@@ -1,0 +1,66 @@
+diff --git a/node_modules/@radix-ui/react-select/dist/index.js b/node_modules/@radix-ui/react-select/dist/index.js
+index dc37ac4..0a347dd 100644
+--- a/node_modules/@radix-ui/react-select/dist/index.js
++++ b/node_modules/@radix-ui/react-select/dist/index.js
+@@ -141,7 +141,7 @@ var Select = (props) => {
+   const triggerPointerDownPosRef = React.useRef(null);
+   const isFormControl = trigger ? form || !!trigger.closest("form") : true;
+   const [nativeOptionsSet, setNativeOptionsSet] = React.useState(/* @__PURE__ */ new Set());
+-  const nativeSelectKey = Array.from(nativeOptionsSet).map((option) => option.props.value).join(";");
++  const nativeSelectKey = ...Array.from(nativeOptionsSet).map((option) => option.props.value).join(";");
+   return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(PopperPrimitive.Root, { ...popperScope, children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(
+     SelectProvider,
+     {
+@@ -192,7 +192,7 @@ var Select = (props) => {
+             disabled,
+             form,
+             children: [
+-              value === void 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { value: "" }) : null,
++              value === void 0 ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)("option", { value: "" }, "select-empty-option") : null,
+               Array.from(nativeOptionsSet)
+             ]
+           },
+@@ -988,8 +988,8 @@ var SelectItemText = React.forwardRef(
+       return () => onNativeOptionRemove(nativeOption);
+     }, [onNativeOptionAdd, onNativeOptionRemove, nativeOption]);
+     return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(import_jsx_runtime.Fragment, { children: [
+-      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react_primitive.Primitive.span, { id: itemContext.textId, ...itemTextProps, ref: composedRefs }),
+-      itemContext.isSelected && context.valueNode && !context.valueNodeHasChildren ? ReactDOM.createPortal(itemTextProps.children, context.valueNode) : null
++      /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react_primitive.Primitive.span, { id: itemContext.textId, ...itemTextProps, ref: composedRefs }, "select-item-text"),
++      itemContext.isSelected && context.valueNode && !context.valueNodeHasChildren ? /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_jsx_runtime.Fragment, { children: ReactDOM.createPortal(itemTextProps.children, context.valueNode) }, "select-item-text-portal") : null
+     ] });
+   }
+ );
+diff --git a/node_modules/@radix-ui/react-select/dist/index.mjs b/node_modules/@radix-ui/react-select/dist/index.mjs
+index f9b94f3..3effc89 100644
+--- a/node_modules/@radix-ui/react-select/dist/index.mjs
++++ b/node_modules/@radix-ui/react-select/dist/index.mjs
+@@ -74,7 +74,7 @@ var Select = (props) => {
+   const triggerPointerDownPosRef = React.useRef(null);
+   const isFormControl = trigger ? form || !!trigger.closest("form") : true;
+   const [nativeOptionsSet, setNativeOptionsSet] = React.useState(/* @__PURE__ */ new Set());
+-  const nativeSelectKey = Array.from(nativeOptionsSet).map((option) => option.props.value).join(";");
++  const nativeSelectKey = ...Array.from(nativeOptionsSet).map((option) => option.props.value).join(";");
+   return /* @__PURE__ */ jsx(PopperPrimitive.Root, { ...popperScope, children: /* @__PURE__ */ jsxs(
+     SelectProvider,
+     {
+@@ -125,7 +125,7 @@ var Select = (props) => {
+             disabled,
+             form,
+             children: [
+-              value === void 0 ? /* @__PURE__ */ jsx("option", { value: "" }) : null,
++              value === void 0 ? /* @__PURE__ */ jsx("option", { value: "" }, "select-empty-option") : null,
+               Array.from(nativeOptionsSet)
+             ]
+           },
+@@ -921,8 +921,8 @@ var SelectItemText = React.forwardRef(
+       return () => onNativeOptionRemove(nativeOption);
+     }, [onNativeOptionAdd, onNativeOptionRemove, nativeOption]);
+     return /* @__PURE__ */ jsxs(Fragment, { children: [
+-      /* @__PURE__ */ jsx(Primitive.span, { id: itemContext.textId, ...itemTextProps, ref: composedRefs }),
+-      itemContext.isSelected && context.valueNode && !context.valueNodeHasChildren ? ReactDOM.createPortal(itemTextProps.children, context.valueNode) : null
++      /* @__PURE__ */ jsx(Primitive.span, { id: itemContext.textId, ...itemTextProps, ref: composedRefs }, "select-item-text"),
++      itemContext.isSelected && context.valueNode && !context.valueNodeHasChildren ? /* @__PURE__ */ jsx(Fragment, { children: ReactDOM.createPortal(itemTextProps.children, context.valueNode) }, "select-item-text-portal") : null
+     ] });
+   }
+ );

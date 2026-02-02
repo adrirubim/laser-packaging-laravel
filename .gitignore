@@ -1,0 +1,47 @@
+# Laravel
+/.phpunit.cache
+/bootstrap/ssr
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/resources/js/actions
+/resources/js/routes
+/resources/js/wayfinder
+/storage/*.key
+/storage/pail
+/vendor
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+.env.local
+.env.*.local
+/auth.json
+*.pem
+*.key
+credentials.json
+
+# IDE & editor
+.DS_Store
+/.fleet
+/.idea
+/.nova
+/.vscode
+/.zed
+.cursor/
+
+# Build & deps
+.phpactor.json
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log*
+yarn-error.log
+*.tar.gz
+patch-package-error.json.gz
+
+# Copilot / instructions (optional)
+.github/copilot/
+.github/copilot-instructions.md

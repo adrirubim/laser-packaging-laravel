@@ -1,0 +1,10 @@
+* text=auto eol=lf
+
+# Patch files must be LF so patch-package parses them on all platforms
+*.patch text eol=lf
+
+*.blade.php diff=html
+*.css diff=css
+*.html diff=html
+*.md diff=markdown
+*.php diff=php
