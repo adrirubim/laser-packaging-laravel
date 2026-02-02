@@ -1,0 +1,296 @@
+import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import AppLayout from '@/layouts/app-layout';
+import customerDivisions from '@/routes/customer-divisions';
+import customerShippingAddresses from '@/routes/customer-shipping-addresses';
+import { type BreadcrumbItem } from '@/types';
+import { Head, Link, router } from '@inertiajs/react';
+
+type Customer = {
+    uuid: string;
+    company_name: string;
+};
+
+type CustomerDivision = {
+    id: number;
+    uuid: string;
+    name: string;
+    customer?: Customer | null;
+};
+
+type Order = {
+    uuid: string;
+    order_production_number: string;
+    quantity?: number | null;
+};
+
+type CustomerShippingAddress = {
+    id: number;
+    uuid: string;
+    street: string;
+    city: string;
+    postal_code?: string | null;
+    province?: string | null;
+    country?: string | null;
+    co?: string | null;
+    contacts?: string | null;
+    customerDivision?: CustomerDivision | null;
+    customer_division?: CustomerDivision | null; // Laravel serializa en snake_case
+    orders?: Order[];
+};
+
+type CustomerShippingAddressesShowProps = {
+    address: CustomerShippingAddress;
+};
+
+export default function CustomerShippingAddressesShow({
+    address,
+}: CustomerShippingAddressesShowProps) {
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: 'Indirizzi di Consegna Clienti',
+            href: customerShippingAddresses.index().url,
+        },
+        {
+            title: address.street,
+            href: customerShippingAddresses.show({
+                customerShippingAddress: address.uuid,
+            }).url,
+        },
+    ];
+
+    const handleDelete = () => {
+        if (
+            confirm(
+                'Sei sicuro di voler eliminare questo indirizzo di consegna? Questa azione non può essere annullata.',
+            )
+        ) {
+            router.delete(
+                customerShippingAddresses.destroy({
+                    customerShippingAddress: address.uuid,
+                }).url,
+                {
+                    onSuccess: () => {
+                        router.visit(customerShippingAddresses.index().url);
+                    },
+                },
+            );
+        }
+    };
+
+    return (
+        <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title={`Indirizzo di Consegna ${address.street}`} />
+
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-2xl font-bold">{address.street}</h1>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                            {address.city}{' '}
+                            {address.postal_code
+                                ? `(${address.postal_code})`
+                                : ''}
+                        </p>
+                    </div>
+                    <div className="flex gap-2">
+                        <Button asChild variant="outline">
+                            <Link
+                                href={
+                                    customerShippingAddresses.edit({
+                                        customerShippingAddress: address.uuid,
+                                    }).url
+                                }
+                            >
+                                Modifica
+                            </Link>
+                        </Button>
+                        <Button variant="destructive" onClick={handleDelete}>
+                            Elimina
+                        </Button>
+                    </div>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Dettagli Indirizzo</CardTitle>
+                            <CardDescription>
+                                Informazioni complete dell'indirizzo
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div>
+                                <Label className="text-sm font-medium text-muted-foreground">
+                                    Via
+                                </Label>
+                                <p className="text-lg font-semibold">
+                                    {address.street}
+                                </p>
+                            </div>
+
+                            {address.co && (
+                                <div>
+                                    <Label className="text-sm font-medium text-muted-foreground">
+                                        C/O
+                                    </Label>
+                                    <p>{address.co}</p>
+                                </div>
+                            )}
+
+                            <div>
+                                <Label className="text-sm font-medium text-muted-foreground">
+                                    Città
+                                </Label>
+                                <p className="text-lg font-semibold">
+                                    {address.city}
+                                </p>
+                            </div>
+
+                            {address.postal_code && (
+                                <div>
+                                    <Label className="text-sm font-medium text-muted-foreground">
+                                        CAP
+                                    </Label>
+                                    <p>{address.postal_code}</p>
+                                </div>
+                            )}
+
+                            {address.province && (
+                                <div>
+                                    <Label className="text-sm font-medium text-muted-foreground">
+                                        Provincia
+                                    </Label>
+                                    <p>{address.province}</p>
+                                </div>
+                            )}
+
+                            {address.country && (
+                                <div>
+                                    <Label className="text-sm font-medium text-muted-foreground">
+                                        Nazione
+                                    </Label>
+                                    <p>{address.country}</p>
+                                </div>
+                            )}
+
+                            {address.contacts && (
+                                <div>
+                                    <Label className="text-sm font-medium text-muted-foreground">
+                                        Contatti
+                                    </Label>
+                                    <p>{address.contacts}</p>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Informazioni Divisione</CardTitle>
+                            <CardDescription>
+                                Divisione e cliente di appartenenza
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            {(() => {
+                                const division =
+                                    address.customerDivision ||
+                                    address.customer_division;
+                                if (!division) return null;
+
+                                return (
+                                    <>
+                                        {division.customer && (
+                                            <div>
+                                                <Label className="text-sm font-medium text-muted-foreground">
+                                                    Cliente
+                                                </Label>
+                                                <p className="text-lg font-semibold">
+                                                    {
+                                                        division.customer
+                                                            .company_name
+                                                    }
+                                                </p>
+                                            </div>
+                                        )}
+                                        <div>
+                                            <Label className="text-sm font-medium text-muted-foreground">
+                                                Divisione
+                                            </Label>
+                                            <Link
+                                                href={
+                                                    customerDivisions.show({
+                                                        customerDivision:
+                                                            division.uuid,
+                                                    }).url
+                                                }
+                                                className="text-lg font-semibold text-primary hover:underline"
+                                            >
+                                                {division.name}
+                                            </Link>
+                                        </div>
+                                    </>
+                                );
+                            })()}
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {address.orders && address.orders.length > 0 && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Ordini Associati</CardTitle>
+                            <CardDescription>
+                                Ordini che utilizzano questo indirizzo di
+                                consegna
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-2">
+                                {address.orders.map((order) => (
+                                    <div
+                                        key={order.uuid}
+                                        className="flex items-center justify-between rounded-lg border p-3"
+                                    >
+                                        <div>
+                                            <p className="font-mono font-medium">
+                                                {order.order_production_number}
+                                            </p>
+                                            {order.quantity !== null &&
+                                                order.quantity !==
+                                                    undefined && (
+                                                    <p className="text-sm text-muted-foreground">
+                                                        Quantità:{' '}
+                                                        {order.quantity}
+                                                    </p>
+                                                )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
+
+                {(!address.orders || address.orders.length === 0) && (
+                    <Card>
+                        <CardContent className="py-8 text-center text-muted-foreground">
+                            <p>
+                                Nessun ordine associato a questo indirizzo di
+                                consegna.
+                            </p>
+                        </CardContent>
+                    </Card>
+                )}
+            </div>
+        </AppLayout>
+    );
+}

@@ -1,0 +1,53 @@
+<?php
+
+use App\Http\Controllers\Api\ProductionPortalController;
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| API Routes - Production Portal
+|--------------------------------------------------------------------------
+|
+| Estas rutas son para el portal de producción, utilizadas por dispositivos
+| móviles y lectores de códigos de barras. No requieren autenticación web
+| tradicional, sino tokens generados por el sistema.
+|
+*/
+
+Route::prefix('production')->group(function () {
+    // Autenticación
+    Route::post('/authenticate', [ProductionPortalController::class, 'authenticate'])
+        ->name('api.production.authenticate');
+
+    Route::post('/login', [ProductionPortalController::class, 'login'])
+        ->name('api.production.login');
+
+    Route::post('/check-token', [ProductionPortalController::class, 'checkToken'])
+        ->name('api.production.check-token');
+
+    // Procesamiento de órdenes (requieren token - validación en controller)
+    // Nota: La validación de token se hace directamente en los controllers
+    Route::post('/add-pallet-quantity', [ProductionPortalController::class, 'addPalletQuantity'])
+        ->name('api.production.add-pallet-quantity');
+
+    Route::post('/add-manual-quantity', [ProductionPortalController::class, 'addManualQuantity'])
+        ->name('api.production.add-manual-quantity');
+
+    Route::post('/suspend-order', [ProductionPortalController::class, 'suspendOrder'])
+        ->name('api.production.suspend-order');
+
+    Route::post('/confirm-autocontrollo', [ProductionPortalController::class, 'confirmAutocontrollo'])
+        ->name('api.production.confirm-autocontrollo');
+
+    Route::post('/employee-order-list', [ProductionPortalController::class, 'getEmployeeOrderList'])
+        ->name('api.production.employee-order-list');
+
+    Route::post('/get-info', [ProductionPortalController::class, 'getInfo'])
+        ->name('api.production.get-info');
+});
+
+// Ruta para imprimir foglio pallet (si se implementa)
+Route::get('/production/foglio-pallet/{uuid}/print', function ($uuid) {
+    // TODO: Implementar generación de PDF o impresión
+    return response()->json(['message' => 'Print functionality not yet implemented']);
+})->name('api.production.foglio-pallet.print');
