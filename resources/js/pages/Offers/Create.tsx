@@ -290,11 +290,30 @@ export default function OffersCreate() {
     const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
 
     // UUID stabile per il form (generato una sola volta al mount)
-    const [formUuid] = useState(
-        () =>
-            crypto.randomUUID?.() ??
-            `offer-${Date.now()}-${String(Math.random()).slice(2, 11)}`,
-    );
+    const [formUuid] = useState(() => {
+        if (typeof crypto !== 'undefined') {
+            if (typeof crypto.randomUUID === 'function') {
+                return crypto.randomUUID();
+            }
+            if (typeof crypto.getRandomValues === 'function') {
+                const bytes = new Uint8Array(16);
+                crypto.getRandomValues(bytes);
+                const hex = Array.from(bytes, b =>
+                    b.toString(16).padStart(2, '0'),
+                ).join('');
+                // Formato UUID v4-like: 8-4-4-4-12
+                return [
+                    hex.slice(0, 8),
+                    hex.slice(8, 12),
+                    hex.slice(12, 16),
+                    hex.slice(16, 20),
+                    hex.slice(20, 32),
+                ].join('-');
+            }
+        }
+        // Fallback finale per ambienti senza Web Crypto
+        return `offer-${Date.now()}-${String(Math.random()).slice(2, 11)}`;
+    });
 
     // Hook per notifiche flash
     const { flash } = useFlashNotifications();
