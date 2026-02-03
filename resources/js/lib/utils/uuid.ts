@@ -54,13 +54,12 @@ export function generateUUID(): string {
         );
     }
 
-    // ÚLTIMO RECURSO: sin crypto disponible, volver al algoritmo basado en Math.random (no criptográficamente seguro).
-    // Nota: Este caso solo debería darse en entornos muy antiguos o no estándar.
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        const r = (Math.random() * 16) | 0;
-        const v = c === 'x' ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-    });
+    // ÚLTIMO RECURSO: sin una fuente de aleatoriedad criptográficamente segura disponible,
+    // lanzamos un error en lugar de utilizar Math.random, que no es seguro.
+    // Esto evita generar UUIDs predecibles en entornos no compatibles.
+    throw new Error(
+        'generateUUID requiere una fuente de aleatoriedad criptográficamente segura (crypto.randomUUID o crypto.getRandomValues).',
+    );
 }
 
 /**
