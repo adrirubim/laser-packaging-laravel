@@ -54,13 +54,11 @@ export function generateUUID(): string {
         );
     }
 
-    // ÚLTIMO RECURSO: sin crypto disponible, volver al algoritmo basado en Math.random (no criptográficamente seguro).
-    // Nota: Este caso solo debería darse en entornos muy antiguos o no estándar.
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        const r = (Math.random() * 16) | 0;
-        const v = c === 'x' ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-    });
+    // Si no hay una fuente de aleatoriedad criptográficamente segura disponible,
+    // falla explícitamente en lugar de recurrir a Math.random (no seguro).
+    throw new Error(
+        'No se puede generar un UUID v4 de forma segura: API crypto no disponible en este entorno.'
+    );
 }
 
 /**
