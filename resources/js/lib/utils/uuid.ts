@@ -9,7 +9,7 @@ import * as nodeCrypto from 'crypto';
 export function generateUUID(): string {
     const globalCrypto = (typeof globalThis !== 'undefined' &&
         (globalThis as unknown as { crypto?: Crypto }).crypto) as
-        | (Crypto & { randomUUID?: () => string })
+        | (Crypto & { randomUUID?: () => string; getRandomValues?: (<T extends ArrayBufferView | null>(array: T) => T) })
         | undefined;
 
     // Si el entorno proporciona crypto.randomUUID (navegadores modernos, Node recientes), úsalo directamente.
