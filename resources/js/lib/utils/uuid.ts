@@ -54,11 +54,11 @@ export function generateUUID(): string {
         );
     }
 
-    // ÚLTIMO RECURSO: sin una fuente de aleatoriedad criptográficamente segura disponible,
-    // lanzamos un error en lugar de utilizar Math.random, que no es seguro.
-    // Esto evita generar UUIDs predecibles en entornos no compatibles.
+    // Sin una fuente de aleatoriedad criptográficamente segura disponible,
+    // no es posible generar un UUID v4 seguro.
+    // Lanzamos un error en lugar de recurrir a Math.random() inseguro.
     throw new Error(
-        'generateUUID requiere una fuente de aleatoriedad criptográficamente segura (crypto.randomUUID o crypto.getRandomValues).',
+        'No cryptographically secure random source available to generate UUID v4.'
     );
 }
 
