@@ -56,12 +56,13 @@ export function generateUUID(): string {
         );
     }
 
-    // Fallback seguro utilizando el módulo crypto de Node.js, si está disponible.
-    if (nodeCrypto && typeof nodeCrypto.randomUUID === 'function') {
+    // Fallback seguro para entornos Node.js que no exponen globalThis.crypto.
+    if (typeof nodeCrypto.randomUUID === 'function') {
         return nodeCrypto.randomUUID();
     }
 
-    if (nodeCrypto && typeof nodeCrypto.randomBytes === 'function') {
+    // Último recurso seguro en Node.js: usar randomBytes y formatear como UUID v4.
+    if (typeof nodeCrypto.randomBytes === 'function') {
         const bytes = nodeCrypto.randomBytes(16);
 
         // Establecer versión (4) y variante (RFC4122)
@@ -98,9 +99,11 @@ export function generateUUID(): string {
         );
     }
 
-    // Si no hay ninguna fuente de aleatoriedad criptográficamente segura disponible,
-    // lanzamos un error en lugar de recurrir a Math.random (inseguro).
-    throw new Error('No cryptographically secure random number generator available to generate UUID.');
+    // Si llegamos aquí, no hay ninguna fuente de aleatoriedad criptográficamente segura disponible.
+    // Lanzamos un error en lugar de caer en Math.random(), que no es seguro.
+    throw new Error(
+        'No se pudo generar un UUID de forma segura: no hay API de criptografía disponible.'
+    );
 }
 
 /**
