@@ -1,3 +1,5 @@
+import * as nodeCrypto from 'crypto';
+
 /**
  * Genera un UUID v4 válido utilizando una fuente de aleatoriedad
  * criptográficamente segura cuando está disponible.
@@ -54,10 +56,53 @@ export function generateUUID(): string {
         );
     }
 
-    // Si no hay una fuente de aleatoriedad criptográficamente segura disponible,
-    // falla explícitamente en lugar de recurrir a Math.random (no seguro).
+    // Fallback seguro para entornos Node.js que no exponen globalThis.crypto.
+    if (typeof nodeCrypto.randomUUID === 'function') {
+        return nodeCrypto.randomUUID();
+    }
+
+    // Último recurso seguro en Node.js: usar randomBytes y formatear como UUID v4.
+    if (typeof nodeCrypto.randomBytes === 'function') {
+        const bytes = nodeCrypto.randomBytes(16);
+
+        // Establecer versión (4) y variante (RFC4122)
+        bytes[6] = (bytes[6] & 0x0f) | 0x40; // versión 4
+        bytes[8] = (bytes[8] & 0x3f) | 0x80; // variante 10xxxxxx
+
+        const hex: string[] = [];
+        for (let i = 0; i < bytes.length; i++) {
+            const h = bytes[i].toString(16).padStart(2, '0');
+            hex.push(h);
+        }
+
+        return (
+            hex[0] +
+            hex[1] +
+            hex[2] +
+            hex[3] +
+            '-' +
+            hex[4] +
+            hex[5] +
+            '-' +
+            hex[6] +
+            hex[7] +
+            '-' +
+            hex[8] +
+            hex[9] +
+            '-' +
+            hex[10] +
+            hex[11] +
+            hex[12] +
+            hex[13] +
+            hex[14] +
+            hex[15]
+        );
+    }
+
+    // Si llegamos aquí, no hay ninguna fuente de aleatoriedad criptográficamente segura disponible.
+    // Lanzamos un error en lugar de caer en Math.random(), que no es seguro.
     throw new Error(
-        'No se puede generar un UUID v4 de forma segura: API crypto no disponible en este entorno.'
+        'No se pudo generar un UUID de forma segura: no hay API de criptografía disponible.'
     );
 }
 
