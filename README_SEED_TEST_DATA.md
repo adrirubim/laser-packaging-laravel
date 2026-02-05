@@ -181,6 +181,8 @@ If you need to recreate the demo data:
 
 The seeder automatically truncates all related tables before inserting the new demo data.
 
+**Production:** The seeder **refuses to run** when `APP_ENV=production`. Use it only in local or test environments.
+
 ## 📊 Data Structure Created
 
 ```

@@ -64,6 +64,12 @@ class TestDataSeeder extends Seeder
      */
     public function run(): void
     {
+        if (app()->environment('production')) {
+            throw new \RuntimeException(
+                'TestDataSeeder cannot run in production. It wipes all data. Use only in local or test environments.'
+            );
+        }
+
         $faker = Faker::create();
 
         $this->command->info('🌱 Creando datos de prueba...');
