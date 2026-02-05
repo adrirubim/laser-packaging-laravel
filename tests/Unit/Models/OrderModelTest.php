@@ -93,4 +93,3 @@ class OrderModelTest extends TestCase
         $this->assertTrue($order->processings->contains($processing));
     }
 }
-

@@ -4,7 +4,6 @@ namespace Tests\Unit\Models;
 
 use App\Models\Machinery;
 use App\Models\ValueTypes;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -65,4 +64,3 @@ class MachineryModelTest extends TestCase
         // No forzamos que la relación esté necesariamente presente: solo que no rompa
     }
 }
-

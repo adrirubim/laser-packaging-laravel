@@ -41,10 +41,9 @@ class UpdateOrderActionTest extends TestCase
     #[Test]
     public function it_sets_status_to_in_avanazamento_when_worked_quantity_increases()
     {
-        $fakeService = new class() extends OrderProductionNumberService {
-            public function __construct()
-            {
-            }
+        $fakeService = new class extends OrderProductionNumberService
+        {
+            public function __construct() {}
         };
 
         $this->app->instance(OrderProductionNumberService::class, $fakeService);
@@ -67,4 +66,3 @@ class UpdateOrderActionTest extends TestCase
         $this->assertSame(OrderStatus::IN_AVANZAMENTO->value, $result->status);
     }
 }
-

@@ -39,10 +39,9 @@ class CreateOrderActionTest extends TestCase
     #[Test]
     public function it_generates_production_number_and_initial_status_when_missing()
     {
-        $fakeService = new class() extends OrderProductionNumberService {
-            public function __construct()
-            {
-            }
+        $fakeService = new class extends OrderProductionNumberService
+        {
+            public function __construct() {}
 
             public function generateNext(): string
             {
@@ -72,4 +71,3 @@ class CreateOrderActionTest extends TestCase
         );
     }
 }
-

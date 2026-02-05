@@ -41,10 +41,9 @@ class CreateOfferActionTest extends TestCase
     public function it_generates_offer_number_when_missing()
     {
         // Arrange: simular un servicio de numeración que siempre devuelve el mismo valor
-        $fakeService = new class() extends OfferNumberService {
-            public function __construct()
-            {
-            }
+        $fakeService = new class extends OfferNumberService
+        {
+            public function __construct() {}
 
             public function generateNext(?string $subVersion = null, ?string $suffix = null): string
             {
@@ -68,4 +67,3 @@ class CreateOfferActionTest extends TestCase
         $this->assertSame('OFF-TEST-0001', $result->offer_number);
     }
 }
-

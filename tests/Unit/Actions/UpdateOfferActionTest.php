@@ -60,10 +60,9 @@ class UpdateOfferActionTest extends TestCase
         ]);
 
         // Fake simple para no depender de la lógica real de servicios/repos
-        $fakeNumberService = new class() extends OfferNumberService {
-            public function __construct()
-            {
-            }
+        $fakeNumberService = new class extends OfferNumberService
+        {
+            public function __construct() {}
         };
         $this->app->instance(OfferNumberService::class, $fakeNumberService);
         $this->app->instance(ArticleRepository::class, $this->createMock(ArticleRepository::class));
@@ -92,4 +91,3 @@ class UpdateOfferActionTest extends TestCase
         $this->assertTrue($existingList->fresh()->removed === false);
     }
 }
-
