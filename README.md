@@ -495,7 +495,7 @@ This is an open-source project (MIT). For contributions or inquiries, please con
 <a id="license"></a>
 ## 📄 License
 
-MIT
+[MIT](LICENSE)
 
 ---
 
