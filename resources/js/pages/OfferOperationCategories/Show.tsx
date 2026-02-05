@@ -1,14 +1,4 @@
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -19,8 +9,8 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import offerOperationCategories from '@/routes/offer-operation-categories';
-import offerOperations from '@/routes/offer-operations';
+import offerOperationCategories from '@/routes/offer-operation-categories/index';
+import offerOperations from '@/routes/offer-operations/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Edit, Plus, Trash2 } from 'lucide-react';
@@ -48,6 +38,7 @@ type OfferOperationCategoriesShowProps = {
 export default function OfferOperationCategoriesShow({
     category,
 }: OfferOperationCategoriesShowProps) {
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
@@ -67,7 +58,7 @@ export default function OfferOperationCategoriesShow({
         },
     ];
 
-    const handleDelete = () => {
+    const handleDeleteConfirm = () => {
         setIsDeleting(true);
         router.delete(
             offerOperationCategories.destroy({
@@ -75,6 +66,7 @@ export default function OfferOperationCategoriesShow({
             }).url,
             {
                 onSuccess: () => {
+                    setDeleteDialogOpen(false);
                     router.visit(offerOperationCategories.index().url);
                 },
                 onFinish: () => {
@@ -112,54 +104,14 @@ export default function OfferOperationCategoriesShow({
                                 Modifica
                             </Link>
                         </Button>
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <Button
-                                    variant="destructive"
-                                    disabled={isDeleting}
-                                >
-                                    <Trash2 className="mr-2 h-4 w-4" />
-                                    Elimina
-                                </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                        Conferma eliminazione
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        Sei sicuro di voler eliminare la
-                                        categoria operazione{' '}
-                                        <strong>{category.name}</strong>{' '}
-                                        (Codice: {category.code})?
-                                        <br />
-                                        <br />
-                                        Questa azione non può essere annullata.
-                                        La categoria verrà eliminata
-                                        definitivamente.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel disabled={isDeleting}>
-                                        Annulla
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction
-                                        onClick={handleDelete}
-                                        disabled={isDeleting}
-                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                    >
-                                        {isDeleting ? (
-                                            <>
-                                                <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                                                Eliminando...
-                                            </>
-                                        ) : (
-                                            'Elimina definitivamente'
-                                        )}
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
+                        <Button
+                            variant="destructive"
+                            onClick={() => setDeleteDialogOpen(true)}
+                            disabled={isDeleting}
+                        >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Elimina
+                        </Button>
                     </div>
                 </div>
 
@@ -264,6 +216,16 @@ export default function OfferOperationCategoriesShow({
                         </CardContent>
                     </Card>
                 )}
+
+                <ConfirmDeleteDialog
+                    open={deleteDialogOpen}
+                    onOpenChange={setDeleteDialogOpen}
+                    onConfirm={handleDeleteConfirm}
+                    title="Elimina Categoria Operazione"
+                    description="Sei sicuro di voler eliminare questa categoria operazione? Questa azione non può essere annullata."
+                    itemName={category.name}
+                    isLoading={isDeleting}
+                />
             </div>
         </AppLayout>
     );

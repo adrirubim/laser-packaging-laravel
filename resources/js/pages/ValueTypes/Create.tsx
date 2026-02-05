@@ -1,3 +1,4 @@
+import { FormLabel } from '@/components/FormLabel';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import {
@@ -8,10 +9,9 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import { generateUUID } from '@/lib/utils/uuid';
-import valueTypes from '@/routes/value-types';
+import valueTypes from '@/routes/value-types/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
@@ -45,20 +45,22 @@ export default function ValueTypesCreate({
             href: valueTypes.index().url,
         },
         {
-            title: 'Crea',
+            title: 'Nuovo Tipo di Valore',
             href: valueTypes.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Crea Tipo di Valore" />
+            <Head title="Nuovo Tipo di Valore" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Gestione Tipo di Valore</CardTitle>
-                        <CardDescription>Inserimento</CardDescription>
+                        <CardTitle>Nuovo Tipo di Valore</CardTitle>
+                        <CardDescription>
+                            Compila i campi per creare un tipo di valore.
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Form
@@ -76,9 +78,12 @@ export default function ValueTypesCreate({
                                     <>
                                         <div className="grid gap-2">
                                             <div className="flex items-center justify-between">
-                                                <Label htmlFor="uuid">
-                                                    UUID *
-                                                </Label>
+                                                <FormLabel
+                                                    htmlFor="uuid"
+                                                    required
+                                                >
+                                                    UUID
+                                                </FormLabel>
                                                 <Button
                                                     type="button"
                                                     variant="outline"

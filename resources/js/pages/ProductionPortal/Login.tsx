@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import productionPortal from '@/routes/production-portal';
+import productionPortal from '@/routes/production-portal/index';
 import { Head, useForm } from '@inertiajs/react';
 import { LogIn, ScanLine } from 'lucide-react';
 import { useState } from 'react';

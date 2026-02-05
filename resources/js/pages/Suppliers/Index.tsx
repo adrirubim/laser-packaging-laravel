@@ -1,20 +1,18 @@
+import { ActionsDropdown } from '@/components/ActionsDropdown';
 import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
+import {
+    FlashNotifications,
+    useFlashNotifications,
+} from '@/components/flash-notifications';
+import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { SortableTableHeader } from '@/components/SortableTableHeader';
-import { Button } from '@/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import AppLayout from '@/layouts/app-layout';
 import suppliers from '@/routes/suppliers';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Edit, Eye, MoreHorizontal, Plus, Trash2, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Head, router, usePage } from '@inertiajs/react';
+import { useState } from 'react';
 
 type Supplier = {
     id: number;
@@ -51,11 +49,11 @@ type SuppliersIndexProps = {
 
 export default function SuppliersIndex() {
     const { props } = usePage<SuppliersIndexProps>();
-    const { suppliers: suppliersPaginated, filters, flash } = props;
+    const { suppliers: suppliersPaginated, filters } = props;
+    const { flash } = useFlashNotifications();
 
     const [searchValue, setSearchValue] = useState(filters.search ?? '');
     const [isSearching, setIsSearching] = useState(false);
-    const [showFlash, setShowFlash] = useState(true);
     const [deleteDialog, setDeleteDialog] = useState<{
         open: boolean;
         supplier: Supplier | null;
@@ -64,17 +62,6 @@ export default function SuppliersIndex() {
         supplier: null,
     });
     const [isDeleting, setIsDeleting] = useState(false);
-
-    // Auto-dismiss per messaggi flash
-    useEffect(() => {
-        if (flash?.success || flash?.error) {
-            queueMicrotask(() => setShowFlash(true));
-            const timer = setTimeout(() => {
-                setShowFlash(false);
-            }, 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [flash]);
 
     const handleSort = (column: string) => {
         const currentSort = filters.sort_by;
@@ -166,47 +153,14 @@ export default function SuppliersIndex() {
             <Head title="Fornitori" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex items-center justify-between gap-3">
-                    <div>
-                        <h1 className="text-2xl font-semibold tracking-tight">
-                            Fornitori
-                        </h1>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                            Elenco dei fornitori attivi con Cerca e filtri di
-                            base.
-                        </p>
-                    </div>
-                    <Link
-                        href={suppliers.create().url}
-                        className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
-                    >
-                        <Plus className="mr-2 h-4 w-4" />
-                        Nuovo Fornitore
-                    </Link>
-                </div>
+                <IndexHeader
+                    title="Fornitori"
+                    subtitle="Elenco dei fornitori attivi con Cerca e filtri di base."
+                    createHref={suppliers.create().url}
+                    createLabel="Nuovo Fornitore"
+                />
 
-                {showFlash && flash?.success && (
-                    <div className="flex animate-in items-center justify-between rounded-md border border-emerald-500/40 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-700 duration-300 fade-in slide-in-from-top-2 dark:text-emerald-300">
-                        <span>{flash.success}</span>
-                        <button
-                            onClick={() => setShowFlash(false)}
-                            className="ml-2 transition-opacity hover:opacity-70"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
-                {showFlash && flash?.error && (
-                    <div className="flex animate-in items-center justify-between rounded-md border border-rose-500/40 bg-rose-500/5 px-3 py-2 text-sm text-rose-700 duration-300 fade-in slide-in-from-top-2 dark:text-rose-300">
-                        <span>{flash.error}</span>
-                        <button
-                            onClick={() => setShowFlash(false)}
-                            className="ml-2 transition-opacity hover:opacity-70"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
+                <FlashNotifications flash={flash} />
 
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="space-y-1">
@@ -246,60 +200,21 @@ export default function SuppliersIndex() {
                                                     Codice: {supplier.code}
                                                 </p>
                                             </div>
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="h-8 w-8"
-                                                        aria-label="Apri menu azioni"
-                                                    >
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            router.visit(
-                                                                suppliers.show({
-                                                                    supplier:
-                                                                        supplier.uuid,
-                                                                }).url,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Eye className="mr-2 h-4 w-4" />
-                                                        Visualizza
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            router.visit(
-                                                                suppliers.edit({
-                                                                    supplier:
-                                                                        supplier.uuid,
-                                                                }).url,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Edit className="mr-2 h-4 w-4" />
-                                                        Modifica
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        variant="destructive"
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            handleDeleteClick(
-                                                                supplier,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Trash2 className="mr-2 h-4 w-4" />
-                                                        Elimina
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
+                                            <ActionsDropdown
+                                                viewHref={
+                                                    suppliers.show({
+                                                        supplier: supplier.uuid,
+                                                    }).url
+                                                }
+                                                editHref={
+                                                    suppliers.edit({
+                                                        supplier: supplier.uuid,
+                                                    }).url
+                                                }
+                                                onDelete={() =>
+                                                    handleDeleteClick(supplier)
+                                                }
+                                            />
                                         </div>
                                         <div className="grid grid-cols-2 gap-2 text-xs">
                                             {supplier.vat_number && (
@@ -480,60 +395,21 @@ export default function SuppliersIndex() {
                                             {supplier.country ?? '—'}
                                         </td>
                                         <td className="px-3 py-2 text-right align-middle text-xs">
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="h-8 w-8"
-                                                        aria-label="Apri menu azioni"
-                                                    >
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            router.visit(
-                                                                suppliers.show({
-                                                                    supplier:
-                                                                        supplier.uuid,
-                                                                }).url,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Eye className="mr-2 h-4 w-4" />
-                                                        Visualizza
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            router.visit(
-                                                                suppliers.edit({
-                                                                    supplier:
-                                                                        supplier.uuid,
-                                                                }).url,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Edit className="mr-2 h-4 w-4" />
-                                                        Modifica
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        variant="destructive"
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            handleDeleteClick(
-                                                                supplier,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Trash2 className="mr-2 h-4 w-4" />
-                                                        Elimina
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
+                                            <ActionsDropdown
+                                                viewHref={
+                                                    suppliers.show({
+                                                        supplier: supplier.uuid,
+                                                    }).url
+                                                }
+                                                editHref={
+                                                    suppliers.edit({
+                                                        supplier: supplier.uuid,
+                                                    }).url
+                                                }
+                                                onDelete={() =>
+                                                    handleDeleteClick(supplier)
+                                                }
+                                            />
                                         </td>
                                     </tr>
                                 ))}

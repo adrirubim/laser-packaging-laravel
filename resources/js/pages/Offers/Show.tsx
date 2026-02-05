@@ -1,3 +1,4 @@
+import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -10,8 +11,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
-import offerOperations from '@/routes/offer-operations';
-import offers from '@/routes/offers';
+import offerOperations from '@/routes/offer-operations/index';
+import offers from '@/routes/offers/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Download, FileText, Loader2 } from 'lucide-react';
@@ -175,6 +176,8 @@ type OffersShowProps = {
 
 export default function OffersShow({ offer }: OffersShowProps) {
     const [downloadingPdf, setDownloadingPdf] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
@@ -187,18 +190,17 @@ export default function OffersShow({ offer }: OffersShowProps) {
         },
     ];
 
-    const handleDelete = () => {
-        if (
-            confirm(
-                'Sei sicuro di voler eliminare questa offerta? Questa azione non può essere annullata.',
-            )
-        ) {
-            router.delete(offers.destroy({ offer: offer.uuid }).url, {
-                onSuccess: () => {
-                    router.visit(offers.index().url);
-                },
-            });
-        }
+    const handleDeleteConfirm = () => {
+        setIsDeleting(true);
+        router.delete(offers.destroy({ offer: offer.uuid }).url, {
+            onSuccess: () => {
+                setDeleteDialogOpen(false);
+                router.visit(offers.index().url);
+            },
+            onFinish: () => {
+                setIsDeleting(false);
+            },
+        });
     };
 
     const handleDownloadPdf = () => {
@@ -287,7 +289,11 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                 Modifica
                             </Link>
                         </Button>
-                        <Button variant="destructive" onClick={handleDelete}>
+                        <Button
+                            variant="destructive"
+                            onClick={() => setDeleteDialogOpen(true)}
+                            disabled={isDeleting}
+                        >
                             Elimina
                         </Button>
                     </div>
@@ -1736,6 +1742,21 @@ export default function OffersShow({ offer }: OffersShowProps) {
                     </div>
                 </Card>
             </div>
+            <ConfirmDeleteDialog
+                open={deleteDialogOpen}
+                onOpenChange={setDeleteDialogOpen}
+                onConfirm={handleDeleteConfirm}
+                isDeleting={isDeleting}
+                title="Conferma eliminazione"
+                description={
+                    <>
+                        Sei sicuro di voler eliminare questa offerta? Questa
+                        azione non può essere annullata. Tutti i dati associati
+                        a questa offerta verranno eliminati definitivamente.
+                    </>
+                }
+                itemName={`Offerta ${offer.offer_number}`}
+            />
         </AppLayout>
     );
 }

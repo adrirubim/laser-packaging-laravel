@@ -1,4 +1,8 @@
 import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
+import {
+    FlashNotifications,
+    useFlashNotifications,
+} from '@/components/flash-notifications';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { SortableTableHeader } from '@/components/SortableTableHeader';
@@ -21,11 +25,11 @@ import {
     getOrderStatusLabel,
 } from '@/constants/orderStatus';
 import AppLayout from '@/layouts/app-layout';
-import orders from '@/routes/orders';
+import orders from '@/routes/orders/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
-import { Edit, Eye, MoreHorizontal, Trash2, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Edit, Eye, MoreHorizontal, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 
 type Article = {
     uuid: string;
@@ -70,14 +74,14 @@ type ProductionAdvancementsProps = {
 
 export default function ProductionAdvancements() {
     const { props } = usePage<ProductionAdvancementsProps>();
-    const { orders: ordersPaginated, articles, filters, flash } = props;
+    const { orders: ordersPaginated, articles, filters } = props;
+    const { flash } = useFlashNotifications();
 
     const [searchValue, setSearchValue] = useState(filters.search ?? '');
     const [articleFilter, setArticleFilter] = useState(
         filters.article_uuid ?? '',
     );
     const [isSearching, setIsSearching] = useState(false);
-    const [showFlash, setShowFlash] = useState(true);
     const [deleteDialog, setDeleteDialog] = useState<{
         open: boolean;
         order: Order | null;
@@ -113,14 +117,6 @@ export default function ProductionAdvancements() {
         }
         return `${workedStr} / ${totalStr}`;
     };
-
-    useEffect(() => {
-        if (flash?.success || flash?.error) {
-            queueMicrotask(() => setShowFlash(true));
-            const timer = setTimeout(() => setShowFlash(false), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [flash]);
 
     const handleSort = (column: string) => {
         const currentSort = filters.sort_by;
@@ -240,28 +236,7 @@ export default function ProductionAdvancements() {
                     </div>
                 </div>
 
-                {showFlash && flash?.success && (
-                    <div className="flex animate-in items-center justify-between rounded-md border border-emerald-500/40 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-700 duration-300 fade-in slide-in-from-top-2 dark:text-emerald-300">
-                        <span>{flash.success}</span>
-                        <button
-                            onClick={() => setShowFlash(false)}
-                            className="ml-2 transition-opacity hover:opacity-70"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
-                {showFlash && flash?.error && (
-                    <div className="flex animate-in items-center justify-between rounded-md border border-rose-500/40 bg-rose-500/5 px-3 py-2 text-sm text-rose-700 duration-300 fade-in slide-in-from-top-2 dark:text-rose-300">
-                        <span>{flash.error}</span>
-                        <button
-                            onClick={() => setShowFlash(false)}
-                            className="ml-2 transition-opacity hover:opacity-70"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
+                <FlashNotifications flash={flash} />
 
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="grid gap-3 md:grid-cols-2">

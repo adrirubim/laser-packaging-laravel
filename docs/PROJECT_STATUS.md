@@ -1,81 +1,83 @@
-# Estado del Proyecto - Laser Packaging Laravel
+# Project Status - Laser Packaging Laravel
 
-**Última actualización:** 2026-01-28  
-**Estado General:** ✅ **Implementación funcional + Dashboard UX refinado** (resumen ejecutivo)
-
----
-
-## 📊 Resumen Ejecutivo
-
-### Estado (alto nivel)
-
-- ✅ **Migración**: módulos principales y submódulos implementados.
-- ✅ **Frontend**: Inertia + React/TypeScript (páginas en `resources/js/pages`).
-- ✅ **Testing**: suite amplia (Unit/Feature/Performance).
-  - **Importante (Vite)**: los Feature tests pueden renderizar el layout con `@vite()` y requieren `public/build/manifest.json`.  
-    Si aparece `Unable to locate file in Vite manifest...`, ejecutar `npm run build` antes de `php artisan test` (ver `../README.md`).
-- ✅ **Datos de prueba**: `TestDataSeeder` (ver `../README_SEED_TEST_DATA.md`).
-  - Cobertura verificada: Clienti, Fornitori, Offerte, Articoli, Ordini, Personale (todas las subsecciones).
-  - Órdenes en los 7 estados (Pianificato, In Allestimento, Lanciato, In Avanzamento, Sospese, Evaso, Saldato).
-  - Archivos placeholder en storage para descargas (instrucciones IC/IO/IP, ModelSCQ, PalletSheet, line_layout, operaciones oferta).
+**Last updated:** 2026-02-05  
+**Overall status:** ✅ **Production-ready implementation + refined dashboard UX**  
+**Stack (exact versions):** [VERSION_STACK.md](VERSION_STACK.md)
 
 ---
 
-## ✅ Módulos Completados
+## 📊 Executive Summary
 
-Offerte, Clienti, Articoli, Ordini, Anagrafica, Production Portal (web + API) y configuración — ver `../README.md` para el listado completo.
+### High-level status
+
+- ✅ **Core modules**: main and sub-modules implemented.
+- ✅ **Frontend**: Inertia + React/TypeScript (pages in `resources/js/pages`).
+- ✅ **Testing**: broad test suite (Unit / Feature / Performance).
+  - **Vite note**: Feature tests can render the layout with `@vite()` and require `public/build/manifest.json`.  
+    If you see `Unable to locate file in Vite manifest...`, run `npm run build` before `php artisan test` (see `../README.md`).
+- ✅ **Demo data**: `TestDataSeeder` (see `../README_SEED_TEST_DATA.md`).
+  - Verified coverage: Clienti, Fornitori, Offerte, Articoli, Ordini, Personale (all subsections).
+  - Orders present in all 7 statuses (Pianificato, In Allestimento, Lanciato, In Avanzamento, Sospese, Evaso, Saldato).
+  - Placeholder files in storage for downloads (IC/IO/IP instructions, ModelSCQ, PalletSheet, line_layout, offer operations).
 
 ---
 
-## 🏗️ Arquitectura Implementada
+## ✅ Completed Modules
+
+Offerte, Clienti, Articoli, Ordini, Anagrafica, Production Portal (web + API) and configuration — see `../README.md` for the full list.
+
+---
+
+## 🏗️ Implemented Architecture
 
 ### Backend
-- Repositorios, Action classes, Traits, Enums, Form Requests, cache e invalidación (ver `../README.md` → Architecture).
+- Repositories, Action classes, Traits, Enums, Form Requests, caching and invalidation (see `../README.md` → Architecture).
 
 ### Frontend
-- Estructura frontend y comandos (dev/build): ver `../README.md`.
+- Frontend structure and dev/build commands: see `../README.md`.
 
 ---
 
 ## 🧪 Testing
 
-- Ejecución: ver `../README.md`.
-- Base de datos de tests: ver `../README_TEST_DATABASE.md`.
-- Cobertura automática: puede estar limitada en PHP NTS (Xdebug/PCOV).
+- How to run tests: see `../README.md`.
+- Test database: see `../README_TEST_DATABASE.md`.
+- Automatic coverage reports may be limited on PHP NTS (Xdebug/PCOV).
 
 ---
 
-## 📋 Verificaciones (resumen)
+## 📋 Verification (summary)
 
-- Modelos y rutas usando UUIDs (route model binding)
-- UI/UX consistente (paginación, búsqueda, ordenamiento)
-- Dashboard principal:
-  - Colores de estados unificados (paleta pastel alineada con Tailwind)
-  - Gráficos interactivos con navegación cruzada (click en barras, porciones, puntos)
-  - Tarjetas de “Ordini Urgenti/Recenti” completamente clicables y con estilos alineados
-  - Estados vacíos unificados mediante `DashboardEmptyState`
-- Validaciones y edge cases cubiertos por tests (ver `TEST_COVERAGE_REPORT.md`)
-
----
-
-## 📚 Documentación
-
-Índice actualizado en `docs/README.md`.
+- Models and routes using UUIDs (route model binding).
+- Consistent UI/UX (pagination, search, sorting).
+- Main dashboard:
+  - Unified status colors (pastel palette aligned with Tailwind).
+  - Interactive charts with cross navigation (clicking bars, slices, points).
+  - “Ordini Urgenti/Recenti” cards fully clickable with consistent styling.
+  - Unified empty states via `DashboardEmptyState`.
+- Validations and edge cases covered by tests (see `TEST_COVERAGE_REPORT.md`).
 
 ---
 
-## 🚀 Próximos Pasos
+## 📚 Documentation
 
-### Inmediatos (Producción)
-- [ ] Configurar entorno de staging
-- [ ] Ejecutar `npm run build` + `php artisan test` en staging
-- [ ] Configurar variables de entorno de producción
-- [ ] Configurar backups automáticos
-- [ ] Configurar monitoreo y alertas
+- Main index in `docs/README.md`.
+- Frontend architecture & conventions guide (Inertia + React) in `docs/FRONTEND_GUIDE.md`, with a 100% completed checklist for all pages in `resources/js/pages`.
 
-### Opcionales (Mejoras Futuras)
-- [ ] Form Requests para submódulos restantes - Opcional
-- [ ] Repositorios adicionales para módulos simples - Opcional
-- [ ] Optimizaciones frontend avanzadas - Opcional
-- [ ] Internacionalización adicional - Opcional
+---
+
+## 🚀 Next Steps
+
+### Immediate (production)
+- [ ] Configure staging environment
+- [ ] Run `npm run build` + `php artisan test` in staging
+- [ ] Configure production environment variables
+- [ ] Configure automated backups
+- [ ] Configure monitoring and alerts
+
+### Optional (future improvements)
+- [ ] Additional Form Requests for remaining small submodules (optional)
+- [ ] Additional repositories for very simple modules (optional)
+- [ ] Advanced frontend performance optimizations (optional)
+- [ ] Additional internationalization (optional)
 

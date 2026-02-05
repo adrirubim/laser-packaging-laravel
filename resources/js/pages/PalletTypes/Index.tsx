@@ -1,16 +1,15 @@
-import { SearchInput } from '@/components/SearchInput';
-import { Button } from '@/components/ui/button';
+import { ActionsDropdown } from '@/components/ActionsDropdown';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+    FlashNotifications,
+    useFlashNotifications,
+} from '@/components/flash-notifications';
+import { IndexHeader } from '@/components/IndexHeader';
+import { Pagination } from '@/components/Pagination';
+import { SearchInput } from '@/components/SearchInput';
 import AppLayout from '@/layouts/app-layout';
-import palletTypes from '@/routes/pallet-types';
+import palletTypes from '@/routes/pallet-types/index';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Edit, Eye, MoreHorizontal, Plus } from 'lucide-react';
+import { Head, router, usePage } from '@inertiajs/react';
 
 type PalletType = {
     id: number;
@@ -37,7 +36,8 @@ type PalletTypesIndexProps = {
 
 export default function PalletTypesIndex() {
     const { props } = usePage<PalletTypesIndexProps>();
-    const { palletTypes: palletTypesPaginated, filters, flash } = props;
+    const { palletTypes: palletTypesPaginated, filters } = props;
+    const { flash } = useFlashNotifications();
 
     const handleSearchChange = (value: string) => {
         router.get(
@@ -75,34 +75,14 @@ export default function PalletTypesIndex() {
             <Head title="Tipi pallet" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex items-center justify-between gap-3">
-                    <div>
-                        <h1 className="text-2xl font-semibold tracking-tight">
-                            Tipi pallet
-                        </h1>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                            Elenco dei tipi pallet attivi con Cerca.
-                        </p>
-                    </div>
-                    <Link
-                        href={palletTypes.create().url}
-                        className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
-                    >
-                        <Plus className="mr-2 h-4 w-4" />
-                        Nuovo tipo pallet
-                    </Link>
-                </div>
+                <IndexHeader
+                    title="Tipi pallet"
+                    subtitle="Elenco dei tipi pallet attivi con Cerca."
+                    createHref={palletTypes.create().url}
+                    createLabel="Nuovo tipo pallet"
+                />
 
-                {flash?.success && (
-                    <div className="rounded-md border border-emerald-500/40 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-700 dark:text-emerald-300">
-                        {flash.success}
-                    </div>
-                )}
-                {flash?.error && (
-                    <div className="rounded-md border border-rose-500/40 bg-rose-500/5 px-3 py-2 text-sm text-rose-700 dark:text-rose-300">
-                        {flash.error}
-                    </div>
-                )}
+                <FlashNotifications flash={flash} />
 
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="space-y-1">
@@ -127,7 +107,7 @@ export default function PalletTypesIndex() {
                                         ID
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        uuid
+                                        UUID
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
                                         Codice
@@ -170,52 +150,20 @@ export default function PalletTypesIndex() {
                                             {palletType.description}
                                         </td>
                                         <td className="px-3 py-2 text-right align-middle text-xs">
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="h-8 w-8"
-                                                        aria-label="Apri menu azioni"
-                                                    >
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            router.visit(
-                                                                palletTypes.show(
-                                                                    {
-                                                                        palletType:
-                                                                            palletType.uuid,
-                                                                    },
-                                                                ).url,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Eye className="mr-2 h-4 w-4" />
-                                                        Visualizza
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            router.visit(
-                                                                palletTypes.edit(
-                                                                    {
-                                                                        palletType:
-                                                                            palletType.uuid,
-                                                                    },
-                                                                ).url,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Edit className="mr-2 h-4 w-4" />
-                                                        Modifica
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
+                                            <ActionsDropdown
+                                                viewHref={
+                                                    palletTypes.show({
+                                                        palletType:
+                                                            palletType.uuid,
+                                                    }).url
+                                                }
+                                                editHref={
+                                                    palletTypes.edit({
+                                                        palletType:
+                                                            palletType.uuid,
+                                                    }).url
+                                                }
+                                            />
                                         </td>
                                     </tr>
                                 ))}
@@ -224,42 +172,11 @@ export default function PalletTypesIndex() {
                     </div>
                 </div>
 
-                {palletTypesPaginated.links.length > 1 && (
-                    <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
-                        <div>
-                            Pagina {palletTypesPaginated.current_page} di{' '}
-                            {palletTypesPaginated.last_page}
-                        </div>
-                        <div className="flex flex-wrap items-center gap-1">
-                            {palletTypesPaginated.links.map((link, index) => {
-                                if (
-                                    link.label.includes('&laquo;') ||
-                                    link.label.includes('&raquo;')
-                                ) {
-                                    return null;
-                                }
-
-                                return (
-                                    <Link
-                                        key={`${link.label}-${index}`}
-                                        href={link.url ?? '#'}
-                                        className={`rounded-md px-2 py-1 ${
-                                            link.active
-                                                ? 'bg-primary text-primary-foreground'
-                                                : 'hover:bg-muted'
-                                        }`}
-                                    >
-                                        <span
-                                            dangerouslySetInnerHTML={{
-                                                __html: link.label,
-                                            }}
-                                        />
-                                    </Link>
-                                );
-                            })}
-                        </div>
-                    </div>
-                )}
+                <Pagination
+                    links={palletTypesPaginated.links}
+                    currentPage={palletTypesPaginated.current_page}
+                    lastPage={palletTypesPaginated.last_page}
+                />
             </div>
         </AppLayout>
     );

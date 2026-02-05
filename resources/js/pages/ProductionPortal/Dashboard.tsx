@@ -7,7 +7,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import productionPortal from '@/routes/production-portal';
+import productionPortal from '@/routes/production-portal/index';
 import { Head, Link, router } from '@inertiajs/react';
 import { Eye, LogOut, Package, RefreshCw } from 'lucide-react';
 import { useEffect, useState } from 'react';

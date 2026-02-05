@@ -1,3 +1,5 @@
+import { ConfirmCloseDialog } from '@/components/confirm-close-dialog';
+import { FormValidationNotification } from '@/components/form-validation-notification';
 import { FormLabel } from '@/components/FormLabel';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -24,7 +26,7 @@ import {
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
-import customerShippingAddresses from '@/routes/customer-shipping-addresses';
+import customerShippingAddresses from '@/routes/customer-shipping-addresses/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router } from '@inertiajs/react';
 import { HelpCircle, Loader2 } from 'lucide-react';
@@ -56,6 +58,7 @@ export default function CustomerShippingAddressesCreate({
     customerdivision_uuid,
     errors: serverErrors,
 }: CustomerShippingAddressesCreateProps) {
+    const [showCloseConfirm, setShowCloseConfirm] = useState(false);
     const [selectedCustomer, setSelectedCustomer] = useState<string>(
         initialCustomerUuid ?? '',
     );
@@ -149,9 +152,17 @@ export default function CustomerShippingAddressesCreate({
                                     ...errors,
                                     ...serverErrors,
                                 };
+                                const hasAttemptedSubmit =
+                                    Object.keys(allErrors).length > 0;
 
                                 return (
                                     <>
+                                        <FormValidationNotification
+                                            errors={allErrors}
+                                            hasAttemptedSubmit={
+                                                hasAttemptedSubmit
+                                            }
+                                        />
                                         <div className="grid gap-2">
                                             <FormLabel
                                                 htmlFor="customer_uuid"
@@ -562,6 +573,14 @@ export default function CustomerShippingAddressesCreate({
                     </CardContent>
                 </Card>
             </div>
+            <ConfirmCloseDialog
+                open={showCloseConfirm}
+                onOpenChange={setShowCloseConfirm}
+                onConfirm={() => {
+                    setShowCloseConfirm(false);
+                    router.visit(customerShippingAddresses.index().url);
+                }}
+            />
         </AppLayout>
     );
 }

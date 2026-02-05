@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
-import offerTypes from '@/routes/offer-types';
+import offerTypes from '@/routes/offer-types/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
@@ -24,12 +24,18 @@ type OfferTypesCreateProps = {
 // Funzione per generare UUID v4
 function generateUUID(): string {
     // Usa crypto.randomUUID se disponibile (moderno, sicuro)
-    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    if (
+        typeof crypto !== 'undefined' &&
+        typeof crypto.randomUUID === 'function'
+    ) {
         return crypto.randomUUID();
     }
 
     // Fallback sicuro basato su crypto.getRandomValues
-    if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+    if (
+        typeof crypto !== 'undefined' &&
+        typeof crypto.getRandomValues === 'function'
+    ) {
         const bytes = new Uint8Array(16);
         crypto.getRandomValues(bytes);
 
@@ -100,20 +106,22 @@ export default function OfferTypesCreate({
             href: offerTypes.index().url,
         },
         {
-            title: 'Crea',
+            title: 'Nuovo Tipo di Offerta',
             href: offerTypes.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Crea Tipo di Offerta" />
+            <Head title="Nuovo Tipo di Offerta" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Gestione Tipo di Offerta</CardTitle>
-                        <CardDescription>Inserimento</CardDescription>
+                        <CardTitle>Nuovo Tipo di Offerta</CardTitle>
+                        <CardDescription>
+                            Compila i campi per creare un tipo di offerta.
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Form

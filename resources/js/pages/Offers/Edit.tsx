@@ -26,7 +26,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
-import offers from '@/routes/offers';
+import offers from '@/routes/offers/index';
 import { type BreadcrumbItem } from '@/types';
 import type { FormDataConvertible } from '@inertiajs/core';
 import { Form, Head, router, usePage } from '@inertiajs/react';

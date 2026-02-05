@@ -26,7 +26,7 @@ import {
     confirmAutocontrollo,
     suspendOrder,
 } from '@/lib/api/production-portal';
-import productionPortal from '@/routes/production-portal';
+import productionPortal from '@/routes/production-portal/index';
 import { Head, Link, router } from '@inertiajs/react';
 import {
     AlertTriangle,

@@ -1,14 +1,4 @@
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -19,7 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import lasFamilies from '@/routes/las-families';
+import lasFamilies from '@/routes/las-families/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Edit, Trash2 } from 'lucide-react';
@@ -38,6 +28,7 @@ type LasFamiliesShowProps = {
 
 export default function LasFamiliesShow({ family }: LasFamiliesShowProps) {
     const [isDeleting, setIsDeleting] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
@@ -54,10 +45,13 @@ export default function LasFamiliesShow({ family }: LasFamiliesShowProps) {
         },
     ];
 
-    const handleDelete = () => {
+    const handleDeleteConfirm = () => {
+        if (isDeleting) return;
+
         setIsDeleting(true);
         router.delete(lasFamilies.destroy({ lasFamily: family.uuid }).url, {
             onSuccess: () => {
+                setDeleteDialogOpen(false);
                 router.visit(lasFamilies.index().url);
             },
             onFinish: () => {
@@ -93,54 +87,14 @@ export default function LasFamiliesShow({ family }: LasFamiliesShowProps) {
                                 Modifica
                             </Link>
                         </Button>
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <Button
-                                    variant="destructive"
-                                    disabled={isDeleting}
-                                >
-                                    <Trash2 className="mr-2 h-4 w-4" />
-                                    Elimina
-                                </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                        Conferma eliminazione
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        Sei sicuro di voler eliminare la
-                                        famiglia LAS{' '}
-                                        <strong>{family.name}</strong> (Codice:{' '}
-                                        {family.code})?
-                                        <br />
-                                        <br />
-                                        Questa azione non può essere annullata.
-                                        La famiglia LAS verrà eliminata
-                                        definitivamente.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel disabled={isDeleting}>
-                                        Annulla
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction
-                                        onClick={handleDelete}
-                                        disabled={isDeleting}
-                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                    >
-                                        {isDeleting ? (
-                                            <>
-                                                <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                                                Eliminando...
-                                            </>
-                                        ) : (
-                                            'Elimina definitivamente'
-                                        )}
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
+                        <Button
+                            variant="destructive"
+                            disabled={isDeleting}
+                            onClick={() => setDeleteDialogOpen(true)}
+                        >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Elimina
+                        </Button>
                     </div>
                 </div>
 
@@ -185,6 +139,24 @@ export default function LasFamiliesShow({ family }: LasFamiliesShowProps) {
                         </div>
                     </CardContent>
                 </Card>
+
+                <ConfirmDeleteDialog
+                    open={deleteDialogOpen}
+                    onOpenChange={setDeleteDialogOpen}
+                    onConfirm={handleDeleteConfirm}
+                    isDeleting={isDeleting}
+                    title="Conferma eliminazione"
+                    description={
+                        <>
+                            Sei sicuro di voler eliminare la famiglia LAS{' '}
+                            <strong>{family.name}</strong> (Codice:{' '}
+                            {family.code}
+                            )? Questa azione non può essere annullata. La
+                            famiglia LAS verrà eliminata definitivamente.
+                        </>
+                    }
+                    itemName={`${family.name} (Codice: ${family.code})`}
+                />
             </div>
         </AppLayout>
     );

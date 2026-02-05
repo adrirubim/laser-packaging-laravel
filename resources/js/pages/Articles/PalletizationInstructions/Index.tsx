@@ -1,29 +1,20 @@
+import { ActionsDropdown } from '@/components/ActionsDropdown';
 import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
+import {
+    FlashNotifications,
+    useFlashNotifications,
+} from '@/components/flash-notifications';
+import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { SortableTableHeader } from '@/components/SortableTableHeader';
-import { Button } from '@/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import AppLayout from '@/layouts/app-layout';
-import articles from '@/routes/articles';
+import articles from '@/routes/articles/index';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import {
-    Box,
-    Download,
-    Edit,
-    Eye,
-    MoreHorizontal,
-    Plus,
-    Trash2,
-    X,
-} from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Head, router, usePage } from '@inertiajs/react';
+import { Box, Download } from 'lucide-react';
+import { useState } from 'react';
 
 type PalletizationInstruction = {
     id: number;
@@ -63,11 +54,11 @@ type PalletizationInstructionsIndexProps = {
 
 export default function PalletizationInstructionsIndex() {
     const { props } = usePage<PalletizationInstructionsIndexProps>();
-    const { instructions: instructionsPaginated, filters, flash } = props;
+    const { instructions: instructionsPaginated, filters } = props;
+    const { flash } = useFlashNotifications();
 
     const [searchValue, setSearchValue] = useState(filters.search ?? '');
     const [isSearching, setIsSearching] = useState(false);
-    const [showFlash, setShowFlash] = useState(true);
     const [deleteDialog, setDeleteDialog] = useState<{
         open: boolean;
         instruction: PalletizationInstruction | null;
@@ -76,14 +67,6 @@ export default function PalletizationInstructionsIndex() {
         instruction: null,
     });
     const [isDeleting, setIsDeleting] = useState(false);
-
-    useEffect(() => {
-        if (flash?.success || flash?.error) {
-            queueMicrotask(() => setShowFlash(true));
-            const timer = setTimeout(() => setShowFlash(false), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [flash]);
 
     const handleSort = (column: string) => {
         const currentSort = filters.sort_by;
@@ -181,47 +164,14 @@ export default function PalletizationInstructionsIndex() {
             <Head title="Istruzioni di Pallettizzazione" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex items-center justify-between gap-3">
-                    <div>
-                        <h1 className="text-2xl font-semibold tracking-tight">
-                            Istruzioni di Pallettizzazione
-                        </h1>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                            Elenco delle istruzioni di pallettizzazione attive
-                            con Cerca e filtri.
-                        </p>
-                    </div>
-                    <Link
-                        href={articles.palletizationInstructions.create().url}
-                        className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
-                    >
-                        <Plus className="mr-2 h-4 w-4" />
-                        Nuova Istruzione
-                    </Link>
-                </div>
+                <IndexHeader
+                    title="Istruzioni di Pallettizzazione"
+                    subtitle="Elenco delle istruzioni di pallettizzazione attive con Cerca e filtri."
+                    createHref={articles.palletizationInstructions.create().url}
+                    createLabel="Nuova Istruzione"
+                />
 
-                {showFlash && flash?.success && (
-                    <div className="flex animate-in items-center justify-between rounded-md border border-emerald-500/40 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-700 duration-300 fade-in slide-in-from-top-2 dark:text-emerald-300">
-                        <span>{flash.success}</span>
-                        <button
-                            onClick={() => setShowFlash(false)}
-                            className="ml-2 transition-opacity hover:opacity-70"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
-                {showFlash && flash?.error && (
-                    <div className="flex animate-in items-center justify-between rounded-md border border-rose-500/40 bg-rose-500/5 px-3 py-2 text-sm text-rose-700 duration-300 fade-in slide-in-from-top-2 dark:text-rose-300">
-                        <span>{flash.error}</span>
-                        <button
-                            onClick={() => setShowFlash(false)}
-                            className="ml-2 transition-opacity hover:opacity-70"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
+                <FlashNotifications flash={flash} />
 
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="space-y-1">
@@ -270,66 +220,29 @@ export default function PalletizationInstructionsIndex() {
                                                         )}
                                                     </div>
                                                 </div>
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger
-                                                        asChild
-                                                    >
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="h-8 w-8"
-                                                            aria-label="Apri menu azioni"
-                                                        >
-                                                            <MoreHorizontal className="h-4 w-4" />
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
-                                                        <DropdownMenuItem
-                                                            onSelect={(e) => {
-                                                                e.preventDefault();
-                                                                router.visit(
-                                                                    articles.palletizationInstructions.show(
-                                                                        {
-                                                                            palletizationInstruction:
-                                                                                instruction.uuid,
-                                                                        },
-                                                                    ).url,
-                                                                );
-                                                            }}
-                                                        >
-                                                            <Eye className="mr-2 h-4 w-4" />
-                                                            Visualizza
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem
-                                                            onSelect={(e) => {
-                                                                e.preventDefault();
-                                                                router.visit(
-                                                                    articles.palletizationInstructions.edit(
-                                                                        {
-                                                                            palletizationInstruction:
-                                                                                instruction.uuid,
-                                                                        },
-                                                                    ).url,
-                                                                );
-                                                            }}
-                                                        >
-                                                            <Edit className="mr-2 h-4 w-4" />
-                                                            Modifica
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem
-                                                            variant="destructive"
-                                                            onSelect={(e) => {
-                                                                e.preventDefault();
-                                                                handleDeleteClick(
-                                                                    instruction,
-                                                                );
-                                                            }}
-                                                        >
-                                                            <Trash2 className="mr-2 h-4 w-4" />
-                                                            Elimina
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
+                                                <ActionsDropdown
+                                                    viewHref={
+                                                        articles.palletizationInstructions.show(
+                                                            {
+                                                                palletizationInstruction:
+                                                                    instruction.uuid,
+                                                            },
+                                                        ).url
+                                                    }
+                                                    editHref={
+                                                        articles.palletizationInstructions.edit(
+                                                            {
+                                                                palletizationInstruction:
+                                                                    instruction.uuid,
+                                                            },
+                                                        ).url
+                                                    }
+                                                    onDelete={() =>
+                                                        handleDeleteClick(
+                                                            instruction,
+                                                        )
+                                                    }
+                                                />
                                             </div>
                                             <div className="grid grid-cols-2 gap-2 text-xs">
                                                 {instruction.filename && (
@@ -591,88 +504,50 @@ export default function PalletizationInstructionsIndex() {
                                                 )}
                                             </td>
                                             <td className="px-3 py-2 text-right align-middle text-xs">
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger
-                                                        asChild
-                                                    >
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="h-8 w-8"
-                                                            aria-label="Apri menu azioni"
-                                                        >
-                                                            <MoreHorizontal className="h-4 w-4" />
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
-                                                        <DropdownMenuItem
-                                                            onSelect={(e) => {
-                                                                e.preventDefault();
-                                                                router.visit(
-                                                                    articles.palletizationInstructions.show(
-                                                                        {
-                                                                            palletizationInstruction:
-                                                                                instruction.uuid,
-                                                                        },
-                                                                    ).url,
-                                                                );
-                                                            }}
-                                                        >
-                                                            <Eye className="mr-2 h-4 w-4" />
-                                                            Visualizza
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem
-                                                            onSelect={(e) => {
-                                                                e.preventDefault();
-                                                                router.visit(
-                                                                    articles.palletizationInstructions.edit(
-                                                                        {
-                                                                            palletizationInstruction:
-                                                                                instruction.uuid,
-                                                                        },
-                                                                    ).url,
-                                                                );
-                                                            }}
-                                                        >
-                                                            <Edit className="mr-2 h-4 w-4" />
-                                                            Modifica
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem
-                                                            disabled={
-                                                                !instruction.filename
-                                                            }
-                                                            onSelect={(e) => {
-                                                                e.preventDefault();
-                                                                if (
-                                                                    !instruction.filename
-                                                                )
-                                                                    return;
-                                                                window.location.href =
-                                                                    articles.palletizationInstructions.download(
-                                                                        {
-                                                                            palletizationInstruction:
-                                                                                instruction.uuid,
-                                                                        },
-                                                                    ).url;
-                                                            }}
-                                                        >
-                                                            <Download className="mr-2 h-4 w-4" />
-                                                            Scarica allegato
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem
-                                                            variant="destructive"
-                                                            onSelect={(e) => {
-                                                                e.preventDefault();
-                                                                handleDeleteClick(
-                                                                    instruction,
-                                                                );
-                                                            }}
-                                                        >
-                                                            <Trash2 className="mr-2 h-4 w-4" />
-                                                            Elimina
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
+                                                <ActionsDropdown
+                                                    viewHref={
+                                                        articles.palletizationInstructions.show(
+                                                            {
+                                                                palletizationInstruction:
+                                                                    instruction.uuid,
+                                                            },
+                                                        ).url
+                                                    }
+                                                    editHref={
+                                                        articles.palletizationInstructions.edit(
+                                                            {
+                                                                palletizationInstruction:
+                                                                    instruction.uuid,
+                                                            },
+                                                        ).url
+                                                    }
+                                                    onDelete={() =>
+                                                        handleDeleteClick(
+                                                            instruction,
+                                                        )
+                                                    }
+                                                    extraItems={
+                                                        instruction.filename ? (
+                                                            <DropdownMenuItem
+                                                                onSelect={(
+                                                                    e,
+                                                                ) => {
+                                                                    e.preventDefault();
+                                                                    window.location.href =
+                                                                        articles.palletizationInstructions.download(
+                                                                            {
+                                                                                palletizationInstruction:
+                                                                                    instruction.uuid,
+                                                                            },
+                                                                        ).url;
+                                                                }}
+                                                            >
+                                                                <Download className="mr-2 h-4 w-4" />
+                                                                Scarica allegato
+                                                            </DropdownMenuItem>
+                                                        ) : undefined
+                                                    }
+                                                />
                                             </td>
                                         </tr>
                                     ),

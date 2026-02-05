@@ -1,13 +1,9 @@
+import { ActionsDropdown } from '@/components/ActionsDropdown';
+import { FlashNotifications } from '@/components/flash-notifications';
+import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { SortableTableHeader } from '@/components/SortableTableHeader';
-import { Button } from '@/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import {
     Select,
     SelectContent,
@@ -16,10 +12,9 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
-import employees from '@/routes/employees';
+import employees from '@/routes/employees/index';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Edit, Eye, MoreHorizontal, Plus } from 'lucide-react';
+import { Head, router, usePage } from '@inertiajs/react';
 
 type Employee = {
     id: number;
@@ -136,34 +131,14 @@ export default function EmployeesIndex() {
             <Head title="Personale" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex items-center justify-between gap-3">
-                    <div>
-                        <h1 className="text-2xl font-semibold tracking-tight">
-                            Personale
-                        </h1>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                            Elenco dipendenti attivi con Cerca e filtri.
-                        </p>
-                    </div>
-                    <Link
-                        href={employees.create().url}
-                        className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
-                    >
-                        <Plus className="mr-2 h-4 w-4" />
-                        Nuovo Dipendente
-                    </Link>
-                </div>
+                <IndexHeader
+                    title="Personale"
+                    subtitle="Elenco dipendenti attivi con Cerca e filtri."
+                    createHref={employees.create().url}
+                    createLabel="Nuovo Dipendente"
+                />
 
-                {flash?.success && (
-                    <div className="rounded-md border border-emerald-500/40 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-700 dark:text-emerald-300">
-                        {flash.success}
-                    </div>
-                )}
-                {flash?.error && (
-                    <div className="rounded-md border border-rose-500/40 bg-rose-500/5 px-3 py-2 text-sm text-rose-700 dark:text-rose-300">
-                        {flash.error}
-                    </div>
-                )}
+                <FlashNotifications flash={flash} />
 
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="flex items-center justify-between gap-3">
@@ -335,48 +310,18 @@ export default function EmployeesIndex() {
                                             )}
                                         </td>
                                         <td className="px-3 py-2 text-right align-middle text-xs">
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="h-8 w-8"
-                                                        aria-label="Apri menu azioni"
-                                                    >
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            router.visit(
-                                                                employees.show({
-                                                                    employee:
-                                                                        employee.uuid,
-                                                                }).url,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Eye className="mr-2 h-4 w-4" />
-                                                        Visualizza
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            router.visit(
-                                                                employees.edit({
-                                                                    employee:
-                                                                        employee.uuid,
-                                                                }).url,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Edit className="mr-2 h-4 w-4" />
-                                                        Modifica
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
+                                            <ActionsDropdown
+                                                viewHref={
+                                                    employees.show({
+                                                        employee: employee.uuid,
+                                                    }).url
+                                                }
+                                                editHref={
+                                                    employees.edit({
+                                                        employee: employee.uuid,
+                                                    }).url
+                                                }
+                                            />
                                         </td>
                                     </tr>
                                 ))}
@@ -410,48 +355,18 @@ export default function EmployeesIndex() {
                                             ID: {employee.id}
                                         </div>
                                     </div>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-8 w-8"
-                                                aria-label="Apri menu azioni"
-                                            >
-                                                <MoreHorizontal className="h-4 w-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem
-                                                onSelect={(e) => {
-                                                    e.preventDefault();
-                                                    router.visit(
-                                                        employees.show({
-                                                            employee:
-                                                                employee.uuid,
-                                                        }).url,
-                                                    );
-                                                }}
-                                            >
-                                                <Eye className="mr-2 h-4 w-4" />
-                                                Visualizza
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem
-                                                onSelect={(e) => {
-                                                    e.preventDefault();
-                                                    router.visit(
-                                                        employees.edit({
-                                                            employee:
-                                                                employee.uuid,
-                                                        }).url,
-                                                    );
-                                                }}
-                                            >
-                                                <Edit className="mr-2 h-4 w-4" />
-                                                Modifica
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
+                                    <ActionsDropdown
+                                        viewHref={
+                                            employees.show({
+                                                employee: employee.uuid,
+                                            }).url
+                                        }
+                                        editHref={
+                                            employees.edit({
+                                                employee: employee.uuid,
+                                            }).url
+                                        }
+                                    />
                                 </div>
                                 <div className="flex items-center justify-between border-t pt-2">
                                     <span className="text-xs text-muted-foreground">

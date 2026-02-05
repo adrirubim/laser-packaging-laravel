@@ -18,7 +18,7 @@ import {
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
-import suppliers from '@/routes/suppliers';
+import suppliers from '@/routes/suppliers/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router } from '@inertiajs/react';
 import { HelpCircle } from 'lucide-react';

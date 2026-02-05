@@ -10,9 +10,9 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
-import articleCategories from '@/routes/article-categories';
+import articleCategories from '@/routes/article-categories/index';
 import { type BreadcrumbItem } from '@/types';
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, router } from '@inertiajs/react';
 
 type ArticleCategory = {
     id: number;
@@ -31,7 +31,7 @@ export default function ArticleCategoriesEdit({
 }: ArticleCategoriesEditProps) {
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Categoria Articoli',
+            title: 'Categorie Articoli',
             href: articleCategories.index().url,
         },
         {
@@ -53,8 +53,10 @@ export default function ArticleCategoriesEdit({
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Gestione Categoria Articolo</CardTitle>
-                        <CardDescription>Modifica</CardDescription>
+                        <CardTitle>Modifica Categoria Articolo</CardTitle>
+                        <CardDescription>
+                            Aggiorna le informazioni della categoria.
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Form
@@ -118,7 +120,12 @@ export default function ArticleCategoriesEdit({
                                                 type="button"
                                                 variant="outline"
                                                 onClick={() =>
-                                                    window.history.back()
+                                                    router.visit(
+                                                        articleCategories.show({
+                                                            articleCategory:
+                                                                category.uuid,
+                                                        }).url,
+                                                    )
                                                 }
                                                 disabled={processing}
                                             >
@@ -129,8 +136,8 @@ export default function ArticleCategoriesEdit({
                                                 disabled={processing}
                                             >
                                                 {processing
-                                                    ? 'Salvando...'
-                                                    : 'Salva'}
+                                                    ? 'Aggiornando...'
+                                                    : 'Aggiorna Categoria'}
                                             </Button>
                                         </div>
                                     </>

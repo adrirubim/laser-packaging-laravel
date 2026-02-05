@@ -1,3 +1,4 @@
+import { FormLabel } from '@/components/FormLabel';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import {
@@ -8,9 +9,8 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import palletTypes from '@/routes/pallet-types';
+import palletTypes from '@/routes/pallet-types/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router } from '@inertiajs/react';
 
@@ -52,8 +52,10 @@ export default function PalletTypesEdit({
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Gestione Tipo di Pallet</CardTitle>
-                        <CardDescription>Modifica</CardDescription>
+                        <CardTitle>Modifica Tipo di Pallet</CardTitle>
+                        <CardDescription>
+                            Aggiorna le informazioni del tipo di pallet.
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Form
@@ -74,7 +76,9 @@ export default function PalletTypesEdit({
                                 return (
                                     <>
                                         <div className="grid gap-2">
-                                            <Label htmlFor="uuid">UUID</Label>
+                                            <FormLabel htmlFor="uuid">
+                                                UUID
+                                            </FormLabel>
                                             <Input
                                                 id="uuid"
                                                 name="uuid"
@@ -85,9 +89,9 @@ export default function PalletTypesEdit({
                                         </div>
 
                                         <div className="grid gap-2">
-                                            <Label htmlFor="cod">
-                                                Codice *
-                                            </Label>
+                                            <FormLabel htmlFor="cod" required>
+                                                Codice
+                                            </FormLabel>
                                             <Input
                                                 id="cod"
                                                 name="cod"
@@ -101,9 +105,12 @@ export default function PalletTypesEdit({
                                         </div>
 
                                         <div className="grid gap-2">
-                                            <Label htmlFor="description">
-                                                Descrizione *
-                                            </Label>
+                                            <FormLabel
+                                                htmlFor="description"
+                                                required
+                                            >
+                                                Descrizione
+                                            </FormLabel>
                                             <Input
                                                 id="description"
                                                 name="description"

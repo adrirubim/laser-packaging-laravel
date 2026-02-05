@@ -17,7 +17,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
-import machineryRoutes from '@/routes/machinery';
+import machineryRoutes from '@/routes/machinery/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
 
@@ -129,7 +129,10 @@ export default function MachineryEdit() {
                                             />
                                         </div>
 
-                                        <div key="description" className="grid gap-2">
+                                        <div
+                                            key="description"
+                                            className="grid gap-2"
+                                        >
                                             <FormLabel
                                                 htmlFor="description"
                                                 required
@@ -153,7 +156,10 @@ export default function MachineryEdit() {
                                             />
                                         </div>
 
-                                        <div key="parameter" className="grid gap-2">
+                                        <div
+                                            key="parameter"
+                                            className="grid gap-2"
+                                        >
                                             <FormLabel htmlFor="parameter">
                                                 Parametro
                                             </FormLabel>
@@ -174,7 +180,10 @@ export default function MachineryEdit() {
                                             />
                                         </div>
 
-                                        <div key="value_type_uuid" className="grid gap-2">
+                                        <div
+                                            key="value_type_uuid"
+                                            className="grid gap-2"
+                                        >
                                             <FormLabel htmlFor="value_type_uuid">
                                                 Tipo Valore
                                             </FormLabel>
@@ -204,20 +213,16 @@ export default function MachineryEdit() {
                                                         >
                                                             Nessuno
                                                         </SelectItem>,
-                                                        ...(valueTypes ?? []).map(
-                                                            (vt) => (
-                                                                <SelectItem
-                                                                    key={
-                                                                        vt.uuid
-                                                                    }
-                                                                    value={
-                                                                        vt.uuid
-                                                                    }
-                                                                >
-                                                                    {`ID: ${vt.id}`}
-                                                                </SelectItem>
-                                                            ),
-                                                        ),
+                                                        ...(
+                                                            valueTypes ?? []
+                                                        ).map((vt) => (
+                                                            <SelectItem
+                                                                key={vt.uuid}
+                                                                value={vt.uuid}
+                                                            >
+                                                                {`ID: ${vt.id}`}
+                                                            </SelectItem>
+                                                        )),
                                                     ]}
                                                 </SelectContent>
                                             </Select>
@@ -228,7 +233,10 @@ export default function MachineryEdit() {
                                             />
                                         </div>
 
-                                        <div key="actions" className="flex items-center gap-4">
+                                        <div
+                                            key="actions"
+                                            className="flex items-center gap-4"
+                                        >
                                             <Button
                                                 type="submit"
                                                 disabled={form.processing}

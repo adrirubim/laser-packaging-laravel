@@ -1,20 +1,19 @@
+import { ActionsDropdown } from '@/components/ActionsDropdown';
 import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
+import {
+    FlashNotifications,
+    useFlashNotifications,
+} from '@/components/flash-notifications';
+import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { SortableTableHeader } from '@/components/SortableTableHeader';
-import { Button } from '@/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import AppLayout from '@/layouts/app-layout';
-import articleCategories from '@/routes/article-categories';
+import articleCategories from '@/routes/article-categories/index';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Edit, Eye, MoreHorizontal, Plus, Tag, Trash2, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Head, router, usePage } from '@inertiajs/react';
+import { Tag } from 'lucide-react';
+import { useState } from 'react';
 
 type ArticleCategory = {
     id: number;
@@ -42,11 +41,9 @@ type ArticleCategoriesIndexProps = {
 
 export default function ArticleCategoriesIndex() {
     const { props } = usePage<ArticleCategoriesIndexProps>();
-    const { categories: categoriesPaginated, filters, flash } = props;
+    const { categories: categoriesPaginated, filters } = props;
+    const { flash } = useFlashNotifications();
 
-    const [searchValue, setSearchValue] = useState(filters.search ?? '');
-    const [isSearching, setIsSearching] = useState(false);
-    const [showFlash, setShowFlash] = useState(true);
     const [deleteDialog, setDeleteDialog] = useState<{
         open: boolean;
         category: ArticleCategory | null;
@@ -55,14 +52,6 @@ export default function ArticleCategoriesIndex() {
         category: null,
     });
     const [isDeleting, setIsDeleting] = useState(false);
-
-    useEffect(() => {
-        if (flash?.success || flash?.error) {
-            queueMicrotask(() => setShowFlash(true));
-            const timer = setTimeout(() => setShowFlash(false), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [flash]);
 
     const handleSort = (column: string) => {
         const currentSort = filters.sort_by;
@@ -88,8 +77,6 @@ export default function ArticleCategoriesIndex() {
     };
 
     const handleSearchChange = (value: string) => {
-        setSearchValue(value);
-        setIsSearching(true);
         router.get(
             articleCategories.index().url,
             {
@@ -99,23 +86,15 @@ export default function ArticleCategoriesIndex() {
             {
                 preserveState: true,
                 preserveScroll: true,
-                onFinish: () => setIsSearching(false),
             },
         );
     };
 
     const clearSearch = () => {
-        setSearchValue('');
         router.get(
             articleCategories.index().url,
-            {
-                ...filters,
-                search: undefined,
-            },
-            {
-                preserveState: true,
-                preserveScroll: true,
-            },
+            { ...filters, search: undefined },
+            { preserveState: true, preserveScroll: true },
         );
     };
 
@@ -146,57 +125,24 @@ export default function ArticleCategoriesIndex() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Categoria Articoli',
+            title: 'Categorie Articoli',
             href: articleCategories.index().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Categoria Articoli" />
+            <Head title="Categorie Articoli" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex items-center justify-between gap-3">
-                    <div>
-                        <h1 className="text-2xl font-semibold tracking-tight">
-                            Categoria Articoli
-                        </h1>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                            Elenco delle categorie di articoli attive con Cerca
-                            e filtri.
-                        </p>
-                    </div>
-                    <Link
-                        href={articleCategories.create().url}
-                        className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
-                    >
-                        <Plus className="mr-2 h-4 w-4" />
-                        Nuova Categoria
-                    </Link>
-                </div>
+                <IndexHeader
+                    title="Categorie Articoli"
+                    subtitle="Elenco delle categorie di articoli attive con Cerca e filtri."
+                    createHref={articleCategories.create().url}
+                    createLabel="Nuova Categoria"
+                />
 
-                {showFlash && flash?.success && (
-                    <div className="flex animate-in items-center justify-between rounded-md border border-emerald-500/40 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-700 duration-300 fade-in slide-in-from-top-2 dark:text-emerald-300">
-                        <span>{flash.success}</span>
-                        <button
-                            onClick={() => setShowFlash(false)}
-                            className="ml-2 transition-opacity hover:opacity-70"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
-                {showFlash && flash?.error && (
-                    <div className="flex animate-in items-center justify-between rounded-md border border-rose-500/40 bg-rose-500/5 px-3 py-2 text-sm text-rose-700 duration-300 fade-in slide-in-from-top-2 dark:text-rose-300">
-                        <span>{flash.error}</span>
-                        <button
-                            onClick={() => setShowFlash(false)}
-                            className="ml-2 transition-opacity hover:opacity-70"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
+                <FlashNotifications flash={flash} />
 
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="space-y-1">
@@ -204,10 +150,10 @@ export default function ArticleCategoriesIndex() {
                             Cerca
                         </label>
                         <SearchInput
-                            value={searchValue}
+                            value={filters.search ?? ''}
                             onChange={handleSearchChange}
                             placeholder="Nome categoria..."
-                            isLoading={isSearching}
+                            debounceMs={500}
                             onClear={clearSearch}
                         />
                     </div>
@@ -234,64 +180,23 @@ export default function ArticleCategoriesIndex() {
                                                     {category.name}
                                                 </h3>
                                             </div>
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="h-8 w-8"
-                                                        aria-label="Apri menu azioni"
-                                                    >
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            router.visit(
-                                                                articleCategories.show(
-                                                                    {
-                                                                        articleCategory:
-                                                                            category.uuid,
-                                                                    },
-                                                                ).url,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Eye className="mr-2 h-4 w-4" />
-                                                        Visualizza
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            router.visit(
-                                                                articleCategories.edit(
-                                                                    {
-                                                                        articleCategory:
-                                                                            category.uuid,
-                                                                    },
-                                                                ).url,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Edit className="mr-2 h-4 w-4" />
-                                                        Modifica
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        variant="destructive"
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            handleDeleteClick(
-                                                                category,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Trash2 className="mr-2 h-4 w-4" />
-                                                        Elimina
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
+                                            <ActionsDropdown
+                                                viewHref={
+                                                    articleCategories.show({
+                                                        articleCategory:
+                                                            category.uuid,
+                                                    }).url
+                                                }
+                                                editHref={
+                                                    articleCategories.edit({
+                                                        articleCategory:
+                                                            category.uuid,
+                                                    }).url
+                                                }
+                                                onDelete={() =>
+                                                    handleDeleteClick(category)
+                                                }
+                                            />
                                         </div>
                                         <div className="font-mono text-xs text-muted-foreground">
                                             UUID: {category.uuid}
@@ -354,66 +259,25 @@ export default function ArticleCategoriesIndex() {
                                                 </div>
                                             </td>
                                             <td className="px-3 py-2 text-right align-middle">
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger
-                                                        asChild
-                                                    >
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="h-8 w-8"
-                                                            aria-label="Apri menu azioni"
-                                                        >
-                                                            <MoreHorizontal className="h-4 w-4" />
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
-                                                        <DropdownMenuItem
-                                                            onSelect={(e) => {
-                                                                e.preventDefault();
-                                                                router.visit(
-                                                                    articleCategories.show(
-                                                                        {
-                                                                            articleCategory:
-                                                                                category.uuid,
-                                                                        },
-                                                                    ).url,
-                                                                );
-                                                            }}
-                                                        >
-                                                            <Eye className="mr-2 h-4 w-4" />
-                                                            Visualizza
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem
-                                                            onSelect={(e) => {
-                                                                e.preventDefault();
-                                                                router.visit(
-                                                                    articleCategories.edit(
-                                                                        {
-                                                                            articleCategory:
-                                                                                category.uuid,
-                                                                        },
-                                                                    ).url,
-                                                                );
-                                                            }}
-                                                        >
-                                                            <Edit className="mr-2 h-4 w-4" />
-                                                            Modifica
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem
-                                                            variant="destructive"
-                                                            onSelect={(e) => {
-                                                                e.preventDefault();
-                                                                handleDeleteClick(
-                                                                    category,
-                                                                );
-                                                            }}
-                                                        >
-                                                            <Trash2 className="mr-2 h-4 w-4" />
-                                                            Elimina
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
+                                                <ActionsDropdown
+                                                    viewHref={
+                                                        articleCategories.show({
+                                                            articleCategory:
+                                                                category.uuid,
+                                                        }).url
+                                                    }
+                                                    editHref={
+                                                        articleCategories.edit({
+                                                            articleCategory:
+                                                                category.uuid,
+                                                        }).url
+                                                    }
+                                                    onDelete={() =>
+                                                        handleDeleteClick(
+                                                            category,
+                                                        )
+                                                    }
+                                                />
                                             </td>
                                         </tr>
                                     ))
@@ -427,7 +291,6 @@ export default function ArticleCategoriesIndex() {
                     links={categoriesPaginated.links}
                     currentPage={categoriesPaginated.current_page}
                     lastPage={categoriesPaginated.last_page}
-                    totalItems={categoriesPaginated.data.length}
                 />
 
                 <ConfirmDeleteDialog
@@ -440,7 +303,8 @@ export default function ArticleCategoriesIndex() {
                     }
                     onConfirm={handleDeleteConfirm}
                     title="Elimina Categoria"
-                    description={`Sei sicuro di voler eliminare la categoria "${deleteDialog.category?.name}"? Questa azione non può essere annullata.`}
+                    description="Sei sicuro di voler eliminare questa categoria di articolo? Questa azione non può essere annullata."
+                    itemName={deleteDialog.category?.name}
                     isLoading={isDeleting}
                 />
             </div>

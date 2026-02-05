@@ -17,7 +17,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
-import productionOrderProcessing from '@/routes/production-order-processing';
+import productionOrderProcessing from '@/routes/production-order-processing/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router } from '@inertiajs/react';
 import { ArrowLeft } from 'lucide-react';

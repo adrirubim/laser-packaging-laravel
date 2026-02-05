@@ -1,3 +1,4 @@
+import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -8,10 +9,11 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import offerOperationLists from '@/routes/offer-operation-lists';
+import offerOperationLists from '@/routes/offer-operation-lists/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Edit, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 
 type Offer = {
     uuid: string;
@@ -40,35 +42,43 @@ type OfferOperationListsShowProps = {
 export default function OfferOperationListsShow({
     operationList,
 }: OfferOperationListsShowProps) {
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
     const breadcrumbs: BreadcrumbItem[] = [
+        { title: 'Offerte', href: '/offers' },
         {
             title: 'Liste Operazioni Offerta',
             href: offerOperationLists.index().url,
         },
         {
-            title: 'Dettagli',
-            href: `/offers/operation-lists/${operationList.uuid}`,
+            title: `${operationList.offer?.offer_number ?? 'N/D'} - ${operationList.operation?.code ?? 'N/D'}`,
+            href: offerOperationLists.show({
+                offerOperationList: operationList.uuid,
+            }).url,
         },
     ];
 
-    const handleDelete = () => {
-        if (
-            confirm(
-                "Sei sicuro di voler rimuovere questa operazione dall'offerta? Questa azione non può essere annullata.",
-            )
-        ) {
-            router.delete(
-                offerOperationLists.destroy({
-                    offerOperationList: operationList.uuid,
-                }).url,
-                {
-                    onSuccess: () => {
-                        router.visit(offerOperationLists.index().url);
-                    },
+    const handleDeleteConfirm = () => {
+        setIsDeleting(true);
+        router.delete(
+            offerOperationLists.destroy({
+                offerOperationList: operationList.uuid,
+            }).url,
+            {
+                onSuccess: () => {
+                    setDeleteDialogOpen(false);
+                    router.visit(offerOperationLists.index().url);
                 },
-            );
-        }
+                onFinish: () => setIsDeleting(false),
+            },
+        );
     };
+
+    const itemName =
+        [operationList.offer?.offer_number, operationList.operation?.code]
+            .filter(Boolean)
+            .join(' - ') || operationList.uuid;
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -101,7 +111,11 @@ export default function OfferOperationListsShow({
                                 Modifica
                             </Link>
                         </Button>
-                        <Button variant="destructive" onClick={handleDelete}>
+                        <Button
+                            variant="destructive"
+                            onClick={() => setDeleteDialogOpen(true)}
+                            disabled={isDeleting}
+                        >
                             <Trash2 className="mr-2 h-4 w-4" />
                             Elimina
                         </Button>
@@ -176,6 +190,16 @@ export default function OfferOperationListsShow({
                         </CardContent>
                     </Card>
                 </div>
+
+                <ConfirmDeleteDialog
+                    open={deleteDialogOpen}
+                    onOpenChange={setDeleteDialogOpen}
+                    onConfirm={handleDeleteConfirm}
+                    title="Elimina Assegnazione Operazione"
+                    description="Sei sicuro di voler rimuovere questa operazione dall'offerta? Questa azione non può essere annullata."
+                    itemName={itemName}
+                    isLoading={isDeleting}
+                />
             </div>
         </AppLayout>
     );

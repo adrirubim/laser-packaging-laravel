@@ -19,8 +19,8 @@ import {
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
-import employeesRoutes from '@/routes/employees';
-import * as employeesContractsRoutes from '@/routes/employees/contracts';
+import * as employeesContractsRoutes from '@/routes/employees/contracts/index';
+import employeesRoutes from '@/routes/employees/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router } from '@inertiajs/react';
 import { useState } from 'react';

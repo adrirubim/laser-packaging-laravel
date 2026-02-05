@@ -1,26 +1,17 @@
+import { ActionsDropdown } from '@/components/ActionsDropdown';
 import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
-import { Button } from '@/components/ui/button';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+    FlashNotifications,
+    useFlashNotifications,
+} from '@/components/flash-notifications';
+import { IndexHeader } from '@/components/IndexHeader';
+import { Pagination } from '@/components/Pagination';
 import AppLayout from '@/layouts/app-layout';
 import lasFamilies from '@/routes/las-families';
 import offers from '@/routes/offers';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import {
-    Edit,
-    Eye,
-    Loader2,
-    MoreHorizontal,
-    Plus,
-    Search,
-    Trash2,
-    X,
-} from 'lucide-react';
+import { Head, router, usePage } from '@inertiajs/react';
+import { Loader2, Search, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 type LasFamily = {
@@ -48,11 +39,11 @@ type LasFamiliesIndexProps = {
 
 export default function LasFamiliesIndex() {
     const { props } = usePage<LasFamiliesIndexProps>();
-    const { families: familiesPaginated, filters, flash } = props;
+    const { families: familiesPaginated, filters } = props;
+    const { flash } = useFlashNotifications();
 
     const [searchValue, setSearchValue] = useState(filters.search ?? '');
     const [isSearching, setIsSearching] = useState(false);
-    const [showFlash, setShowFlash] = useState(true);
     const [deleteDialog, setDeleteDialog] = useState<{
         open: boolean;
         family: LasFamily | null;
@@ -82,14 +73,6 @@ export default function LasFamiliesIndex() {
         return () => clearTimeout(timer);
         // eslint-disable-next-line react-hooks/exhaustive-deps -- debounce: run on searchValue only to avoid loops
     }, [searchValue]);
-
-    useEffect(() => {
-        if (flash?.success || flash?.error) {
-            queueMicrotask(() => setShowFlash(true));
-            const timer = setTimeout(() => setShowFlash(false), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [flash]);
 
     const clearSearch = () => {
         setSearchValue('');
@@ -133,35 +116,14 @@ export default function LasFamiliesIndex() {
             <Head title="Famiglia LAS" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex items-center justify-between gap-3">
-                    <div>
-                        <h1 className="text-2xl font-semibold tracking-tight">
-                            Famiglia LAS
-                        </h1>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                            Elenco delle famiglie LAS attive con Cerca.
-                        </p>
-                    </div>
-                    <Link
-                        href={lasFamilies.create().url}
-                        className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
-                    >
-                        <Plus className="mr-2 h-4 w-4" />
-                        Nuova Famiglia LAS
-                    </Link>
-                </div>
+                <IndexHeader
+                    title="Famiglia LAS"
+                    subtitle="Elenco delle famiglie LAS attive con Cerca."
+                    createHref={lasFamilies.create().url}
+                    createLabel="Nuova Famiglia LAS"
+                />
 
-                {showFlash && flash?.success && (
-                    <div className="flex animate-in items-center justify-between rounded-md border border-emerald-500/40 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-700 duration-300 fade-in slide-in-from-top-2 dark:text-emerald-300">
-                        <span>{flash.success}</span>
-                        <button
-                            onClick={() => setShowFlash(false)}
-                            className="ml-2 transition-opacity hover:opacity-70"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
+                <FlashNotifications flash={flash} />
 
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4">
                     <div className="space-y-1">
@@ -248,64 +210,21 @@ export default function LasFamiliesIndex() {
                                             {family.name}
                                         </td>
                                         <td className="px-3 py-2 text-right align-middle text-xs">
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="h-8 w-8"
-                                                        aria-label="Apri menu azioni"
-                                                    >
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            router.visit(
-                                                                lasFamilies.show(
-                                                                    {
-                                                                        lasFamily:
-                                                                            family.uuid,
-                                                                    },
-                                                                ).url,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Eye className="mr-2 h-4 w-4" />
-                                                        Visualizza
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            router.visit(
-                                                                lasFamilies.edit(
-                                                                    {
-                                                                        lasFamily:
-                                                                            family.uuid,
-                                                                    },
-                                                                ).url,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Edit className="mr-2 h-4 w-4" />
-                                                        Modifica
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        variant="destructive"
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            handleDeleteClick(
-                                                                family,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Trash2 className="mr-2 h-4 w-4" />
-                                                        Elimina
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
+                                            <ActionsDropdown
+                                                viewHref={
+                                                    lasFamilies.show({
+                                                        lasFamily: family.uuid,
+                                                    }).url
+                                                }
+                                                editHref={
+                                                    lasFamilies.edit({
+                                                        lasFamily: family.uuid,
+                                                    }).url
+                                                }
+                                                onDelete={() =>
+                                                    handleDeleteClick(family)
+                                                }
+                                            />
                                         </td>
                                     </tr>
                                 ))}
@@ -314,42 +233,11 @@ export default function LasFamiliesIndex() {
                     </div>
                 </div>
 
-                {familiesPaginated.links.length > 1 && (
-                    <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
-                        <div>
-                            Pagina{' '}
-                            <strong>{familiesPaginated.current_page}</strong> di{' '}
-                            <strong>{familiesPaginated.last_page}</strong>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-1">
-                            {familiesPaginated.links.map((link, index) => {
-                                if (
-                                    link.label.includes('&laquo;') ||
-                                    link.label.includes('&raquo;')
-                                ) {
-                                    return null;
-                                }
-                                return (
-                                    <Link
-                                        key={`${link.label}-${index}`}
-                                        href={link.url ?? '#'}
-                                        className={`min-w-[2.5rem] rounded-md px-3 py-2 text-center transition-colors ${
-                                            link.active
-                                                ? 'bg-primary text-primary-foreground'
-                                                : 'border border-input hover:bg-muted'
-                                        }`}
-                                    >
-                                        <span
-                                            dangerouslySetInnerHTML={{
-                                                __html: link.label,
-                                            }}
-                                        />
-                                    </Link>
-                                );
-                            })}
-                        </div>
-                    </div>
-                )}
+                <Pagination
+                    links={familiesPaginated.links}
+                    currentPage={familiesPaginated.current_page}
+                    lastPage={familiesPaginated.last_page}
+                />
 
                 <ConfirmDeleteDialog
                     open={deleteDialog.open}

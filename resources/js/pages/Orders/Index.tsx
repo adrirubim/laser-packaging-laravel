@@ -1,14 +1,12 @@
+import { ActionsDropdown } from '@/components/ActionsDropdown';
 import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
+import {
+    FlashNotifications,
+    useFlashNotifications,
+} from '@/components/flash-notifications';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { SortableTableHeader } from '@/components/SortableTableHeader';
-import { Button } from '@/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import {
     Select,
     SelectContent,
@@ -26,7 +24,7 @@ import {
     formatDecimal,
     parseDecimal,
 } from '@/lib/utils/number';
-import orders from '@/routes/orders';
+import orders from '@/routes/orders/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
@@ -36,14 +34,11 @@ import {
     CheckCircle2,
     CheckSquare,
     Download,
-    Edit,
-    Eye,
     Filter,
     FilterX,
     Info,
     LayoutGrid,
     Loader2,
-    MoreHorizontal,
     Plus,
     Save,
     Search,
@@ -129,8 +124,8 @@ export default function OrdersIndex() {
         articles,
         customers = [],
         filters,
-        flash,
     } = props;
+    const { flash } = useFlashNotifications();
 
     const [searchValue, setSearchValue] = useState(filters.search ?? '');
     const [selectedArticle, setSelectedArticle] = useState(
@@ -146,7 +141,6 @@ export default function OrdersIndex() {
         filters.autocontrollo ?? '',
     );
     const [isSearching, setIsSearching] = useState(false);
-    const [showFlash, setShowFlash] = useState(true);
     const [deleteDialog, setDeleteDialog] = useState<{
         open: boolean;
         order: Order | null;
@@ -444,14 +438,6 @@ export default function OrdersIndex() {
         setSearchValue('');
         applyFilters({ search: undefined });
     };
-
-    useEffect(() => {
-        if (flash?.success || flash?.error) {
-            queueMicrotask(() => setShowFlash(true));
-            const timer = setTimeout(() => setShowFlash(false), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [flash]);
 
     // Sincronizzare stati con filtri da URL
     useEffect(() => {
@@ -792,7 +778,7 @@ export default function OrdersIndex() {
             <Head title="Ordini" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
                         <h1 className="text-2xl font-semibold tracking-tight">
                             Ordini
@@ -801,7 +787,14 @@ export default function OrdersIndex() {
                             Elenco degli ordini di produzione attivi.
                         </p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <Link
+                            href={orders.create().url}
+                            className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
+                        >
+                            <Plus className="mr-2 h-4 w-4" />
+                            Nuovo Ordine
+                        </Link>
                         {ordersPaginated.total > 0 && (
                             <>
                                 <button
@@ -846,38 +839,10 @@ export default function OrdersIndex() {
                                 </button>
                             </>
                         )}
-                        <Link
-                            href={orders.create().url}
-                            className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
-                        >
-                            <Plus className="mr-2 h-4 w-4" />
-                            Nuovo Ordine
-                        </Link>
                     </div>
                 </div>
 
-                {showFlash && flash?.success && (
-                    <div className="flex animate-in items-center justify-between rounded-md border border-emerald-500/40 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-700 duration-300 fade-in slide-in-from-top-2 dark:text-emerald-300">
-                        <span>{flash.success}</span>
-                        <button
-                            onClick={() => setShowFlash(false)}
-                            className="ml-2 transition-opacity hover:opacity-70"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
-                {showFlash && flash?.error && (
-                    <div className="flex animate-in items-center justify-between rounded-md border border-rose-500/40 bg-rose-500/5 px-3 py-2 text-sm text-rose-700 duration-300 fade-in slide-in-from-top-2 dark:text-rose-300">
-                        <span>{flash.error}</span>
-                        <button
-                            onClick={() => setShowFlash(false)}
-                            className="ml-2 transition-opacity hover:opacity-70"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
+                <FlashNotifications flash={flash} />
 
                 {/* Barra azioni in batch */}
                 {selectedOrders.size > 0 && (
@@ -2141,149 +2106,105 @@ export default function OrdersIndex() {
                                                                 'actions'
                                                             ] !== false && (
                                                                 <td className="px-3 py-2 text-right">
-                                                                    <DropdownMenu>
-                                                                        <DropdownMenuTrigger
-                                                                            asChild
-                                                                        >
-                                                                            <Button
-                                                                                variant="ghost"
-                                                                                size="icon"
-                                                                                className="h-8 w-8"
-                                                                                aria-label="Apri menu azioni"
-                                                                            >
-                                                                                <MoreHorizontal className="h-4 w-4" />
-                                                                            </Button>
-                                                                        </DropdownMenuTrigger>
-                                                                        <DropdownMenuContent align="end">
-                                                                            <DropdownMenuItem
-                                                                                onSelect={(
-                                                                                    e,
-                                                                                ) => {
-                                                                                    e.preventDefault();
-                                                                                    router.visit(
-                                                                                        orders.show(
-                                                                                            {
-                                                                                                order: order.uuid,
-                                                                                            },
-                                                                                        )
-                                                                                            .url,
-                                                                                    );
-                                                                                }}
-                                                                            >
-                                                                                <Eye className="mr-2 h-4 w-4" />
-                                                                                Visualizza
-                                                                            </DropdownMenuItem>
-                                                                            <DropdownMenuItem
-                                                                                onSelect={(
-                                                                                    e,
-                                                                                ) => {
-                                                                                    e.preventDefault();
-                                                                                    router.visit(
-                                                                                        orders.edit(
-                                                                                            {
-                                                                                                order: order.uuid,
-                                                                                            },
-                                                                                        )
-                                                                                            .url,
-                                                                                    );
-                                                                                }}
-                                                                            >
-                                                                                <Edit className="mr-2 h-4 w-4" />
-                                                                                Modifica
-                                                                            </DropdownMenuItem>
-                                                                            <DropdownMenuItem
-                                                                                onSelect={(
-                                                                                    e,
-                                                                                ) => {
-                                                                                    e.preventDefault();
-                                                                                    router.visit(
-                                                                                        orders.manageStatus(
-                                                                                            {
-                                                                                                order: order.uuid,
-                                                                                            },
-                                                                                        )
-                                                                                            .url,
-                                                                                    );
-                                                                                }}
-                                                                            >
-                                                                                <Settings className="mr-2 h-4 w-4" />
-                                                                                Gestisci
-                                                                                Stato
-                                                                            </DropdownMenuItem>
-                                                                            <DropdownMenuItem
-                                                                                onSelect={(
-                                                                                    e,
-                                                                                ) => {
-                                                                                    e.preventDefault();
-                                                                                    handleDownloadBarcode(
-                                                                                        order,
-                                                                                    );
-                                                                                }}
-                                                                                disabled={
-                                                                                    downloadingBarcode ===
-                                                                                    order.uuid
-                                                                                }
-                                                                            >
-                                                                                {downloadingBarcode ===
-                                                                                order.uuid ? (
-                                                                                    <>
-                                                                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                                                        Generando
-                                                                                        Barcode...
-                                                                                    </>
-                                                                                ) : (
-                                                                                    <>
-                                                                                        <Download className="mr-2 h-4 w-4" />
-                                                                                        Stampa
-                                                                                        Barcode
-                                                                                    </>
-                                                                                )}
-                                                                            </DropdownMenuItem>
-                                                                            <DropdownMenuItem
-                                                                                onSelect={(
-                                                                                    e,
-                                                                                ) => {
-                                                                                    e.preventDefault();
-                                                                                    handleDownloadAutocontrollo(
-                                                                                        order,
-                                                                                    );
-                                                                                }}
-                                                                                disabled={
-                                                                                    downloadingAutocontrollo ===
-                                                                                    order.uuid
-                                                                                }
-                                                                            >
-                                                                                {downloadingAutocontrollo ===
-                                                                                order.uuid ? (
-                                                                                    <>
-                                                                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                                                        Generando
-                                                                                        Autocontrollo...
-                                                                                    </>
-                                                                                ) : (
-                                                                                    <>
-                                                                                        <Download className="mr-2 h-4 w-4" />
-                                                                                        Stampa
-                                                                                        Autocontrollo
-                                                                                    </>
-                                                                                )}
-                                                                            </DropdownMenuItem>
-                                                                            <DropdownMenuItem
-                                                                                variant="destructive"
-                                                                                onSelect={(
-                                                                                    e,
-                                                                                ) => {
-                                                                                    e.preventDefault();
-                                                                                    handleDeleteClick(
-                                                                                        order,
-                                                                                    );
-                                                                                }}
-                                                                            >
-                                                                                <Trash2 className="mr-2 h-4 w-4" />
-                                                                                Elimina
-                                                                            </DropdownMenuItem>
-                                                                        </DropdownMenuContent>
-                                                                    </DropdownMenu>
+                                                                    <ActionsDropdown
+                                                                        viewHref={
+                                                                            orders.show(
+                                                                                {
+                                                                                    order: order.uuid,
+                                                                                },
+                                                                            )
+                                                                                .url
+                                                                        }
+                                                                        editHref={
+                                                                            orders.edit(
+                                                                                {
+                                                                                    order: order.uuid,
+                                                                                },
+                                                                            )
+                                                                                .url
+                                                                        }
+                                                                        onDelete={() =>
+                                                                            handleDeleteClick(
+                                                                                order,
+                                                                            )
+                                                                        }
+                                                                        extraItems={
+                                                                            <>
+                                                                                <div
+                                                                                    onClick={(
+                                                                                        e,
+                                                                                    ) => {
+                                                                                        e.preventDefault();
+                                                                                        router.visit(
+                                                                                            orders.manageStatus(
+                                                                                                {
+                                                                                                    order: order.uuid,
+                                                                                                },
+                                                                                            )
+                                                                                                .url,
+                                                                                        );
+                                                                                    }}
+                                                                                    className="flex cursor-pointer items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
+                                                                                >
+                                                                                    <Settings className="mr-2 h-4 w-4" />
+                                                                                    Gestisci
+                                                                                    Stato
+                                                                                </div>
+                                                                                <div
+                                                                                    onClick={(
+                                                                                        e,
+                                                                                    ) => {
+                                                                                        e.preventDefault();
+                                                                                        handleDownloadBarcode(
+                                                                                            order,
+                                                                                        );
+                                                                                    }}
+                                                                                    className="flex cursor-pointer items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                                                                                >
+                                                                                    {downloadingBarcode ===
+                                                                                    order.uuid ? (
+                                                                                        <>
+                                                                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                                                            Generando
+                                                                                            Barcode...
+                                                                                        </>
+                                                                                    ) : (
+                                                                                        <>
+                                                                                            <Download className="mr-2 h-4 w-4" />
+                                                                                            Stampa
+                                                                                            Barcode
+                                                                                        </>
+                                                                                    )}
+                                                                                </div>
+                                                                                <div
+                                                                                    onClick={(
+                                                                                        e,
+                                                                                    ) => {
+                                                                                        e.preventDefault();
+                                                                                        handleDownloadAutocontrollo(
+                                                                                            order,
+                                                                                        );
+                                                                                    }}
+                                                                                    className="flex cursor-pointer items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                                                                                >
+                                                                                    {downloadingAutocontrollo ===
+                                                                                    order.uuid ? (
+                                                                                        <>
+                                                                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                                                            Generando
+                                                                                            Autocontrollo...
+                                                                                        </>
+                                                                                    ) : (
+                                                                                        <>
+                                                                                            <Download className="mr-2 h-4 w-4" />
+                                                                                            Stampa
+                                                                                            Autocontrollo
+                                                                                        </>
+                                                                                    )}
+                                                                                </div>
+                                                                            </>
+                                                                        }
+                                                                    />
                                                                 </td>
                                                             )}
                                                         </tr>
@@ -2481,126 +2402,89 @@ export default function OrdersIndex() {
                                         </div>
 
                                         <div className="flex items-center justify-end gap-2 border-t pt-2">
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="h-8 w-8"
-                                                        aria-label="Apri menu azioni"
-                                                    >
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            router.visit(
-                                                                orders.show({
-                                                                    order: order.uuid,
-                                                                }).url,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Eye className="mr-2 h-4 w-4" />
-                                                        Visualizza
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            router.visit(
-                                                                orders.edit({
-                                                                    order: order.uuid,
-                                                                }).url,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Edit className="mr-2 h-4 w-4" />
-                                                        Modifica
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            router.visit(
-                                                                orders.manageStatus(
-                                                                    {
-                                                                        order: order.uuid,
-                                                                    },
-                                                                ).url,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Settings className="mr-2 h-4 w-4" />
-                                                        Gestisci Stato
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            handleDownloadBarcode(
-                                                                order,
-                                                            );
-                                                        }}
-                                                        disabled={
-                                                            downloadingBarcode ===
-                                                            order.uuid
-                                                        }
-                                                    >
-                                                        {downloadingBarcode ===
-                                                        order.uuid ? (
-                                                            <>
-                                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                                Generando
-                                                                Barcode...
-                                                            </>
-                                                        ) : (
-                                                            <>
-                                                                <Download className="mr-2 h-4 w-4" />
-                                                                Stampa Barcode
-                                                            </>
-                                                        )}
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            handleDownloadAutocontrollo(
-                                                                order,
-                                                            );
-                                                        }}
-                                                        disabled={
-                                                            downloadingAutocontrollo ===
-                                                            order.uuid
-                                                        }
-                                                    >
-                                                        {downloadingAutocontrollo ===
-                                                        order.uuid ? (
-                                                            <>
-                                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                                Generando
-                                                                Autocontrollo...
-                                                            </>
-                                                        ) : (
-                                                            <>
-                                                                <Download className="mr-2 h-4 w-4" />
-                                                                Stampa
-                                                                Autocontrollo
-                                                            </>
-                                                        )}
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        variant="destructive"
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            handleDeleteClick(
-                                                                order,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Trash2 className="mr-2 h-4 w-4" />
-                                                        Elimina
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
+                                            <ActionsDropdown
+                                                viewHref={
+                                                    orders.show({
+                                                        order: order.uuid,
+                                                    }).url
+                                                }
+                                                editHref={
+                                                    orders.edit({
+                                                        order: order.uuid,
+                                                    }).url
+                                                }
+                                                onDelete={() =>
+                                                    handleDeleteClick(order)
+                                                }
+                                                extraItems={
+                                                    <>
+                                                        <div
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                router.visit(
+                                                                    orders.manageStatus(
+                                                                        {
+                                                                            order: order.uuid,
+                                                                        },
+                                                                    ).url,
+                                                                );
+                                                            }}
+                                                            className="flex cursor-pointer items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
+                                                        >
+                                                            <Settings className="mr-2 h-4 w-4" />
+                                                            Gestisci Stato
+                                                        </div>
+                                                        <div
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                handleDownloadBarcode(
+                                                                    order,
+                                                                );
+                                                            }}
+                                                            className="flex cursor-pointer items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                                                        >
+                                                            {downloadingBarcode ===
+                                                            order.uuid ? (
+                                                                <>
+                                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                                    Generando
+                                                                    Barcode...
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <Download className="mr-2 h-4 w-4" />
+                                                                    Stampa
+                                                                    Barcode
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                        <div
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                handleDownloadAutocontrollo(
+                                                                    order,
+                                                                );
+                                                            }}
+                                                            className="flex cursor-pointer items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                                                        >
+                                                            {downloadingAutocontrollo ===
+                                                            order.uuid ? (
+                                                                <>
+                                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                                    Generando
+                                                                    Autocontrollo...
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <Download className="mr-2 h-4 w-4" />
+                                                                    Stampa
+                                                                    Autocontrollo
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                    </>
+                                                }
+                                            />
                                         </div>
                                     </div>
                                 );

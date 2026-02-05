@@ -1,3 +1,5 @@
+import { ConfirmCloseDialog } from '@/components/confirm-close-dialog';
+import { FormValidationNotification } from '@/components/form-validation-notification';
 import { FormLabel } from '@/components/FormLabel';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -17,7 +19,7 @@ import {
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
-import customers from '@/routes/customers';
+import customers from '@/routes/customers/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router } from '@inertiajs/react';
 import { HelpCircle } from 'lucide-react';
@@ -46,6 +48,7 @@ export default function CustomersEdit({
     customer,
     errors: serverErrors,
 }: CustomersEditProps) {
+    const [showCloseConfirm, setShowCloseConfirm] = useState(false);
     const [vatNumber, setVatNumber] = useState(customer.vat_number || '');
     const [postalCode, setPostalCode] = useState(customer.postal_code || '');
     const [province, setProvince] = useState(customer.province || '');
@@ -104,9 +107,17 @@ export default function CustomersEdit({
                                             ...errors,
                                             ...serverErrors,
                                         };
+                                        const hasAttemptedSubmit =
+                                            Object.keys(allErrors).length > 0;
 
                                         return (
                                             <>
+                                                <FormValidationNotification
+                                                    errors={allErrors}
+                                                    hasAttemptedSubmit={
+                                                        hasAttemptedSubmit
+                                                    }
+                                                />
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="uuid">
                                                         UUID
@@ -485,11 +496,8 @@ export default function CustomersEdit({
                                                         type="button"
                                                         variant="outline"
                                                         onClick={() =>
-                                                            router.visit(
-                                                                customers.show({
-                                                                    customer:
-                                                                        customer.uuid,
-                                                                }).url,
+                                                            setShowCloseConfirm(
+                                                                true,
                                                             )
                                                         }
                                                     >
@@ -505,6 +513,16 @@ export default function CustomersEdit({
                     </div>
                 </div>
             </div>
+            <ConfirmCloseDialog
+                open={showCloseConfirm}
+                onOpenChange={setShowCloseConfirm}
+                onConfirm={() => {
+                    setShowCloseConfirm(false);
+                    router.visit(
+                        customers.show({ customer: customer.uuid }).url,
+                    );
+                }}
+            />
         </AppLayout>
     );
 }

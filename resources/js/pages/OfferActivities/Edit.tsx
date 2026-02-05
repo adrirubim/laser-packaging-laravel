@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
-import offerActivities from '@/routes/offer-activities';
+import offerActivities from '@/routes/offer-activities/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router } from '@inertiajs/react';
 import { useState } from 'react';
@@ -71,8 +71,10 @@ export default function OfferActivitiesEdit({
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Gestione Attività</CardTitle>
-                                <CardDescription>Modifica</CardDescription>
+                                <CardTitle>Modifica Attività</CardTitle>
+                                <CardDescription>
+                                    Aggiorna le informazioni dell'attività.
+                                </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <Form

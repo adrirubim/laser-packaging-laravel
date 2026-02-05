@@ -1,14 +1,14 @@
+import { ActionsDropdown } from '@/components/ActionsDropdown';
 import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
+import {
+    FlashNotifications,
+    useFlashNotifications,
+} from '@/components/flash-notifications';
+import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { SortableTableHeader } from '@/components/SortableTableHeader';
-import { Button } from '@/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import {
     Select,
     SelectContent,
@@ -17,23 +17,17 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
-import articles from '@/routes/articles';
-import offers from '@/routes/offers';
+import articles from '@/routes/articles/index';
+import offers from '@/routes/offers/index';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import {
     CheckCircle2,
     Clock,
     Copy,
-    Edit,
-    Eye,
     FileText,
     Loader2,
-    MoreHorizontal,
     Package,
-    Plus,
-    Trash2,
-    X,
     XCircle,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -80,14 +74,14 @@ type OffersIndexProps = {
 
 export default function OffersIndex() {
     const { props } = usePage<OffersIndexProps>();
-    const { offers: offersPaginated, customers, filters, flash } = props;
+    const { offers: offersPaginated, customers, filters } = props;
+    const { flash } = useFlashNotifications();
 
     const [searchValue, setSearchValue] = useState(filters.search ?? '');
     const [customerFilter, setCustomerFilter] = useState(
         filters.customer_uuid ?? '',
     );
     const [isSearching, setIsSearching] = useState(false);
-    const [showFlash, setShowFlash] = useState(true);
     const [deleteDialog, setDeleteDialog] = useState<{
         open: boolean;
         offer: Offer | null;
@@ -163,14 +157,6 @@ export default function OffersIndex() {
             },
         );
     };
-
-    useEffect(() => {
-        if (flash?.success || flash?.error) {
-            queueMicrotask(() => setShowFlash(true));
-            const timer = setTimeout(() => setShowFlash(false), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [flash]);
 
     const clearSearch = () => {
         setSearchValue('');
@@ -322,47 +308,14 @@ export default function OffersIndex() {
             <Head title="Offerte" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex items-center justify-between gap-3">
-                    <div>
-                        <h1 className="text-2xl font-semibold tracking-tight">
-                            Offerte
-                        </h1>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                            Elenco delle offerte attive con Cerca e filtri di
-                            base.
-                        </p>
-                    </div>
-                    <Link
-                        href={offers.create().url}
-                        className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
-                    >
-                        <Plus className="mr-2 h-4 w-4" />
-                        Nuova Offerta
-                    </Link>
-                </div>
+                <IndexHeader
+                    title="Offerte"
+                    subtitle="Elenco delle offerte attive con Cerca e filtri di base."
+                    createHref={offers.create().url}
+                    createLabel="Nuova Offerta"
+                />
 
-                {showFlash && flash?.success && (
-                    <div className="flex animate-in items-center justify-between rounded-md border border-emerald-500/40 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-700 duration-300 fade-in slide-in-from-top-2 dark:text-emerald-300">
-                        <span>{flash.success}</span>
-                        <button
-                            onClick={() => setShowFlash(false)}
-                            className="ml-2 transition-opacity hover:opacity-70"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
-                {showFlash && flash?.error && (
-                    <div className="flex animate-in items-center justify-between rounded-md border border-rose-500/40 bg-rose-500/5 px-3 py-2 text-sm text-rose-700 duration-300 fade-in slide-in-from-top-2 dark:text-rose-300">
-                        <span>{flash.error}</span>
-                        <button
-                            onClick={() => setShowFlash(false)}
-                            className="ml-2 transition-opacity hover:opacity-70"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
+                <FlashNotifications flash={flash} />
 
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="grid gap-3 md:grid-cols-2">
@@ -471,111 +424,82 @@ export default function OffersIndex() {
                                                         : '—')}
                                         </p>
                                     </div>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-8 w-8"
-                                                aria-label="Apri menu azioni"
-                                            >
-                                                <MoreHorizontal className="h-4 w-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem
-                                                onSelect={(e) => {
-                                                    e.preventDefault();
-                                                    router.visit(
-                                                        offers.show({
-                                                            offer: offer.uuid,
-                                                        }).url,
-                                                    );
-                                                }}
-                                            >
-                                                <Eye className="mr-2 h-4 w-4" />
-                                                Visualizza
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem
-                                                onSelect={(e) => {
-                                                    e.preventDefault();
-                                                    router.visit(
-                                                        offers.edit({
-                                                            offer: offer.uuid,
-                                                        }).url,
-                                                    );
-                                                }}
-                                            >
-                                                <Edit className="mr-2 h-4 w-4" />
-                                                Modifica
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem
-                                                onSelect={(e) => {
-                                                    e.preventDefault();
-                                                    router.visit(
-                                                        offers.create({
-                                                            query: {
-                                                                duplicate_from:
-                                                                    offer.uuid,
-                                                            },
-                                                        }).url,
-                                                    );
-                                                }}
-                                            >
-                                                <Copy className="mr-2 h-4 w-4" />
-                                                Duplica
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem
-                                                onSelect={(e) => {
-                                                    e.preventDefault();
-                                                    router.visit(
-                                                        articles.create({
-                                                            query: {
-                                                                offer_uuid:
-                                                                    offer.uuid,
-                                                            },
-                                                        }).url,
-                                                    );
-                                                }}
-                                            >
-                                                <Package className="mr-2 h-4 w-4" />
-                                                Converti in Articolo
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem
-                                                onSelect={(e) => {
-                                                    e.preventDefault();
-                                                    handleDownloadPdf(offer);
-                                                }}
-                                                disabled={
-                                                    downloadingPdf ===
-                                                    offer.uuid
-                                                }
-                                            >
-                                                {downloadingPdf ===
-                                                offer.uuid ? (
-                                                    <>
-                                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                        Generando PDF...
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <FileText className="mr-2 h-4 w-4" />
-                                                        Genera PDF
-                                                    </>
-                                                )}
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem
-                                                variant="destructive"
-                                                onSelect={(e) => {
-                                                    e.preventDefault();
-                                                    handleDeleteClick(offer);
-                                                }}
-                                            >
-                                                <Trash2 className="mr-2 h-4 w-4" />
-                                                Elimina
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
+                                    <ActionsDropdown
+                                        viewHref={
+                                            offers.show({
+                                                offer: offer.uuid,
+                                            }).url
+                                        }
+                                        editHref={
+                                            offers.edit({
+                                                offer: offer.uuid,
+                                            }).url
+                                        }
+                                        onDelete={() =>
+                                            handleDeleteClick(offer)
+                                        }
+                                        extraItems={
+                                            <>
+                                                <DropdownMenuItem
+                                                    onSelect={(e) => {
+                                                        e.preventDefault();
+                                                        router.visit(
+                                                            offers.create({
+                                                                query: {
+                                                                    duplicate_from:
+                                                                        offer.uuid,
+                                                                },
+                                                            }).url,
+                                                        );
+                                                    }}
+                                                >
+                                                    <Copy className="mr-2 h-4 w-4" />
+                                                    Duplica
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem
+                                                    onSelect={(e) => {
+                                                        e.preventDefault();
+                                                        router.visit(
+                                                            articles.create({
+                                                                query: {
+                                                                    offer_uuid:
+                                                                        offer.uuid,
+                                                                },
+                                                            }).url,
+                                                        );
+                                                    }}
+                                                >
+                                                    <Package className="mr-2 h-4 w-4" />
+                                                    Converti in Articolo
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem
+                                                    onSelect={(e) => {
+                                                        e.preventDefault();
+                                                        handleDownloadPdf(
+                                                            offer,
+                                                        );
+                                                    }}
+                                                    disabled={
+                                                        downloadingPdf ===
+                                                        offer.uuid
+                                                    }
+                                                >
+                                                    {downloadingPdf ===
+                                                    offer.uuid ? (
+                                                        <>
+                                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                            Generando PDF...
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <FileText className="mr-2 h-4 w-4" />
+                                                            Genera PDF
+                                                        </>
+                                                    )}
+                                                </DropdownMenuItem>
+                                            </>
+                                        }
+                                    />
                                 </div>
                             </div>
                         ))
@@ -682,117 +606,87 @@ export default function OffersIndex() {
                                             {renderApprovalStatus(offer)}
                                         </td>
                                         <td className="px-3 py-2 text-right align-middle text-xs">
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="h-8 w-8"
-                                                        aria-label="Apri menu azioni"
-                                                    >
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            router.visit(
-                                                                offers.show({
-                                                                    offer: offer.uuid,
-                                                                }).url,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Eye className="mr-2 h-4 w-4" />
-                                                        Visualizza
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            router.visit(
-                                                                offers.edit({
-                                                                    offer: offer.uuid,
-                                                                }).url,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Edit className="mr-2 h-4 w-4" />
-                                                        Modifica
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            router.visit(
-                                                                offers.create({
-                                                                    query: {
-                                                                        duplicate_from:
-                                                                            offer.uuid,
-                                                                    },
-                                                                }).url,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Copy className="mr-2 h-4 w-4" />
-                                                        Duplica
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            router.visit(
-                                                                articles.create(
-                                                                    {
-                                                                        query: {
-                                                                            offer_uuid:
-                                                                                offer.uuid,
+                                            <ActionsDropdown
+                                                viewHref={
+                                                    offers.show({
+                                                        offer: offer.uuid,
+                                                    }).url
+                                                }
+                                                editHref={
+                                                    offers.edit({
+                                                        offer: offer.uuid,
+                                                    }).url
+                                                }
+                                                onDelete={() =>
+                                                    handleDeleteClick(offer)
+                                                }
+                                                extraItems={
+                                                    <>
+                                                        <DropdownMenuItem
+                                                            onSelect={(e) => {
+                                                                e.preventDefault();
+                                                                router.visit(
+                                                                    offers.create(
+                                                                        {
+                                                                            query: {
+                                                                                duplicate_from:
+                                                                                    offer.uuid,
+                                                                            },
                                                                         },
-                                                                    },
-                                                                ).url,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Package className="mr-2 h-4 w-4" />
-                                                        Converti in Articolo
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            handleDownloadPdf(
-                                                                offer,
-                                                            );
-                                                        }}
-                                                        disabled={
-                                                            downloadingPdf ===
-                                                            offer.uuid
-                                                        }
-                                                    >
-                                                        {downloadingPdf ===
-                                                        offer.uuid ? (
-                                                            <>
-                                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                                Generando PDF...
-                                                            </>
-                                                        ) : (
-                                                            <>
-                                                                <FileText className="mr-2 h-4 w-4" />
-                                                                Genera PDF
-                                                            </>
-                                                        )}
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        variant="destructive"
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            handleDeleteClick(
-                                                                offer,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Trash2 className="mr-2 h-4 w-4" />
-                                                        Elimina
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
+                                                                    ).url,
+                                                                );
+                                                            }}
+                                                        >
+                                                            <Copy className="mr-2 h-4 w-4" />
+                                                            Duplica
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem
+                                                            onSelect={(e) => {
+                                                                e.preventDefault();
+                                                                router.visit(
+                                                                    articles.create(
+                                                                        {
+                                                                            query: {
+                                                                                offer_uuid:
+                                                                                    offer.uuid,
+                                                                            },
+                                                                        },
+                                                                    ).url,
+                                                                );
+                                                            }}
+                                                        >
+                                                            <Package className="mr-2 h-4 w-4" />
+                                                            Converti in Articolo
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem
+                                                            onSelect={(e) => {
+                                                                e.preventDefault();
+                                                                handleDownloadPdf(
+                                                                    offer,
+                                                                );
+                                                            }}
+                                                            disabled={
+                                                                downloadingPdf ===
+                                                                offer.uuid
+                                                            }
+                                                        >
+                                                            {downloadingPdf ===
+                                                            offer.uuid ? (
+                                                                <>
+                                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                                    Generando
+                                                                    PDF...
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <FileText className="mr-2 h-4 w-4" />
+                                                                    Genera PDF
+                                                                </>
+                                                            )}
+                                                        </DropdownMenuItem>
+                                                    </>
+                                                }
+                                            />
                                         </td>
                                     </tr>
                                 ))}

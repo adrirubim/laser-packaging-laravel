@@ -1,14 +1,4 @@
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -19,7 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import valueTypes from '@/routes/value-types';
+import valueTypes from '@/routes/value-types/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Edit, Trash2 } from 'lucide-react';
@@ -35,6 +25,7 @@ type ValueTypesShowProps = {
 };
 
 export default function ValueTypesShow({ valueType }: ValueTypesShowProps) {
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
@@ -56,6 +47,7 @@ export default function ValueTypesShow({ valueType }: ValueTypesShowProps) {
         setIsDeleting(true);
         router.delete(valueTypes.destroy({ valueType: valueType.uuid }).url, {
             onSuccess: () => {
+                setDeleteDialogOpen(false);
                 router.visit(valueTypes.index().url);
             },
             onFinish: () => {
@@ -93,56 +85,14 @@ export default function ValueTypesShow({ valueType }: ValueTypesShowProps) {
                                 Modifica
                             </Link>
                         </Button>
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <Button
-                                    variant="destructive"
-                                    disabled={isDeleting}
-                                >
-                                    <Trash2 className="mr-2 h-4 w-4" />
-                                    Elimina
-                                </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                        Conferma eliminazione
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        Sei sicuro di voler eliminare il tipo di
-                                        valore{' '}
-                                        <strong className="font-mono">
-                                            {valueType.uuid}
-                                        </strong>
-                                        ?
-                                        <br />
-                                        <br />
-                                        Questa azione non può essere annullata.
-                                        Il tipo di valore verrà eliminato
-                                        definitivamente.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel disabled={isDeleting}>
-                                        Annulla
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction
-                                        onClick={handleDelete}
-                                        disabled={isDeleting}
-                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                    >
-                                        {isDeleting ? (
-                                            <>
-                                                <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                                                Eliminando...
-                                            </>
-                                        ) : (
-                                            'Elimina definitivamente'
-                                        )}
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
+                        <Button
+                            variant="destructive"
+                            onClick={() => setDeleteDialogOpen(true)}
+                            disabled={isDeleting}
+                        >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Elimina
+                        </Button>
                     </div>
                 </div>
 
@@ -171,6 +121,16 @@ export default function ValueTypesShow({ valueType }: ValueTypesShowProps) {
                         </div>
                     </CardContent>
                 </Card>
+
+                <ConfirmDeleteDialog
+                    open={deleteDialogOpen}
+                    onOpenChange={setDeleteDialogOpen}
+                    onConfirm={handleDelete}
+                    title="Elimina Tipo di Valore"
+                    description="Sei sicuro di voler eliminare questo tipo di valore? Questa azione non può essere annullata."
+                    itemName={valueType.uuid}
+                    isLoading={isDeleting}
+                />
             </div>
         </AppLayout>
     );

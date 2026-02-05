@@ -1,8 +1,15 @@
+import { ActionsDropdown } from '@/components/ActionsDropdown';
+import {
+    FlashNotifications,
+    useFlashNotifications,
+} from '@/components/flash-notifications';
+import { IndexHeader } from '@/components/IndexHeader';
+import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import AppLayout from '@/layouts/app-layout';
-import offerOperationLists from '@/routes/offer-operation-lists';
+import offerOperationLists from '@/routes/offer-operation-lists/index';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 
 type Offer = {
     uuid: string;
@@ -43,7 +50,8 @@ type OfferOperationListsIndexProps = {
 
 export default function OfferOperationListsIndex() {
     const { props } = usePage<OfferOperationListsIndexProps>();
-    const { operationLists: operationListsPaginated, filters, flash } = props;
+    const { operationLists: operationListsPaginated, filters } = props;
+    const { flash } = useFlashNotifications();
 
     const handleSearchChange = (value: string) => {
         router.get(
@@ -73,48 +81,31 @@ export default function OfferOperationListsIndex() {
     };
 
     const breadcrumbs: BreadcrumbItem[] = [
+        { title: 'Offerte', href: '/offers' },
         {
-            title: 'Liste operazioni offerta',
-            href: '/offers/operation-lists',
+            title: 'Liste Operazioni Offerta',
+            href: offerOperationLists.index().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Liste operazioni offerta" />
+            <Head title="Liste Operazioni Offerta" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex items-center justify-between gap-3">
-                    <div>
-                        <h1 className="text-2xl font-semibold tracking-tight">
-                            Liste operazioni offerta
-                        </h1>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                            Elenco delle operazioni assegnate alle offerte.
-                        </p>
-                    </div>
-                    <Link
-                        href={
-                            filters.offer_uuid
-                                ? `/offers/operation-lists/create?offer_uuid=${filters.offer_uuid}`
-                                : '/offers/operation-lists/create'
-                        }
-                        className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
-                    >
-                        Nuova lista operazioni
-                    </Link>
-                </div>
+                <IndexHeader
+                    title="Liste Operazioni Offerta"
+                    subtitle="Elenco delle operazioni assegnate alle offerte con Cerca e filtri."
+                    createHref={
+                        filters.offer_uuid
+                            ? offerOperationLists.create().url +
+                              `?offer_uuid=${filters.offer_uuid}`
+                            : offerOperationLists.create().url
+                    }
+                    createLabel="Nuova Assegnazione"
+                />
 
-                {flash?.success && (
-                    <div className="rounded-md border border-emerald-500/40 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-700 dark:text-emerald-300">
-                        {flash.success}
-                    </div>
-                )}
-                {flash?.error && (
-                    <div className="rounded-md border border-rose-500/40 bg-rose-500/5 px-3 py-2 text-sm text-rose-700 dark:text-rose-300">
-                        {flash.error}
-                    </div>
-                )}
+                <FlashNotifications flash={flash} />
 
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="space-y-1">
@@ -183,31 +174,20 @@ export default function OfferOperationListsIndex() {
                                             {list.num_op}
                                         </td>
                                         <td className="px-3 py-2 text-right align-middle text-xs">
-                                            <Link
-                                                href={
+                                            <ActionsDropdown
+                                                viewHref={
                                                     offerOperationLists.show({
                                                         offerOperationList:
                                                             list.uuid,
                                                     }).url
                                                 }
-                                                className="text-primary hover:underline"
-                                            >
-                                                Visualizza
-                                            </Link>
-                                            <span className="mx-1 text-muted-foreground">
-                                                ·
-                                            </span>
-                                            <Link
-                                                href={
+                                                editHref={
                                                     offerOperationLists.edit({
                                                         offerOperationList:
                                                             list.uuid,
                                                     }).url
                                                 }
-                                                className="text-primary hover:underline"
-                                            >
-                                                Modifica
-                                            </Link>
+                                            />
                                         </td>
                                     </tr>
                                 ))}
@@ -216,48 +196,11 @@ export default function OfferOperationListsIndex() {
                     </div>
                 </div>
 
-                {operationListsPaginated.links.length > 1 && (
-                    <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
-                        <div>
-                            Pagina{' '}
-                            <strong>
-                                {operationListsPaginated.current_page}
-                            </strong>{' '}
-                            di{' '}
-                            <strong>{operationListsPaginated.last_page}</strong>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-1">
-                            {operationListsPaginated.links.map(
-                                (link, index) => {
-                                    if (
-                                        link.label.includes('&laquo;') ||
-                                        link.label.includes('&raquo;')
-                                    ) {
-                                        return null;
-                                    }
-
-                                    return (
-                                        <Link
-                                            key={`${link.label}-${index}`}
-                                            href={link.url ?? '#'}
-                                            className={`rounded-md px-2 py-1 ${
-                                                link.active
-                                                    ? 'bg-primary text-primary-foreground'
-                                                    : 'hover:bg-muted'
-                                            }`}
-                                        >
-                                            <span
-                                                dangerouslySetInnerHTML={{
-                                                    __html: link.label,
-                                                }}
-                                            />
-                                        </Link>
-                                    );
-                                },
-                            )}
-                        </div>
-                    </div>
-                )}
+                <Pagination
+                    links={operationListsPaginated.links}
+                    currentPage={operationListsPaginated.current_page}
+                    lastPage={operationListsPaginated.last_page}
+                />
             </div>
         </AppLayout>
     );

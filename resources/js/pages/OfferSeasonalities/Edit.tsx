@@ -1,3 +1,4 @@
+import { FormLabel } from '@/components/FormLabel';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import {
@@ -8,9 +9,8 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import offerSeasonalities from '@/routes/offer-seasonalities';
+import offerSeasonalities from '@/routes/offer-seasonalities/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router } from '@inertiajs/react';
 
@@ -61,8 +61,10 @@ export default function OfferSeasonalitiesEdit({
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Gestione Stagionalità</CardTitle>
-                                <CardDescription>Modifica</CardDescription>
+                                <CardTitle>Modifica Stagionalità</CardTitle>
+                                <CardDescription>
+                                    Aggiorna le informazioni della stagionalità.
+                                </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <Form
@@ -83,9 +85,9 @@ export default function OfferSeasonalitiesEdit({
                                         return (
                                             <>
                                                 <div className="grid gap-2">
-                                                    <Label htmlFor="uuid">
+                                                    <FormLabel htmlFor="uuid">
                                                         UUID
-                                                    </Label>
+                                                    </FormLabel>
                                                     <Input
                                                         id="uuid"
                                                         name="uuid"
@@ -98,9 +100,12 @@ export default function OfferSeasonalitiesEdit({
                                                 </div>
 
                                                 <div className="grid gap-2">
-                                                    <Label htmlFor="name">
-                                                        Nome *
-                                                    </Label>
+                                                    <FormLabel
+                                                        htmlFor="name"
+                                                        required
+                                                    >
+                                                        Nome
+                                                    </FormLabel>
                                                     <Input
                                                         id="name"
                                                         name="name"

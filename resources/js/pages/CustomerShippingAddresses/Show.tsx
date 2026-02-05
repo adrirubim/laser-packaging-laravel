@@ -1,3 +1,4 @@
+import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -8,10 +9,11 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import customerDivisions from '@/routes/customer-divisions';
-import customerShippingAddresses from '@/routes/customer-shipping-addresses';
+import customerDivisions from '@/routes/customer-divisions/index';
+import customerShippingAddresses from '@/routes/customer-shipping-addresses/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
+import { useState } from 'react';
 
 type Customer = {
     uuid: string;
@@ -53,6 +55,9 @@ type CustomerShippingAddressesShowProps = {
 export default function CustomerShippingAddressesShow({
     address,
 }: CustomerShippingAddressesShowProps) {
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Indirizzi di Consegna Clienti',
@@ -66,23 +71,22 @@ export default function CustomerShippingAddressesShow({
         },
     ];
 
-    const handleDelete = () => {
-        if (
-            confirm(
-                'Sei sicuro di voler eliminare questo indirizzo di consegna? Questa azione non può essere annullata.',
-            )
-        ) {
-            router.delete(
-                customerShippingAddresses.destroy({
-                    customerShippingAddress: address.uuid,
-                }).url,
-                {
-                    onSuccess: () => {
-                        router.visit(customerShippingAddresses.index().url);
-                    },
+    const handleDeleteConfirm = () => {
+        setIsDeleting(true);
+        router.delete(
+            customerShippingAddresses.destroy({
+                customerShippingAddress: address.uuid,
+            }).url,
+            {
+                onSuccess: () => {
+                    setDeleteDialogOpen(false);
+                    router.visit(customerShippingAddresses.index().url);
                 },
-            );
-        }
+                onFinish: () => {
+                    setIsDeleting(false);
+                },
+            },
+        );
     };
 
     return (
@@ -112,7 +116,11 @@ export default function CustomerShippingAddressesShow({
                                 Modifica
                             </Link>
                         </Button>
-                        <Button variant="destructive" onClick={handleDelete}>
+                        <Button
+                            variant="destructive"
+                            onClick={() => setDeleteDialogOpen(true)}
+                            disabled={isDeleting}
+                        >
                             Elimina
                         </Button>
                     </div>
@@ -291,6 +299,24 @@ export default function CustomerShippingAddressesShow({
                     </Card>
                 )}
             </div>
+
+            <ConfirmDeleteDialog
+                open={deleteDialogOpen}
+                onOpenChange={setDeleteDialogOpen}
+                onConfirm={handleDeleteConfirm}
+                isDeleting={isDeleting}
+                title="Conferma eliminazione"
+                description={
+                    <>
+                        Sei sicuro di voler eliminare questo indirizzo di
+                        consegna? Questa azione non può essere annullata e i
+                        dati associati verranno rimossi definitivamente.
+                    </>
+                }
+                itemName={`${address.street}${
+                    address.city ? `, ${address.city}` : ''
+                }${address.postal_code ? ` (${address.postal_code})` : ''}`}
+            />
         </AppLayout>
     );
 }

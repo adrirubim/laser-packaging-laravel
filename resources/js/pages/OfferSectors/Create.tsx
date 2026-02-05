@@ -13,7 +13,7 @@ import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { generateUUID } from '@/lib/utils/uuid';
 import { validationRules } from '@/lib/validation/rules';
-import offerSectors from '@/routes/offer-sectors';
+import offerSectors from '@/routes/offer-sectors/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
@@ -52,20 +52,22 @@ export default function OfferSectorsCreate({
             href: offerSectors.index().url,
         },
         {
-            title: 'Crea',
+            title: 'Nuovo Settore',
             href: offerSectors.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Crea Settore" />
+            <Head title="Nuovo Settore" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Gestione Settore</CardTitle>
-                        <CardDescription>Inserimento</CardDescription>
+                        <CardTitle>Nuovo Settore</CardTitle>
+                        <CardDescription>
+                            Compila i campi per creare un settore.
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Form

@@ -1,4 +1,8 @@
 import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
+import {
+    FlashNotifications,
+    useFlashNotifications,
+} from '@/components/flash-notifications';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { SortableTableHeader } from '@/components/SortableTableHeader';
@@ -26,10 +30,10 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
-import * as contractsRoutes from '@/routes/employees/contracts';
+import * as contractsRoutes from '@/routes/employees/contracts/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
-import { Edit, Eye, MoreHorizontal, Plus, Trash2, X } from 'lucide-react';
+import { Edit, Eye, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 type Employee = {
@@ -98,10 +102,8 @@ export default function ContractsIndex() {
         employees,
         suppliers,
         filters,
-        flash,
     } = props;
-
-    const [showFlash, setShowFlash] = useState(true);
+    const { flash } = useFlashNotifications();
     const [viewDialog, setViewDialog] = useState<{
         open: boolean;
         contract: EmployeeContract | null;
@@ -124,14 +126,6 @@ export default function ContractsIndex() {
         contract: null,
     });
     const [isDeleting, setIsDeleting] = useState(false);
-
-    useEffect(() => {
-        if (flash?.success || flash?.error) {
-            queueMicrotask(() => setShowFlash(true));
-            const timer = setTimeout(() => setShowFlash(false), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [flash]);
 
     const handleSearchChange = (value: string) => {
         router.get(
@@ -278,28 +272,7 @@ export default function ContractsIndex() {
             <Head title="Gestione Contratti Personale" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                {showFlash && flash?.success && (
-                    <div className="flex animate-in items-center justify-between rounded-md border border-emerald-500/40 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-700 duration-300 fade-in slide-in-from-top-2 dark:text-emerald-300">
-                        <span>{flash.success}</span>
-                        <button
-                            onClick={() => setShowFlash(false)}
-                            className="ml-2 transition-opacity hover:opacity-70"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
-                {showFlash && flash?.error && (
-                    <div className="flex animate-in items-center justify-between rounded-md border border-rose-500/40 bg-rose-500/5 px-3 py-2 text-sm text-rose-700 duration-300 fade-in slide-in-from-top-2 dark:text-rose-300">
-                        <span>{flash.error}</span>
-                        <button
-                            onClick={() => setShowFlash(false)}
-                            className="ml-2 transition-opacity hover:opacity-70"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
+                <FlashNotifications flash={flash} />
 
                 <div className="flex items-center justify-between gap-3">
                     <div>

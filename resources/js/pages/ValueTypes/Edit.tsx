@@ -1,3 +1,4 @@
+import { FormLabel } from '@/components/FormLabel';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -7,9 +8,8 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import valueTypes from '@/routes/value-types';
+import valueTypes from '@/routes/value-types/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router } from '@inertiajs/react';
 
@@ -52,8 +52,10 @@ export default function ValueTypesEdit({ valueType }: ValueTypesEditProps) {
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Gestione Tipo di Valore</CardTitle>
-                        <CardDescription>Modifica</CardDescription>
+                        <CardTitle>Modifica Tipo di Valore</CardTitle>
+                        <CardDescription>
+                            Aggiorna le informazioni del tipo di valore.
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Form
@@ -67,7 +69,9 @@ export default function ValueTypesEdit({ valueType }: ValueTypesEditProps) {
                             {({ processing }) => (
                                 <>
                                     <div className="grid gap-2">
-                                        <Label htmlFor="uuid">UUID</Label>
+                                        <FormLabel htmlFor="uuid">
+                                            UUID
+                                        </FormLabel>
                                         <Input
                                             id="uuid"
                                             name="uuid"

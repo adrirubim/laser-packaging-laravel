@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import criticalIssues from '@/routes/critical-issues';
+import criticalIssues from '@/routes/critical-issues/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { AlertTriangle, Edit, Package, Trash2 } from 'lucide-react';

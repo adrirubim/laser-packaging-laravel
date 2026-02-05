@@ -1,3 +1,4 @@
+import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -8,11 +9,12 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import customerDivisions from '@/routes/customer-divisions';
-import customerShippingAddresses from '@/routes/customer-shipping-addresses';
+import customerDivisions from '@/routes/customer-divisions/index';
+import customerShippingAddresses from '@/routes/customer-shipping-addresses/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Eye } from 'lucide-react';
+import { useState } from 'react';
 
 type Customer = {
     uuid: string;
@@ -45,6 +47,9 @@ type CustomerDivisionsShowProps = {
 export default function CustomerDivisionsShow({
     division,
 }: CustomerDivisionsShowProps) {
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Divisioni Clienti',
@@ -57,22 +62,20 @@ export default function CustomerDivisionsShow({
         },
     ];
 
-    const handleDelete = () => {
-        if (
-            confirm(
-                'Sei sicuro di voler eliminare questa divisione? Questa azione non può essere annullata.',
-            )
-        ) {
-            router.delete(
-                customerDivisions.destroy({ customerDivision: division.uuid })
-                    .url,
-                {
-                    onSuccess: () => {
-                        router.visit(customerDivisions.index().url);
-                    },
+    const handleDeleteConfirm = () => {
+        setIsDeleting(true);
+        router.delete(
+            customerDivisions.destroy({ customerDivision: division.uuid }).url,
+            {
+                onSuccess: () => {
+                    setDeleteDialogOpen(false);
+                    router.visit(customerDivisions.index().url);
                 },
-            );
-        }
+                onFinish: () => {
+                    setIsDeleting(false);
+                },
+            },
+        );
     };
 
     return (
@@ -101,7 +104,11 @@ export default function CustomerDivisionsShow({
                                 Modifica
                             </Link>
                         </Button>
-                        <Button variant="destructive" onClick={handleDelete}>
+                        <Button
+                            variant="destructive"
+                            onClick={() => setDeleteDialogOpen(true)}
+                            disabled={isDeleting}
+                        >
                             Elimina
                         </Button>
                     </div>
@@ -218,6 +225,22 @@ export default function CustomerDivisionsShow({
                     );
                 })()}
             </div>
+
+            <ConfirmDeleteDialog
+                open={deleteDialogOpen}
+                onOpenChange={setDeleteDialogOpen}
+                onConfirm={handleDeleteConfirm}
+                isDeleting={isDeleting}
+                title="Conferma eliminazione"
+                description={
+                    <>
+                        Sei sicuro di voler eliminare questa divisione? Questa
+                        azione non può essere annullata e i dati associati
+                        verranno rimossi definitivamente.
+                    </>
+                }
+                itemName={division.name}
+            />
         </AppLayout>
     );
 }

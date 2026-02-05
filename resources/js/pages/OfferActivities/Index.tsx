@@ -1,19 +1,17 @@
+import { ActionsDropdown } from '@/components/ActionsDropdown';
 import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
+import {
+    FlashNotifications,
+    useFlashNotifications,
+} from '@/components/flash-notifications';
+import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { SortableTableHeader } from '@/components/SortableTableHeader';
-import { Button } from '@/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import AppLayout from '@/layouts/app-layout';
 import offerActivities from '@/routes/offer-activities';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Edit, Eye, MoreHorizontal, Plus, Trash2, X } from 'lucide-react';
+import { Head, router, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
 type OfferActivity = {
@@ -42,11 +40,11 @@ type OfferActivitiesIndexProps = {
 
 export default function OfferActivitiesIndex() {
     const { props } = usePage<OfferActivitiesIndexProps>();
-    const { activities: activitiesPaginated, filters, flash } = props;
+    const { activities: activitiesPaginated, filters } = props;
+    const { flash } = useFlashNotifications();
 
     const [searchValue, setSearchValue] = useState(filters.search ?? '');
     const [isSearching, setIsSearching] = useState(false);
-    const [showFlash, setShowFlash] = useState(true);
     const [deleteDialog, setDeleteDialog] = useState<{
         open: boolean;
         activity: OfferActivity | null;
@@ -101,14 +99,6 @@ export default function OfferActivitiesIndex() {
         );
     };
 
-    useEffect(() => {
-        if (flash?.success || flash?.error) {
-            queueMicrotask(() => setShowFlash(true));
-            const timer = setTimeout(() => setShowFlash(false), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [flash]);
-
     const clearSearch = () => {
         setSearchValue('');
         router.get(
@@ -156,35 +146,14 @@ export default function OfferActivitiesIndex() {
             <Head title="Attività" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex items-center justify-between gap-3">
-                    <div>
-                        <h1 className="text-2xl font-semibold tracking-tight">
-                            Attività
-                        </h1>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                            Elenco delle attività attive con Cerca.
-                        </p>
-                    </div>
-                    <Link
-                        href={offerActivities.create().url}
-                        className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
-                    >
-                        <Plus className="mr-2 h-4 w-4" />
-                        Nuova Attività
-                    </Link>
-                </div>
+                <IndexHeader
+                    title="Attività"
+                    subtitle="Elenco delle attività attive con Cerca."
+                    createHref={offerActivities.create().url}
+                    createLabel="Nuova Attività"
+                />
 
-                {showFlash && flash?.success && (
-                    <div className="flex animate-in items-center justify-between rounded-md border border-emerald-500/40 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-700 duration-300 fade-in slide-in-from-top-2 dark:text-emerald-300">
-                        <span>{flash.success}</span>
-                        <button
-                            onClick={() => setShowFlash(false)}
-                            className="ml-2 transition-opacity hover:opacity-70"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
+                <FlashNotifications flash={flash} />
 
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="space-y-1">
@@ -222,58 +191,21 @@ export default function OfferActivitiesIndex() {
                                             {activity.uuid}
                                         </p>
                                     </div>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-8 w-8"
-                                                aria-label="Apri menu azioni"
-                                            >
-                                                <MoreHorizontal className="h-4 w-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem
-                                                onSelect={(e) => {
-                                                    e.preventDefault();
-                                                    router.visit(
-                                                        offerActivities.show({
-                                                            offerActivity:
-                                                                activity.uuid,
-                                                        }).url,
-                                                    );
-                                                }}
-                                            >
-                                                <Eye className="mr-2 h-4 w-4" />
-                                                Visualizza
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem
-                                                onSelect={(e) => {
-                                                    e.preventDefault();
-                                                    router.visit(
-                                                        offerActivities.edit({
-                                                            offerActivity:
-                                                                activity.uuid,
-                                                        }).url,
-                                                    );
-                                                }}
-                                            >
-                                                <Edit className="mr-2 h-4 w-4" />
-                                                Modifica
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem
-                                                variant="destructive"
-                                                onSelect={(e) => {
-                                                    e.preventDefault();
-                                                    handleDeleteClick(activity);
-                                                }}
-                                            >
-                                                <Trash2 className="mr-2 h-4 w-4" />
-                                                Elimina
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
+                                    <ActionsDropdown
+                                        viewHref={
+                                            offerActivities.show({
+                                                offerActivity: activity.uuid,
+                                            }).url
+                                        }
+                                        editHref={
+                                            offerActivities.edit({
+                                                offerActivity: activity.uuid,
+                                            }).url
+                                        }
+                                        onDelete={() =>
+                                            handleDeleteClick(activity)
+                                        }
+                                    />
                                 </div>
                             </div>
                         ))
@@ -332,64 +264,23 @@ export default function OfferActivitiesIndex() {
                                             {activity.name}
                                         </td>
                                         <td className="px-3 py-2 text-right align-middle text-xs">
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="h-8 w-8"
-                                                        aria-label="Apri menu azioni"
-                                                    >
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            router.visit(
-                                                                offerActivities.show(
-                                                                    {
-                                                                        offerActivity:
-                                                                            activity.uuid,
-                                                                    },
-                                                                ).url,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Eye className="mr-2 h-4 w-4" />
-                                                        Visualizza
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            router.visit(
-                                                                offerActivities.edit(
-                                                                    {
-                                                                        offerActivity:
-                                                                            activity.uuid,
-                                                                    },
-                                                                ).url,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Edit className="mr-2 h-4 w-4" />
-                                                        Modifica
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        variant="destructive"
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            handleDeleteClick(
-                                                                activity,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Trash2 className="mr-2 h-4 w-4" />
-                                                        Elimina
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
+                                            <ActionsDropdown
+                                                viewHref={
+                                                    offerActivities.show({
+                                                        offerActivity:
+                                                            activity.uuid,
+                                                    }).url
+                                                }
+                                                editHref={
+                                                    offerActivities.edit({
+                                                        offerActivity:
+                                                            activity.uuid,
+                                                    }).url
+                                                }
+                                                onDelete={() =>
+                                                    handleDeleteClick(activity)
+                                                }
+                                            />
                                         </td>
                                     </tr>
                                 ))}

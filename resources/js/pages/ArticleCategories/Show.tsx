@@ -1,14 +1,4 @@
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -19,7 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import articleCategories from '@/routes/article-categories';
+import articleCategories from '@/routes/article-categories/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Edit, Package, Tag, Trash2 } from 'lucide-react';
@@ -46,11 +36,12 @@ type ArticleCategoriesShowProps = {
 export default function ArticleCategoriesShow({
     category,
 }: ArticleCategoriesShowProps) {
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Categoria Articoli',
+            title: 'Categorie Articoli',
             href: articleCategories.index().url,
         },
         {
@@ -66,6 +57,7 @@ export default function ArticleCategoriesShow({
             articleCategories.destroy({ articleCategory: category.uuid }).url,
             {
                 onSuccess: () => {
+                    setDeleteDialogOpen(false);
                     router.visit(articleCategories.index().url);
                 },
                 onFinish: () => {
@@ -91,74 +83,35 @@ export default function ArticleCategoriesShow({
                         </p>
                     </div>
                     <div className="flex items-center gap-2">
-                        <Link
-                            href={
-                                articleCategories.edit({
-                                    articleCategory: category.uuid,
-                                }).url
-                            }
-                        >
-                            <Button variant="outline" size="sm">
+                        <Button asChild variant="outline">
+                            <Link
+                                href={
+                                    articleCategories.edit({
+                                        articleCategory: category.uuid,
+                                    }).url
+                                }
+                            >
                                 <Edit className="mr-2 h-4 w-4" />
                                 Modifica
-                            </Button>
-                        </Link>
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <Button
-                                    variant="destructive"
-                                    size="sm"
-                                    disabled={isDeleting}
-                                >
-                                    <Trash2 className="mr-2 h-4 w-4" />
-                                    {isDeleting ? 'Eliminando...' : 'Elimina'}
-                                </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                        Elimina Categoria
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        Sei sicuro di voler eliminare la
-                                        categoria "{category.name}"? Questa
-                                        azione non può essere annullata.
-                                        {category.articles &&
-                                            category.articles.length > 0 && (
-                                                <span className="mt-2 block text-amber-600 dark:text-amber-400">
-                                                    Attenzione: questa categoria
-                                                    è associata a{' '}
-                                                    {category.articles.length}{' '}
-                                                    articolo/i.
-                                                </span>
-                                            )}
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>
-                                        Annulla
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction
-                                        onClick={handleDelete}
-                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                        disabled={isDeleting}
-                                    >
-                                        {isDeleting
-                                            ? 'Eliminando...'
-                                            : 'Elimina'}
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
+                            </Link>
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            onClick={() => setDeleteDialogOpen(true)}
+                            disabled={isDeleting}
+                        >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Elimina
+                        </Button>
                     </div>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Informazioni Generali</CardTitle>
+                            <CardTitle>Dettagli Categoria</CardTitle>
                             <CardDescription>
-                                Dati principali della categoria
+                                Informazioni sulla categoria di articolo
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -229,6 +182,16 @@ export default function ArticleCategoriesShow({
                         </Card>
                     )}
                 </div>
+
+                <ConfirmDeleteDialog
+                    open={deleteDialogOpen}
+                    onOpenChange={setDeleteDialogOpen}
+                    onConfirm={handleDelete}
+                    title="Elimina Categoria"
+                    description="Sei sicuro di voler eliminare questa categoria di articolo? Questa azione non può essere annullata."
+                    itemName={category.name}
+                    isLoading={isDeleting}
+                />
             </div>
         </AppLayout>
     );

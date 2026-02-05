@@ -1,3 +1,4 @@
+import { FormLabel } from '@/components/FormLabel';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import {
@@ -8,9 +9,8 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import offerOperationCategories from '@/routes/offer-operation-categories';
+import offerOperationCategories from '@/routes/offer-operation-categories/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router } from '@inertiajs/react';
 
@@ -63,9 +63,12 @@ export default function OfferOperationCategoriesEdit({
                         <Card>
                             <CardHeader>
                                 <CardTitle>
-                                    Gestione Categoria Operazione
+                                    Modifica Categoria Operazione
                                 </CardTitle>
-                                <CardDescription>Modifica</CardDescription>
+                                <CardDescription>
+                                    Aggiorna le informazioni della categoria
+                                    operazione.
+                                </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <Form
@@ -87,9 +90,9 @@ export default function OfferOperationCategoriesEdit({
                                         return (
                                             <>
                                                 <div className="grid gap-2">
-                                                    <Label htmlFor="uuid">
+                                                    <FormLabel htmlFor="uuid">
                                                         UUID
-                                                    </Label>
+                                                    </FormLabel>
                                                     <Input
                                                         id="uuid"
                                                         name="uuid"
@@ -102,9 +105,12 @@ export default function OfferOperationCategoriesEdit({
                                                 </div>
 
                                                 <div className="grid gap-2">
-                                                    <Label htmlFor="code">
-                                                        Codice *
-                                                    </Label>
+                                                    <FormLabel
+                                                        htmlFor="code"
+                                                        required
+                                                    >
+                                                        Codice
+                                                    </FormLabel>
                                                     <Input
                                                         id="code"
                                                         name="code"
@@ -130,9 +136,12 @@ export default function OfferOperationCategoriesEdit({
                                                 </div>
 
                                                 <div className="grid gap-2">
-                                                    <Label htmlFor="name">
-                                                        Nome *
-                                                    </Label>
+                                                    <FormLabel
+                                                        htmlFor="name"
+                                                        required
+                                                    >
+                                                        Nome
+                                                    </FormLabel>
                                                     <Input
                                                         id="name"
                                                         name="name"

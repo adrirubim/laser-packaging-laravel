@@ -1,14 +1,4 @@
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -19,7 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import offerOperations from '@/routes/offer-operations';
+import offerOperations from '@/routes/offer-operations/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Edit, Trash2 } from 'lucide-react';
@@ -53,6 +43,7 @@ const getFileDisplayName = (path?: string | null): string => {
 export default function OfferOperationsShow({
     operation,
 }: OfferOperationsShowProps) {
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
@@ -70,20 +61,21 @@ export default function OfferOperationsShow({
         },
     ];
 
-    const handleDelete = () => {
+    const handleDeleteConfirm = () => {
         setIsDeleting(true);
         router.delete(
             offerOperations.destroy({ offerOperation: operation.uuid }).url,
             {
                 onSuccess: () => {
+                    setDeleteDialogOpen(false);
                     router.visit(offerOperations.index().url);
                 },
-                onFinish: () => {
-                    setIsDeleting(false);
-                },
+                onFinish: () => setIsDeleting(false),
             },
         );
     };
+
+    const itemName = operation.descrizione ?? operation.codice ?? 'Operazione';
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -126,57 +118,14 @@ export default function OfferOperationsShow({
                                 Modifica
                             </Link>
                         </Button>
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <Button
-                                    variant="destructive"
-                                    disabled={isDeleting}
-                                >
-                                    <Trash2 className="mr-2 h-4 w-4" />
-                                    Elimina
-                                </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                        Conferma eliminazione
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        Sei sicuro di voler eliminare
-                                        l'operazione{' '}
-                                        <strong>
-                                            {operation.descrizione ??
-                                                operation.codice}
-                                        </strong>
-                                        ?
-                                        <br />
-                                        <br />
-                                        Questa azione non può essere annullata.
-                                        L'operazione verrà eliminata
-                                        definitivamente.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel disabled={isDeleting}>
-                                        Annulla
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction
-                                        onClick={handleDelete}
-                                        disabled={isDeleting}
-                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                    >
-                                        {isDeleting ? (
-                                            <>
-                                                <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                                                Eliminando...
-                                            </>
-                                        ) : (
-                                            'Elimina definitivamente'
-                                        )}
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
+                        <Button
+                            variant="destructive"
+                            onClick={() => setDeleteDialogOpen(true)}
+                            disabled={isDeleting}
+                        >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Elimina
+                        </Button>
                     </div>
                 </div>
 
@@ -272,6 +221,16 @@ export default function OfferOperationsShow({
                         </CardContent>
                     </Card>
                 </div>
+
+                <ConfirmDeleteDialog
+                    open={deleteDialogOpen}
+                    onOpenChange={setDeleteDialogOpen}
+                    onConfirm={handleDeleteConfirm}
+                    title="Elimina Operazione"
+                    description="Sei sicuro di voler eliminare questa operazione? Questa azione non può essere annullata."
+                    itemName={itemName}
+                    isLoading={isDeleting}
+                />
             </div>
         </AppLayout>
     );

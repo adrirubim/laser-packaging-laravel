@@ -1,26 +1,17 @@
+import { ActionsDropdown } from '@/components/ActionsDropdown';
 import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
-import { Button } from '@/components/ui/button';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+    FlashNotifications,
+    useFlashNotifications,
+} from '@/components/flash-notifications';
+import { IndexHeader } from '@/components/IndexHeader';
+import { Pagination } from '@/components/Pagination';
 import AppLayout from '@/layouts/app-layout';
 import lsResources from '@/routes/ls-resources';
 import offers from '@/routes/offers';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import {
-    Edit,
-    Eye,
-    Loader2,
-    MoreHorizontal,
-    Plus,
-    Search,
-    Trash2,
-    X,
-} from 'lucide-react';
+import { Head, router, usePage } from '@inertiajs/react';
+import { Loader2, Search, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 type LsResource = {
@@ -48,11 +39,11 @@ type LsResourcesIndexProps = {
 
 export default function LsResourcesIndex() {
     const { props } = usePage<LsResourcesIndexProps>();
-    const { resources: resourcesPaginated, filters, flash } = props;
+    const { resources: resourcesPaginated, filters } = props;
+    const { flash } = useFlashNotifications();
 
     const [searchValue, setSearchValue] = useState(filters.search ?? '');
     const [isSearching, setIsSearching] = useState(false);
-    const [showFlash, setShowFlash] = useState(true);
     const [deleteDialog, setDeleteDialog] = useState<{
         open: boolean;
         resource: LsResource | null;
@@ -82,14 +73,6 @@ export default function LsResourcesIndex() {
         return () => clearTimeout(timer);
         // eslint-disable-next-line react-hooks/exhaustive-deps -- debounce: run on searchValue only to avoid loops
     }, [searchValue]);
-
-    useEffect(() => {
-        if (flash?.success || flash?.error) {
-            queueMicrotask(() => setShowFlash(true));
-            const timer = setTimeout(() => setShowFlash(false), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [flash]);
 
     const clearSearch = () => {
         setSearchValue('');
@@ -133,35 +116,14 @@ export default function LsResourcesIndex() {
             <Head title="L&S Risorse" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex items-center justify-between gap-3">
-                    <div>
-                        <h1 className="text-2xl font-semibold tracking-tight">
-                            L&S Risorse
-                        </h1>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                            Elenco delle risorse L&S attive con Cerca.
-                        </p>
-                    </div>
-                    <Link
-                        href={lsResources.create().url}
-                        className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
-                    >
-                        <Plus className="mr-2 h-4 w-4" />
-                        Nuova Risorsa L&S
-                    </Link>
-                </div>
+                <IndexHeader
+                    title="L&S Risorse"
+                    subtitle="Elenco delle risorse L&S attive con Cerca."
+                    createHref={lsResources.create().url}
+                    createLabel="Nuova Risorsa L&S"
+                />
 
-                {showFlash && flash?.success && (
-                    <div className="flex animate-in items-center justify-between rounded-md border border-emerald-500/40 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-700 duration-300 fade-in slide-in-from-top-2 dark:text-emerald-300">
-                        <span>{flash.success}</span>
-                        <button
-                            onClick={() => setShowFlash(false)}
-                            className="ml-2 transition-opacity hover:opacity-70"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
+                <FlashNotifications flash={flash} />
 
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4">
                     <div className="space-y-1">
@@ -248,64 +210,23 @@ export default function LsResourcesIndex() {
                                             {resource.name}
                                         </td>
                                         <td className="px-3 py-2 text-right align-middle text-xs">
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="h-8 w-8"
-                                                        aria-label="Apri menu azioni"
-                                                    >
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            router.visit(
-                                                                lsResources.show(
-                                                                    {
-                                                                        lsResource:
-                                                                            resource.uuid,
-                                                                    },
-                                                                ).url,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Eye className="mr-2 h-4 w-4" />
-                                                        Visualizza
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            router.visit(
-                                                                lsResources.edit(
-                                                                    {
-                                                                        lsResource:
-                                                                            resource.uuid,
-                                                                    },
-                                                                ).url,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Edit className="mr-2 h-4 w-4" />
-                                                        Modifica
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        variant="destructive"
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            handleDeleteClick(
-                                                                resource,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Trash2 className="mr-2 h-4 w-4" />
-                                                        Elimina
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
+                                            <ActionsDropdown
+                                                viewHref={
+                                                    lsResources.show({
+                                                        lsResource:
+                                                            resource.uuid,
+                                                    }).url
+                                                }
+                                                editHref={
+                                                    lsResources.edit({
+                                                        lsResource:
+                                                            resource.uuid,
+                                                    }).url
+                                                }
+                                                onDelete={() =>
+                                                    handleDeleteClick(resource)
+                                                }
+                                            />
                                         </td>
                                     </tr>
                                 ))}
@@ -314,42 +235,11 @@ export default function LsResourcesIndex() {
                     </div>
                 </div>
 
-                {resourcesPaginated.links.length > 1 && (
-                    <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
-                        <div>
-                            Pagina{' '}
-                            <strong>{resourcesPaginated.current_page}</strong>{' '}
-                            di <strong>{resourcesPaginated.last_page}</strong>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-1">
-                            {resourcesPaginated.links.map((link, index) => {
-                                if (
-                                    link.label.includes('&laquo;') ||
-                                    link.label.includes('&raquo;')
-                                ) {
-                                    return null;
-                                }
-                                return (
-                                    <Link
-                                        key={`${link.label}-${index}`}
-                                        href={link.url ?? '#'}
-                                        className={`min-w-[2.5rem] rounded-md px-3 py-2 text-center transition-colors ${
-                                            link.active
-                                                ? 'bg-primary text-primary-foreground'
-                                                : 'border border-input hover:bg-muted'
-                                        }`}
-                                    >
-                                        <span
-                                            dangerouslySetInnerHTML={{
-                                                __html: link.label,
-                                            }}
-                                        />
-                                    </Link>
-                                );
-                            })}
-                        </div>
-                    </div>
-                )}
+                <Pagination
+                    links={resourcesPaginated.links}
+                    currentPage={resourcesPaginated.current_page}
+                    lastPage={resourcesPaginated.last_page}
+                />
 
                 <ConfirmDeleteDialog
                     open={deleteDialog.open}

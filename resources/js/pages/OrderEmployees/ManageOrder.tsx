@@ -1,3 +1,13 @@
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -8,8 +18,8 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
-import orderEmployees from '@/routes/order-employees';
-import orders from '@/routes/orders';
+import orderEmployees from '@/routes/order-employees/index';
+import orders from '@/routes/orders/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
 import {
@@ -47,6 +57,8 @@ export default function OrderEmployeesManageOrder() {
     const [processing, setProcessing] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [hasChanges, setHasChanges] = useState(false);
+    const [confirmNoEmployeesOpen, setConfirmNoEmployeesOpen] = useState(false);
+    const [confirmDiscardOpen, setConfirmDiscardOpen] = useState(false);
 
     // Initialize selected employees from assigned employees
     useEffect(() => {
@@ -115,15 +127,7 @@ export default function OrderEmployeesManageOrder() {
         }
     };
 
-    const handleSave = () => {
-        // Validazione
-        if (selectedEmployees.length === 0) {
-            // Avviso ma consentire salvataggio (rimozione di tutti i dipendenti)
-            if (!confirm('Nessun dipendente selezionato. Vuoi continuare?')) {
-                return;
-            }
-        }
-
+    const performSave = () => {
         setProcessing(true);
         router.post(
             orderEmployees.saveAssignments().url,
@@ -142,6 +146,22 @@ export default function OrderEmployeesManageOrder() {
                 },
             },
         );
+    };
+
+    const handleSave = () => {
+        // Validazione: nessun dipendente selezionato
+        if (selectedEmployees.length === 0) {
+            // Apri dialogo di conferma ma consenti comunque il salvataggio
+            setConfirmNoEmployeesOpen(true);
+            return;
+        }
+
+        performSave();
+    };
+
+    const handleConfirmNoEmployees = () => {
+        setConfirmNoEmployeesOpen(false);
+        performSave();
     };
 
     const allFilteredSelected =
@@ -191,12 +211,8 @@ export default function OrderEmployeesManageOrder() {
                         <Button
                             variant="outline"
                             onClick={() => {
-                                if (
-                                    hasChanges &&
-                                    !confirm(
-                                        'Hai modifiche non salvate. Vuoi davvero annullare?',
-                                    )
-                                ) {
+                                if (hasChanges) {
+                                    setConfirmDiscardOpen(true);
                                     return;
                                 }
                                 router.visit(
@@ -355,6 +371,68 @@ export default function OrderEmployeesManageOrder() {
                     </CardContent>
                 </Card>
             </div>
+            <AlertDialog
+                open={confirmNoEmployeesOpen}
+                onOpenChange={setConfirmNoEmployeesOpen}
+            >
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>
+                            Nessun dipendente selezionato
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Non hai selezionato alcun dipendente per questo
+                            ordine. Vuoi comunque salvare le assegnazioni (tutti
+                            i dipendenti verranno rimossi)?
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel disabled={processing}>
+                            Annulla
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleConfirmNoEmployees}
+                            disabled={processing}
+                        >
+                            Sì, continua
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            <AlertDialog
+                open={confirmDiscardOpen}
+                onOpenChange={setConfirmDiscardOpen}
+            >
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>
+                            Modifiche non salvate
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Hai modifiche non salvate alle assegnazioni dei
+                            dipendenti. Vuoi davvero annullare e tornare ai
+                            dettagli ordine senza salvare?
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel disabled={processing}>
+                            Continua a modificare
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={() => {
+                                setConfirmDiscardOpen(false);
+                                router.visit(
+                                    orders.show({ order: order.uuid }).url,
+                                );
+                            }}
+                            disabled={processing}
+                        >
+                            Sì, annulla le modifiche
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </AppLayout>
     );
 }

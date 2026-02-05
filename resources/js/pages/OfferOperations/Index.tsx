@@ -1,11 +1,13 @@
+import { ActionsDropdown } from '@/components/ActionsDropdown';
 import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
-import { Button } from '@/components/ui/button';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+    FlashNotifications,
+    useFlashNotifications,
+} from '@/components/flash-notifications';
+import { IndexHeader } from '@/components/IndexHeader';
+import { Pagination } from '@/components/Pagination';
+import { SearchInput } from '@/components/SearchInput';
+import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import {
     Select,
     SelectContent,
@@ -16,18 +18,8 @@ import {
 import AppLayout from '@/layouts/app-layout';
 import offerOperations from '@/routes/offer-operations';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import {
-    Download,
-    Edit,
-    Eye,
-    Loader2,
-    MoreHorizontal,
-    Plus,
-    Search,
-    Trash2,
-    X,
-} from 'lucide-react';
+import { Head, router, usePage } from '@inertiajs/react';
+import { Download } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 // Formattare interi (senza decimali)
@@ -86,16 +78,11 @@ type OfferOperationsIndexProps = {
 
 export default function OfferOperationsIndex() {
     const { props } = usePage<OfferOperationsIndexProps>();
-    const {
-        operations: operationsPaginated,
-        categories,
-        filters,
-        flash,
-    } = props;
+    const { operations: operationsPaginated, categories, filters } = props;
+    const { flash } = useFlashNotifications();
 
     const [searchValue, setSearchValue] = useState(filters.search ?? '');
     const [isSearching, setIsSearching] = useState(false);
-    const [showFlash, setShowFlash] = useState(true);
     const [deleteDialog, setDeleteDialog] = useState<{
         open: boolean;
         operation: OfferOperation | null;
@@ -106,34 +93,24 @@ export default function OfferOperationsIndex() {
     const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            if (searchValue !== (filters.search ?? '')) {
-                setIsSearching(true);
-                router.get(
-                    offerOperations.index().url,
-                    {
-                        ...filters,
-                        search: searchValue || undefined,
-                    },
-                    {
-                        preserveState: true,
-                        preserveScroll: true,
-                        onFinish: () => setIsSearching(false),
-                    },
-                );
-            }
-        }, 500);
-        return () => clearTimeout(timer);
-        // eslint-disable-next-line react-hooks/exhaustive-deps -- debounce: run on searchValue only to avoid loops
-    }, [searchValue]);
+        queueMicrotask(() => setSearchValue(filters.search ?? ''));
+    }, [filters.search]);
 
-    useEffect(() => {
-        if (flash?.success || flash?.error) {
-            queueMicrotask(() => setShowFlash(true));
-            const timer = setTimeout(() => setShowFlash(false), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [flash]);
+    const handleSearchChange = (value: string) => {
+        setIsSearching(true);
+        router.get(
+            offerOperations.index().url,
+            {
+                ...filters,
+                search: value || undefined,
+            },
+            {
+                preserveState: true,
+                preserveScroll: true,
+                onFinish: () => setIsSearching(false),
+            },
+        );
+    };
 
     const clearSearch = () => {
         setSearchValue('');
@@ -181,67 +158,28 @@ export default function OfferOperationsIndex() {
             <Head title="Operazioni" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex items-center justify-between gap-3">
-                    <div>
-                        <h1 className="text-2xl font-semibold tracking-tight">
-                            Operazioni
-                        </h1>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                            Elenco delle operazioni attive con Cerca e filtri.
-                        </p>
-                    </div>
-                    <Link
-                        href={offerOperations.create().url}
-                        className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
-                    >
-                        <Plus className="mr-2 h-4 w-4" />
-                        Nuova Operazione
-                    </Link>
-                </div>
+                <IndexHeader
+                    title="Operazioni"
+                    subtitle="Elenco delle operazioni attive con Cerca e filtri."
+                    createHref={offerOperations.create().url}
+                    createLabel="Nuova Operazione"
+                />
 
-                {showFlash && flash?.success && (
-                    <div className="flex animate-in items-center justify-between rounded-md border border-emerald-500/40 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-700 duration-300 fade-in slide-in-from-top-2 dark:text-emerald-300">
-                        <span>{flash.success}</span>
-                        <button
-                            onClick={() => setShowFlash(false)}
-                            className="ml-2 transition-opacity hover:opacity-70"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
+                <FlashNotifications flash={flash} />
 
-                <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4">
+                <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="grid gap-3 md:grid-cols-2">
                         <div className="space-y-1">
                             <label className="text-xs font-medium text-muted-foreground">
                                 Cerca
                             </label>
-                            <div className="relative flex items-center gap-2">
-                                <div className="relative flex-1">
-                                    <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
-                                    <input
-                                        type="text"
-                                        value={searchValue}
-                                        onChange={(e) =>
-                                            setSearchValue(e.target.value)
-                                        }
-                                        placeholder="Codice, descrizione..."
-                                        className="w-full rounded-md border border-input bg-background px-3 py-2 pr-9 pl-9 text-sm shadow-sm focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
-                                    />
-                                    {isSearching && (
-                                        <Loader2 className="absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 transform animate-spin text-muted-foreground" />
-                                    )}
-                                    {searchValue && !isSearching && (
-                                        <button
-                                            onClick={clearSearch}
-                                            className="absolute top-1/2 right-3 -translate-y-1/2 transform transition-opacity hover:opacity-70"
-                                        >
-                                            <X className="h-4 w-4 text-muted-foreground" />
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
+                            <SearchInput
+                                value={searchValue}
+                                onChange={handleSearchChange}
+                                placeholder="Codice, descrizione..."
+                                isLoading={isSearching}
+                                onClear={clearSearch}
+                            />
                         </div>
 
                         {categories.length > 0 && (
@@ -295,7 +233,7 @@ export default function OfferOperationsIndex() {
                     </div>
                 </div>
 
-                <div className="relative min-h-[300px] flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 bg-card">
+                <div className="relative min-h-[300px] flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 bg-card dark:border-sidebar-border">
                     <div className="relative h-full w-full overflow-auto">
                         <table className="min-w-full border-separate border-spacing-0 text-left text-sm">
                             <thead className="sticky top-0 z-10 bg-muted/80 backdrop-blur">
@@ -304,7 +242,7 @@ export default function OfferOperationsIndex() {
                                         ID
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        uuid
+                                        UUID
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
                                         Categoria
@@ -375,50 +313,23 @@ export default function OfferOperationsIndex() {
                                             )}
                                         </td>
                                         <td className="px-3 py-2 text-right align-middle text-xs">
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="h-8 w-8"
-                                                        aria-label="Apri menu azioni"
-                                                    >
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            router.visit(
-                                                                offerOperations.show(
-                                                                    {
-                                                                        offerOperation:
-                                                                            operation.uuid,
-                                                                    },
-                                                                ).url,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Eye className="mr-2 h-4 w-4" />
-                                                        Visualizza
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            router.visit(
-                                                                offerOperations.edit(
-                                                                    {
-                                                                        offerOperation:
-                                                                            operation.uuid,
-                                                                    },
-                                                                ).url,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Edit className="mr-2 h-4 w-4" />
-                                                        Modifica
-                                                    </DropdownMenuItem>
+                                            <ActionsDropdown
+                                                viewHref={
+                                                    offerOperations.show({
+                                                        offerOperation:
+                                                            operation.uuid,
+                                                    }).url
+                                                }
+                                                editHref={
+                                                    offerOperations.edit({
+                                                        offerOperation:
+                                                            operation.uuid,
+                                                    }).url
+                                                }
+                                                onDelete={() =>
+                                                    handleDeleteClick(operation)
+                                                }
+                                                extraItems={
                                                     <DropdownMenuItem
                                                         disabled={
                                                             !operation.filename
@@ -441,20 +352,8 @@ export default function OfferOperationsIndex() {
                                                         <Download className="mr-2 h-4 w-4" />
                                                         Scarica allegato
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        variant="destructive"
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            handleDeleteClick(
-                                                                operation,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Trash2 className="mr-2 h-4 w-4" />
-                                                        Elimina
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
+                                                }
+                                            />
                                         </td>
                                     </tr>
                                 ))}
@@ -463,42 +362,11 @@ export default function OfferOperationsIndex() {
                     </div>
                 </div>
 
-                {operationsPaginated.links.length > 1 && (
-                    <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
-                        <div>
-                            Pagina{' '}
-                            <strong>{operationsPaginated.current_page}</strong>{' '}
-                            di <strong>{operationsPaginated.last_page}</strong>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-1">
-                            {operationsPaginated.links.map((link, index) => {
-                                if (
-                                    link.label.includes('&laquo;') ||
-                                    link.label.includes('&raquo;')
-                                ) {
-                                    return null;
-                                }
-                                return (
-                                    <Link
-                                        key={`${link.label}-${index}`}
-                                        href={link.url ?? '#'}
-                                        className={`min-w-[2.5rem] rounded-md px-3 py-2 text-center transition-colors ${
-                                            link.active
-                                                ? 'bg-primary text-primary-foreground'
-                                                : 'border border-input hover:bg-muted'
-                                        }`}
-                                    >
-                                        <span
-                                            dangerouslySetInnerHTML={{
-                                                __html: link.label,
-                                            }}
-                                        />
-                                    </Link>
-                                );
-                            })}
-                        </div>
-                    </div>
-                )}
+                <Pagination
+                    links={operationsPaginated.links}
+                    currentPage={operationsPaginated.current_page}
+                    lastPage={operationsPaginated.last_page}
+                />
 
                 <ConfirmDeleteDialog
                     open={deleteDialog.open}

@@ -1,73 +1,73 @@
-# Configuración de Base de Datos de Test
+# Test Database Configuration
 
-**Última actualización:** 2026-01-28
+**Last updated:** 2026-01-28
 
-Los tests se ejecutan en **PostgreSQL** para asegurar compatibilidad con el entorno de producción. La conexión se configura en `phpunit.xml`.
+Tests run against **PostgreSQL** to match the production environment. The connection is configured in `phpunit.xml`.
 
-## Crear la Base de Datos de Test
+## Create the Test Database
 
-1. Conectarse a PostgreSQL como usuario `postgres`:
+1. Connect to PostgreSQL as user `postgres`:
 
 ```bash
 psql -U postgres
 ```
 
-2. Crear la base de datos de test:
+2. Create the test database:
 
 ```sql
 CREATE DATABASE laser_packaging_test;
 ```
 
-O ejecutar el script SQL incluido en el proyecto:
+Or run the SQL script included in the project:
 
 ```bash
 psql -U postgres -f CREATE_TEST_DATABASE.sql
 ```
 
-3. Verificar que la base de datos se creó:
+3. Verify that the database was created:
 
 ```bash
 psql -U postgres -l
 ```
 
-## Configuración de conexión
+## Connection configuration
 
-Las credenciales de test están en **`phpunit.xml`** (bloque `<php><env>...`):
+The test credentials live in **`phpunit.xml`** (the `<php><env>...</env></php>` section):
 
-| Variable   | Valor por defecto      | Descripción        |
+| Variable   | Default value          | Description        |
 |-----------|-------------------------|--------------------|
 | `DB_CONNECTION` | `pgsql`           | Driver             |
-| `DB_DATABASE`   | `laser_packaging_test` | Nombre de la BD   |
-| `DB_USERNAME`   | `postgres`        | Usuario            |
-| `DB_PASSWORD`   | vacía por defecto   | Contraseña (configurar en `.env.testing` si tu PostgreSQL la requiere) |
+| `DB_DATABASE`   | `laser_packaging_test` | Database name |
+| `DB_USERNAME`   | `postgres`        | User               |
+| `DB_PASSWORD`   | empty by default  | Password (set in `.env.testing` if your PostgreSQL requires it) |
 
-Si tu entorno usa otro usuario/contraseña, crea **`.env.testing`** en la raíz (no se sube al repo). PHPUnit carga `.env.testing` cuando `APP_ENV=testing`.
+If your environment uses a different user/password, create **`.env.testing`** in the project root (it is not committed). PHPUnit loads `.env.testing` when `APP_ENV=testing`.
 
-## Migraciones
+## Migrations
 
-Antes de ejecutar los tests por primera vez, aplicar migraciones en el entorno de test:
+Before running the tests for the first time, you can apply migrations on the test environment:
 
 ```bash
 php artisan migrate --env=testing
 ```
 
-Los tests que usan el trait **`RefreshDatabase`** ejecutan las migraciones automáticamente; no es obligatorio migrar a mano si todos los tests usan ese trait.
+Tests that use the **`RefreshDatabase`** trait will run migrations automatically; running them manually is optional if all tests use that trait.
 
-## Ejecutar los Tests
+## Running the tests
 
 ```bash
 php artisan test
 ```
 
-Para tests que renderizan vistas Inertia (Vite), generar antes el build:
+For tests that render Inertia (Vite) views, generate the build first:
 
 ```bash
 npm run build
 php artisan test
 ```
 
-## Notas
+## Notes
 
-- La base de datos de test se limpia automáticamente después de cada test gracias al trait `RefreshDatabase`.
-- La base de datos de test es independiente de la de desarrollo/producción.
-- Ver **`README_SEED_TEST_DATA.md`** para datos de prueba (seeder); el seeder se usa en entorno de desarrollo, no en la BD de test de PHPUnit.
+- The test database is automatically cleaned after each test thanks to the `RefreshDatabase` trait.
+- The test database is independent from development/production databases.
+- See **`README_SEED_TEST_DATA.md`** for demo data (seeder); the seeder is used in development, not in the PHPUnit test database.

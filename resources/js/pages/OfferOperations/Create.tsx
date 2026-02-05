@@ -1,3 +1,4 @@
+import { FormLabel } from '@/components/FormLabel';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import {
@@ -8,7 +9,6 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
     Select,
     SelectContent,
@@ -19,7 +19,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { generateUUID } from '@/lib/utils/uuid';
-import offerOperations from '@/routes/offer-operations';
+import offerOperations from '@/routes/offer-operations/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
@@ -55,20 +55,22 @@ export default function OfferOperationsCreate({
             href: offerOperations.index().url,
         },
         {
-            title: 'Crea',
+            title: 'Nuova Operazione',
             href: offerOperations.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Crea Operazione" />
+            <Head title="Nuova Operazione" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Gestione Operazione</CardTitle>
-                        <CardDescription>Inserimento</CardDescription>
+                        <CardTitle>Nuova Operazione</CardTitle>
+                        <CardDescription>
+                            Compila i campi per creare un'operazione.
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Form
@@ -88,9 +90,12 @@ export default function OfferOperationsCreate({
                                         <div className="flex justify-center">
                                             <div className="w-full max-w-4xl space-y-5">
                                                 <div className="grid gap-2">
-                                                    <Label htmlFor="uuid">
-                                                        UUID *
-                                                    </Label>
+                                                    <FormLabel
+                                                        htmlFor="uuid"
+                                                        required
+                                                    >
+                                                        UUID
+                                                    </FormLabel>
                                                     <Input
                                                         id="uuid"
                                                         name="uuid"
@@ -109,9 +114,9 @@ export default function OfferOperationsCreate({
                                                 </div>
 
                                                 <div className="grid gap-2">
-                                                    <Label htmlFor="category_uuid">
+                                                    <FormLabel htmlFor="category_uuid">
                                                         Categoria
-                                                    </Label>
+                                                    </FormLabel>
                                                     <input
                                                         type="hidden"
                                                         name="category_uuid"
@@ -163,9 +168,9 @@ export default function OfferOperationsCreate({
                                                 </div>
 
                                                 <div className="grid gap-2">
-                                                    <Label htmlFor="codice">
+                                                    <FormLabel htmlFor="codice">
                                                         Codice
-                                                    </Label>
+                                                    </FormLabel>
                                                     <Input
                                                         id="codice"
                                                         name="codice"
@@ -201,9 +206,9 @@ export default function OfferOperationsCreate({
                                                 </div>
 
                                                 <div className="grid gap-2">
-                                                    <Label htmlFor="descrizione">
+                                                    <FormLabel htmlFor="descrizione">
                                                         Descrizione
-                                                    </Label>
+                                                    </FormLabel>
                                                     <Textarea
                                                         id="descrizione"
                                                         name="descrizione"
@@ -227,9 +232,9 @@ export default function OfferOperationsCreate({
                                                 </div>
 
                                                 <div className="grid gap-2">
-                                                    <Label htmlFor="secondi_operazione">
+                                                    <FormLabel htmlFor="secondi_operazione">
                                                         Secondi operazione
-                                                    </Label>
+                                                    </FormLabel>
                                                     <Input
                                                         id="secondi_operazione"
                                                         name="secondi_operazione"
@@ -256,9 +261,9 @@ export default function OfferOperationsCreate({
                                                 </div>
 
                                                 <div className="grid gap-2">
-                                                    <Label htmlFor="filename">
+                                                    <FormLabel htmlFor="filename">
                                                         Allegato
-                                                    </Label>
+                                                    </FormLabel>
                                                     <Input
                                                         id="filename"
                                                         name="filename"

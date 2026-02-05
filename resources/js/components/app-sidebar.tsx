@@ -11,16 +11,16 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
-import articles from '@/routes/articles';
-import customerDivisions from '@/routes/customer-divisions';
-import customerShippingAddresses from '@/routes/customer-shipping-addresses';
-import customers from '@/routes/customers';
-import employees from '@/routes/employees';
-import machinery from '@/routes/machinery';
-import materials from '@/routes/materials';
-import offers from '@/routes/offers';
-import orders from '@/routes/orders';
-import suppliers from '@/routes/suppliers';
+import articles from '@/routes/articles/index';
+import customerDivisions from '@/routes/customer-divisions/index';
+import customerShippingAddresses from '@/routes/customer-shipping-addresses/index';
+import customers from '@/routes/customers/index';
+import employees from '@/routes/employees/index';
+import machinery from '@/routes/machinery/index';
+import materials from '@/routes/materials/index';
+import offers from '@/routes/offers/index';
+import orders from '@/routes/orders/index';
+import suppliers from '@/routes/suppliers/index';
 import { type NavGroup, type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import {

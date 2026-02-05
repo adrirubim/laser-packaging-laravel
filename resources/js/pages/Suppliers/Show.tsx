@@ -1,4 +1,5 @@
 import { FormLabel } from '@/components/FormLabel';
+import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -8,9 +9,10 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import AppLayout from '@/layouts/app-layout';
-import suppliers from '@/routes/suppliers';
+import suppliers from '@/routes/suppliers/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
+import { useState } from 'react';
 
 type Supplier = {
     id: number;
@@ -32,6 +34,9 @@ type SuppliersShowProps = {
 };
 
 export default function SuppliersShow({ supplier }: SuppliersShowProps) {
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Fornitori',
@@ -43,14 +48,17 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
         },
     ];
 
-    const handleDelete = () => {
-        if (confirm('Sei sicuro di voler eliminare questo fornitore?')) {
-            router.delete(suppliers.destroy({ supplier: supplier.uuid }).url, {
-                onSuccess: () => {
-                    router.visit(suppliers.index().url);
-                },
-            });
-        }
+    const handleDeleteConfirm = () => {
+        setIsDeleting(true);
+        router.delete(suppliers.destroy({ supplier: supplier.uuid }).url, {
+            onSuccess: () => {
+                setDeleteDialogOpen(false);
+                router.visit(suppliers.index().url);
+            },
+            onFinish: () => {
+                setIsDeleting(false);
+            },
+        });
     };
 
     return (
@@ -78,7 +86,11 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
                                 Modifica
                             </Link>
                         </Button>
-                        <Button variant="destructive" onClick={handleDelete}>
+                        <Button
+                            variant="destructive"
+                            onClick={() => setDeleteDialogOpen(true)}
+                            disabled={isDeleting}
+                        >
                             Elimina
                         </Button>
                     </div>
@@ -203,6 +215,16 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
                     </Card>
                 </div>
             </div>
+
+            <ConfirmDeleteDialog
+                open={deleteDialogOpen}
+                onOpenChange={setDeleteDialogOpen}
+                onConfirm={handleDeleteConfirm}
+                isDeleting={isDeleting}
+                title="Elimina Fornitore"
+                description="Sei sicuro di voler eliminare questo fornitore? Questa azione non può essere annullata."
+                itemName={`${supplier.company_name} (Codice: ${supplier.code})`}
+            />
         </AppLayout>
     );
 }

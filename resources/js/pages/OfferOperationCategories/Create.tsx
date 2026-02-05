@@ -1,3 +1,4 @@
+import { FormLabel } from '@/components/FormLabel';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import {
@@ -8,10 +9,9 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import { generateUUID } from '@/lib/utils/uuid';
-import offerOperationCategories from '@/routes/offer-operation-categories';
+import offerOperationCategories from '@/routes/offer-operation-categories/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router } from '@inertiajs/react';
 import { useState } from 'react';
@@ -38,20 +38,22 @@ export default function OfferOperationCategoriesCreate({
             href: offerOperationCategories.index().url,
         },
         {
-            title: 'Crea',
+            title: 'Nuova Categoria Operazione',
             href: offerOperationCategories.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Crea Categoria Operazione" />
+            <Head title="Nuova Categoria Operazione" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Gestione Categoria Operazione</CardTitle>
-                        <CardDescription>Inserimento</CardDescription>
+                        <CardTitle>Nuova Categoria Operazione</CardTitle>
+                        <CardDescription>
+                            Compila i campi per creare una categoria operazione.
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Form
@@ -69,9 +71,12 @@ export default function OfferOperationCategoriesCreate({
                                     <>
                                         <div className="grid gap-2">
                                             <div className="flex items-center justify-between">
-                                                <Label htmlFor="uuid">
-                                                    UUID *
-                                                </Label>
+                                                <FormLabel
+                                                    htmlFor="uuid"
+                                                    required
+                                                >
+                                                    UUID
+                                                </FormLabel>
                                                 <Button
                                                     type="button"
                                                     variant="ghost"
@@ -108,9 +113,9 @@ export default function OfferOperationCategoriesCreate({
                                         </div>
 
                                         <div className="grid gap-2">
-                                            <Label htmlFor="code">
-                                                Codice *
-                                            </Label>
+                                            <FormLabel htmlFor="code" required>
+                                                Codice
+                                            </FormLabel>
                                             <Input
                                                 id="code"
                                                 name="code"
@@ -133,7 +138,9 @@ export default function OfferOperationCategoriesCreate({
                                         </div>
 
                                         <div className="grid gap-2">
-                                            <Label htmlFor="name">Nome *</Label>
+                                            <FormLabel htmlFor="name" required>
+                                                Nome
+                                            </FormLabel>
                                             <Input
                                                 id="name"
                                                 name="name"

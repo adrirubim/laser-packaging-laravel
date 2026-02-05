@@ -1,13 +1,13 @@
 # Laser Packaging Laravel
 
 [![PHP 8.4](https://img.shields.io/badge/PHP-8.4+-777BB4?logo=php&logoColor=white)](https://www.php.net/)
-[![Laravel 12](https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel&logoColor=white)](https://laravel.com/)
-[![React 19](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
-[![TypeScript 5.7](https://img.shields.io/badge/TypeScript-5.7-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Laravel 12.48](https://img.shields.io/badge/Laravel-12.48-FF2D20?logo=laravel&logoColor=white)](https://laravel.com/)
+[![React 19.2](https://img.shields.io/badge/React-19.2-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript 5.9](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tests 967 passing](https://img.shields.io/badge/Tests-967%20passing-10B981)](docs/TEST_COVERAGE_REPORT.md)
 [![License MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> A modern, enterprise-grade application for managing offers, articles, orders and a production portal (web + API). Built with Laravel 12, React 19 (Inertia.js), and PostgreSQL. Featuring a professional UI/UX, comprehensive security, and optimized performance.
+> A modern, enterprise-grade application for managing offers, articles, orders and a production portal (web + API). Built with Laravel 12.48.x, React 19.2.x (Inertia.js 2.3.x), TypeScript 5.9.x, Vite 7.3.x, Tailwind CSS 4.1.x, and PostgreSQL. Featuring a professional UI/UX, comprehensive security, and optimized performance. **Exact versions:** [docs/VERSION_STACK.md](docs/VERSION_STACK.md).
 
 ## 📋 Table of Contents
 
@@ -38,7 +38,7 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 
 ### Key Highlights
 
-- **Modern Stack:** Laravel 12, React 19, TypeScript, Tailwind CSS 4, Radix UI
+- **Modern Stack:** Laravel 12.48.x, React 19.2.x, Inertia.js 2.3.x, TypeScript 5.9.x, Vite 7.3.x, Tailwind CSS 4.1.x, Radix UI
 - **Professional UI/UX:** Skeleton loaders, dashboard charts, real-time search, mobile-responsive, accessibility (WCAG AA)
 - **Enterprise Security:** Form Requests, validation, `.env` handling, test DB isolation
 - **Optimized Performance:** Caching, indexes, Performance test suite (Concurrency, Load, API)
@@ -119,8 +119,8 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 ### Frontend
 
 - **Framework:** React 19 with Inertia.js
-- **Language:** TypeScript 5.7
-- **Styling:** Tailwind CSS 4.0 · Radix UI
+- **Language:** TypeScript 5.9
+- **Styling:** Tailwind CSS 4.1 · Radix UI
 - **Build Tool:** Vite 7
 
 ### Development Tools
@@ -134,11 +134,15 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 <a id="requirements"></a>
 ## 📦 Requirements
 
-- **PHP** >= 8.4
+- **PHP** >= 8.4  
+  Check in WSL: `php -v`
 - **PostgreSQL** (app and tests; see [README_TEST_DATABASE.md](README_TEST_DATABASE.md))
-- **Node.js** >= 18
-- **Composer** >= 2.0
-- **NPM** >= 9.0
+- **Node.js** >= 20 (reference env: 20.19.6)  
+  Check: `node -v`
+- **Composer** >= 2.0  
+  Check: `composer -V`
+- **NPM** >= 10.0  
+  Check: `npm -v`
 
 ---
 
@@ -233,16 +237,18 @@ Then open **http://localhost:8000**. For full dev (Laravel + Vite): `npm run dev
 <a id="documentation"></a>
 ## 📚 Documentation
 
-Todo en **[docs/](docs/README.md)**:
+Everything is linked from **[docs/](docs/README.md)**:
 
-| Doc | Descripción |
+| Doc | Description |
 |-----|-------------|
-| [docs/README.md](docs/README.md) | Índice completo de documentación |
-| [README_TEST_DATABASE.md](README_TEST_DATABASE.md) | Configuración BD de test |
-| [README_SEED_TEST_DATA.md](README_SEED_TEST_DATA.md) | Datos de prueba / seeders |
-| [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md) | Estado del proyecto y módulos |
-| [docs/TEST_COVERAGE_REPORT.md](docs/TEST_COVERAGE_REPORT.md) | Resumen de tests y cobertura |
-| [SECURITY.md](SECURITY.md) | Cómo reportar vulnerabilidades |
+| [docs/README.md](docs/README.md) | Full documentation index |
+| [README_TEST_DATABASE.md](README_TEST_DATABASE.md) | Test database configuration (PostgreSQL) |
+| [README_SEED_TEST_DATA.md](README_SEED_TEST_DATA.md) | Demo/test data seeder for dashboard and flows |
+| [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md) | Project status and module overview |
+| [docs/TEST_COVERAGE_REPORT.md](docs/TEST_COVERAGE_REPORT.md) | Test suites and coverage summary |
+| [docs/BACKEND_GUIDE.md](docs/BACKEND_GUIDE.md) | Backend architecture & conventions (controllers, services, actions, repositories, models) |
+| [docs/FRONTEND_GUIDE.md](docs/FRONTEND_GUIDE.md) | Frontend architecture & conventions (Inertia + React) and consistency guide |
+| [SECURITY.md](SECURITY.md) | How to report security vulnerabilities |
 
 ---
 
@@ -354,7 +360,7 @@ Backend tree: `app/Http/Controllers/`, `app/Services/`, `app/Actions/`, `app/Rep
 
 ### Recent improvements (2026-01)
 
-- Documentación unificada en `docs/`; formularios con datos iniciales (query params); UI consistente; seeder DEMO-ALL y test de verificación; production ready.
+- Unified documentation under `docs/`; forms with initial data from query params; consistent UI patterns; DEMO-ALL seeder and verification test; production ready.
 
 <a id="default-users-development"></a>
 ## 👥 Default Users (development)
@@ -493,5 +499,6 @@ MIT
 
 ---
 
-**Last Updated:** January 2026  
-**Status:** Production Ready ✅
+**Last Updated:** February 2026  
+**Status:** Production Ready ✅  
+**Stack versions:** [docs/VERSION_STACK.md](docs/VERSION_STACK.md)

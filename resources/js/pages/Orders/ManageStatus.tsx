@@ -21,7 +21,7 @@ import {
     getOrderStatusLabel,
 } from '@/constants/orderStatus';
 import AppLayout from '@/layouts/app-layout';
-import orders from '@/routes/orders';
+import orders from '@/routes/orders/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { AlertCircle, CheckCircle2, Loader2, XCircle } from 'lucide-react';

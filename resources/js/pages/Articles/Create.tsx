@@ -1,3 +1,5 @@
+import { ConfirmCloseDialog } from '@/components/confirm-close-dialog';
+import { FormValidationNotification } from '@/components/form-validation-notification';
 import { FormLabel } from '@/components/FormLabel';
 import InputError from '@/components/input-error';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -22,7 +24,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
-import articles from '@/routes/articles';
+import articles from '@/routes/articles/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router, usePage } from '@inertiajs/react';
 import { Info, Plus, X } from 'lucide-react';
@@ -269,6 +271,7 @@ export default function ArticlesCreate({
     errors: serverErrors,
 }: ArticlesCreateProps) {
     const { props } = usePage<ArticlesCreateProps>();
+    const [showCloseConfirm, setShowCloseConfirm] = useState(false);
     const actualSourceArticle = sourceArticle || props.sourceArticle;
     const actualSelectedOfferUuid =
         selectedOfferUuid ||
@@ -972,9 +975,17 @@ export default function ArticlesCreate({
                                     ...errors,
                                     ...serverErrors,
                                 };
+                                const hasAttemptedSubmit =
+                                    Object.keys(allErrors).length > 0;
 
                                 return (
                                     <>
+                                        <FormValidationNotification
+                                            errors={allErrors}
+                                            hasAttemptedSubmit={
+                                                hasAttemptedSubmit
+                                            }
+                                        />
                                         {actualSourceArticle && (
                                             <input
                                                 type="hidden"
@@ -3525,9 +3536,7 @@ export default function ArticlesCreate({
                                                 type="button"
                                                 variant="outline"
                                                 onClick={() =>
-                                                    router.visit(
-                                                        articles.index().url,
-                                                    )
+                                                    setShowCloseConfirm(true)
                                                 }
                                             >
                                                 Annulla
@@ -3540,6 +3549,14 @@ export default function ArticlesCreate({
                     </CardContent>
                 </Card>
             </div>
+            <ConfirmCloseDialog
+                open={showCloseConfirm}
+                onOpenChange={setShowCloseConfirm}
+                onConfirm={() => {
+                    setShowCloseConfirm(false);
+                    router.visit(articles.index().url);
+                }}
+            />
         </AppLayout>
     );
 }

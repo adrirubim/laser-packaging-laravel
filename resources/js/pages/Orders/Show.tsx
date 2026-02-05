@@ -1,3 +1,4 @@
+import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -10,8 +11,8 @@ import { Label } from '@/components/ui/label';
 import { getLotTypeText } from '@/constants/lotTypes';
 import { getLabelText } from '@/constants/orderLabels';
 import AppLayout from '@/layouts/app-layout';
-import articles from '@/routes/articles';
-import orders from '@/routes/orders';
+import articles from '@/routes/articles/index';
+import orders from '@/routes/orders/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Download, Loader2 } from 'lucide-react';
@@ -101,6 +102,8 @@ export default function OrdersShow({ order }: OrdersShowProps) {
     const [downloadingBarcode, setDownloadingBarcode] = useState(false);
     const [downloadingAutocontrollo, setDownloadingAutocontrollo] =
         useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
@@ -113,18 +116,17 @@ export default function OrdersShow({ order }: OrdersShowProps) {
         },
     ];
 
-    const handleDelete = () => {
-        if (
-            confirm(
-                'Sei sicuro di voler eliminare questo ordine? Questa azione non può essere annullata.',
-            )
-        ) {
-            router.delete(orders.destroy({ order: order.uuid }).url, {
-                onSuccess: () => {
-                    router.visit(orders.index().url);
-                },
-            });
-        }
+    const handleDeleteConfirm = () => {
+        setIsDeleting(true);
+        router.delete(orders.destroy({ order: order.uuid }).url, {
+            onSuccess: () => {
+                setDeleteDialogOpen(false);
+                router.visit(orders.index().url);
+            },
+            onFinish: () => {
+                setIsDeleting(false);
+            },
+        });
     };
 
     /**
@@ -296,7 +298,11 @@ export default function OrdersShow({ order }: OrdersShowProps) {
                                 Modifica
                             </Link>
                         </Button>
-                        <Button variant="destructive" onClick={handleDelete}>
+                        <Button
+                            variant="destructive"
+                            onClick={() => setDeleteDialogOpen(true)}
+                            disabled={isDeleting}
+                        >
                             Elimina
                         </Button>
                     </div>
@@ -862,6 +868,21 @@ export default function OrdersShow({ order }: OrdersShowProps) {
                     )}
                 </div>
             </div>
+            <ConfirmDeleteDialog
+                open={deleteDialogOpen}
+                onOpenChange={setDeleteDialogOpen}
+                onConfirm={handleDeleteConfirm}
+                isDeleting={isDeleting}
+                title="Conferma eliminazione"
+                description={
+                    <>
+                        Sei sicuro di voler eliminare questo ordine? Questa
+                        azione non può essere annullata. L&apos;ordine verrà
+                        eliminato definitivamente.
+                    </>
+                }
+                itemName={`Ordine ${order.order_production_number}`}
+            />
         </AppLayout>
     );
 }

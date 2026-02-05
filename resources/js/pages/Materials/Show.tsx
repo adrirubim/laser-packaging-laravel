@@ -1,3 +1,4 @@
+import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -8,9 +9,10 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import materials from '@/routes/materials';
+import materials from '@/routes/materials/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
+import { useState } from 'react';
 
 type Article = {
     uuid: string;
@@ -31,6 +33,8 @@ type MaterialsShowProps = {
 };
 
 export default function MaterialsShow({ material }: MaterialsShowProps) {
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Materiali',
@@ -42,18 +46,19 @@ export default function MaterialsShow({ material }: MaterialsShowProps) {
         },
     ];
 
-    const handleDelete = () => {
-        if (
-            confirm(
-                'Sei sicuro di voler eliminare questo materiale? Questa azione non può essere annullata.',
-            )
-        ) {
-            router.delete(materials.destroy({ material: material.uuid }).url, {
-                onSuccess: () => {
-                    router.visit(materials.index().url);
-                },
-            });
-        }
+    const handleDeleteConfirm = () => {
+        if (isDeleting) return;
+
+        setIsDeleting(true);
+        router.delete(materials.destroy({ material: material.uuid }).url, {
+            onSuccess: () => {
+                setDeleteDialogOpen(false);
+                router.visit(materials.index().url);
+            },
+            onFinish: () => {
+                setIsDeleting(false);
+            },
+        });
     };
 
     return (
@@ -81,7 +86,11 @@ export default function MaterialsShow({ material }: MaterialsShowProps) {
                                 Modifica
                             </Link>
                         </Button>
-                        <Button variant="destructive" onClick={handleDelete}>
+                        <Button
+                            variant="destructive"
+                            onClick={() => setDeleteDialogOpen(true)}
+                            disabled={isDeleting}
+                        >
                             Elimina
                         </Button>
                     </div>
@@ -156,6 +165,22 @@ export default function MaterialsShow({ material }: MaterialsShowProps) {
                         </CardContent>
                     </Card>
                 )}
+
+                <ConfirmDeleteDialog
+                    open={deleteDialogOpen}
+                    onOpenChange={setDeleteDialogOpen}
+                    onConfirm={handleDeleteConfirm}
+                    isDeleting={isDeleting}
+                    title="Conferma eliminazione"
+                    description={
+                        <>
+                            Sei sicuro di voler eliminare questo materiale?
+                            Questa azione non può essere annullata. Il materiale
+                            verrà eliminato definitivamente.
+                        </>
+                    }
+                    itemName={`${material.description} (Codice: ${material.cod})`}
+                />
             </div>
         </AppLayout>
     );

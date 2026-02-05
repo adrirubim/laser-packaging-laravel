@@ -1,3 +1,5 @@
+import { ConfirmCloseDialog } from '@/components/confirm-close-dialog';
+import { FormValidationNotification } from '@/components/form-validation-notification';
 import { FormLabel } from '@/components/FormLabel';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -22,8 +24,8 @@ import { LABEL_OPTIONS } from '@/constants/orderLabels';
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
-import articlesRoutes from '@/routes/articles';
-import orders from '@/routes/orders';
+import articlesRoutes from '@/routes/articles/index';
+import orders from '@/routes/orders/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router } from '@inertiajs/react';
 import { Download } from 'lucide-react';
@@ -116,6 +118,7 @@ export default function OrdersCreate({
     const [indicationsForProduction, setIndicationsForProduction] =
         useState('');
     const [indicationsForDelivery, setIndicationsForDelivery] = useState('');
+    const [showCloseConfirm, setShowCloseConfirm] = useState(false);
 
     // Calcolare remain_quantity
     const workedQuantity = 0;
@@ -240,9 +243,18 @@ export default function OrdersCreate({
                                     ...errors,
                                     ...serverErrors,
                                 };
+                                const hasAttemptedSubmit =
+                                    Object.keys(allErrors).length > 0;
 
                                 return (
                                     <>
+                                        <FormValidationNotification
+                                            hasAttemptedSubmit={
+                                                hasAttemptedSubmit
+                                            }
+                                            errors={allErrors}
+                                        />
+
                                         {/* Informazioni articolo (sola lettura) */}
                                         {currentArticle && (
                                             <>
@@ -1027,9 +1039,7 @@ export default function OrdersCreate({
                                                 type="button"
                                                 variant="outline"
                                                 onClick={() =>
-                                                    router.visit(
-                                                        orders.index().url,
-                                                    )
+                                                    setShowCloseConfirm(true)
                                                 }
                                             >
                                                 Annulla
@@ -1042,6 +1052,14 @@ export default function OrdersCreate({
                     </CardContent>
                 </Card>
             </div>
+            <ConfirmCloseDialog
+                open={showCloseConfirm}
+                onOpenChange={setShowCloseConfirm}
+                onConfirm={() => {
+                    setShowCloseConfirm(false);
+                    router.visit(orders.index().url);
+                }}
+            />
         </AppLayout>
     );
 }

@@ -1,3 +1,4 @@
+import { FormLabel } from '@/components/FormLabel';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import {
@@ -8,7 +9,6 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
     Select,
     SelectContent,
@@ -17,7 +17,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
-import offerOperationLists from '@/routes/offer-operation-lists';
+import offerOperationLists from '@/routes/offer-operation-lists/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router, usePage } from '@inertiajs/react';
 
@@ -53,19 +53,30 @@ export default function OfferOperationListsEdit() {
     const { operationList, offers, operations, errors: serverErrors } = props;
 
     const breadcrumbs: BreadcrumbItem[] = [
+        { title: 'Offerte', href: '/offers' },
         {
             title: 'Liste Operazioni Offerta',
-            href: '/offers/operation-lists',
+            href: offerOperationLists.index().url,
+        },
+        {
+            title: 'Assegnazione',
+            href: offerOperationLists.show({
+                offerOperationList: operationList.uuid,
+            }).url,
         },
         {
             title: 'Modifica',
-            href: `/offers/operation-lists/${operationList.uuid}/edit`,
+            href: offerOperationLists.edit({
+                offerOperationList: operationList.uuid,
+            }).url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Modifica lista operazioni offerta" />
+            <Head
+                title={`Modifica Assegnazione Operazione ${operationList.uuid}`}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
@@ -73,10 +84,10 @@ export default function OfferOperationListsEdit() {
                         <Card>
                             <CardHeader>
                                 <CardTitle>
-                                    Modifica assegnazione operazione
+                                    Modifica Assegnazione Operazione
                                 </CardTitle>
                                 <CardDescription>
-                                    Aggiorna assegnazione operazione all'offerta
+                                    Aggiorna le informazioni dell'assegnazione.
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -99,9 +110,9 @@ export default function OfferOperationListsEdit() {
                                         return (
                                             <>
                                                 <div className="grid gap-2">
-                                                    <Label htmlFor="uuid">
+                                                    <FormLabel htmlFor="uuid">
                                                         UUID
-                                                    </Label>
+                                                    </FormLabel>
                                                     <Input
                                                         id="uuid"
                                                         name="uuid"
@@ -114,9 +125,12 @@ export default function OfferOperationListsEdit() {
                                                 </div>
 
                                                 <div className="grid gap-2">
-                                                    <Label htmlFor="offer_uuid">
-                                                        Offerta *
-                                                    </Label>
+                                                    <FormLabel
+                                                        htmlFor="offer_uuid"
+                                                        required
+                                                    >
+                                                        Offerta
+                                                    </FormLabel>
                                                     <Select
                                                         name="offer_uuid"
                                                         required
@@ -157,9 +171,12 @@ export default function OfferOperationListsEdit() {
                                                 </div>
 
                                                 <div className="grid gap-2">
-                                                    <Label htmlFor="offeroperation_uuid">
-                                                        Operazione *
-                                                    </Label>
+                                                    <FormLabel
+                                                        htmlFor="offeroperation_uuid"
+                                                        required
+                                                    >
+                                                        Operazione
+                                                    </FormLabel>
                                                     <Select
                                                         name="offeroperation_uuid"
                                                         required
@@ -200,9 +217,12 @@ export default function OfferOperationListsEdit() {
                                                 </div>
 
                                                 <div className="grid gap-2">
-                                                    <Label htmlFor="num_op">
-                                                        Numero Operazione *
-                                                    </Label>
+                                                    <FormLabel
+                                                        htmlFor="num_op"
+                                                        required
+                                                    >
+                                                        Numero Operazione
+                                                    </FormLabel>
                                                     <Input
                                                         id="num_op"
                                                         name="num_op"

@@ -1,3 +1,4 @@
+import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -8,7 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import employees from '@/routes/employees';
+import employees from '@/routes/employees/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Download, Loader2 } from 'lucide-react';
@@ -37,6 +38,8 @@ type EmployeesShowProps = {
 };
 
 export default function EmployeesShow({ employee }: EmployeesShowProps) {
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     const [downloadingBarcode, setDownloadingBarcode] = useState(false);
     const breadcrumbs: BreadcrumbItem[] = [
         {
@@ -49,18 +52,20 @@ export default function EmployeesShow({ employee }: EmployeesShowProps) {
         },
     ];
 
-    const handleDelete = () => {
-        if (
-            confirm(
-                'Sei sicuro di voler eliminare questo dipendente? Questa azione non può essere annullata.',
-            )
-        ) {
-            router.delete(employees.destroy({ employee: employee.uuid }).url, {
-                onSuccess: () => {
-                    router.visit(employees.index().url);
-                },
-            });
-        }
+    const handleDeleteConfirm = () => {
+        if (isDeleting) return;
+
+        setIsDeleting(true);
+
+        router.delete(employees.destroy({ employee: employee.uuid }).url, {
+            onSuccess: () => {
+                setDeleteDialogOpen(false);
+                router.visit(employees.index().url);
+            },
+            onFinish: () => {
+                setIsDeleting(false);
+            },
+        });
     };
 
     const handleDownloadBarcode = () => {
@@ -143,7 +148,11 @@ export default function EmployeesShow({ employee }: EmployeesShowProps) {
                                 Modifica
                             </Link>
                         </Button>
-                        <Button variant="destructive" onClick={handleDelete}>
+                        <Button
+                            variant="destructive"
+                            onClick={() => setDeleteDialogOpen(true)}
+                            disabled={isDeleting}
+                        >
                             Elimina
                         </Button>
                     </div>
@@ -247,6 +256,22 @@ export default function EmployeesShow({ employee }: EmployeesShowProps) {
                     )}
                 </div>
             </div>
+
+            <ConfirmDeleteDialog
+                open={deleteDialogOpen}
+                onOpenChange={setDeleteDialogOpen}
+                onConfirm={handleDeleteConfirm}
+                isDeleting={isDeleting}
+                title="Conferma eliminazione"
+                description={
+                    <>
+                        Sei sicuro di voler eliminare questo dipendente? Questa
+                        azione non può essere annullata. Tutti i dati associati
+                        a questo dipendente verranno eliminati definitivamente.
+                    </>
+                }
+                itemName={`${employee.name} ${employee.surname} (Matricola: ${employee.matriculation_number})`}
+            />
         </AppLayout>
     );
 }

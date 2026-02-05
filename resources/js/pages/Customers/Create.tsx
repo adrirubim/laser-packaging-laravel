@@ -1,3 +1,5 @@
+import { ConfirmCloseDialog } from '@/components/confirm-close-dialog';
+import { FormValidationNotification } from '@/components/form-validation-notification';
 import { FormLabel } from '@/components/FormLabel';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -17,7 +19,7 @@ import {
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
-import customers from '@/routes/customers';
+import customers from '@/routes/customers/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router } from '@inertiajs/react';
 import { HelpCircle } from 'lucide-react';
@@ -30,6 +32,7 @@ type CustomersCreateProps = {
 export default function CustomersCreate({
     errors: serverErrors,
 }: CustomersCreateProps) {
+    const [showCloseConfirm, setShowCloseConfirm] = useState(false);
     const [vatNumber, setVatNumber] = useState('');
     const [postalCode, setPostalCode] = useState('');
     const [province, setProvince] = useState('');
@@ -78,9 +81,18 @@ export default function CustomersCreate({
                                     ...errors,
                                     ...serverErrors,
                                 };
+                                const hasAttemptedSubmit =
+                                    Object.keys(allErrors).length > 0;
 
                                 return (
                                     <>
+                                        <FormValidationNotification
+                                            hasAttemptedSubmit={
+                                                hasAttemptedSubmit
+                                            }
+                                            errors={allErrors}
+                                        />
+
                                         <div className="grid gap-2">
                                             <FormLabel htmlFor="code" required>
                                                 Codice Cliente
@@ -386,9 +398,7 @@ export default function CustomersCreate({
                                                 type="button"
                                                 variant="outline"
                                                 onClick={() =>
-                                                    router.visit(
-                                                        customers.index().url,
-                                                    )
+                                                    setShowCloseConfirm(true)
                                                 }
                                             >
                                                 Annulla
@@ -401,6 +411,14 @@ export default function CustomersCreate({
                     </CardContent>
                 </Card>
             </div>
+            <ConfirmCloseDialog
+                open={showCloseConfirm}
+                onOpenChange={setShowCloseConfirm}
+                onConfirm={() => {
+                    setShowCloseConfirm(false);
+                    router.visit(customers.index().url);
+                }}
+            />
         </AppLayout>
     );
 }

@@ -1,3 +1,4 @@
+import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -8,9 +9,10 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import machineryRoutes from '@/routes/machinery';
+import machineryRoutes from '@/routes/machinery/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
+import { useState } from 'react';
 
 type Article = {
     uuid: string;
@@ -39,6 +41,8 @@ type MachineryShowProps = {
 };
 
 export default function MachineryShow({ machinery }: MachineryShowProps) {
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Macchinari',
@@ -50,21 +54,22 @@ export default function MachineryShow({ machinery }: MachineryShowProps) {
         },
     ];
 
-    const handleDelete = () => {
-        if (
-            confirm(
-                'Sei sicuro di voler eliminare questo macchinario? Questa azione non può essere annullata.',
-            )
-        ) {
-            router.delete(
-                machineryRoutes.destroy({ machinery: machinery.uuid }).url,
-                {
-                    onSuccess: () => {
-                        router.visit(machineryRoutes.index().url);
-                    },
+    const handleDeleteConfirm = () => {
+        if (isDeleting) return;
+
+        setIsDeleting(true);
+        router.delete(
+            machineryRoutes.destroy({ machinery: machinery.uuid }).url,
+            {
+                onSuccess: () => {
+                    setDeleteDialogOpen(false);
+                    router.visit(machineryRoutes.index().url);
                 },
-            );
-        }
+                onFinish: () => {
+                    setIsDeleting(false);
+                },
+            },
+        );
     };
 
     return (
@@ -93,7 +98,11 @@ export default function MachineryShow({ machinery }: MachineryShowProps) {
                                 Modifica
                             </Link>
                         </Button>
-                        <Button variant="destructive" onClick={handleDelete}>
+                        <Button
+                            variant="destructive"
+                            onClick={() => setDeleteDialogOpen(true)}
+                            disabled={isDeleting}
+                        >
                             Elimina
                         </Button>
                     </div>
@@ -216,6 +225,22 @@ export default function MachineryShow({ machinery }: MachineryShowProps) {
                         </CardContent>
                     </Card>
                 )}
+
+                <ConfirmDeleteDialog
+                    open={deleteDialogOpen}
+                    onOpenChange={setDeleteDialogOpen}
+                    onConfirm={handleDeleteConfirm}
+                    isDeleting={isDeleting}
+                    title="Conferma eliminazione"
+                    description={
+                        <>
+                            Sei sicuro di voler eliminare questo macchinario?{' '}
+                            Questa azione non può essere annullata. Il
+                            macchinario verrà eliminato definitivamente.
+                        </>
+                    }
+                    itemName={`${machinery.description} (Codice: ${machinery.cod})`}
+                />
             </div>
         </AppLayout>
     );

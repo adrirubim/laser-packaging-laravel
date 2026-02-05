@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
-import offerSectors from '@/routes/offer-sectors';
+import offerSectors from '@/routes/offer-sectors/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router } from '@inertiajs/react';
 
@@ -57,8 +57,10 @@ export default function OfferSectorsEdit({
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Gestione Settore</CardTitle>
-                                <CardDescription>Modifica</CardDescription>
+                                <CardTitle>Modifica Settore</CardTitle>
+                                <CardDescription>
+                                    Aggiorna le informazioni del settore.
+                                </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <Form

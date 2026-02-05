@@ -1,48 +1,48 @@
-# Datos de Prueba para el Dashboard
+# Demo/Test Data for the Dashboard
 
-Este documento explica cómo crear datos de prueba para verificar el funcionamiento completo del dashboard y todas las funcionalidades del sistema.
+This document explains how to create demo data to verify the full behaviour of the dashboard and all system features.
 
-## 📋 Seeder de Datos de Prueba
+## 📋 Test Data Seeder
 
-Se ha creado un seeder completo (`TestDataSeeder`) que genera datos de prueba realistas para probar todas las funcionalidades del sistema.
+There is a full seeder (`TestDataSeeder`) that generates realistic demo data to test all features.
 
-### Datos que se Crean
+### Data created
 
-El seeder crea:
+The seeder creates:
 
-1. **5 Clientes** - Con datos completos
-2. **Divisiones de Clientes** - 1-3 divisiones por cliente
-3. **Direcciones de Envío** - 1-2 direcciones por división
-4. **3 Proveedores** - Para contratos de empleados
-5. **10 Empleados** - Con datos completos
-6. **18-30 Contratos de Empleados** - 1-3 contratos por empleado, todos los campos completos:
-   - 100% con proveedor asignado
-   - 70% contratos activos (con fecha de fin futura)
-   - 30% contratos finalizados (con fecha de fin pasada)
-   - Todos con nivel de pago (0-4)
-   - Todas las fechas válidas (end_date posterior a start_date)
-7. **Materiales y Maquinaria** - 5 materiales, 5 maquinarias, 3 tipos de pallet
-8. **Categorías de Artículos** - 5 categorías
-9. **Instrucciones y modelos** - 10 IC, 10 IO, 10 IP, 5 ModelSCQ, 5 CriticalIssue, 5 PalletSheet (con archivos placeholder en storage para descargas)
-10. **Ofertas** - Actividades, sectores, estacionalidades, tipos oferta/orden, familias LAS, operaciones; 2-4 ofertas por cliente con operaciones (OfferOperationList)
-11. **Artículos** - 3-6 artículos por oferta + **1 artículo demo**
-    - **Todos** los artículos tienen al menos 1 Istruzione di Confezionamento (IC), 1 di Pallettizzazione (IP) y 1 Operativa (IO), para que en Visualizza aparezcan las 3 tarjetas con el menú ⋯ (Scarica file).
-    - **Artículo demo** para comprobar **todos los inputs**: código **`LAS-DEMO-ALL`** (tutti i campi compilati). Tiene **todos los campos** rellenados (informazioni base, offerta, categoria, pallet, piano imballaggio, piani pallet, line_layout, materiales, macchinari, criticità, istruzioni IC/IP/IO, etichette, peso e controllo, approvazioni, media produttività, Verifica Consumi Materiali). En Articoli → buscar **"LAS-DEMO-ALL"** → Visualizza / Modifica / Duplica para verificar cada input.
-    - Con relaciones: materials (1-3), machinery (1-2 con value en pivot), criticalIssues (0-2), instrucciones IC/IO/IP (1-3 por tipo), pivot offerarticles, Verifica Consumi Materiali (~40 % artículos)
-    - Archivos placeholder para line_layout en `storage/app/line_layout/{uuid}/`
-12. **Órdenes en los 7 estados:**
-    - **5 órdenes Pianificato** (status 0)
-    - **5 órdenes In Allestimento** (status 1)
-    - **8 órdenes Lanciate** (status 2)
-    - **12 órdenes In Avanzamento** (status 3)
-    - **5 órdenes Sospese** (status 4, con motivazione)
-    - **15 órdenes Evaso** (status 5)
-    - **10 órdenes Saldato** (status 6)
-13. **Estados de Órdenes (OfferOrderState)** - 6 estados personalizados
-14. **Asignaciones Empleados-Órdenes (OfferOrderEmployee)** - 1-3 empleados por orden
-15. **Procesamientos de Órdenes (ProductionOrderProcessing)** - 2-5 procesamientos por orden en Lanciato/In Avanzamento
+1. **5 Customers** – with complete data
+2. **Customer Divisions** – 1–3 divisions per customer
+3. **Shipping Addresses** – 1–2 addresses per division
+4. **3 Suppliers** – for employee contracts
+5. **10 Employees** – with complete data
+6. **18–30 Employee Contracts** – 1–3 contracts per employee, all fields filled:
+   - 100% with a supplier assigned
+   - 70% active contracts (end_date in the future)
+   - 30% finished contracts (end_date in the past)
+   - All with pay level (0–4)
+   - All dates valid (end_date after start_date)
+7. **Materials and Machinery** – 5 materials, 5 machines, 3 pallet types
+8. **Article Categories** – 5 categories
+9. **Instructions and models** – 10 IC, 10 IO, 10 IP, 5 ModelSCQ, 5 CriticalIssue, 5 PalletSheet (with placeholder files in storage for downloads)
+10. **Offers** – activities, sectors, seasonality, offer/order types, LAS families, operations; 2–4 offers per customer with operations (OfferOperationList)
+11. **Articles** – 3–6 articles per offer + **1 demo article**
+    - **All** articles have at least 1 Istruzione di Confezionamento (IC), 1 di Pallettizzazione (IP) and 1 Operativa (IO), so that in “Visualizza” the three cards with ⋯ (Scarica file) appear.
+    - **Demo article** to verify **all inputs**: code **`LAS-DEMO-ALL`** (tutti i campi compilati). It has **all fields** filled (informazioni base, offerta, categoria, pallet, piano imballaggio, piani pallet, line_layout, materiali, macchinari, criticità, istruzioni IC/IP/IO, etichette, peso e controllo, approvazioni, media produttività, Verifica Consumi Materiali). In Articoli → search for **"LAS-DEMO-ALL"** → Visualizza / Modifica / Duplica to verify each input.
+    - Relations: materials (1–3), machinery (1–2 with `value` on pivot), criticalIssues (0–2), IC/IO/IP instructions (1–3 per type), pivot offerarticles, Verifica Consumi Materiali (~40% of articles)
+    - Placeholder files for line_layout under `storage/app/line_layout/{uuid}/`
+12. **Orders in all 7 statuses:**
+    - **5 orders Pianificato** (status 0)
+    - **5 orders In Allestimento** (status 1)
+    - **8 orders Lanciate** (status 2)
+    - **12 orders In Avanzamento** (status 3)
+    - **5 orders Sospese** (status 4, with `motivazione`)
+    - **15 orders Evaso** (status 5)
+    - **10 orders Saldato** (status 6)
+13. **Order States (OfferOrderState)** – 6 custom states
+14. **Order–Employee assignments (OfferOrderEmployee)** – 1–3 employees per order
+15. **Order Processings (ProductionOrderProcessing)** – 2–5 processings per order in Lanciato / In Avanzamento
 
-**Total: ~60 órdenes** en los 7 estados. **Descargas:** se crean archivos placeholder en storage para instrucciones (packaging/operational/palletization), ModelSCQ, PalletSheet, line_layout de artículos y operaciones de oferta (`offer-operations/`).
+**Total: ~60 orders** across the 7 statuses. **Downloads:** placeholder files are created in storage for instructions (packaging/operational/palletization), ModelSCQ, PalletSheet, article line_layout and offer operations (`offer-operations/`).
 
 ### Registros "Demo All" (tutti i campi compilati)
 
@@ -167,72 +167,72 @@ Order::where('removed', false)->where('status', 5)->count(); // Evaso
 Order::where('removed', false)->where('status', 6)->count(); // Saldato
 ```
 
-### Verificar en el Dashboard
+### Check in the Dashboard
 
-1. Accede al dashboard: `http://localhost:8000/dashboard`
-2. Verifica que las tarjetas de "Stato degli Ordini" muestren números diferentes de 0
-3. Haz clic en cada tarjeta para verificar que los filtros funcionen correctamente
+1. Open the dashboard: `http://localhost:8000/dashboard`
+2. Verify that the "Stato degli Ordini" cards show non‑zero numbers
+3. Click each card to verify that filters work correctly
 
-## 🔄 Re-ejecutar el Seeder
+## 🔄 Re-running the Seeder
 
-Si necesitas recrear los datos de prueba:
+If you need to recreate the demo data:
 
-**⚠️ ADVERTENCIA:** El seeder actual **SÍ elimina** todos los datos existentes antes de crear nuevos datos. Esto asegura que el dashboard solo muestre los datos del seeder.
+**⚠️ WARNING:** The current seeder **does wipe** all existing data before creating new demo data. This ensures the dashboard only shows seeder data.
 
-El seeder limpia automáticamente todas las tablas relacionadas usando `truncate` antes de crear los nuevos datos de prueba.
+The seeder automatically truncates all related tables before inserting the new demo data.
 
-## 📊 Estructura de Datos Creados
+## 📊 Data Structure Created
 
 ```
-Clientes (5)
-  └── Divisiones (1-3 por cliente)
-      └── Direcciones de Envío (1-2 por división)
-  └── Ofertas (2-4 por cliente, con OfferOperationList)
-      └── Artículos (3-6 por oferta; pivot offerarticles; IC/IO/IP, materials, machinery, criticalIssues; Verifica Consumi)
-          └── Órdenes (~60 en los 7 estados: Pianificato, In Allestimento, Lanciate, In Avanzamento, Sospese, Evaso, Saldato)
+Customers (5)
+  └── Divisions (1–3 per customer)
+      └── Shipping Addresses (1–2 per division)
+  └── Offers (2–4 per customer, with OfferOperationList)
+      └── Articles (3–6 per offer; pivot offerarticles; IC/IO/IP, materials, machinery, criticalIssues; Verifica Consumi)
+          └── Orders (~60 across the 7 statuses: Pianificato, In Allestimento, Lanciate, In Avanzamento, Sospese, Evaso, Saldato)
               └── ProductionOrderProcessing (Lanciato + In Avanzamento)
-              └── OfferOrderEmployee (1-3 por orden)
-Empleados (10) → Contratos (1-3 por empleado, con proveedor)
+              └── OfferOrderEmployee (1–3 per order)
+Employees (10) → Contracts (1–3 per employee, with supplier)
 ```
 
-## 🎯 Casos de Prueba Cubiertos
+## 🎯 Scenarios Covered
 
-Con estos datos puedes probar:
+With this data you can test:
 
-- ✅ Dashboard con estadísticas reales
-- ✅ Filtros de status en la lista de órdenes
-- ✅ Tarjetas clickables del dashboard
-- ✅ Órdenes urgentes (con fechas de entrega próximas)
-- ✅ Órdenes en retraso (con fechas pasadas)
-- ✅ Órdenes suspendidas
-- ✅ Órdenes completadas (Evaso + Saldato)
-- ✅ Relaciones entre clientes, ofertas, artículos y órdenes
-- ✅ Direcciones de envío asociadas a órdenes
-- ✅ Modelos CQ con directorios de almacenamiento creados
+- ✅ Dashboard with realistic statistics
+- ✅ Status filters in the orders list
+- ✅ Clickable dashboard cards
+- ✅ Urgent orders (upcoming due dates)
+- ✅ Late orders (past due dates)
+- ✅ Suspended orders
+- ✅ Completed orders (Evaso + Saldato)
+- ✅ Relationships between customers, offers, articles and orders
+- ✅ Shipping addresses linked to orders
+- ✅ CQ models with storage directories created
 
-## 📝 Notas
+## 📝 Notes
 
-- Los números de producción se generan automáticamente usando `OrderProductionNumberService`
-- Las fechas de entrega se distribuyen entre pasadas, presentes y futuras
-- Las cantidades trabajadas se calculan según el status (0 para Lanciate, parcial para In Avanzamento, completa para Evaso/Saldato)
-- Todas las relaciones están correctamente establecidas
-- Los directorios para archivos de ModelSCQ se crean automáticamente en `storage/app/modelsCQ/{uuid}/`
-- El seeder limpia automáticamente todos los datos existentes antes de crear nuevos datos
-- Las relaciones many-to-many de artículos se crean automáticamente (materials, machinery, criticalIssues)
-- Se crean 6 estados personalizados de órdenes con diferentes configuraciones
-- Cada orden tiene asignados 1-3 empleados aleatorios
+- Production numbers are automatically generated by `OrderProductionNumberService`.
+- Delivery dates are distributed across past, present and future.
+- Worked quantities are calculated according to status (0 for Lanciate, partial for In Avanzamento, full for Evaso/Saldato).
+- All relations are properly established.
+- ModelSCQ files are stored under `storage/app/modelsCQ/{uuid}/`.
+- The seeder wipes all existing data before inserting new demo data.
+- Many-to-many relations for articles (materials, machinery, criticalIssues) are created automatically.
+- Six custom order states are created with different configurations.
+- Each order has 1–3 random employees assigned.
 
-## ✅ Cobertura Completa
+## ✅ Full Coverage
 
-El seeder ahora cubre **100% de las funcionalidades principales** del sistema, incluyendo:
+The seeder now covers **100% of the main system features**, including:
 
-- ✅ Todos los modelos principales y sus relaciones
-- ✅ Estados personalizados de órdenes (`OfferOrderState`)
-- ✅ Asignaciones de empleados a órdenes (`OfferOrderEmployee`)
-- ✅ Relaciones many-to-many de artículos (materials, machinery, criticalIssues)
-- ✅ Procesamientos de órdenes con múltiples empleados
-- ✅ Todos los datos necesarios para probar el dashboard y todas las funcionalidades
+- ✅ All main models and their relations
+- ✅ Custom order states (`OfferOrderState`)
+- ✅ Order–employee assignments (`OfferOrderEmployee`)
+- ✅ Article many-to-many relations (materials, machinery, criticalIssues)
+- ✅ Order processings with multiple employees
+- ✅ All data needed to fully test the dashboard and the main flows
 
 ---
 
-**Última actualización:** 2026-01-28
+**Last updated:** 2026-01-28

@@ -15,7 +15,7 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip';
 import AppLayout from '@/layouts/app-layout';
-import articles from '@/routes/articles';
+import articles from '@/routes/articles/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router, usePage } from '@inertiajs/react';
 import { HelpCircle } from 'lucide-react';

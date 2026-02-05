@@ -1,3 +1,5 @@
+import { ConfirmCloseDialog } from '@/components/confirm-close-dialog';
+import { FormValidationNotification } from '@/components/form-validation-notification';
 import { FormLabel } from '@/components/FormLabel';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -21,7 +23,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
-import articles from '@/routes/articles';
+import articles from '@/routes/articles/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router, usePage } from '@inertiajs/react';
 import { Download } from 'lucide-react';
@@ -254,6 +256,7 @@ export default function ArticlesEdit({
     errors: serverErrors,
 }: ArticlesEditProps) {
     const { props } = usePage<ArticlesEditProps>();
+    const [showCloseConfirm, setShowCloseConfirm] = useState(false);
     const actualUm = um || props.um;
     const actualPiecesPerPackage = piecesPerPackage || props.piecesPerPackage;
     const actualMediaValues = mediaValues || props.mediaValues;
@@ -613,9 +616,17 @@ export default function ArticlesEdit({
                                             ...errors,
                                             ...serverErrors,
                                         };
+                                        const hasAttemptedSubmit =
+                                            Object.keys(allErrors).length > 0;
 
                                         return (
                                             <>
+                                                <FormValidationNotification
+                                                    errors={allErrors}
+                                                    hasAttemptedSubmit={
+                                                        hasAttemptedSubmit
+                                                    }
+                                                />
                                                 <div className="grid gap-2">
                                                     <FormLabel
                                                         htmlFor="offer_uuid"
@@ -2570,11 +2581,8 @@ export default function ArticlesEdit({
                                                         type="button"
                                                         variant="outline"
                                                         onClick={() =>
-                                                            router.visit(
-                                                                articles.show({
-                                                                    article:
-                                                                        article.uuid,
-                                                                }).url,
+                                                            setShowCloseConfirm(
+                                                                true,
                                                             )
                                                         }
                                                     >
@@ -2590,6 +2598,14 @@ export default function ArticlesEdit({
                     </div>
                 </div>
             </div>
+            <ConfirmCloseDialog
+                open={showCloseConfirm}
+                onOpenChange={setShowCloseConfirm}
+                onConfirm={() => {
+                    setShowCloseConfirm(false);
+                    router.visit(articles.show({ article: article.uuid }).url);
+                }}
+            />
         </AppLayout>
     );
 }

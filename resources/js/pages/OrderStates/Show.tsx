@@ -1,3 +1,4 @@
+import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -8,10 +9,11 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import orderStates from '@/routes/order-states';
+import orderStates from '@/routes/order-states/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Edit, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 
 type OrderState = {
     id: number;
@@ -27,6 +29,9 @@ type OrderStatesShowProps = {
 };
 
 export default function OrderStatesShow({ orderState }: OrderStatesShowProps) {
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Stati Ordine',
@@ -38,21 +43,20 @@ export default function OrderStatesShow({ orderState }: OrderStatesShowProps) {
         },
     ];
 
-    const handleDelete = () => {
-        if (
-            confirm(
-                'Sei sicuro di voler eliminare questo stato ordine? Questa azione non può essere annullata.',
-            )
-        ) {
-            router.delete(
-                orderStates.destroy({ orderState: orderState.uuid }).url,
-                {
-                    onSuccess: () => {
-                        router.visit(orderStates.index().url);
-                    },
+    const handleDeleteConfirm = () => {
+        setIsDeleting(true);
+        router.delete(
+            orderStates.destroy({ orderState: orderState.uuid }).url,
+            {
+                onSuccess: () => {
+                    setDeleteDialogOpen(false);
+                    router.visit(orderStates.index().url);
                 },
-            );
-        }
+                onFinish: () => {
+                    setIsDeleting(false);
+                },
+            },
+        );
     };
 
     return (
@@ -79,7 +83,11 @@ export default function OrderStatesShow({ orderState }: OrderStatesShowProps) {
                                 Modifica
                             </Link>
                         </Button>
-                        <Button variant="destructive" onClick={handleDelete}>
+                        <Button
+                            variant="destructive"
+                            onClick={() => setDeleteDialogOpen(true)}
+                            disabled={isDeleting}
+                        >
                             <Trash2 className="mr-2 h-4 w-4" />
                             Elimina
                         </Button>
@@ -166,6 +174,21 @@ export default function OrderStatesShow({ orderState }: OrderStatesShowProps) {
                     </Card>
                 </div>
             </div>
+            <ConfirmDeleteDialog
+                open={deleteDialogOpen}
+                onOpenChange={setDeleteDialogOpen}
+                onConfirm={handleDeleteConfirm}
+                isDeleting={isDeleting}
+                title="Conferma eliminazione"
+                description={
+                    <>
+                        Sei sicuro di voler eliminare questo stato ordine?
+                        Questa azione non può essere annullata. Lo stato verrà
+                        eliminato definitivamente.
+                    </>
+                }
+                itemName={orderState.name}
+            />
         </AppLayout>
     );
 }

@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
-import employees from '@/routes/employees';
+import employees from '@/routes/employees/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router } from '@inertiajs/react';
 import { useState } from 'react';

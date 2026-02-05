@@ -1,3 +1,4 @@
+import { FormLabel } from '@/components/FormLabel';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import {
@@ -8,7 +9,6 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
     Select,
     SelectContent,
@@ -17,7 +17,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
-import offerOperationLists from '@/routes/offer-operation-lists';
+import offerOperationLists from '@/routes/offer-operation-lists/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router } from '@inertiajs/react';
 import { useState } from 'react';
@@ -50,26 +50,28 @@ export default function OfferOperationListsCreate({
     const [selectedOffer, setSelectedOffer] = useState<string>(offerUuid ?? '');
 
     const breadcrumbs: BreadcrumbItem[] = [
+        { title: 'Offerte', href: '/offers' },
         {
             title: 'Liste Operazioni Offerta',
             href: offerOperationLists.index().url,
         },
         {
-            title: 'Crea',
+            title: 'Nuova Assegnazione',
             href: offerOperationLists.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Crea Lista Operazioni Offerta" />
+            <Head title="Nuova Assegnazione Operazione" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Aggiungi operazione a offerta</CardTitle>
+                        <CardTitle>Nuova Assegnazione Operazione</CardTitle>
                         <CardDescription>
-                            Assegna un'operazione a un'offerta
+                            Compila i campi per assegnare un'operazione a
+                            un'offerta.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -87,9 +89,12 @@ export default function OfferOperationListsCreate({
                                 return (
                                     <>
                                         <div className="grid gap-2">
-                                            <Label htmlFor="offer_uuid">
-                                                Offerta *
-                                            </Label>
+                                            <FormLabel
+                                                htmlFor="offer_uuid"
+                                                required
+                                            >
+                                                Offerta
+                                            </FormLabel>
                                             <input
                                                 type="hidden"
                                                 name="offer_uuid"
@@ -125,9 +130,12 @@ export default function OfferOperationListsCreate({
                                         </div>
 
                                         <div className="grid gap-2">
-                                            <Label htmlFor="offeroperation_uuid">
-                                                Operazione *
-                                            </Label>
+                                            <FormLabel
+                                                htmlFor="offeroperation_uuid"
+                                                required
+                                            >
+                                                Operazione
+                                            </FormLabel>
                                             <Select
                                                 name="offeroperation_uuid"
                                                 required
@@ -163,9 +171,12 @@ export default function OfferOperationListsCreate({
                                         </div>
 
                                         <div className="grid gap-2">
-                                            <Label htmlFor="num_op">
-                                                Numero operazione *
-                                            </Label>
+                                            <FormLabel
+                                                htmlFor="num_op"
+                                                required
+                                            >
+                                                Numero operazione
+                                            </FormLabel>
                                             <Input
                                                 id="num_op"
                                                 name="num_op"

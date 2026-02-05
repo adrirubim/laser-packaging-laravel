@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
-import offerTypes from '@/routes/offer-types';
+import offerTypes from '@/routes/offer-types/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router } from '@inertiajs/react';
 
@@ -57,8 +57,11 @@ export default function OfferTypesEdit({
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Gestione Tipo di Offerta</CardTitle>
-                                <CardDescription>Modifica</CardDescription>
+                                <CardTitle>Modifica Tipo di Offerta</CardTitle>
+                                <CardDescription>
+                                    Aggiorna le informazioni del tipo di
+                                    offerta.
+                                </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <Form

@@ -1,3 +1,5 @@
+import { ConfirmCloseDialog } from '@/components/confirm-close-dialog';
+import { FormValidationNotification } from '@/components/form-validation-notification';
 import { FormLabel } from '@/components/FormLabel';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -24,7 +26,7 @@ import {
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
-import customerShippingAddresses from '@/routes/customer-shipping-addresses';
+import customerShippingAddresses from '@/routes/customer-shipping-addresses/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router } from '@inertiajs/react';
 import { HelpCircle, Loader2 } from 'lucide-react';
@@ -69,6 +71,7 @@ export default function CustomerShippingAddressesEdit({
     customer_uuid: initialCustomerUuid,
     errors: serverErrors,
 }: CustomerShippingAddressesEditProps) {
+    const [showCloseConfirm, setShowCloseConfirm] = useState(false);
     const [selectedCustomer, setSelectedCustomer] = useState<string>(
         initialCustomerUuid ?? '',
     );
@@ -163,9 +166,18 @@ export default function CustomerShippingAddressesEdit({
                                             ...errors,
                                             ...serverErrors,
                                         };
+                                        const hasAttemptedSubmit =
+                                            Object.keys(allErrors).length > 0;
 
                                         return (
                                             <>
+                                                <FormValidationNotification
+                                                    hasAttemptedSubmit={
+                                                        hasAttemptedSubmit
+                                                    }
+                                                    errors={allErrors}
+                                                />
+
                                                 <div className="grid gap-2">
                                                     <FormLabel
                                                         htmlFor="customer_uuid"
@@ -566,13 +578,8 @@ export default function CustomerShippingAddressesEdit({
                                                         type="button"
                                                         variant="outline"
                                                         onClick={() =>
-                                                            router.visit(
-                                                                customerShippingAddresses.show(
-                                                                    {
-                                                                        customerShippingAddress:
-                                                                            address.uuid,
-                                                                    },
-                                                                ).url,
+                                                            setShowCloseConfirm(
+                                                                true,
                                                             )
                                                         }
                                                     >
@@ -588,6 +595,18 @@ export default function CustomerShippingAddressesEdit({
                     </div>
                 </div>
             </div>
+            <ConfirmCloseDialog
+                open={showCloseConfirm}
+                onOpenChange={setShowCloseConfirm}
+                onConfirm={() => {
+                    setShowCloseConfirm(false);
+                    router.visit(
+                        customerShippingAddresses.show({
+                            customerShippingAddress: address.uuid,
+                        }).url,
+                    );
+                }}
+            />
         </AppLayout>
     );
 }

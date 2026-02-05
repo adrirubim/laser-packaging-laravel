@@ -1,14 +1,4 @@
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,9 +10,9 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import customerDivisions from '@/routes/customer-divisions';
-import customers from '@/routes/customers';
-import offers from '@/routes/offers';
+import customerDivisions from '@/routes/customer-divisions/index';
+import customers from '@/routes/customers/index';
+import offers from '@/routes/offers/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Building2, Edit, FileText, MapPin, Plus, Trash2 } from 'lucide-react';
@@ -64,6 +54,7 @@ type CustomersShowProps = {
 };
 
 export default function CustomersShow({ customer }: CustomersShowProps) {
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
@@ -77,10 +68,11 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
         },
     ];
 
-    const handleDelete = () => {
+    const handleDeleteConfirm = () => {
         setIsDeleting(true);
         router.delete(customers.destroy({ customer: customer.uuid }).url, {
             onSuccess: () => {
+                setDeleteDialogOpen(false);
                 router.visit(customers.index().url);
             },
             onFinish: () => {
@@ -146,53 +138,14 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
                                 Modifica
                             </Link>
                         </Button>
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <Button
-                                    variant="destructive"
-                                    disabled={isDeleting}
-                                >
-                                    <Trash2 className="mr-2 h-4 w-4" />
-                                    Elimina
-                                </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                        Conferma eliminazione
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        Sei sicuro di voler eliminare il cliente{' '}
-                                        <strong>{customer.company_name}</strong>{' '}
-                                        (Codice: {customer.code})?
-                                        <br />
-                                        <br />
-                                        Questa azione non può essere annullata.
-                                        Tutti i dati associati a questo cliente
-                                        verranno eliminati definitivamente.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel disabled={isDeleting}>
-                                        Annulla
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction
-                                        onClick={handleDelete}
-                                        disabled={isDeleting}
-                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                    >
-                                        {isDeleting ? (
-                                            <>
-                                                <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                                                Eliminando...
-                                            </>
-                                        ) : (
-                                            'Elimina definitivamente'
-                                        )}
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
+                        <Button
+                            variant="destructive"
+                            disabled={isDeleting}
+                            onClick={() => setDeleteDialogOpen(true)}
+                        >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Elimina
+                        </Button>
                     </div>
                 </div>
 
@@ -428,6 +381,22 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
                     </CardContent>
                 </Card>
             </div>
+
+            <ConfirmDeleteDialog
+                open={deleteDialogOpen}
+                onOpenChange={setDeleteDialogOpen}
+                onConfirm={handleDeleteConfirm}
+                isDeleting={isDeleting}
+                title="Conferma eliminazione"
+                description={
+                    <>
+                        Sei sicuro di voler eliminare il cliente? Questa azione
+                        non può essere annullata. Tutti i dati associati a
+                        questo cliente verranno eliminati definitivamente.
+                    </>
+                }
+                itemName={`${customer.company_name} (Codice: ${customer.code})`}
+            />
         </AppLayout>
     );
 }

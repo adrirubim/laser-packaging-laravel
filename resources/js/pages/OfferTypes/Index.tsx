@@ -1,12 +1,17 @@
+import { ActionsDropdown } from '@/components/ActionsDropdown';
 import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
+import {
+    FlashNotifications,
+    useFlashNotifications,
+} from '@/components/flash-notifications';
+import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { SortableTableHeader } from '@/components/SortableTableHeader';
 import AppLayout from '@/layouts/app-layout';
 import offerTypes from '@/routes/offer-types';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Edit, Eye, Plus, Trash2, X } from 'lucide-react';
+import { Head, router, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
 type OfferType = {
@@ -35,11 +40,11 @@ type OfferTypesIndexProps = {
 
 export default function OfferTypesIndex() {
     const { props } = usePage<OfferTypesIndexProps>();
-    const { offerTypes: offerTypesPaginated, filters, flash } = props;
+    const { offerTypes: offerTypesPaginated, filters } = props;
+    const { flash } = useFlashNotifications();
 
     const [searchValue, setSearchValue] = useState(filters.search ?? '');
     const [isSearching, setIsSearching] = useState(false);
-    const [showFlash, setShowFlash] = useState(true);
     const [deleteDialog, setDeleteDialog] = useState<{
         open: boolean;
         offerType: OfferType | null;
@@ -94,14 +99,6 @@ export default function OfferTypesIndex() {
         );
     };
 
-    useEffect(() => {
-        if (flash?.success || flash?.error) {
-            queueMicrotask(() => setShowFlash(true));
-            const timer = setTimeout(() => setShowFlash(false), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [flash]);
-
     const clearSearch = () => {
         setSearchValue('');
         router.get(
@@ -147,35 +144,14 @@ export default function OfferTypesIndex() {
             <Head title="Tipi di Offerta" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex items-center justify-between gap-3">
-                    <div>
-                        <h1 className="text-2xl font-semibold tracking-tight">
-                            Tipi di Offerta
-                        </h1>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                            Elenco dei tipi di offerta attivi con Cerca.
-                        </p>
-                    </div>
-                    <Link
-                        href={offerTypes.create().url}
-                        className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
-                    >
-                        <Plus className="mr-2 h-4 w-4" />
-                        Nuovo Tipo
-                    </Link>
-                </div>
+                <IndexHeader
+                    title="Tipi di Offerta"
+                    subtitle="Elenco dei tipi di offerta attivi con Cerca."
+                    createHref={offerTypes.create().url}
+                    createLabel="Nuovo Tipo"
+                />
 
-                {showFlash && flash?.success && (
-                    <div className="flex animate-in items-center justify-between rounded-md border border-emerald-500/40 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-700 duration-300 fade-in slide-in-from-top-2 dark:text-emerald-300">
-                        <span>{flash.success}</span>
-                        <button
-                            onClick={() => setShowFlash(false)}
-                            className="ml-2 transition-opacity hover:opacity-70"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
+                <FlashNotifications flash={flash} />
 
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="space-y-1">
@@ -213,39 +189,21 @@ export default function OfferTypesIndex() {
                                             {offerType.uuid}
                                         </p>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <Link
-                                            href={
-                                                offerTypes.show({
-                                                    offerType: offerType.uuid,
-                                                }).url
-                                            }
-                                            className="inline-flex items-center text-primary hover:underline"
-                                            title="Visualizza"
-                                        >
-                                            <Eye className="h-4 w-4" />
-                                        </Link>
-                                        <Link
-                                            href={
-                                                offerTypes.edit({
-                                                    offerType: offerType.uuid,
-                                                }).url
-                                            }
-                                            className="inline-flex items-center text-primary hover:underline"
-                                            title="Modifica"
-                                        >
-                                            <Edit className="h-4 w-4" />
-                                        </Link>
-                                        <button
-                                            onClick={() =>
-                                                handleDeleteClick(offerType)
-                                            }
-                                            className="inline-flex items-center text-destructive hover:underline"
-                                            title="Elimina"
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </button>
-                                    </div>
+                                    <ActionsDropdown
+                                        viewHref={
+                                            offerTypes.show({
+                                                offerType: offerType.uuid,
+                                            }).url
+                                        }
+                                        editHref={
+                                            offerTypes.edit({
+                                                offerType: offerType.uuid,
+                                            }).url
+                                        }
+                                        onDelete={() =>
+                                            handleDeleteClick(offerType)
+                                        }
+                                    />
                                 </div>
                             </div>
                         ))
@@ -304,43 +262,23 @@ export default function OfferTypesIndex() {
                                             {offerType.name}
                                         </td>
                                         <td className="px-3 py-2 text-right align-middle text-xs">
-                                            <div className="flex items-center justify-end gap-2">
-                                                <Link
-                                                    href={
-                                                        offerTypes.show({
-                                                            offerType:
-                                                                offerType.uuid,
-                                                        }).url
-                                                    }
-                                                    className="inline-flex items-center text-primary hover:underline"
-                                                    title="Visualizza"
-                                                >
-                                                    <Eye className="h-4 w-4" />
-                                                </Link>
-                                                <Link
-                                                    href={
-                                                        offerTypes.edit({
-                                                            offerType:
-                                                                offerType.uuid,
-                                                        }).url
-                                                    }
-                                                    className="inline-flex items-center text-primary hover:underline"
-                                                    title="Modifica"
-                                                >
-                                                    <Edit className="h-4 w-4" />
-                                                </Link>
-                                                <button
-                                                    onClick={() =>
-                                                        handleDeleteClick(
-                                                            offerType,
-                                                        )
-                                                    }
-                                                    className="inline-flex items-center text-destructive hover:underline"
-                                                    title="Elimina"
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </button>
-                                            </div>
+                                            <ActionsDropdown
+                                                viewHref={
+                                                    offerTypes.show({
+                                                        offerType:
+                                                            offerType.uuid,
+                                                    }).url
+                                                }
+                                                editHref={
+                                                    offerTypes.edit({
+                                                        offerType:
+                                                            offerType.uuid,
+                                                    }).url
+                                                }
+                                                onDelete={() =>
+                                                    handleDeleteClick(offerType)
+                                                }
+                                            />
                                         </td>
                                     </tr>
                                 ))}

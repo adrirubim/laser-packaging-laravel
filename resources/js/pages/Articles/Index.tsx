@@ -1,4 +1,6 @@
 import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
+import { FlashNotifications } from '@/components/flash-notifications';
+import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { SortableTableHeader } from '@/components/SortableTableHeader';
@@ -24,9 +26,9 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
-import articles from '@/routes/articles';
-import offers from '@/routes/offers';
-import orders from '@/routes/orders';
+import articles from '@/routes/articles/index';
+import offers from '@/routes/offers/index';
+import orders from '@/routes/orders/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
@@ -44,7 +46,6 @@ import {
     Package,
     ShoppingCart,
     Trash2,
-    X,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -109,7 +110,6 @@ export default function ArticlesIndex() {
         filters.article_category ?? '',
     );
     const [isSearching, setIsSearching] = useState(false);
-    const [showFlash, setShowFlash] = useState(true);
     const [deleteDialog, setDeleteDialog] = useState<{
         open: boolean;
         article: Article | null;
@@ -118,14 +118,6 @@ export default function ArticlesIndex() {
         article: null,
     });
     const [isDeleting, setIsDeleting] = useState(false);
-
-    useEffect(() => {
-        if (flash?.success || flash?.error) {
-            queueMicrotask(() => setShowFlash(true));
-            const timer = setTimeout(() => setShowFlash(false), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [flash]);
 
     useEffect(() => {
         queueMicrotask(() => {
@@ -250,39 +242,14 @@ export default function ArticlesIndex() {
             <Head title="Articoli" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex items-center justify-between gap-3">
-                    <div>
-                        <h1 className="text-2xl font-semibold tracking-tight">
-                            Articoli
-                        </h1>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                            Elenco degli articoli attivi con Cerca e filtri.
-                        </p>
-                    </div>
-                </div>
+                <IndexHeader
+                    title="Articoli"
+                    subtitle="Elenco degli articoli attivi con Cerca e filtri."
+                    createHref={articles.create().url}
+                    createLabel="Nuovo Articolo"
+                />
 
-                {showFlash && flash?.success && (
-                    <div className="flex animate-in items-center justify-between rounded-md border border-emerald-500/40 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-700 duration-300 fade-in slide-in-from-top-2 dark:text-emerald-300">
-                        <span>{flash.success}</span>
-                        <button
-                            onClick={() => setShowFlash(false)}
-                            className="ml-2 transition-opacity hover:opacity-70"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
-                {showFlash && flash?.error && (
-                    <div className="flex animate-in items-center justify-between rounded-md border border-rose-500/40 bg-rose-500/5 px-3 py-2 text-sm text-rose-700 duration-300 fade-in slide-in-from-top-2 dark:text-rose-300">
-                        <span>{flash.error}</span>
-                        <button
-                            onClick={() => setShowFlash(false)}
-                            className="ml-2 transition-opacity hover:opacity-70"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
+                <FlashNotifications flash={flash} />
 
                 {/* Quick Access Cards to Sub-sections */}
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">

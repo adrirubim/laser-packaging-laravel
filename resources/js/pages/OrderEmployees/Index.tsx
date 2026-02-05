@@ -1,7 +1,8 @@
+import { FlashNotifications } from '@/components/flash-notifications';
 import { Pagination } from '@/components/Pagination';
 import AppLayout from '@/layouts/app-layout';
-import orderEmployees from '@/routes/order-employees';
-import orders from '@/routes/orders';
+import orderEmployees from '@/routes/order-employees/index';
+import orders from '@/routes/orders/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 
@@ -69,16 +70,7 @@ export default function OrderEmployeesIndex() {
                     </div>
                 </div>
 
-                {flash?.success && (
-                    <div className="rounded-md border border-emerald-500/40 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-700 dark:text-emerald-300">
-                        {flash.success}
-                    </div>
-                )}
-                {flash?.error && (
-                    <div className="rounded-md border border-rose-500/40 bg-rose-500/5 px-3 py-2 text-sm text-rose-700 dark:text-rose-300">
-                        {flash.error}
-                    </div>
-                )}
+                <FlashNotifications flash={flash} />
 
                 <div className="relative min-h-[300px] flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 bg-card dark:border-sidebar-border">
                     <div className="relative h-full w-full overflow-auto">

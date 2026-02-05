@@ -10,9 +10,9 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/app-layout';
-import articleCategories from '@/routes/article-categories';
+import articleCategories from '@/routes/article-categories/index';
 import { type BreadcrumbItem } from '@/types';
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, router } from '@inertiajs/react';
 
 type ArticleCategoriesCreateProps = {
     errors?: Record<string, string>;
@@ -27,20 +27,23 @@ export default function ArticleCategoriesCreate({
             href: articleCategories.index().url,
         },
         {
-            title: 'Crea',
+            title: 'Nuova Categoria',
             href: articleCategories.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Crea Categoria Articolo" />
+            <Head title="Nuova Categoria Articolo" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Gestione Categoria Articolo</CardTitle>
-                        <CardDescription>Inserimento</CardDescription>
+                        <CardTitle>Nuova Categoria Articolo</CardTitle>
+                        <CardDescription>
+                            Compila i campi per creare una categoria di
+                            articolo.
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Form
@@ -86,7 +89,10 @@ export default function ArticleCategoriesCreate({
                                                 type="button"
                                                 variant="outline"
                                                 onClick={() =>
-                                                    window.history.back()
+                                                    router.visit(
+                                                        articleCategories.index()
+                                                            .url,
+                                                    )
                                                 }
                                                 disabled={processing}
                                             >
@@ -97,8 +103,8 @@ export default function ArticleCategoriesCreate({
                                                 disabled={processing}
                                             >
                                                 {processing
-                                                    ? 'Salvando...'
-                                                    : 'Salva'}
+                                                    ? 'Creando...'
+                                                    : 'Crea Categoria'}
                                             </Button>
                                         </div>
                                     </>

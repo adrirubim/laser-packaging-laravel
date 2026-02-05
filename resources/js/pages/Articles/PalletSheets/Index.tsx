@@ -1,28 +1,20 @@
+import { ActionsDropdown } from '@/components/ActionsDropdown';
 import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
+import {
+    FlashNotifications,
+    useFlashNotifications,
+} from '@/components/flash-notifications';
+import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { SortableTableHeader } from '@/components/SortableTableHeader';
-import { Button } from '@/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import AppLayout from '@/layouts/app-layout';
-import articles from '@/routes/articles';
+import articles from '@/routes/articles/index';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import {
-    Download,
-    Edit,
-    Eye,
-    MoreHorizontal,
-    Plus,
-    Trash2,
-    X,
-} from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Head, router, usePage } from '@inertiajs/react';
+import { Download } from 'lucide-react';
+import { useState } from 'react';
 
 type PalletSheet = {
     id: number;
@@ -57,9 +49,9 @@ type PalletSheetsIndexProps = {
 
 export default function PalletSheetsIndex() {
     const { props } = usePage<PalletSheetsIndexProps>();
-    const { sheets: sheetsPaginated, filters, flash } = props;
+    const { sheets: sheetsPaginated, filters } = props;
+    const { flash } = useFlashNotifications();
 
-    const [showFlash, setShowFlash] = useState(true);
     const [deleteDialog, setDeleteDialog] = useState<{
         open: boolean;
         sheet: PalletSheet | null;
@@ -68,14 +60,6 @@ export default function PalletSheetsIndex() {
         sheet: null,
     });
     const [isDeleting, setIsDeleting] = useState(false);
-
-    useEffect(() => {
-        if (flash?.success || flash?.error) {
-            queueMicrotask(() => setShowFlash(true));
-            const timer = setTimeout(() => setShowFlash(false), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [flash]);
 
     const handleSearchChange = (value: string) => {
         router.get(
@@ -154,46 +138,14 @@ export default function PalletSheetsIndex() {
             <Head title="Fogli Pallet" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex items-center justify-between gap-3">
-                    <div>
-                        <h1 className="text-2xl font-semibold tracking-tight">
-                            Fogli Pallet
-                        </h1>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                            Elenco dei fogli pallet attivi.
-                        </p>
-                    </div>
-                    <Link
-                        href={articles.palletSheets.create().url}
-                        className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
-                    >
-                        <Plus className="mr-2 h-4 w-4" />
-                        Nuovo Foglio
-                    </Link>
-                </div>
+                <IndexHeader
+                    title="Fogli Pallet"
+                    subtitle="Elenco dei fogli pallet attivi."
+                    createHref={articles.palletSheets.create().url}
+                    createLabel="Nuovo Foglio"
+                />
 
-                {showFlash && flash?.success && (
-                    <div className="flex animate-in items-center justify-between rounded-md border border-emerald-500/40 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-700 duration-300 fade-in slide-in-from-top-2 dark:text-emerald-300">
-                        <span>{flash.success}</span>
-                        <button
-                            onClick={() => setShowFlash(false)}
-                            className="ml-2 transition-opacity hover:opacity-70"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
-                {showFlash && flash?.error && (
-                    <div className="flex animate-in items-center justify-between rounded-md border border-rose-500/40 bg-rose-500/5 px-3 py-2 text-sm text-rose-700 duration-300 fade-in slide-in-from-top-2 dark:text-rose-300">
-                        <span>{flash.error}</span>
-                        <button
-                            onClick={() => setShowFlash(false)}
-                            className="ml-2 transition-opacity hover:opacity-70"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
+                <FlashNotifications flash={flash} />
 
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <SearchInput
@@ -279,51 +231,22 @@ export default function PalletSheetsIndex() {
                                             )}
                                         </td>
                                         <td className="px-3 py-2 text-right">
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="h-8 w-8"
-                                                        aria-label="Apri menu azioni"
-                                                    >
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            router.visit(
-                                                                articles.palletSheets.show(
-                                                                    {
-                                                                        palletSheet:
-                                                                            sheet.uuid,
-                                                                    },
-                                                                ).url,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Eye className="mr-2 h-4 w-4" />
-                                                        Visualizza
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            router.visit(
-                                                                articles.palletSheets.edit(
-                                                                    {
-                                                                        palletSheet:
-                                                                            sheet.uuid,
-                                                                    },
-                                                                ).url,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Edit className="mr-2 h-4 w-4" />
-                                                        Modifica
-                                                    </DropdownMenuItem>
-                                                    {sheet.filename && (
+                                            <ActionsDropdown
+                                                viewHref={
+                                                    articles.palletSheets.show({
+                                                        palletSheet: sheet.uuid,
+                                                    }).url
+                                                }
+                                                editHref={
+                                                    articles.palletSheets.edit({
+                                                        palletSheet: sheet.uuid,
+                                                    }).url
+                                                }
+                                                onDelete={() =>
+                                                    handleDeleteClick(sheet)
+                                                }
+                                                extraItems={
+                                                    sheet.filename ? (
                                                         <DropdownMenuItem
                                                             onSelect={(e) => {
                                                                 e.preventDefault();
@@ -339,21 +262,9 @@ export default function PalletSheetsIndex() {
                                                             <Download className="mr-2 h-4 w-4" />
                                                             Scarica allegato
                                                         </DropdownMenuItem>
-                                                    )}
-                                                    <DropdownMenuItem
-                                                        variant="destructive"
-                                                        onSelect={(e) => {
-                                                            e.preventDefault();
-                                                            handleDeleteClick(
-                                                                sheet,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Trash2 className="mr-2 h-4 w-4" />
-                                                        Elimina
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
+                                                    ) : undefined
+                                                }
+                                            />
                                         </td>
                                     </tr>
                                 ))}

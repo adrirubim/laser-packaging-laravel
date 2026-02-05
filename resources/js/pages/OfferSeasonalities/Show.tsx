@@ -1,14 +1,4 @@
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -19,7 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import offerSeasonalities from '@/routes/offer-seasonalities';
+import offerSeasonalities from '@/routes/offer-seasonalities/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Edit, Trash2 } from 'lucide-react';
@@ -39,6 +29,7 @@ export default function OfferSeasonalitiesShow({
     seasonality,
 }: OfferSeasonalitiesShowProps) {
     const [isDeleting, setIsDeleting] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
@@ -57,7 +48,7 @@ export default function OfferSeasonalitiesShow({
         },
     ];
 
-    const handleDelete = () => {
+    const handleDeleteConfirm = () => {
         setIsDeleting(true);
         router.delete(
             offerSeasonalities.destroy({ offerSeasonality: seasonality.uuid })
@@ -68,6 +59,7 @@ export default function OfferSeasonalitiesShow({
                 },
                 onFinish: () => {
                     setIsDeleting(false);
+                    setDeleteDialogOpen(false);
                 },
             },
         );
@@ -103,53 +95,14 @@ export default function OfferSeasonalitiesShow({
                                 Modifica
                             </Link>
                         </Button>
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <Button
-                                    variant="destructive"
-                                    disabled={isDeleting}
-                                >
-                                    <Trash2 className="mr-2 h-4 w-4" />
-                                    Elimina
-                                </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                        Conferma eliminazione
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        Sei sicuro di voler eliminare la
-                                        stagionalità{' '}
-                                        <strong>{seasonality.name}</strong>?
-                                        <br />
-                                        <br />
-                                        Questa azione non può essere annullata.
-                                        La stagionalità verrà eliminata
-                                        definitivamente.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel disabled={isDeleting}>
-                                        Annulla
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction
-                                        onClick={handleDelete}
-                                        disabled={isDeleting}
-                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                    >
-                                        {isDeleting ? (
-                                            <>
-                                                <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                                                Eliminando...
-                                            </>
-                                        ) : (
-                                            'Elimina definitivamente'
-                                        )}
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
+                        <Button
+                            variant="destructive"
+                            disabled={isDeleting}
+                            onClick={() => setDeleteDialogOpen(true)}
+                        >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Elimina
+                        </Button>
                     </div>
                 </div>
 
@@ -188,6 +141,21 @@ export default function OfferSeasonalitiesShow({
                     </CardContent>
                 </Card>
             </div>
+            <ConfirmDeleteDialog
+                open={deleteDialogOpen}
+                onOpenChange={setDeleteDialogOpen}
+                onConfirm={handleDeleteConfirm}
+                isDeleting={isDeleting}
+                title="Conferma eliminazione"
+                description={
+                    <>
+                        Sei sicuro di voler eliminare la stagionalità? Questa
+                        azione non può essere annullata. La stagionalità verrà
+                        eliminata definitivamente.
+                    </>
+                }
+                itemName={seasonality.name}
+            />
         </AppLayout>
     );
 }

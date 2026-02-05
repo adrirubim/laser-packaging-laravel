@@ -1,14 +1,4 @@
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -19,7 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import offerSectors from '@/routes/offer-sectors';
+import offerSectors from '@/routes/offer-sectors/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Edit, Trash2 } from 'lucide-react';
@@ -36,6 +26,7 @@ type OfferSectorsShowProps = {
 };
 
 export default function OfferSectorsShow({ sector }: OfferSectorsShowProps) {
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
@@ -53,15 +44,14 @@ export default function OfferSectorsShow({ sector }: OfferSectorsShowProps) {
         },
     ];
 
-    const handleDelete = () => {
+    const handleDeleteConfirm = () => {
         setIsDeleting(true);
         router.delete(offerSectors.destroy({ offerSector: sector.uuid }).url, {
             onSuccess: () => {
+                setDeleteDialogOpen(false);
                 router.visit(offerSectors.index().url);
             },
-            onFinish: () => {
-                setIsDeleting(false);
-            },
+            onFinish: () => setIsDeleting(false),
         });
     };
 
@@ -91,52 +81,14 @@ export default function OfferSectorsShow({ sector }: OfferSectorsShowProps) {
                                 Modifica
                             </Link>
                         </Button>
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <Button
-                                    variant="destructive"
-                                    disabled={isDeleting}
-                                >
-                                    <Trash2 className="mr-2 h-4 w-4" />
-                                    Elimina
-                                </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                        Conferma eliminazione
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        Sei sicuro di voler eliminare il settore{' '}
-                                        <strong>{sector.name}</strong>?
-                                        <br />
-                                        <br />
-                                        Questa azione non può essere annullata.
-                                        Il settore verrà eliminato
-                                        definitivamente.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel disabled={isDeleting}>
-                                        Annulla
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction
-                                        onClick={handleDelete}
-                                        disabled={isDeleting}
-                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                    >
-                                        {isDeleting ? (
-                                            <>
-                                                <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                                                Eliminando...
-                                            </>
-                                        ) : (
-                                            'Elimina definitivamente'
-                                        )}
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
+                        <Button
+                            variant="destructive"
+                            onClick={() => setDeleteDialogOpen(true)}
+                            disabled={isDeleting}
+                        >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Elimina
+                        </Button>
                     </div>
                 </div>
 
@@ -172,6 +124,16 @@ export default function OfferSectorsShow({ sector }: OfferSectorsShowProps) {
                         </div>
                     </CardContent>
                 </Card>
+
+                <ConfirmDeleteDialog
+                    open={deleteDialogOpen}
+                    onOpenChange={setDeleteDialogOpen}
+                    onConfirm={handleDeleteConfirm}
+                    title="Elimina Settore"
+                    description="Sei sicuro di voler eliminare questo settore? Questa azione non può essere annullata."
+                    itemName={sector.name}
+                    isLoading={isDeleting}
+                />
             </div>
         </AppLayout>
     );

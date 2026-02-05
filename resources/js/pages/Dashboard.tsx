@@ -47,10 +47,10 @@ import {
 import { getOrderStatusColor } from '@/constants/orderStatus';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
-import articles from '@/routes/articles';
-import customers from '@/routes/customers';
-import offers from '@/routes/offers';
-import orders from '@/routes/orders';
+import articles from '@/routes/articles/index';
+import customers from '@/routes/customers/index';
+import offers from '@/routes/offers/index';
+import orders from '@/routes/orders/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import {

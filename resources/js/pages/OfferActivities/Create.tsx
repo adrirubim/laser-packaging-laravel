@@ -13,7 +13,7 @@ import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { generateUUID } from '@/lib/utils/uuid';
 import { validationRules } from '@/lib/validation/rules';
-import offerActivities from '@/routes/offer-activities';
+import offerActivities from '@/routes/offer-activities/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router } from '@inertiajs/react';
 import { useState } from 'react';
@@ -50,20 +50,22 @@ export default function OfferActivitiesCreate({
             href: offerActivities.index().url,
         },
         {
-            title: 'Crea',
+            title: 'Nuova Attività',
             href: offerActivities.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Crea Attività" />
+            <Head title="Nuova Attività" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Gestione Attività</CardTitle>
-                        <CardDescription>Inserimento</CardDescription>
+                        <CardTitle>Nuova Attività</CardTitle>
+                        <CardDescription>
+                            Compila i campi per creare un'attività.
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Form

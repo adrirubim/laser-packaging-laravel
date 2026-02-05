@@ -1,5 +1,9 @@
 import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
 import {
+    FlashNotifications,
+    useFlashNotifications,
+} from '@/components/flash-notifications';
+import {
     Select,
     SelectContent,
     SelectItem,
@@ -8,8 +12,8 @@ import {
 } from '@/components/ui/select';
 import AppLayout from '@/layouts/app-layout';
 import { formatDecimal, parseDecimal } from '@/lib/utils/number';
-import ordersRoutes from '@/routes/orders';
-import productionOrderProcessing from '@/routes/production-order-processing';
+import ordersRoutes from '@/routes/orders/index';
+import productionOrderProcessing from '@/routes/production-order-processing/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
@@ -86,8 +90,8 @@ export default function ProductionOrderProcessingIndex() {
         employees = [],
         orders = [],
         filters,
-        flash,
     } = props;
+    const { flash } = useFlashNotifications();
 
     const [searchValue, setSearchValue] = useState(filters.search ?? '');
     const [selectedEmployee, setSelectedEmployee] = useState(
@@ -102,7 +106,6 @@ export default function ProductionOrderProcessingIndex() {
     const [maxQuantity, setMaxQuantity] = useState<number | ''>('');
     const [isSearching, setIsSearching] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [showFlash, setShowFlash] = useState(true);
     const [deleteDialog, setDeleteDialog] = useState<{
         open: boolean;
         processing: ProductionOrderProcessing | null;
@@ -298,14 +301,6 @@ export default function ProductionOrderProcessingIndex() {
         // eslint-disable-next-line react-hooks/exhaustive-deps -- debounce: run on searchValue only to avoid loops
     }, [searchValue]);
 
-    useEffect(() => {
-        if (flash?.success || flash?.error) {
-            queueMicrotask(() => setShowFlash(true));
-            const timer = setTimeout(() => setShowFlash(false), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [flash]);
-
     const handleDeleteClick = (processing: ProductionOrderProcessing) => {
         setDeleteDialog({ open: true, processing });
     };
@@ -397,7 +392,7 @@ export default function ProductionOrderProcessingIndex() {
             <Head title="Gestione Lavorazione Ordini" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
                         <h1 className="text-2xl font-semibold tracking-tight">
                             Gestione Lavorazione Ordini
@@ -406,7 +401,14 @@ export default function ProductionOrderProcessingIndex() {
                             Elenco delle lavorazioni ordini di produzione.
                         </p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <Link
+                            href={productionOrderProcessing.create().url}
+                            className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
+                        >
+                            <Plus className="mr-2 h-4 w-4" />
+                            Aggiungi nuovo
+                        </Link>
                         {processingsPaginated.total > 0 && (
                             <button
                                 onClick={handleExportCSV}
@@ -417,38 +419,10 @@ export default function ProductionOrderProcessingIndex() {
                                 Esporta CSV
                             </button>
                         )}
-                        <Link
-                            href={productionOrderProcessing.create().url}
-                            className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
-                        >
-                            <Plus className="mr-2 h-4 w-4" />
-                            Aggiungi nuovo
-                        </Link>
                     </div>
                 </div>
 
-                {showFlash && flash?.success && (
-                    <div className="flex animate-in items-center justify-between rounded-md border border-emerald-500/40 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-700 duration-300 fade-in slide-in-from-top-2 dark:text-emerald-300">
-                        <span>{flash.success}</span>
-                        <button
-                            onClick={() => setShowFlash(false)}
-                            className="ml-2 transition-opacity hover:opacity-70"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
-                {showFlash && flash?.error && (
-                    <div className="flex animate-in items-center justify-between rounded-md border border-rose-500/40 bg-rose-500/5 px-3 py-2 text-sm text-rose-700 duration-300 fade-in slide-in-from-top-2 dark:text-rose-300">
-                        <span>{flash.error}</span>
-                        <button
-                            onClick={() => setShowFlash(false)}
-                            className="ml-2 transition-opacity hover:opacity-70"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
+                <FlashNotifications flash={flash} />
 
                 {/* Filtri attivi */}
                 {activeFiltersCount > 0 && (

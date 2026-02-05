@@ -1,26 +1,20 @@
+import { ActionsDropdown } from '@/components/ActionsDropdown';
 import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
-import { Button } from '@/components/ui/button';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+    FlashNotifications,
+    useFlashNotifications,
+} from '@/components/flash-notifications';
+import { IndexHeader } from '@/components/IndexHeader';
 import AppLayout from '@/layouts/app-layout';
-import criticalIssues from '@/routes/critical-issues';
+import criticalIssues from '@/routes/critical-issues/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
     AlertTriangle,
     ChevronLeft,
     ChevronRight,
-    Edit,
-    Eye,
     Loader2,
-    MoreHorizontal,
-    Plus,
     Search,
-    Trash2,
     X,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -49,11 +43,11 @@ type CriticalIssuesIndexProps = {
 
 export default function CriticalIssuesIndex() {
     const { props } = usePage<CriticalIssuesIndexProps>();
-    const { criticalIssues: criticalIssuesPaginated, filters, flash } = props;
+    const { criticalIssues: criticalIssuesPaginated, filters } = props;
+    const { flash } = useFlashNotifications();
 
     const [searchValue, setSearchValue] = useState(filters.search ?? '');
     const [isSearching, setIsSearching] = useState(false);
-    const [showFlash, setShowFlash] = useState(true);
     const [deleteDialog, setDeleteDialog] = useState<{
         open: boolean;
         criticalIssue: CriticalIssue | null;
@@ -84,14 +78,6 @@ export default function CriticalIssuesIndex() {
         return () => clearTimeout(timer);
         // eslint-disable-next-line react-hooks/exhaustive-deps -- debounce: run on searchValue only to avoid loops
     }, [searchValue]);
-
-    useEffect(() => {
-        if (flash?.success || flash?.error) {
-            queueMicrotask(() => setShowFlash(true));
-            const timer = setTimeout(() => setShowFlash(false), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [flash]);
 
     const clearSearch = () => {
         setSearchValue('');
@@ -154,46 +140,14 @@ export default function CriticalIssuesIndex() {
             <Head title="Criticità" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex items-center justify-between gap-3">
-                    <div>
-                        <h1 className="text-2xl font-semibold tracking-tight">
-                            Criticità
-                        </h1>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                            Elenco delle criticità attive.
-                        </p>
-                    </div>
-                    <Link
-                        href={criticalIssues.create().url}
-                        className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
-                    >
-                        <Plus className="mr-2 h-4 w-4" />
-                        Nuova Criticità
-                    </Link>
-                </div>
+                <IndexHeader
+                    title="Criticità"
+                    subtitle="Elenco delle criticità attive."
+                    createHref={criticalIssues.create().url}
+                    createLabel="Nuova Criticità"
+                />
 
-                {showFlash && flash?.success && (
-                    <div className="flex animate-in items-center justify-between rounded-md border border-emerald-500/40 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-700 duration-300 fade-in slide-in-from-top-2 dark:text-emerald-300">
-                        <span>{flash.success}</span>
-                        <button
-                            onClick={() => setShowFlash(false)}
-                            className="ml-2 transition-opacity hover:opacity-70"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
-                {showFlash && flash?.error && (
-                    <div className="flex animate-in items-center justify-between rounded-md border border-rose-500/40 bg-rose-500/5 px-3 py-2 text-sm text-rose-700 duration-300 fade-in slide-in-from-top-2 dark:text-rose-300">
-                        <span>{flash.error}</span>
-                        <button
-                            onClick={() => setShowFlash(false)}
-                            className="ml-2 transition-opacity hover:opacity-70"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                    </div>
-                )}
+                <FlashNotifications flash={flash} />
 
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="space-y-1">
@@ -250,66 +204,25 @@ export default function CriticalIssuesIndex() {
                                                         {criticalIssue.name}
                                                     </h3>
                                                 </div>
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger
-                                                        asChild
-                                                    >
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="h-8 w-8"
-                                                            aria-label="Apri menu azioni"
-                                                        >
-                                                            <MoreHorizontal className="h-4 w-4" />
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
-                                                        <DropdownMenuItem
-                                                            onSelect={(e) => {
-                                                                e.preventDefault();
-                                                                router.visit(
-                                                                    criticalIssues.show(
-                                                                        {
-                                                                            criticalIssue:
-                                                                                criticalIssue.uuid,
-                                                                        },
-                                                                    ).url,
-                                                                );
-                                                            }}
-                                                        >
-                                                            <Eye className="mr-2 h-4 w-4" />
-                                                            Visualizza
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem
-                                                            onSelect={(e) => {
-                                                                e.preventDefault();
-                                                                router.visit(
-                                                                    criticalIssues.edit(
-                                                                        {
-                                                                            criticalIssue:
-                                                                                criticalIssue.uuid,
-                                                                        },
-                                                                    ).url,
-                                                                );
-                                                            }}
-                                                        >
-                                                            <Edit className="mr-2 h-4 w-4" />
-                                                            Modifica
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem
-                                                            variant="destructive"
-                                                            onSelect={(e) => {
-                                                                e.preventDefault();
-                                                                handleDeleteClick(
-                                                                    criticalIssue,
-                                                                );
-                                                            }}
-                                                        >
-                                                            <Trash2 className="mr-2 h-4 w-4" />
-                                                            Elimina
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
+                                                <ActionsDropdown
+                                                    viewHref={
+                                                        criticalIssues.show({
+                                                            criticalIssue:
+                                                                criticalIssue.uuid,
+                                                        }).url
+                                                    }
+                                                    editHref={
+                                                        criticalIssues.edit({
+                                                            criticalIssue:
+                                                                criticalIssue.uuid,
+                                                        }).url
+                                                    }
+                                                    onDelete={() =>
+                                                        handleDeleteClick(
+                                                            criticalIssue,
+                                                        )
+                                                    }
+                                                />
                                             </div>
                                             <div className="font-mono text-xs text-muted-foreground">
                                                 UUID: {criticalIssue.uuid}
@@ -369,72 +282,29 @@ export default function CriticalIssuesIndex() {
                                                     </div>
                                                 </td>
                                                 <td className="px-3 py-2 text-right align-middle text-xs">
-                                                    <DropdownMenu>
-                                                        <DropdownMenuTrigger
-                                                            asChild
-                                                        >
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                className="h-8 w-8"
-                                                                aria-label="Apri menu azioni"
-                                                            >
-                                                                <MoreHorizontal className="h-4 w-4" />
-                                                            </Button>
-                                                        </DropdownMenuTrigger>
-                                                        <DropdownMenuContent align="end">
-                                                            <DropdownMenuItem
-                                                                onSelect={(
-                                                                    e,
-                                                                ) => {
-                                                                    e.preventDefault();
-                                                                    router.visit(
-                                                                        criticalIssues.show(
-                                                                            {
-                                                                                criticalIssue:
-                                                                                    criticalIssue.uuid,
-                                                                            },
-                                                                        ).url,
-                                                                    );
-                                                                }}
-                                                            >
-                                                                <Eye className="mr-2 h-4 w-4" />
-                                                                Visualizza
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuItem
-                                                                onSelect={(
-                                                                    e,
-                                                                ) => {
-                                                                    e.preventDefault();
-                                                                    router.visit(
-                                                                        criticalIssues.edit(
-                                                                            {
-                                                                                criticalIssue:
-                                                                                    criticalIssue.uuid,
-                                                                            },
-                                                                        ).url,
-                                                                    );
-                                                                }}
-                                                            >
-                                                                <Edit className="mr-2 h-4 w-4" />
-                                                                Modifica
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuItem
-                                                                variant="destructive"
-                                                                onSelect={(
-                                                                    e,
-                                                                ) => {
-                                                                    e.preventDefault();
-                                                                    handleDeleteClick(
-                                                                        criticalIssue,
-                                                                    );
-                                                                }}
-                                                            >
-                                                                <Trash2 className="mr-2 h-4 w-4" />
-                                                                Elimina
-                                                            </DropdownMenuItem>
-                                                        </DropdownMenuContent>
-                                                    </DropdownMenu>
+                                                    <ActionsDropdown
+                                                        viewHref={
+                                                            criticalIssues.show(
+                                                                {
+                                                                    criticalIssue:
+                                                                        criticalIssue.uuid,
+                                                                },
+                                                            ).url
+                                                        }
+                                                        editHref={
+                                                            criticalIssues.edit(
+                                                                {
+                                                                    criticalIssue:
+                                                                        criticalIssue.uuid,
+                                                                },
+                                                            ).url
+                                                        }
+                                                        onDelete={() =>
+                                                            handleDeleteClick(
+                                                                criticalIssue,
+                                                            )
+                                                        }
+                                                    />
                                                 </td>
                                             </tr>
                                         ),

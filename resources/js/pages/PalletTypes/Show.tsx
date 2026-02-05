@@ -1,3 +1,4 @@
+import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -8,9 +9,10 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
-import palletTypes from '@/routes/pallet-types';
+import palletTypes from '@/routes/pallet-types/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
+import { useState } from 'react';
 
 type Article = {
     uuid: string;
@@ -31,6 +33,9 @@ type PalletTypesShowProps = {
 };
 
 export default function PalletTypesShow({ palletType }: PalletTypesShowProps) {
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Tipi di Pallet',
@@ -42,21 +47,18 @@ export default function PalletTypesShow({ palletType }: PalletTypesShowProps) {
         },
     ];
 
-    const handleDelete = () => {
-        if (
-            confirm(
-                'Sei sicuro di voler eliminare questo tipo di pallet? Questa azione non può essere annullata.',
-            )
-        ) {
-            router.delete(
-                palletTypes.destroy({ palletType: palletType.uuid }).url,
-                {
-                    onSuccess: () => {
-                        router.visit(palletTypes.index().url);
-                    },
+    const handleDeleteConfirm = () => {
+        setIsDeleting(true);
+        router.delete(
+            palletTypes.destroy({ palletType: palletType.uuid }).url,
+            {
+                onSuccess: () => {
+                    setDeleteDialogOpen(false);
+                    router.visit(palletTypes.index().url);
                 },
-            );
-        }
+                onFinish: () => setIsDeleting(false),
+            },
+        );
     };
 
     return (
@@ -88,7 +90,11 @@ export default function PalletTypesShow({ palletType }: PalletTypesShowProps) {
                                 Modifica
                             </Link>
                         </Button>
-                        <Button variant="destructive" onClick={handleDelete}>
+                        <Button
+                            variant="destructive"
+                            onClick={() => setDeleteDialogOpen(true)}
+                            disabled={isDeleting}
+                        >
                             Elimina
                         </Button>
                     </div>
@@ -183,6 +189,16 @@ export default function PalletTypesShow({ palletType }: PalletTypesShowProps) {
                         </CardContent>
                     </Card>
                 )}
+
+                <ConfirmDeleteDialog
+                    open={deleteDialogOpen}
+                    onOpenChange={setDeleteDialogOpen}
+                    onConfirm={handleDeleteConfirm}
+                    title="Elimina Tipo di Pallet"
+                    description="Sei sicuro di voler eliminare questo tipo di pallet? Questa azione non può essere annullata."
+                    itemName={`${palletType.description} (${palletType.cod})`}
+                    isLoading={isDeleting}
+                />
             </div>
         </AppLayout>
     );
