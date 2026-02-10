@@ -8,11 +8,12 @@ import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { SortableTableHeader } from '@/components/SortableTableHeader';
+import { Button } from '@/components/ui/button';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import AppLayout from '@/layouts/app-layout';
 import articles from '@/routes/articles/index';
 import { type BreadcrumbItem } from '@/types';
-import { Head, router, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { Download } from 'lucide-react';
 import { useState } from 'react';
 
@@ -200,7 +201,22 @@ export default function CQModelsIndex() {
                                             colSpan={6}
                                             className="px-3 py-8 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessun modello disponibile.
+                                            <div className="flex flex-col items-center justify-center gap-3">
+                                                <p>
+                                                    Nessun modello CQ. Aggiungi
+                                                    il primo.
+                                                </p>
+                                                <Button asChild size="sm">
+                                                    <Link
+                                                        href={
+                                                            articles.cqModels.create()
+                                                                .url
+                                                        }
+                                                    >
+                                                        Aggiungi
+                                                    </Link>
+                                                </Button>
+                                            </div>
                                         </td>
                                     </tr>
                                 )}

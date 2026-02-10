@@ -65,30 +65,30 @@ export default function OfferOperationsCreate({
             <Head title="Nuova Operazione" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Nuova Operazione</CardTitle>
-                        <CardDescription>
-                            Compila i campi per creare un'operazione.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Form
-                            action={offerOperations.store().url}
-                            method="post"
-                            encType="multipart/form-data"
-                            className="space-y-5"
-                        >
-                            {({ processing, errors }) => {
-                                const allErrors = {
-                                    ...errors,
-                                    ...serverErrors,
-                                };
+                <div className="flex w-full justify-center">
+                    <div className="w-full max-w-4xl space-y-5">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Nuova Operazione</CardTitle>
+                                <CardDescription>
+                                    Compila i campi per creare un'operazione.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Form
+                                    action={offerOperations.store().url}
+                                    method="post"
+                                    encType="multipart/form-data"
+                                    className="space-y-5"
+                                >
+                                    {({ processing, errors }) => {
+                                        const allErrors = {
+                                            ...errors,
+                                            ...serverErrors,
+                                        };
 
-                                return (
-                                    <>
-                                        <div className="flex justify-center">
-                                            <div className="w-full max-w-4xl space-y-5">
+                                        return (
+                                            <>
                                                 <div className="grid gap-2">
                                                     <FormLabel
                                                         htmlFor="uuid"
@@ -113,7 +113,7 @@ export default function OfferOperationsCreate({
                                                     />
                                                 </div>
 
-                                                <div className="grid gap-2">
+                                                <div className="mt-4 grid gap-2">
                                                     <FormLabel htmlFor="category_uuid">
                                                         Categoria
                                                     </FormLabel>
@@ -167,7 +167,7 @@ export default function OfferOperationsCreate({
                                                     />
                                                 </div>
 
-                                                <div className="grid gap-2">
+                                                <div className="mt-4 grid gap-2">
                                                     <FormLabel htmlFor="codice">
                                                         Codice
                                                     </FormLabel>
@@ -205,7 +205,7 @@ export default function OfferOperationsCreate({
                                                     />
                                                 </div>
 
-                                                <div className="grid gap-2">
+                                                <div className="mt-4 grid gap-2">
                                                     <FormLabel htmlFor="descrizione">
                                                         Descrizione
                                                     </FormLabel>
@@ -231,7 +231,7 @@ export default function OfferOperationsCreate({
                                                     />
                                                 </div>
 
-                                                <div className="grid gap-2">
+                                                <div className="mt-4 grid gap-2">
                                                     <FormLabel htmlFor="secondi_operazione">
                                                         Secondi operazione
                                                     </FormLabel>
@@ -283,7 +283,7 @@ export default function OfferOperationsCreate({
                                                     />
                                                 </div>
 
-                                                <div className="flex items-center gap-4">
+                                                <div className="mt-4 flex items-center gap-4">
                                                     <Button
                                                         type="submit"
                                                         disabled={processing}
@@ -305,14 +305,14 @@ export default function OfferOperationsCreate({
                                                         Annulla
                                                     </Button>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </>
-                                );
-                            }}
-                        </Form>
-                    </CardContent>
-                </Card>
+                                            </>
+                                        );
+                                    }}
+                                </Form>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
             </div>
         </AppLayout>
     );

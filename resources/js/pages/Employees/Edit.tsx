@@ -1,3 +1,5 @@
+import { ConfirmCloseDialog } from '@/components/confirm-close-dialog';
+import { FormValidationNotification } from '@/components/form-validation-notification';
 import { FormLabel } from '@/components/FormLabel';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -16,6 +18,7 @@ import { validationRules } from '@/lib/validation/rules';
 import employees from '@/routes/employees/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router } from '@inertiajs/react';
+import { ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
 
 type Employee = {
@@ -34,7 +37,7 @@ type EmployeesEditProps = {
 
 export default function EmployeesEdit({
     employee,
-    errors: serverErrors,
+    errors: serverErrors = {},
 }: EmployeesEditProps) {
     const [name, setName] = useState(employee.name);
     const [surname, setSurname] = useState(employee.surname);
@@ -42,6 +45,20 @@ export default function EmployeesEdit({
         employee.matriculation_number,
     );
     const [password, setPassword] = useState('');
+    const [showCloseConfirm, setShowCloseConfirm] = useState(false);
+
+    const validationErrors = Object.fromEntries(
+        Object.entries(serverErrors).filter(
+            (entry): entry is [string, string] =>
+                typeof entry[1] === 'string' && entry[1].length > 0,
+        ),
+    ) as Record<string, string>;
+
+    const isDirty =
+        name !== employee.name ||
+        surname !== employee.surname ||
+        matriculationNumber !== employee.matriculation_number ||
+        password !== '';
 
     const nameValidation = useFieldValidation(name, [
         validationRules.required('Il nome è obbligatorio'),
@@ -102,6 +119,23 @@ export default function EmployeesEdit({
             />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+                <div className="flex justify-between">
+                    <Button
+                        variant="outline"
+                        onClick={() => setShowCloseConfirm(true)}
+                        aria-label="Torna indietro"
+                    >
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        Indietro
+                    </Button>
+                </div>
+
+                <FormValidationNotification
+                    errors={validationErrors}
+                    message="Correggi gli errori nel modulo prima di salvare."
+                    showOnSubmit={false}
+                />
+
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
@@ -351,12 +385,18 @@ export default function EmployeesEdit({
                                                         type="button"
                                                         variant="outline"
                                                         onClick={() =>
-                                                            router.visit(
-                                                                employees.show({
-                                                                    employee:
-                                                                        employee.uuid,
-                                                                }).url,
-                                                            )
+                                                            isDirty
+                                                                ? setShowCloseConfirm(
+                                                                      true,
+                                                                  )
+                                                                : router.visit(
+                                                                      employees.show(
+                                                                          {
+                                                                              employee:
+                                                                                  employee.uuid,
+                                                                          },
+                                                                      ).url,
+                                                                  )
                                                         }
                                                     >
                                                         Annulla
@@ -371,6 +411,19 @@ export default function EmployeesEdit({
                     </div>
                 </div>
             </div>
+
+            <ConfirmCloseDialog
+                open={showCloseConfirm}
+                onOpenChange={setShowCloseConfirm}
+                onConfirm={() => {
+                    setShowCloseConfirm(false);
+                    router.visit(
+                        employees.show({ employee: employee.uuid }).url,
+                    );
+                }}
+                title="Conferma chiusura"
+                description="Sei sicuro di voler uscire? I dati non salvati andranno persi."
+            />
         </AppLayout>
     );
 }

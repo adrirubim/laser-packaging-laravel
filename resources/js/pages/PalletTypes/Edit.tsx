@@ -50,111 +50,126 @@ export default function PalletTypesEdit({
             <Head title={`Modifica Tipo di Pallet ${palletType.cod}`} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Modifica Tipo di Pallet</CardTitle>
-                        <CardDescription>
-                            Aggiorna le informazioni del tipo di pallet.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Form
-                            action={
-                                palletTypes.update({
-                                    palletType: palletType.uuid,
-                                }).url
-                            }
-                            method="put"
-                            className="space-y-6"
-                        >
-                            {({ processing, errors }) => {
-                                const allErrors = {
-                                    ...errors,
-                                    ...serverErrors,
-                                };
+                <div className="flex w-full justify-center">
+                    <div className="w-full max-w-4xl space-y-5">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Modifica Tipo di Pallet</CardTitle>
+                                <CardDescription>
+                                    Aggiorna le informazioni del tipo di pallet.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Form
+                                    action={
+                                        palletTypes.update({
+                                            palletType: palletType.uuid,
+                                        }).url
+                                    }
+                                    method="put"
+                                    className="space-y-6"
+                                >
+                                    {({ processing, errors }) => {
+                                        const allErrors = {
+                                            ...errors,
+                                            ...serverErrors,
+                                        };
 
-                                return (
-                                    <>
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="uuid">
-                                                UUID
-                                            </FormLabel>
-                                            <Input
-                                                id="uuid"
-                                                name="uuid"
-                                                defaultValue={palletType.uuid}
-                                                readOnly
-                                                className="bg-muted"
-                                            />
-                                        </div>
+                                        return (
+                                            <>
+                                                <div className="grid gap-2">
+                                                    <FormLabel htmlFor="uuid">
+                                                        UUID
+                                                    </FormLabel>
+                                                    <Input
+                                                        id="uuid"
+                                                        name="uuid"
+                                                        defaultValue={
+                                                            palletType.uuid
+                                                        }
+                                                        readOnly
+                                                        className="bg-muted"
+                                                    />
+                                                </div>
 
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="cod" required>
-                                                Codice
-                                            </FormLabel>
-                                            <Input
-                                                id="cod"
-                                                name="cod"
-                                                defaultValue={palletType.cod}
-                                                required
-                                                placeholder="Codice Tipo di Pallet"
-                                            />
-                                            <InputError
-                                                message={allErrors.cod}
-                                            />
-                                        </div>
+                                                <div className="grid gap-2">
+                                                    <FormLabel
+                                                        htmlFor="cod"
+                                                        required
+                                                    >
+                                                        Codice
+                                                    </FormLabel>
+                                                    <Input
+                                                        id="cod"
+                                                        name="cod"
+                                                        defaultValue={
+                                                            palletType.cod
+                                                        }
+                                                        required
+                                                        placeholder="Codice Tipo di Pallet"
+                                                    />
+                                                    <InputError
+                                                        message={allErrors.cod}
+                                                    />
+                                                </div>
 
-                                        <div className="grid gap-2">
-                                            <FormLabel
-                                                htmlFor="description"
-                                                required
-                                            >
-                                                Descrizione
-                                            </FormLabel>
-                                            <Input
-                                                id="description"
-                                                name="description"
-                                                defaultValue={
-                                                    palletType.description
-                                                }
-                                                required
-                                                placeholder="Descrizione Tipo di Pallet"
-                                            />
-                                            <InputError
-                                                message={allErrors.description}
-                                            />
-                                        </div>
+                                                <div className="grid gap-2">
+                                                    <FormLabel
+                                                        htmlFor="description"
+                                                        required
+                                                    >
+                                                        Descrizione
+                                                    </FormLabel>
+                                                    <Input
+                                                        id="description"
+                                                        name="description"
+                                                        defaultValue={
+                                                            palletType.description
+                                                        }
+                                                        required
+                                                        placeholder="Descrizione Tipo di Pallet"
+                                                    />
+                                                    <InputError
+                                                        message={
+                                                            allErrors.description
+                                                        }
+                                                    />
+                                                </div>
 
-                                        <div className="flex items-center gap-4">
-                                            <Button
-                                                type="submit"
-                                                disabled={processing}
-                                            >
-                                                {processing
-                                                    ? 'Aggiornando...'
-                                                    : 'Aggiorna Tipo di Pallet'}
-                                            </Button>
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                onClick={() =>
-                                                    router.visit(
-                                                        palletTypes.show({
-                                                            palletType:
-                                                                palletType.uuid,
-                                                        }).url,
-                                                    )
-                                                }
-                                            >
-                                                Annulla
-                                            </Button>
-                                        </div>
-                                    </>
-                                );
-                            }}
-                        </Form>
-                    </CardContent>
-                </Card>
+                                                <div className="flex items-center gap-4">
+                                                    <Button
+                                                        type="submit"
+                                                        disabled={processing}
+                                                    >
+                                                        {processing
+                                                            ? 'Aggiornando...'
+                                                            : 'Aggiorna Tipo di Pallet'}
+                                                    </Button>
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        onClick={() =>
+                                                            router.visit(
+                                                                palletTypes.show(
+                                                                    {
+                                                                        palletType:
+                                                                            palletType.uuid,
+                                                                    },
+                                                                ).url,
+                                                            )
+                                                        }
+                                                    >
+                                                        Annulla
+                                                    </Button>
+                                                </div>
+                                            </>
+                                        );
+                                    }}
+                                </Form>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
             </div>
         </AppLayout>
     );

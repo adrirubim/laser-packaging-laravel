@@ -7,6 +7,13 @@ import { FormValidationNotification } from '@/components/form-validation-notific
 import { FormLabel } from '@/components/FormLabel';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -1040,1961 +1047,2364 @@ export default function OffersCreate() {
                 {/* Notifiche flash (successo, errore, ecc.) */}
                 <FlashNotifications flash={flash} />
 
-                <Form
-                    action={offers.store().url}
-                    method="post"
-                    className="space-y-5"
-                    onSuccess={() => {
-                        // Il successo è gestito con messaggi flash mostrati nella pagina indice dopo il redirect
-                        setHasAttemptedSubmit(false);
-                    }}
-                    onError={() => {
-                        setHasAttemptedSubmit(true);
-                    }}
-                    transform={(data): Record<string, FormDataConvertible> => {
-                        // Mappare nomi campi del modulo ai nomi del database
-                        const fieldMapping: Record<string, string> = {
-                            validity: 'validity_date',
-                            client: 'customer_uuid',
-                            division: 'customerdivision_uuid',
-                            activity: 'activity_uuid',
-                            sector: 'sector_uuid',
-                            type: 'seasonality_uuid',
-                            order_type: 'order_type_uuid',
-                            las_family: 'lasfamily_uuid',
-                            ls_resource: 'lsresource_uuid',
-                            las_work_line: 'lasworkline_uuid',
-                        };
+                <div className="flex w-full justify-center">
+                    <div className="w-full max-w-4xl space-y-5">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Crea nuova offerta</CardTitle>
+                                <CardDescription>
+                                    Compila i campi per creare una nuova
+                                    offerta.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Form
+                                    action={offers.store().url}
+                                    method="post"
+                                    className="space-y-5"
+                                    onSuccess={() => {
+                                        // Il successo è gestito con messaggi flash mostrati nella pagina indice dopo il redirect
+                                        setHasAttemptedSubmit(false);
+                                    }}
+                                    onError={() => {
+                                        setHasAttemptedSubmit(true);
+                                    }}
+                                    transform={(
+                                        data,
+                                    ): Record<string, FormDataConvertible> => {
+                                        // Mappare nomi campi del modulo ai nomi del database
+                                        const fieldMapping: Record<
+                                            string,
+                                            string
+                                        > = {
+                                            validity: 'validity_date',
+                                            client: 'customer_uuid',
+                                            division: 'customerdivision_uuid',
+                                            activity: 'activity_uuid',
+                                            sector: 'sector_uuid',
+                                            type: 'seasonality_uuid',
+                                            order_type: 'order_type_uuid',
+                                            las_family: 'lasfamily_uuid',
+                                            ls_resource: 'lsresource_uuid',
+                                            las_work_line: 'lasworkline_uuid',
+                                        };
 
-                        // Convertire tutti i campi numerici da formato italiano (virgola) a formato standard (punto)
-                        const numericFields = [
-                            'quantity',
-                            'piece',
-                            'declared_weight_cfz',
-                            'declared_weight_pz',
-                            'theoretical_time_cfz',
-                            'unexpected',
-                            'total_theoretical_time',
-                            'theoretical_time',
-                            'production_time_cfz',
-                            'production_time',
-                            'production_average_cfz',
-                            'production_average_pz',
-                            'expected_workers',
-                            'expected_revenue',
-                            'rate_cfz',
-                            'rate_pz',
-                            'rate_rounding_cfz',
-                            'rate_increase_cfz',
-                            'rate_rounding_cfz_perc',
-                            'final_rate_cfz',
-                            'final_rate_pz',
-                            'materials_euro',
-                            'logistics_euro',
-                            'other_euro',
-                            'total_rate_cfz',
-                            'total_rate_pz',
-                            'ls_setup_cost',
-                            'ls_other_costs',
-                        ];
+                                        // Convertire tutti i campi numerici da formato italiano (virgola) a formato standard (punto)
+                                        const numericFields = [
+                                            'quantity',
+                                            'piece',
+                                            'declared_weight_cfz',
+                                            'declared_weight_pz',
+                                            'theoretical_time_cfz',
+                                            'unexpected',
+                                            'total_theoretical_time',
+                                            'theoretical_time',
+                                            'production_time_cfz',
+                                            'production_time',
+                                            'production_average_cfz',
+                                            'production_average_pz',
+                                            'expected_workers',
+                                            'expected_revenue',
+                                            'rate_cfz',
+                                            'rate_pz',
+                                            'rate_rounding_cfz',
+                                            'rate_increase_cfz',
+                                            'rate_rounding_cfz_perc',
+                                            'final_rate_cfz',
+                                            'final_rate_pz',
+                                            'materials_euro',
+                                            'logistics_euro',
+                                            'other_euro',
+                                            'total_rate_cfz',
+                                            'total_rate_pz',
+                                            'ls_setup_cost',
+                                            'ls_other_costs',
+                                        ];
 
-                        const transformed: Record<string, FormDataConvertible> =
-                            {};
+                                        const transformed: Record<
+                                            string,
+                                            FormDataConvertible
+                                        > = {};
 
-                        // Prima mappare i nomi dei campi
-                        Object.keys(data).forEach((key) => {
-                            const mappedKey = fieldMapping[key] || key;
-                            transformed[mappedKey] = data[key];
-                        });
+                                        // Prima mappare i nomi dei campi
+                                        Object.keys(data).forEach((key) => {
+                                            const mappedKey =
+                                                fieldMapping[key] || key;
+                                            transformed[mappedKey] = data[key];
+                                        });
 
-                        // Convertire campi numerici
-                        numericFields.forEach((field) => {
-                            if (
-                                transformed[field] !== undefined &&
-                                transformed[field] !== null &&
-                                transformed[field] !== ''
-                            ) {
-                                if (typeof transformed[field] === 'string') {
-                                    const trimmed = transformed[field].trim();
-                                    if (trimmed === '') {
-                                        transformed[field] = null;
-                                    } else {
-                                        const parsed = parseNumber(trimmed);
-                                        transformed[field] = isNaN(parsed)
-                                            ? null
-                                            : parsed;
-                                    }
-                                }
-                            } else {
-                                transformed[field] = null;
-                            }
-                        });
-
-                        // Convertir expected_workers a entero
-                        if (
-                            transformed.expected_workers !== undefined &&
-                            transformed.expected_workers !== null &&
-                            transformed.expected_workers !== ''
-                        ) {
-                            if (
-                                typeof transformed.expected_workers === 'string'
-                            ) {
-                                const trimmed =
-                                    transformed.expected_workers.trim();
-                                if (trimmed === '') {
-                                    transformed.expected_workers = null;
-                                } else {
-                                    const parsed = parseNumber(trimmed);
-                                    transformed.expected_workers = isNaN(parsed)
-                                        ? null
-                                        : Math.round(parsed);
-                                }
-                            } else if (
-                                typeof transformed.expected_workers === 'number'
-                            ) {
-                                transformed.expected_workers = Math.round(
-                                    transformed.expected_workers,
-                                );
-                            }
-                        } else {
-                            transformed.expected_workers = null;
-                        }
-
-                        // Convertir approval_status a entero
-                        if (
-                            transformed.approval_status !== undefined &&
-                            transformed.approval_status !== null &&
-                            transformed.approval_status !== ''
-                        ) {
-                            const parsed = parseInt(
-                                String(transformed.approval_status),
-                                10,
-                            );
-                            transformed.approval_status = isNaN(parsed)
-                                ? null
-                                : parsed;
-                        } else {
-                            transformed.approval_status = null;
-                        }
-
-                        // Convertire stringhe vuote in null per campi nullable
-                        const nullableFields = [
-                            'customerdivision_uuid',
-                            'validity_date',
-                            'activity_uuid',
-                            'sector_uuid',
-                            'seasonality_uuid',
-                            'type_uuid',
-                            'order_type_uuid',
-                            'lasfamily_uuid',
-                            'lasworkline_uuid',
-                            'lsresource_uuid',
-                            'customer_ref',
-                            'article_code_ref',
-                            'provisional_description',
-                            'unit_of_measure',
-                            'notes',
-                            'offer_notes',
-                        ];
-
-                        nullableFields.forEach((field) => {
-                            if (transformed[field] === '') {
-                                transformed[field] = null;
-                            }
-                        });
-
-                        // Preparare operazioni per l'invio
-                        if (operationRows.length > 0) {
-                            transformed.operations = operationRows
-                                .filter(
-                                    (row) =>
-                                        row.operationUuid &&
-                                        row.numOp &&
-                                        row.numOp > 0,
-                                )
-                                .map((row) => ({
-                                    offeroperation_uuid: row.operationUuid,
-                                    num_op: parseFloat(row.numOp.toString()), // Il modello si aspetta decimal:5
-                                }));
-                        }
-
-                        return transformed;
-                    }}
-                >
-                    {({ processing, errors }) => {
-                        const allErrors = { ...errors, ...serverErrors };
-
-                        return (
-                            <>
-                                {/* Notifica errori di validazione */}
-                                <FormValidationNotification
-                                    errors={allErrors}
-                                    hasAttemptedSubmit={hasAttemptedSubmit}
-                                />
-
-                                <div className="flex justify-center">
-                                    <div className="w-full max-w-4xl space-y-5">
-                                        {/* UUID (hidden) */}
-                                        <input
-                                            type="hidden"
-                                            name="uuid"
-                                            value={formUuid}
-                                        />
-
-                                        {/* Numero Offerta */}
-                                        <div className="grid gap-2">
-                                            <FormLabel
-                                                htmlFor="offer_number"
-                                                required
-                                            >
-                                                Numero Offerta
-                                            </FormLabel>
-                                            <Input
-                                                id="offer_number"
-                                                name="offer_number"
-                                                value={offerNumberValue}
-                                                onChange={(e) =>
-                                                    setOfferNumberValue(
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                onBlur={
-                                                    offerNumberValidation.onBlur
-                                                }
-                                                onFocus={(e) => {
-                                                    handleInputFocus(e);
-                                                    if (
-                                                        offerNumberValidation.onFocus
-                                                    ) {
-                                                        offerNumberValidation.onFocus();
-                                                    }
-                                                }}
-                                                required
-                                                className={
-                                                    offerNumberValidation.error
-                                                        ? 'border-destructive'
-                                                        : ''
-                                                }
-                                            />
-                                            {offerNumberValidation.error && (
-                                                <InputError
-                                                    message={
-                                                        offerNumberValidation.error
-                                                    }
-                                                />
-                                            )}
-                                            <InputError
-                                                message={allErrors.offer_number}
-                                            />
-                                        </div>
-
-                                        {/* Data Offerta */}
-                                        <div className="grid gap-2">
-                                            <FormLabel
-                                                htmlFor="offer_date"
-                                                required
-                                            >
-                                                Data Offerta
-                                            </FormLabel>
-                                            <Input
-                                                id="offer_date"
-                                                name="offer_date"
-                                                type="date"
-                                                min="2005-01-01"
-                                                max="2099-12-31"
-                                                value={offerDate}
-                                                onChange={(e) =>
-                                                    setOfferDate(e.target.value)
-                                                }
-                                                required
-                                            />
-                                            <InputError
-                                                message={allErrors.offer_date}
-                                            />
-                                        </div>
-
-                                        {/* Data Validità */}
-                                        <div className="grid gap-2">
-                                            <FormLabel
-                                                htmlFor="validity"
-                                                required
-                                            >
-                                                Data Validità
-                                            </FormLabel>
-                                            <Input
-                                                id="validity"
-                                                name="validity_date"
-                                                type="date"
-                                                min="2005-01-01"
-                                                max="2099-12-31"
-                                                value={validityDate}
-                                                onChange={(e) =>
-                                                    setValidityDate(
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                required
-                                            />
-                                            <InputError
-                                                message={
-                                                    allErrors.validity_date
-                                                }
-                                            />
-                                        </div>
-
-                                        {/* Cliente */}
-                                        <div className="grid gap-2">
-                                            <FormLabel
-                                                htmlFor="client"
-                                                required
-                                            >
-                                                Cliente
-                                            </FormLabel>
-                                            <Select
-                                                name="customer_uuid"
-                                                value={selectedCustomer || ''}
-                                                onValueChange={
-                                                    handleCustomerChange
-                                                }
-                                                required
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Seleziona il cliente..." />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {customers.map(
-                                                        (customer) => (
-                                                            <SelectItem
-                                                                key={
-                                                                    customer.uuid
-                                                                }
-                                                                value={
-                                                                    customer.uuid
-                                                                }
-                                                            >
-                                                                {customer.code}{' '}
-                                                                -{' '}
-                                                                {
-                                                                    customer.company_name
-                                                                }
-                                                            </SelectItem>
-                                                        ),
-                                                    )}
-                                                </SelectContent>
-                                            </Select>
-                                            <InputError
-                                                message={allErrors.client}
-                                            />
-                                        </div>
-
-                                        {/* Divisione */}
-                                        <div className="grid gap-2">
-                                            <FormLabel
-                                                htmlFor="division"
-                                                required
-                                            >
-                                                Divisione
-                                            </FormLabel>
-                                            <Select
-                                                name="customerdivision_uuid"
-                                                value={selectedDivision || ''}
-                                                onValueChange={
-                                                    setSelectedDivision
-                                                }
-                                                required
-                                                disabled={
-                                                    !selectedCustomer ||
-                                                    divisions.length === 0
-                                                }
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue
-                                                        placeholder={
-                                                            !selectedCustomer
-                                                                ? 'Seleziona la divisione...'
-                                                                : divisions.length ===
-                                                                    0
-                                                                  ? 'Nessuna divisione disponibile'
-                                                                  : 'Seleziona la divisione...'
-                                                        }
-                                                    />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {divisions.map(
-                                                        (division) => (
-                                                            <SelectItem
-                                                                key={
-                                                                    division.uuid
-                                                                }
-                                                                value={
-                                                                    division.uuid
-                                                                }
-                                                            >
-                                                                {division.name}
-                                                            </SelectItem>
-                                                        ),
-                                                    )}
-                                                </SelectContent>
-                                            </Select>
-                                            <InputError
-                                                message={
-                                                    allErrors.customerdivision_uuid
-                                                }
-                                            />
-                                        </div>
-
-                                        {/* Attività */}
-                                        <div className="grid gap-2">
-                                            <FormLabel
-                                                htmlFor="activity"
-                                                required
-                                            >
-                                                Attività
-                                            </FormLabel>
-                                            <Select
-                                                name="activity"
-                                                value={selectedActivity || ''}
-                                                onValueChange={
-                                                    setSelectedActivity
-                                                }
-                                                required
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Seleziona l'attività..." />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {activities.map(
-                                                        (activity) => (
-                                                            <SelectItem
-                                                                key={
-                                                                    activity.uuid
-                                                                }
-                                                                value={
-                                                                    activity.uuid
-                                                                }
-                                                            >
-                                                                {activity.name}
-                                                            </SelectItem>
-                                                        ),
-                                                    )}
-                                                </SelectContent>
-                                            </Select>
-                                            <InputError
-                                                message={allErrors.activity}
-                                            />
-                                        </div>
-
-                                        {/* Settore */}
-                                        <div className="grid gap-2">
-                                            <FormLabel
-                                                htmlFor="sector"
-                                                required
-                                            >
-                                                Settore
-                                            </FormLabel>
-                                            <Select
-                                                name="sector_uuid"
-                                                value={selectedSector || ''}
-                                                onValueChange={
-                                                    setSelectedSector
-                                                }
-                                                required
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Seleziona il settore..." />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {sectors.map((sector) => (
-                                                        <SelectItem
-                                                            key={sector.uuid}
-                                                            value={sector.uuid}
-                                                        >
-                                                            {sector.name}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            <InputError
-                                                message={allErrors.sector_uuid}
-                                            />
-                                        </div>
-
-                                        {/* Stagionalità */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="type" required>
-                                                Stagionalità
-                                            </FormLabel>
-                                            <Select
-                                                name="type"
-                                                value={
-                                                    selectedSeasonality || ''
-                                                }
-                                                onValueChange={
-                                                    setSelectedSeasonality
-                                                }
-                                                required
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Seleziona la stagionalità..." />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {seasonalities.map(
-                                                        (seasonality) => (
-                                                            <SelectItem
-                                                                key={
-                                                                    seasonality.uuid
-                                                                }
-                                                                value={
-                                                                    seasonality.uuid
-                                                                }
-                                                            >
-                                                                {
-                                                                    seasonality.name
-                                                                }
-                                                            </SelectItem>
-                                                        ),
-                                                    )}
-                                                </SelectContent>
-                                            </Select>
-                                            <InputError
-                                                message={allErrors.type}
-                                            />
-                                        </div>
-
-                                        {/* Tipo Ordine */}
-                                        <div className="grid gap-2">
-                                            <FormLabel
-                                                htmlFor="order_type"
-                                                required
-                                            >
-                                                Tipo Ordine
-                                            </FormLabel>
-                                            <Select
-                                                name="order_type"
-                                                value={selectedOrderType || ''}
-                                                onValueChange={
-                                                    setSelectedOrderType
-                                                }
-                                                required
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Seleziona il tipo di ordine..." />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {orderTypes.map(
-                                                        (orderType) => (
-                                                            <SelectItem
-                                                                key={
-                                                                    orderType.uuid
-                                                                }
-                                                                value={
-                                                                    orderType.uuid
-                                                                }
-                                                            >
-                                                                {orderType.name}
-                                                            </SelectItem>
-                                                        ),
-                                                    )}
-                                                </SelectContent>
-                                            </Select>
-                                            <InputError
-                                                message={allErrors.order_type}
-                                            />
-                                        </div>
-
-                                        {/* Famiglia LAS */}
-                                        <div className="grid gap-2">
-                                            <FormLabel
-                                                htmlFor="las_family"
-                                                required
-                                            >
-                                                Famiglia LAS
-                                            </FormLabel>
-                                            <Select
-                                                name="lasfamily_uuid"
-                                                value={selectedLasFamily || ''}
-                                                onValueChange={
-                                                    setSelectedLasFamily
-                                                }
-                                                required
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Seleziona la famiglia LAS..." />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {lasFamilies.map(
-                                                        (family) => (
-                                                            <SelectItem
-                                                                key={
-                                                                    family.uuid
-                                                                }
-                                                                value={
-                                                                    family.uuid
-                                                                }
-                                                            >
-                                                                {family.code} -{' '}
-                                                                {family.name}
-                                                            </SelectItem>
-                                                        ),
-                                                    )}
-                                                </SelectContent>
-                                            </Select>
-                                            <InputError
-                                                message={allErrors.las_family}
-                                            />
-                                        </div>
-
-                                        {/* Rif. Cliente */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="customer_ref">
-                                                Rif. Cliente
-                                            </FormLabel>
-                                            <Input
-                                                id="customer_ref"
-                                                name="customer_ref"
-                                                type="text"
-                                                value={customerRef}
-                                                onChange={(e) =>
-                                                    setCustomerRef(
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                onFocus={handleInputFocus}
-                                            />
-                                            <InputError
-                                                message={allErrors.customer_ref}
-                                            />
-                                        </div>
-
-                                        {/* L&S Risorsa */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="ls_resource">
-                                                L&S Risorsa
-                                            </FormLabel>
-                                            <Select
-                                                name="ls_resource"
-                                                value={selectedLsResource || ''}
-                                                onValueChange={
-                                                    setSelectedLsResource
-                                                }
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Seleziona la risorsa L&S..." />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {lsResources.map(
-                                                        (resource) => (
-                                                            <SelectItem
-                                                                key={
-                                                                    resource.uuid
-                                                                }
-                                                                value={
-                                                                    resource.uuid
-                                                                }
-                                                            >
-                                                                {resource.code}{' '}
-                                                                -{' '}
-                                                                {resource.name}
-                                                            </SelectItem>
-                                                        ),
-                                                    )}
-                                                </SelectContent>
-                                            </Select>
-                                            <InputError
-                                                message={
-                                                    allErrors.lsresource_uuid
-                                                }
-                                            />
-                                        </div>
-
-                                        {/* LAS Linea di Lavoro */}
-                                        <div className="grid gap-2">
-                                            <FormLabel
-                                                htmlFor="las_work_line"
-                                                required
-                                            >
-                                                LAS Linea di Lavoro
-                                            </FormLabel>
-                                            <Select
-                                                name="lasworkline_uuid"
-                                                value={
-                                                    selectedLasWorkLine || ''
-                                                }
-                                                onValueChange={
-                                                    setSelectedLasWorkLine
-                                                }
-                                                required
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Seleziona la linea di lavoro LAS..." />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {lasWorkLines.map(
-                                                        (workLine) => (
-                                                            <SelectItem
-                                                                key={
-                                                                    workLine.uuid
-                                                                }
-                                                                value={
-                                                                    workLine.uuid
-                                                                }
-                                                            >
-                                                                {workLine.code}{' '}
-                                                                -{' '}
-                                                                {workLine.name}
-                                                            </SelectItem>
-                                                        ),
-                                                    )}
-                                                </SelectContent>
-                                            </Select>
-                                            <InputError
-                                                message={
-                                                    allErrors.las_work_line
-                                                }
-                                            />
-                                        </div>
-
-                                        {/* Codice articolo di riferimento */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="article_code_ref">
-                                                Codice articolo di riferimento
-                                            </FormLabel>
-                                            <Input
-                                                id="article_code_ref"
-                                                name="article_code_ref"
-                                                type="text"
-                                                value={articleCodeRef}
-                                                onChange={(e) =>
-                                                    setArticleCodeRef(
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                onFocus={handleInputFocus}
-                                            />
-                                            <InputError
-                                                message={
-                                                    allErrors.article_code_ref
-                                                }
-                                            />
-                                        </div>
-
-                                        {/* Descrizione provvisoria */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="provisional_description">
-                                                Descrizione provvisoria
-                                            </FormLabel>
-                                            <Textarea
-                                                id="provisional_description"
-                                                name="provisional_description"
-                                                rows={3}
-                                                value={provisionalDescription}
-                                                onChange={(e) =>
-                                                    setProvisionalDescription(
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                onFocus={handleInputFocus}
-                                            />
-                                            <InputError
-                                                message={
-                                                    allErrors.provisional_description
-                                                }
-                                            />
-                                        </div>
-
-                                        {/* Unità di Misura */}
-                                        <div className="grid gap-2">
-                                            <FormLabel
-                                                htmlFor="unit_of_measure"
-                                                required
-                                            >
-                                                Unità di Misura
-                                            </FormLabel>
-                                            <Input
-                                                id="unit_of_measure"
-                                                name="unit_of_measure"
-                                                type="text"
-                                                value={unitOfMeasure}
-                                                onChange={(e) =>
-                                                    setUnitOfMeasure(
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                onFocus={handleInputFocus}
-                                                required
-                                            />
-                                            <InputError
-                                                message={
-                                                    allErrors.unit_of_measure
-                                                }
-                                            />
-                                        </div>
-
-                                        {/* Quantità */}
-                                        <div className="grid gap-2">
-                                            <FormLabel
-                                                htmlFor="quantity"
-                                                required
-                                            >
-                                                Quantità
-                                            </FormLabel>
-                                            <Input
-                                                id="quantity"
-                                                name="quantity"
-                                                type="text"
-                                                value={quantityValue}
-                                                onChange={(e) => {
-                                                    const formatted =
-                                                        formatInputNumber(
-                                                            e.target.value,
-                                                        );
-                                                    setQuantityValue(formatted);
-                                                }}
-                                                onBlur={
-                                                    quantityValidation.onBlur
-                                                }
-                                                onFocus={(e) => {
-                                                    handleInputFocus(e);
-                                                    quantityValidation.onFocus();
-                                                }}
-                                                required
-                                                min="0"
-                                                className={`text-right ${quantityValidation.error ? 'border-destructive' : ''}`}
-                                            />
-                                            {quantityValidation.error && (
-                                                <InputError
-                                                    message={
-                                                        quantityValidation.error
-                                                    }
-                                                />
-                                            )}
-                                            <InputError
-                                                message={allErrors.quantity}
-                                            />
-                                        </div>
-
-                                        {/* Pezzo */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="piece" required>
-                                                Pz
-                                            </FormLabel>
-                                            <Input
-                                                id="piece"
-                                                name="piece"
-                                                type="text"
-                                                value={pieceValue}
-                                                onChange={(e) => {
-                                                    const formatted =
-                                                        formatInputNumber(
-                                                            e.target.value,
-                                                        );
-                                                    setPieceValue(formatted);
-                                                }}
-                                                onBlur={pieceValidation.onBlur}
-                                                onFocus={(e) => {
-                                                    handleInputFocus(e);
-                                                    if (
-                                                        pieceValidation.onFocus
-                                                    ) {
-                                                        pieceValidation.onFocus();
-                                                    }
-                                                }}
-                                                required
-                                                min="0"
-                                                className={`text-right ${pieceValidation.error ? 'border-destructive' : ''}`}
-                                            />
-                                            {pieceValidation.error && (
-                                                <InputError
-                                                    message={
-                                                        pieceValidation.error
-                                                    }
-                                                />
-                                            )}
-                                            <InputError
-                                                message={allErrors.piece}
-                                            />
-                                        </div>
-
-                                        {/* Peso dichiarato gr/cfz */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="declared_weight_cfz">
-                                                Peso dichiarato gr/cfz
-                                            </FormLabel>
-                                            <div className="flex">
-                                                <Input
-                                                    id="declared_weight_cfz"
-                                                    name="declared_weight_cfz"
-                                                    type="text"
-                                                    value={declaredWeightCfz}
-                                                    onChange={(e) => {
-                                                        const formatted =
-                                                            formatInputNumber(
-                                                                e.target.value,
+                                        // Convertire campi numerici
+                                        numericFields.forEach((field) => {
+                                            if (
+                                                transformed[field] !==
+                                                    undefined &&
+                                                transformed[field] !== null &&
+                                                transformed[field] !== ''
+                                            ) {
+                                                if (
+                                                    typeof transformed[
+                                                        field
+                                                    ] === 'string'
+                                                ) {
+                                                    const trimmed =
+                                                        transformed[
+                                                            field
+                                                        ].trim();
+                                                    if (trimmed === '') {
+                                                        transformed[field] =
+                                                            null;
+                                                    } else {
+                                                        const parsed =
+                                                            parseNumber(
+                                                                trimmed,
                                                             );
-                                                        setDeclaredWeightCfz(
-                                                            formatted,
-                                                        );
-                                                    }}
-                                                    onFocus={handleInputFocus}
-                                                    min="0"
-                                                    className="rounded-r-none text-right"
-                                                />
-                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
-                                                    gr/cfz
-                                                </span>
-                                            </div>
-                                            <InputError
-                                                message={
-                                                    allErrors.declared_weight_cfz
+                                                        transformed[field] =
+                                                            isNaN(parsed)
+                                                                ? null
+                                                                : parsed;
+                                                    }
                                                 }
-                                            />
-                                        </div>
+                                            } else {
+                                                transformed[field] = null;
+                                            }
+                                        });
 
-                                        {/* Peso dichiarato gr/pz */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="declared_weight_pz">
-                                                Peso dichiarato gr/pz
-                                            </FormLabel>
-                                            <div className="flex">
-                                                <Input
-                                                    id="declared_weight_pz"
-                                                    name="declared_weight_pz"
-                                                    type="text"
-                                                    value={declaredWeightPz}
-                                                    readOnly
-                                                    min="0"
-                                                    className="rounded-r-none bg-muted"
-                                                />
-                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
-                                                    gr/pz
-                                                </span>
-                                            </div>
-                                            <InputError
-                                                message={
-                                                    allErrors.declared_weight_pz
+                                        // Convertir expected_workers a entero
+                                        if (
+                                            transformed.expected_workers !==
+                                                undefined &&
+                                            transformed.expected_workers !==
+                                                null &&
+                                            transformed.expected_workers !== ''
+                                        ) {
+                                            if (
+                                                typeof transformed.expected_workers ===
+                                                'string'
+                                            ) {
+                                                const trimmed =
+                                                    transformed.expected_workers.trim();
+                                                if (trimmed === '') {
+                                                    transformed.expected_workers =
+                                                        null;
+                                                } else {
+                                                    const parsed =
+                                                        parseNumber(trimmed);
+                                                    transformed.expected_workers =
+                                                        isNaN(parsed)
+                                                            ? null
+                                                            : Math.round(
+                                                                  parsed,
+                                                              );
                                                 }
-                                            />
-                                        </div>
-
-                                        {/* Note */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="notes">
-                                                Note
-                                            </FormLabel>
-                                            <Textarea
-                                                id="notes"
-                                                name="notes"
-                                                rows={3}
-                                                value={notes}
-                                                onChange={(e) =>
-                                                    setNotes(e.target.value)
-                                                }
-                                            />
-                                            <InputError
-                                                message={allErrors.notes}
-                                            />
-                                        </div>
-
-                                        {/* Operazioni */}
-                                        <div className="grid gap-2">
-                                            <div className="mb-3 flex gap-1">
-                                                <label className="col-form-label w-[29%]">
-                                                    Categoria
-                                                </label>
-                                                <label className="col-form-label w-[29%]">
-                                                    Operazioni
-                                                </label>
-                                                <label className="col-form-label w-[12%] text-right">
-                                                    Secondi
-                                                </label>
-                                                <label className="col-form-label w-[12%] text-right">
-                                                    N° Op
-                                                    <span className="ml-1 text-red-500">
-                                                        *
-                                                    </span>
-                                                </label>
-                                                <label className="col-form-label w-[12%] text-right">
-                                                    Totale
-                                                </label>
-                                            </div>
-                                            {operationRows.map((row) => (
-                                                <div
-                                                    key={row.id}
-                                                    className="mb-3 flex items-center gap-1"
-                                                >
-                                                    <div className="w-[29%]">
-                                                        <Select
-                                                            value={
-                                                                row.categoryUuid
-                                                            }
-                                                            onValueChange={(
-                                                                value,
-                                                            ) =>
-                                                                updateOperationRow(
-                                                                    row.id,
-                                                                    {
-                                                                        categoryUuid:
-                                                                            value,
-                                                                    },
-                                                                )
-                                                            }
-                                                        >
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Seleziona la categoria..." />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                {operationCategories.map(
-                                                                    (
-                                                                        category,
-                                                                    ) => (
-                                                                        <SelectItem
-                                                                            key={
-                                                                                category.uuid
-                                                                            }
-                                                                            value={
-                                                                                category.uuid
-                                                                            }
-                                                                        >
-                                                                            {
-                                                                                category.code
-                                                                            }{' '}
-                                                                            -{' '}
-                                                                            {
-                                                                                category.name
-                                                                            }
-                                                                        </SelectItem>
-                                                                    ),
-                                                                )}
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </div>
-                                                    <div className="w-[29%]">
-                                                        <Select
-                                                            value={
-                                                                row.operationUuid
-                                                            }
-                                                            onValueChange={(
-                                                                value,
-                                                            ) => {
-                                                                updateOperationRow(
-                                                                    row.id,
-                                                                    {
-                                                                        operationUuid:
-                                                                            value,
-                                                                    },
-                                                                );
-                                                            }}
-                                                            disabled={
-                                                                !row.categoryUuid
-                                                            }
-                                                        >
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Seleziona l'operazione..." />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                {(
-                                                                    operationsByCategory[
-                                                                        row
-                                                                            .categoryUuid
-                                                                    ] || []
-                                                                ).map(
-                                                                    (
-                                                                        operation,
-                                                                    ) => (
-                                                                        <SelectItem
-                                                                            key={
-                                                                                operation.uuid
-                                                                            }
-                                                                            value={
-                                                                                operation.uuid
-                                                                            }
-                                                                        >
-                                                                            {
-                                                                                operation.codice_univoco
-                                                                            }{' '}
-                                                                            -{' '}
-                                                                            {
-                                                                                operation.descrizione
-                                                                            }
-                                                                        </SelectItem>
-                                                                    ),
-                                                                )}
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </div>
-                                                    <Input
-                                                        type="text"
-                                                        value={
-                                                            row.secOp
-                                                                ? formatNumber(
-                                                                      row.secOp,
-                                                                  )
-                                                                : ''
-                                                        }
-                                                        readOnly
-                                                        className="w-[12%] bg-muted text-right"
-                                                    />
-                                                    <Input
-                                                        type="text"
-                                                        value={
-                                                            row.numOp
-                                                                ? formatInteger(
-                                                                      row.numOp,
-                                                                  )
-                                                                : ''
-                                                        }
-                                                        onChange={(e) => {
-                                                            const formatted =
-                                                                formatInputNumber(
-                                                                    e.target
-                                                                        .value,
-                                                                    false,
-                                                                    true,
-                                                                ); // isInteger = true
-                                                            const parsed =
-                                                                parseNumber(
-                                                                    formatted,
-                                                                );
-                                                            updateOperationRow(
-                                                                row.id,
-                                                                {
-                                                                    numOp: Math.round(
-                                                                        parsed,
-                                                                    ),
-                                                                },
-                                                            ); // Asegurar que sea entero
-                                                        }}
-                                                        onFocus={
-                                                            handleInputFocus
-                                                        }
-                                                        required
-                                                        min="1"
-                                                        className="w-[12%] text-right"
-                                                    />
-                                                    <Input
-                                                        type="text"
-                                                        value={
-                                                            row.totalSec
-                                                                ? formatNumber(
-                                                                      row.totalSec,
-                                                                  )
-                                                                : ''
-                                                        }
-                                                        readOnly
-                                                        className="w-[12%] bg-muted text-right"
-                                                    />
-                                                    <Button
-                                                        type="button"
-                                                        variant="destructive"
-                                                        size="sm"
-                                                        onClick={() =>
-                                                            removeOperationRow(
-                                                                row.id,
-                                                            )
-                                                        }
-                                                        className="ml-1"
-                                                    >
-                                                        X
-                                                    </Button>
-                                                </div>
-                                            ))}
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                onClick={addOperationRow}
-                                                className="mt-2"
-                                            >
-                                                Aggiungi operazione
-                                            </Button>
-                                        </div>
-
-                                        {/* Tempo teorico (sec/cfz) */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="theoretical_time_cfz">
-                                                Tempo teorico (sec/cfz)
-                                            </FormLabel>
-                                            <div className="flex">
-                                                <Input
-                                                    id="theoretical_time_cfz"
-                                                    name="theoretical_time_cfz"
-                                                    type="text"
-                                                    value={theoreticalTimeCfz}
-                                                    readOnly
-                                                    className="rounded-r-none bg-muted text-right"
-                                                />
-                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
-                                                    sec/cfz
-                                                </span>
-                                            </div>
-                                            <InputError
-                                                message={
-                                                    allErrors.theoretical_time_cfz
-                                                }
-                                            />
-                                        </div>
-
-                                        {/* Imprevisti */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="unexpected">
-                                                Imprevisti
-                                            </FormLabel>
-                                            <Input
-                                                id="unexpected"
-                                                name="unexpected"
-                                                type="text"
-                                                value={unexpected}
-                                                readOnly
-                                                className="bg-muted text-right"
-                                            />
-                                            <InputError
-                                                message={allErrors.unexpected}
-                                            />
-                                        </div>
-
-                                        {/* Tempo teorico totale (sec/cfz) */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="total_theoretical_time">
-                                                Tempo teorico totale (sec/cfz)
-                                            </FormLabel>
-                                            <div className="flex">
-                                                <Input
-                                                    id="total_theoretical_time"
-                                                    name="total_theoretical_time"
-                                                    type="text"
-                                                    value={totalTheoreticalTime}
-                                                    readOnly
-                                                    className="rounded-r-none bg-muted text-right"
-                                                />
-                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
-                                                    sec/cfz
-                                                </span>
-                                            </div>
-                                            <InputError
-                                                message={
-                                                    allErrors.total_theoretical_time
-                                                }
-                                            />
-                                        </div>
-
-                                        {/* Tempo teorico (sec/pz) */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="theoretical_time">
-                                                Tempo teorico (sec/pz)
-                                            </FormLabel>
-                                            <div className="flex">
-                                                <Input
-                                                    id="theoretical_time"
-                                                    name="theoretical_time"
-                                                    type="text"
-                                                    value={theoreticalTime}
-                                                    readOnly
-                                                    className="rounded-r-none bg-muted text-right"
-                                                />
-                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
-                                                    sec/pz
-                                                </span>
-                                            </div>
-                                            <InputError
-                                                message={
-                                                    allErrors.theoretical_time
-                                                }
-                                            />
-                                        </div>
-
-                                        {/* Tempo produzione (sec/cfz) */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="production_time_cfz">
-                                                Tempo produzione (sec/cfz)
-                                            </FormLabel>
-                                            <div className="flex">
-                                                <Input
-                                                    id="production_time_cfz"
-                                                    name="production_time_cfz"
-                                                    type="text"
-                                                    value={productionTimeCfz}
-                                                    readOnly
-                                                    className="rounded-r-none bg-muted text-right"
-                                                />
-                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
-                                                    sec/cfz
-                                                </span>
-                                            </div>
-                                            <InputError
-                                                message={
-                                                    allErrors.production_time_cfz
-                                                }
-                                            />
-                                        </div>
-
-                                        {/* Tempo produzione (sec/pz) */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="production_time">
-                                                Tempo produzione (sec/pz)
-                                            </FormLabel>
-                                            <div className="flex">
-                                                <Input
-                                                    id="production_time"
-                                                    name="production_time"
-                                                    type="text"
-                                                    value={productionTime}
-                                                    readOnly
-                                                    className="rounded-r-none bg-muted text-right"
-                                                />
-                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
-                                                    sec/pz
-                                                </span>
-                                            </div>
-                                            <InputError
-                                                message={
-                                                    allErrors.production_time
-                                                }
-                                            />
-                                        </div>
-
-                                        {/* Media prevista (cfz/h/ps) */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="production_average_cfz">
-                                                Media prevista (cfz/h/ps)
-                                            </FormLabel>
-                                            <div className="flex">
-                                                <Input
-                                                    id="production_average_cfz"
-                                                    name="production_average_cfz"
-                                                    type="text"
-                                                    value={productionAverageCfz}
-                                                    readOnly
-                                                    className="rounded-r-none bg-muted text-right"
-                                                />
-                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
-                                                    cfz/h/ps
-                                                </span>
-                                            </div>
-                                            <InputError
-                                                message={
-                                                    allErrors.production_average_cfz
-                                                }
-                                            />
-                                        </div>
-
-                                        {/* Media prevista (pz/h/ps) */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="production_average_pz">
-                                                Media prevista (pz/h/ps)
-                                            </FormLabel>
-                                            <div className="flex">
-                                                <Input
-                                                    id="production_average_pz"
-                                                    name="production_average_pz"
-                                                    type="text"
-                                                    value={productionAveragePz}
-                                                    readOnly
-                                                    className="rounded-r-none bg-muted text-right"
-                                                />
-                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
-                                                    pz/h/ps
-                                                </span>
-                                            </div>
-                                            <InputError
-                                                message={
-                                                    allErrors.production_average_pz
-                                                }
-                                            />
-                                        </div>
-
-                                        {/* Addetti previsti */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="expected_workers">
-                                                Addetti previsti
-                                            </FormLabel>
-                                            <Input
-                                                id="expected_workers"
-                                                name="expected_workers"
-                                                type="text"
-                                                value={expectedWorkers}
-                                                onChange={(e) => {
-                                                    const formatted =
-                                                        formatInputNumber(
-                                                            e.target.value,
-                                                            false,
-                                                            true,
-                                                        );
-                                                    setExpectedWorkers(
-                                                        formatted,
+                                            } else if (
+                                                typeof transformed.expected_workers ===
+                                                'number'
+                                            ) {
+                                                transformed.expected_workers =
+                                                    Math.round(
+                                                        transformed.expected_workers,
                                                     );
-                                                }}
-                                                onFocus={handleInputFocus}
-                                                className="text-right"
-                                            />
-                                            <InputError
-                                                message={
-                                                    allErrors.expected_workers
-                                                }
-                                            />
-                                        </div>
+                                            }
+                                        } else {
+                                            transformed.expected_workers = null;
+                                        }
 
-                                        {/* Ricavo Manodopera prevista */}
-                                        <div className="grid gap-2">
-                                            <FormLabel
-                                                htmlFor="expected_revenue"
-                                                required
-                                            >
-                                                Ricavo Manodopera prevista
-                                            </FormLabel>
-                                            <div className="flex">
-                                                <Input
-                                                    id="expected_revenue"
-                                                    name="expected_revenue"
-                                                    type="text"
-                                                    value={expectedRevenue}
-                                                    onChange={(e) => {
-                                                        const formatted =
-                                                            formatInputNumber(
-                                                                e.target.value,
-                                                            );
-                                                        setExpectedRevenue(
-                                                            formatted,
-                                                        );
-                                                    }}
-                                                    required
-                                                    title="Inserisci un valore valido (es. 1.234.567,00000)"
-                                                    className="rounded-r-none text-right"
-                                                />
-                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
-                                                    €
-                                                </span>
-                                            </div>
-                                            <InputError
-                                                message={
-                                                    allErrors.expected_revenue
-                                                }
-                                            />
-                                        </div>
+                                        // Convertir approval_status a entero
+                                        if (
+                                            transformed.approval_status !==
+                                                undefined &&
+                                            transformed.approval_status !==
+                                                null &&
+                                            transformed.approval_status !== ''
+                                        ) {
+                                            const parsed = parseInt(
+                                                String(
+                                                    transformed.approval_status,
+                                                ),
+                                                10,
+                                            );
+                                            transformed.approval_status = isNaN(
+                                                parsed,
+                                            )
+                                                ? null
+                                                : parsed;
+                                        } else {
+                                            transformed.approval_status = null;
+                                        }
 
-                                        {/* Tariffa mdo cfz */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="rate_cfz">
-                                                Tariffa mdo cfz
-                                            </FormLabel>
-                                            <div className="flex">
-                                                <Input
-                                                    id="rate_cfz"
-                                                    name="rate_cfz"
-                                                    type="text"
-                                                    value={rateCfz}
-                                                    readOnly
-                                                    className="rounded-r-none bg-muted text-right"
-                                                />
-                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
-                                                    cfz
-                                                </span>
-                                            </div>
-                                            <InputError
-                                                message={allErrors.rate_cfz}
-                                            />
-                                        </div>
+                                        // Convertire stringhe vuote in null per campi nullable
+                                        const nullableFields = [
+                                            'customerdivision_uuid',
+                                            'validity_date',
+                                            'activity_uuid',
+                                            'sector_uuid',
+                                            'seasonality_uuid',
+                                            'type_uuid',
+                                            'order_type_uuid',
+                                            'lasfamily_uuid',
+                                            'lasworkline_uuid',
+                                            'lsresource_uuid',
+                                            'customer_ref',
+                                            'article_code_ref',
+                                            'provisional_description',
+                                            'unit_of_measure',
+                                            'notes',
+                                            'offer_notes',
+                                        ];
 
-                                        {/* Tariffa mdo pz */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="rate_pz">
-                                                Tariffa mdo pz
-                                            </FormLabel>
-                                            <div className="flex">
-                                                <Input
-                                                    id="rate_pz"
-                                                    name="rate_pz"
-                                                    type="text"
-                                                    value={ratePz}
-                                                    readOnly
-                                                    className="rounded-r-none bg-muted text-right"
-                                                />
-                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
-                                                    pz
-                                                </span>
-                                            </div>
-                                            <InputError
-                                                message={allErrors.rate_pz}
-                                            />
-                                        </div>
+                                        nullableFields.forEach((field) => {
+                                            if (transformed[field] === '') {
+                                                transformed[field] = null;
+                                            }
+                                        });
 
-                                        {/* Tariffa mdo cfz arrotondata */}
-                                        <div className="grid gap-2">
-                                            <FormLabel
-                                                htmlFor="rate_rounding_cfz"
-                                                required
-                                            >
-                                                Tariffa mdo cfz arrotondata
-                                            </FormLabel>
-                                            <div className="flex">
-                                                <Input
-                                                    id="rate_rounding_cfz"
-                                                    name="rate_rounding_cfz"
-                                                    type="text"
-                                                    value={rateRoundingCfz}
-                                                    onChange={(e) => {
-                                                        const formatted =
-                                                            formatInputNumber(
-                                                                e.target.value,
-                                                            );
-                                                        setRateRoundingCfz(
-                                                            formatted,
-                                                        );
-                                                    }}
-                                                    onFocus={handleInputFocus}
-                                                    required
-                                                    title="Inserisci un valore valido (es. 1.234.567,00000)"
-                                                    className="rounded-r-none text-right"
-                                                />
-                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
-                                                    cfz
-                                                </span>
-                                            </div>
-                                            <InputError
-                                                message={
-                                                    allErrors.rate_rounding_cfz
-                                                }
-                                            />
-                                        </div>
-
-                                        {/* Aumento/sconto tariffa cfz */}
-                                        <div className="grid gap-2">
-                                            <FormLabel
-                                                htmlFor="rate_increase_cfz"
-                                                required
-                                            >
-                                                Aumento/sconto tariffa cfz
-                                            </FormLabel>
-                                            <div className="flex">
-                                                <Input
-                                                    id="rate_increase_cfz"
-                                                    name="rate_increase_cfz"
-                                                    type="text"
-                                                    value={rateIncreaseCfz}
-                                                    onChange={(e) => {
-                                                        const formatted =
-                                                            formatInputNumber(
-                                                                e.target.value,
-                                                                true,
-                                                            );
-                                                        setRateIncreaseCfz(
-                                                            formatted,
-                                                        );
-                                                    }}
-                                                    onFocus={handleInputFocus}
-                                                    required
-                                                    title="Inserisci un valore valido (es. 1.234.567,00000 o -1.234.567,00000)"
-                                                    className="rounded-r-none text-right"
-                                                />
-                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
-                                                    cfz
-                                                </span>
-                                            </div>
-                                            <InputError
-                                                message={
-                                                    allErrors.rate_increase_cfz
-                                                }
-                                            />
-                                        </div>
-
-                                        {/* Tariffa mdo cfz arrotondata % */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="rate_rounding_cfz_perc">
-                                                Tariffa mdo cfz arrotondata %
-                                            </FormLabel>
-                                            <div className="flex">
-                                                <Input
-                                                    id="rate_rounding_cfz_perc"
-                                                    name="rate_rounding_cfz_perc"
-                                                    type="text"
-                                                    value={rateRoundingCfzPerc}
-                                                    readOnly
-                                                    className="rounded-r-none bg-muted text-right"
-                                                />
-                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
-                                                    %
-                                                </span>
-                                            </div>
-                                            <InputError
-                                                message={
-                                                    allErrors.rate_rounding_cfz_perc
-                                                }
-                                            />
-                                        </div>
-
-                                        {/* Tariffa definitiva mdo cfz */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="final_rate_cfz">
-                                                Tariffa definitiva mdo cfz
-                                            </FormLabel>
-                                            <div className="flex">
-                                                <Input
-                                                    id="final_rate_cfz"
-                                                    name="final_rate_cfz"
-                                                    type="text"
-                                                    value={finalRateCfz}
-                                                    readOnly
-                                                    className="rounded-r-none bg-muted text-right"
-                                                />
-                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
-                                                    cfz
-                                                </span>
-                                            </div>
-                                            <InputError
-                                                message={
-                                                    allErrors.final_rate_cfz
-                                                }
-                                            />
-                                        </div>
-
-                                        {/* Tariffa definitiva mdo pz */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="final_rate_pz">
-                                                Tariffa definitiva mdo pz
-                                            </FormLabel>
-                                            <div className="flex">
-                                                <Input
-                                                    id="final_rate_pz"
-                                                    name="final_rate_pz"
-                                                    type="text"
-                                                    value={finalRatePz}
-                                                    readOnly
-                                                    className="rounded-r-none bg-muted text-right"
-                                                />
-                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
-                                                    pz
-                                                </span>
-                                            </div>
-                                            <InputError
-                                                message={
-                                                    allErrors.final_rate_pz
-                                                }
-                                            />
-                                        </div>
-
-                                        {/* Euro materiali */}
-                                        <div className="grid gap-2">
-                                            <FormLabel
-                                                htmlFor="materials_euro"
-                                                required
-                                            >
-                                                Euro materiali
-                                            </FormLabel>
-                                            <div className="flex">
-                                                <Input
-                                                    id="materials_euro"
-                                                    name="materials_euro"
-                                                    type="text"
-                                                    value={materialsEuro}
-                                                    onChange={(e) => {
-                                                        const formatted =
-                                                            formatInputNumber(
-                                                                e.target.value,
-                                                            );
-                                                        setMaterialsEuro(
-                                                            formatted,
-                                                        );
-                                                    }}
-                                                    onFocus={handleInputFocus}
-                                                    required
-                                                    className="rounded-r-none text-right"
-                                                />
-                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
-                                                    €
-                                                </span>
-                                            </div>
-                                            <small className="text-sm text-muted-foreground">
-                                                Inserisci l'importo, ad esempio
-                                                1.234.567,00000
-                                            </small>
-                                            <InputError
-                                                message={
-                                                    allErrors.materials_euro
-                                                }
-                                            />
-                                        </div>
-
-                                        {/* Euro logistica */}
-                                        <div className="grid gap-2">
-                                            <FormLabel
-                                                htmlFor="logistics_euro"
-                                                required
-                                            >
-                                                Euro logistica
-                                            </FormLabel>
-                                            <div className="flex">
-                                                <Input
-                                                    id="logistics_euro"
-                                                    name="logistics_euro"
-                                                    type="text"
-                                                    value={logisticsEuro}
-                                                    onChange={(e) => {
-                                                        const formatted =
-                                                            formatInputNumber(
-                                                                e.target.value,
-                                                            );
-                                                        setLogisticsEuro(
-                                                            formatted,
-                                                        );
-                                                    }}
-                                                    onFocus={handleInputFocus}
-                                                    required
-                                                    className="rounded-r-none text-right"
-                                                />
-                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
-                                                    €
-                                                </span>
-                                            </div>
-                                            <small className="text-sm text-muted-foreground">
-                                                Inserisci l'importo, ad esempio
-                                                1.234.567,00000
-                                            </small>
-                                            <InputError
-                                                message={
-                                                    allErrors.logistics_euro
-                                                }
-                                            />
-                                        </div>
-
-                                        {/* Euro altro */}
-                                        <div className="grid gap-2">
-                                            <FormLabel
-                                                htmlFor="other_euro"
-                                                required
-                                            >
-                                                Euro altro
-                                            </FormLabel>
-                                            <div className="flex">
-                                                <Input
-                                                    id="other_euro"
-                                                    name="other_euro"
-                                                    type="text"
-                                                    value={otherEuro}
-                                                    onChange={(e) => {
-                                                        const formatted =
-                                                            formatInputNumber(
-                                                                e.target.value,
-                                                            );
-                                                        setOtherEuro(formatted);
-                                                    }}
-                                                    onFocus={handleInputFocus}
-                                                    required
-                                                    className="rounded-r-none text-right"
-                                                />
-                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
-                                                    €
-                                                </span>
-                                            </div>
-                                            <small className="text-sm text-muted-foreground">
-                                                Inserisci l'importo, ad esempio
-                                                1.234.567,00000
-                                            </small>
-                                            <InputError
-                                                message={allErrors.other_euro}
-                                            />
-                                        </div>
-
-                                        {/* Tariffa totale cfz */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="total_rate_cfz">
-                                                Tariffa totale cfz
-                                            </FormLabel>
-                                            <div className="flex">
-                                                <Input
-                                                    id="total_rate_cfz"
-                                                    name="total_rate_cfz"
-                                                    type="text"
-                                                    value={totalRateCfz}
-                                                    readOnly
-                                                    className="rounded-r-none bg-muted text-right"
-                                                />
-                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
-                                                    cfz
-                                                </span>
-                                            </div>
-                                            <InputError
-                                                message={
-                                                    allErrors.total_rate_cfz
-                                                }
-                                            />
-                                        </div>
-
-                                        {/* Tariffa totale pz */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="total_rate_pz">
-                                                Tariffa totale pz
-                                            </FormLabel>
-                                            <div className="flex">
-                                                <Input
-                                                    id="total_rate_pz"
-                                                    name="total_rate_pz"
-                                                    type="text"
-                                                    value={totalRatePz}
-                                                    readOnly
-                                                    className="rounded-r-none bg-muted text-right"
-                                                />
-                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
-                                                    pz
-                                                </span>
-                                            </div>
-                                            <InputError
-                                                message={
-                                                    allErrors.total_rate_pz
-                                                }
-                                            />
-                                        </div>
-
-                                        {/* Note sull'offerta */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="offer_notes">
-                                                Note sull'offerta
-                                            </FormLabel>
-                                            <Textarea
-                                                id="offer_notes"
-                                                name="offer_notes"
-                                                rows={3}
-                                                value={offerNotes}
-                                                onChange={(e) =>
-                                                    setOfferNotes(
-                                                        e.target.value,
+                                        // Preparare operazioni per l'invio
+                                        if (operationRows.length > 0) {
+                                            transformed.operations =
+                                                operationRows
+                                                    .filter(
+                                                        (row) =>
+                                                            row.operationUuid &&
+                                                            row.numOp &&
+                                                            row.numOp > 0,
                                                     )
-                                                }
-                                                onFocus={handleInputFocus}
-                                            />
-                                            <InputError
-                                                message={allErrors.offer_notes}
-                                            />
-                                        </div>
+                                                    .map((row) => ({
+                                                        offeroperation_uuid:
+                                                            row.operationUuid,
+                                                        num_op: parseFloat(
+                                                            row.numOp.toString(),
+                                                        ), // Il modello si aspetta decimal:5
+                                                    }));
+                                        }
 
-                                        {/* L&S Costo setup (%) */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="ls_setup_cost">
-                                                L&S Costo setup (%)
-                                            </FormLabel>
-                                            <div className="flex">
-                                                <Input
-                                                    id="ls_setup_cost"
-                                                    name="ls_setup_cost"
-                                                    type="text"
-                                                    value={lsSetupCost}
-                                                    onChange={(e) => {
-                                                        const formatted =
-                                                            formatInputNumber(
-                                                                e.target.value,
-                                                            );
-                                                        setLsSetupCost(
-                                                            formatted,
-                                                        );
-                                                    }}
-                                                    className="rounded-r-none text-right"
+                                        return transformed;
+                                    }}
+                                >
+                                    {({ processing, errors }) => {
+                                        const allErrors = {
+                                            ...errors,
+                                            ...serverErrors,
+                                        };
+
+                                        return (
+                                            <>
+                                                {/* Notifica errori di validazione */}
+                                                <FormValidationNotification
+                                                    errors={allErrors}
+                                                    hasAttemptedSubmit={
+                                                        hasAttemptedSubmit
+                                                    }
                                                 />
-                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
-                                                    %
-                                                </span>
-                                            </div>
-                                            <InputError
-                                                message={
-                                                    allErrors.ls_setup_cost
-                                                }
-                                            />
-                                        </div>
 
-                                        {/* L&S Altri costi */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="ls_other_costs">
-                                                L&S Altri costi
-                                            </FormLabel>
-                                            <div className="flex">
-                                                <Input
-                                                    id="ls_other_costs"
-                                                    name="ls_other_costs"
-                                                    type="text"
-                                                    value={lsOtherCosts}
-                                                    onChange={(e) => {
-                                                        const formatted =
-                                                            formatInputNumber(
-                                                                e.target.value,
-                                                            );
-                                                        setLsOtherCosts(
-                                                            formatted,
-                                                        );
-                                                    }}
-                                                    onFocus={handleInputFocus}
-                                                    title="Inserisci un importo valido in euro (es. 1.234.567,00000)"
-                                                    className="rounded-r-none text-right"
-                                                />
-                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
-                                                    €
-                                                </span>
-                                            </div>
-                                            <small className="text-sm text-muted-foreground">
-                                                Inserisci l'importo, ad esempio
-                                                1.234.567,00000
-                                            </small>
-                                            <InputError
-                                                message={
-                                                    allErrors.ls_other_costs
-                                                }
-                                            />
-                                        </div>
+                                                <div className="flex justify-center">
+                                                    <div className="w-full max-w-4xl space-y-5">
+                                                        {/* UUID (hidden) */}
+                                                        <input
+                                                            type="hidden"
+                                                            name="uuid"
+                                                            value={formUuid}
+                                                        />
 
-                                        {/* Approvazione */}
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="approval_status">
-                                                Approvazione
-                                            </FormLabel>
-                                            <Select
-                                                name="approval_status"
-                                                value={approvalStatus}
-                                                onValueChange={
-                                                    setApprovalStatus
-                                                }
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Seleziona lo stato di approvazione" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="0">
-                                                        In attesa di
-                                                        approvazione
-                                                    </SelectItem>
-                                                    <SelectItem value="1">
-                                                        Approvata
-                                                    </SelectItem>
-                                                    <SelectItem value="2">
-                                                        Respinta
-                                                    </SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                            <InputError
-                                                message={
-                                                    allErrors.approval_status
-                                                }
-                                            />
-                                        </div>
+                                                        {/* Numero Offerta */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel
+                                                                htmlFor="offer_number"
+                                                                required
+                                                            >
+                                                                Numero Offerta
+                                                            </FormLabel>
+                                                            <Input
+                                                                id="offer_number"
+                                                                name="offer_number"
+                                                                value={
+                                                                    offerNumberValue
+                                                                }
+                                                                onChange={(e) =>
+                                                                    setOfferNumberValue(
+                                                                        e.target
+                                                                            .value,
+                                                                    )
+                                                                }
+                                                                onBlur={
+                                                                    offerNumberValidation.onBlur
+                                                                }
+                                                                onFocus={(
+                                                                    e,
+                                                                ) => {
+                                                                    handleInputFocus(
+                                                                        e,
+                                                                    );
+                                                                    if (
+                                                                        offerNumberValidation.onFocus
+                                                                    ) {
+                                                                        offerNumberValidation.onFocus();
+                                                                    }
+                                                                }}
+                                                                required
+                                                                className={
+                                                                    offerNumberValidation.error
+                                                                        ? 'border-destructive'
+                                                                        : ''
+                                                                }
+                                                            />
+                                                            {offerNumberValidation.error && (
+                                                                <InputError
+                                                                    message={
+                                                                        offerNumberValidation.error
+                                                                    }
+                                                                />
+                                                            )}
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.offer_number
+                                                                }
+                                                            />
+                                                        </div>
 
-                                        {/* Bottoni */}
-                                        <div className="flex items-center gap-4 pt-4">
-                                            <Button
-                                                type="submit"
-                                                disabled={processing}
-                                            >
-                                                {processing
-                                                    ? 'Creando...'
-                                                    : 'Salva'}
-                                            </Button>
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                onClick={handleClose}
-                                            >
-                                                Chiudi
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </>
-                        );
-                    }}
-                </Form>
+                                                        {/* Data Offerta */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel
+                                                                htmlFor="offer_date"
+                                                                required
+                                                            >
+                                                                Data Offerta
+                                                            </FormLabel>
+                                                            <Input
+                                                                id="offer_date"
+                                                                name="offer_date"
+                                                                type="date"
+                                                                min="2005-01-01"
+                                                                max="2099-12-31"
+                                                                value={
+                                                                    offerDate
+                                                                }
+                                                                onChange={(e) =>
+                                                                    setOfferDate(
+                                                                        e.target
+                                                                            .value,
+                                                                    )
+                                                                }
+                                                                required
+                                                            />
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.offer_date
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Data Validità */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel
+                                                                htmlFor="validity"
+                                                                required
+                                                            >
+                                                                Data Validità
+                                                            </FormLabel>
+                                                            <Input
+                                                                id="validity"
+                                                                name="validity_date"
+                                                                type="date"
+                                                                min="2005-01-01"
+                                                                max="2099-12-31"
+                                                                value={
+                                                                    validityDate
+                                                                }
+                                                                onChange={(e) =>
+                                                                    setValidityDate(
+                                                                        e.target
+                                                                            .value,
+                                                                    )
+                                                                }
+                                                                required
+                                                            />
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.validity_date
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Cliente */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel
+                                                                htmlFor="client"
+                                                                required
+                                                            >
+                                                                Cliente
+                                                            </FormLabel>
+                                                            <Select
+                                                                name="customer_uuid"
+                                                                value={
+                                                                    selectedCustomer ||
+                                                                    ''
+                                                                }
+                                                                onValueChange={
+                                                                    handleCustomerChange
+                                                                }
+                                                                required
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Seleziona il cliente..." />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {customers.map(
+                                                                        (
+                                                                            customer,
+                                                                        ) => (
+                                                                            <SelectItem
+                                                                                key={
+                                                                                    customer.uuid
+                                                                                }
+                                                                                value={
+                                                                                    customer.uuid
+                                                                                }
+                                                                            >
+                                                                                {
+                                                                                    customer.code
+                                                                                }{' '}
+                                                                                -{' '}
+                                                                                {
+                                                                                    customer.company_name
+                                                                                }
+                                                                            </SelectItem>
+                                                                        ),
+                                                                    )}
+                                                                </SelectContent>
+                                                            </Select>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.client
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Divisione */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel
+                                                                htmlFor="division"
+                                                                required
+                                                            >
+                                                                Divisione
+                                                            </FormLabel>
+                                                            <Select
+                                                                name="customerdivision_uuid"
+                                                                value={
+                                                                    selectedDivision ||
+                                                                    ''
+                                                                }
+                                                                onValueChange={
+                                                                    setSelectedDivision
+                                                                }
+                                                                required
+                                                                disabled={
+                                                                    !selectedCustomer ||
+                                                                    divisions.length ===
+                                                                        0
+                                                                }
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue
+                                                                        placeholder={
+                                                                            !selectedCustomer
+                                                                                ? 'Seleziona la divisione...'
+                                                                                : divisions.length ===
+                                                                                    0
+                                                                                  ? 'Nessuna divisione disponibile'
+                                                                                  : 'Seleziona la divisione...'
+                                                                        }
+                                                                    />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {divisions.map(
+                                                                        (
+                                                                            division,
+                                                                        ) => (
+                                                                            <SelectItem
+                                                                                key={
+                                                                                    division.uuid
+                                                                                }
+                                                                                value={
+                                                                                    division.uuid
+                                                                                }
+                                                                            >
+                                                                                {
+                                                                                    division.name
+                                                                                }
+                                                                            </SelectItem>
+                                                                        ),
+                                                                    )}
+                                                                </SelectContent>
+                                                            </Select>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.customerdivision_uuid
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Attività */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel
+                                                                htmlFor="activity"
+                                                                required
+                                                            >
+                                                                Attività
+                                                            </FormLabel>
+                                                            <Select
+                                                                name="activity"
+                                                                value={
+                                                                    selectedActivity ||
+                                                                    ''
+                                                                }
+                                                                onValueChange={
+                                                                    setSelectedActivity
+                                                                }
+                                                                required
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Seleziona l'attività..." />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {activities.map(
+                                                                        (
+                                                                            activity,
+                                                                        ) => (
+                                                                            <SelectItem
+                                                                                key={
+                                                                                    activity.uuid
+                                                                                }
+                                                                                value={
+                                                                                    activity.uuid
+                                                                                }
+                                                                            >
+                                                                                {
+                                                                                    activity.name
+                                                                                }
+                                                                            </SelectItem>
+                                                                        ),
+                                                                    )}
+                                                                </SelectContent>
+                                                            </Select>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.activity
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Settore */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel
+                                                                htmlFor="sector"
+                                                                required
+                                                            >
+                                                                Settore
+                                                            </FormLabel>
+                                                            <Select
+                                                                name="sector_uuid"
+                                                                value={
+                                                                    selectedSector ||
+                                                                    ''
+                                                                }
+                                                                onValueChange={
+                                                                    setSelectedSector
+                                                                }
+                                                                required
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Seleziona il settore..." />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {sectors.map(
+                                                                        (
+                                                                            sector,
+                                                                        ) => (
+                                                                            <SelectItem
+                                                                                key={
+                                                                                    sector.uuid
+                                                                                }
+                                                                                value={
+                                                                                    sector.uuid
+                                                                                }
+                                                                            >
+                                                                                {
+                                                                                    sector.name
+                                                                                }
+                                                                            </SelectItem>
+                                                                        ),
+                                                                    )}
+                                                                </SelectContent>
+                                                            </Select>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.sector_uuid
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Stagionalità */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel
+                                                                htmlFor="type"
+                                                                required
+                                                            >
+                                                                Stagionalità
+                                                            </FormLabel>
+                                                            <Select
+                                                                name="type"
+                                                                value={
+                                                                    selectedSeasonality ||
+                                                                    ''
+                                                                }
+                                                                onValueChange={
+                                                                    setSelectedSeasonality
+                                                                }
+                                                                required
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Seleziona la stagionalità..." />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {seasonalities.map(
+                                                                        (
+                                                                            seasonality,
+                                                                        ) => (
+                                                                            <SelectItem
+                                                                                key={
+                                                                                    seasonality.uuid
+                                                                                }
+                                                                                value={
+                                                                                    seasonality.uuid
+                                                                                }
+                                                                            >
+                                                                                {
+                                                                                    seasonality.name
+                                                                                }
+                                                                            </SelectItem>
+                                                                        ),
+                                                                    )}
+                                                                </SelectContent>
+                                                            </Select>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.type
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Tipo Ordine */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel
+                                                                htmlFor="order_type"
+                                                                required
+                                                            >
+                                                                Tipo Ordine
+                                                            </FormLabel>
+                                                            <Select
+                                                                name="order_type"
+                                                                value={
+                                                                    selectedOrderType ||
+                                                                    ''
+                                                                }
+                                                                onValueChange={
+                                                                    setSelectedOrderType
+                                                                }
+                                                                required
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Seleziona il tipo di ordine..." />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {orderTypes.map(
+                                                                        (
+                                                                            orderType,
+                                                                        ) => (
+                                                                            <SelectItem
+                                                                                key={
+                                                                                    orderType.uuid
+                                                                                }
+                                                                                value={
+                                                                                    orderType.uuid
+                                                                                }
+                                                                            >
+                                                                                {
+                                                                                    orderType.name
+                                                                                }
+                                                                            </SelectItem>
+                                                                        ),
+                                                                    )}
+                                                                </SelectContent>
+                                                            </Select>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.order_type
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Famiglia LAS */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel
+                                                                htmlFor="las_family"
+                                                                required
+                                                            >
+                                                                Famiglia LAS
+                                                            </FormLabel>
+                                                            <Select
+                                                                name="lasfamily_uuid"
+                                                                value={
+                                                                    selectedLasFamily ||
+                                                                    ''
+                                                                }
+                                                                onValueChange={
+                                                                    setSelectedLasFamily
+                                                                }
+                                                                required
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Seleziona la famiglia LAS..." />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {lasFamilies.map(
+                                                                        (
+                                                                            family,
+                                                                        ) => (
+                                                                            <SelectItem
+                                                                                key={
+                                                                                    family.uuid
+                                                                                }
+                                                                                value={
+                                                                                    family.uuid
+                                                                                }
+                                                                            >
+                                                                                {
+                                                                                    family.code
+                                                                                }{' '}
+                                                                                -{' '}
+                                                                                {
+                                                                                    family.name
+                                                                                }
+                                                                            </SelectItem>
+                                                                        ),
+                                                                    )}
+                                                                </SelectContent>
+                                                            </Select>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.las_family
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Rif. Cliente */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="customer_ref">
+                                                                Rif. Cliente
+                                                            </FormLabel>
+                                                            <Input
+                                                                id="customer_ref"
+                                                                name="customer_ref"
+                                                                type="text"
+                                                                value={
+                                                                    customerRef
+                                                                }
+                                                                onChange={(e) =>
+                                                                    setCustomerRef(
+                                                                        e.target
+                                                                            .value,
+                                                                    )
+                                                                }
+                                                                onFocus={
+                                                                    handleInputFocus
+                                                                }
+                                                            />
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.customer_ref
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* L&S Risorsa */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="ls_resource">
+                                                                L&S Risorsa
+                                                            </FormLabel>
+                                                            <Select
+                                                                name="ls_resource"
+                                                                value={
+                                                                    selectedLsResource ||
+                                                                    ''
+                                                                }
+                                                                onValueChange={
+                                                                    setSelectedLsResource
+                                                                }
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Seleziona la risorsa L&S..." />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {lsResources.map(
+                                                                        (
+                                                                            resource,
+                                                                        ) => (
+                                                                            <SelectItem
+                                                                                key={
+                                                                                    resource.uuid
+                                                                                }
+                                                                                value={
+                                                                                    resource.uuid
+                                                                                }
+                                                                            >
+                                                                                {
+                                                                                    resource.code
+                                                                                }{' '}
+                                                                                -{' '}
+                                                                                {
+                                                                                    resource.name
+                                                                                }
+                                                                            </SelectItem>
+                                                                        ),
+                                                                    )}
+                                                                </SelectContent>
+                                                            </Select>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.lsresource_uuid
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* LAS Linea di Lavoro */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel
+                                                                htmlFor="las_work_line"
+                                                                required
+                                                            >
+                                                                LAS Linea di
+                                                                Lavoro
+                                                            </FormLabel>
+                                                            <Select
+                                                                name="lasworkline_uuid"
+                                                                value={
+                                                                    selectedLasWorkLine ||
+                                                                    ''
+                                                                }
+                                                                onValueChange={
+                                                                    setSelectedLasWorkLine
+                                                                }
+                                                                required
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Seleziona la linea di lavoro LAS..." />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {lasWorkLines.map(
+                                                                        (
+                                                                            workLine,
+                                                                        ) => (
+                                                                            <SelectItem
+                                                                                key={
+                                                                                    workLine.uuid
+                                                                                }
+                                                                                value={
+                                                                                    workLine.uuid
+                                                                                }
+                                                                            >
+                                                                                {
+                                                                                    workLine.code
+                                                                                }{' '}
+                                                                                -{' '}
+                                                                                {
+                                                                                    workLine.name
+                                                                                }
+                                                                            </SelectItem>
+                                                                        ),
+                                                                    )}
+                                                                </SelectContent>
+                                                            </Select>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.las_work_line
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Codice articolo di riferimento */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="article_code_ref">
+                                                                Codice articolo
+                                                                di riferimento
+                                                            </FormLabel>
+                                                            <Input
+                                                                id="article_code_ref"
+                                                                name="article_code_ref"
+                                                                type="text"
+                                                                value={
+                                                                    articleCodeRef
+                                                                }
+                                                                onChange={(e) =>
+                                                                    setArticleCodeRef(
+                                                                        e.target
+                                                                            .value,
+                                                                    )
+                                                                }
+                                                                onFocus={
+                                                                    handleInputFocus
+                                                                }
+                                                            />
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.article_code_ref
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Descrizione provvisoria */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="provisional_description">
+                                                                Descrizione
+                                                                provvisoria
+                                                            </FormLabel>
+                                                            <Textarea
+                                                                id="provisional_description"
+                                                                name="provisional_description"
+                                                                rows={3}
+                                                                value={
+                                                                    provisionalDescription
+                                                                }
+                                                                onChange={(e) =>
+                                                                    setProvisionalDescription(
+                                                                        e.target
+                                                                            .value,
+                                                                    )
+                                                                }
+                                                                onFocus={
+                                                                    handleInputFocus
+                                                                }
+                                                            />
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.provisional_description
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Unità di Misura */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel
+                                                                htmlFor="unit_of_measure"
+                                                                required
+                                                            >
+                                                                Unità di Misura
+                                                            </FormLabel>
+                                                            <Input
+                                                                id="unit_of_measure"
+                                                                name="unit_of_measure"
+                                                                type="text"
+                                                                value={
+                                                                    unitOfMeasure
+                                                                }
+                                                                onChange={(e) =>
+                                                                    setUnitOfMeasure(
+                                                                        e.target
+                                                                            .value,
+                                                                    )
+                                                                }
+                                                                onFocus={
+                                                                    handleInputFocus
+                                                                }
+                                                                required
+                                                            />
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.unit_of_measure
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Quantità */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel
+                                                                htmlFor="quantity"
+                                                                required
+                                                            >
+                                                                Quantità
+                                                            </FormLabel>
+                                                            <Input
+                                                                id="quantity"
+                                                                name="quantity"
+                                                                type="text"
+                                                                value={
+                                                                    quantityValue
+                                                                }
+                                                                onChange={(
+                                                                    e,
+                                                                ) => {
+                                                                    const formatted =
+                                                                        formatInputNumber(
+                                                                            e
+                                                                                .target
+                                                                                .value,
+                                                                        );
+                                                                    setQuantityValue(
+                                                                        formatted,
+                                                                    );
+                                                                }}
+                                                                onBlur={
+                                                                    quantityValidation.onBlur
+                                                                }
+                                                                onFocus={(
+                                                                    e,
+                                                                ) => {
+                                                                    handleInputFocus(
+                                                                        e,
+                                                                    );
+                                                                    quantityValidation.onFocus();
+                                                                }}
+                                                                required
+                                                                min="0"
+                                                                className={`text-right ${quantityValidation.error ? 'border-destructive' : ''}`}
+                                                            />
+                                                            {quantityValidation.error && (
+                                                                <InputError
+                                                                    message={
+                                                                        quantityValidation.error
+                                                                    }
+                                                                />
+                                                            )}
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.quantity
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Pezzo */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel
+                                                                htmlFor="piece"
+                                                                required
+                                                            >
+                                                                Pz
+                                                            </FormLabel>
+                                                            <Input
+                                                                id="piece"
+                                                                name="piece"
+                                                                type="text"
+                                                                value={
+                                                                    pieceValue
+                                                                }
+                                                                onChange={(
+                                                                    e,
+                                                                ) => {
+                                                                    const formatted =
+                                                                        formatInputNumber(
+                                                                            e
+                                                                                .target
+                                                                                .value,
+                                                                        );
+                                                                    setPieceValue(
+                                                                        formatted,
+                                                                    );
+                                                                }}
+                                                                onBlur={
+                                                                    pieceValidation.onBlur
+                                                                }
+                                                                onFocus={(
+                                                                    e,
+                                                                ) => {
+                                                                    handleInputFocus(
+                                                                        e,
+                                                                    );
+                                                                    if (
+                                                                        pieceValidation.onFocus
+                                                                    ) {
+                                                                        pieceValidation.onFocus();
+                                                                    }
+                                                                }}
+                                                                required
+                                                                min="0"
+                                                                className={`text-right ${pieceValidation.error ? 'border-destructive' : ''}`}
+                                                            />
+                                                            {pieceValidation.error && (
+                                                                <InputError
+                                                                    message={
+                                                                        pieceValidation.error
+                                                                    }
+                                                                />
+                                                            )}
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.piece
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Peso dichiarato gr/cfz */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="declared_weight_cfz">
+                                                                Peso dichiarato
+                                                                gr/cfz
+                                                            </FormLabel>
+                                                            <div className="flex">
+                                                                <Input
+                                                                    id="declared_weight_cfz"
+                                                                    name="declared_weight_cfz"
+                                                                    type="text"
+                                                                    value={
+                                                                        declaredWeightCfz
+                                                                    }
+                                                                    onChange={(
+                                                                        e,
+                                                                    ) => {
+                                                                        const formatted =
+                                                                            formatInputNumber(
+                                                                                e
+                                                                                    .target
+                                                                                    .value,
+                                                                            );
+                                                                        setDeclaredWeightCfz(
+                                                                            formatted,
+                                                                        );
+                                                                    }}
+                                                                    onFocus={
+                                                                        handleInputFocus
+                                                                    }
+                                                                    min="0"
+                                                                    className="rounded-r-none text-right"
+                                                                />
+                                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
+                                                                    gr/cfz
+                                                                </span>
+                                                            </div>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.declared_weight_cfz
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Peso dichiarato gr/pz */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="declared_weight_pz">
+                                                                Peso dichiarato
+                                                                gr/pz
+                                                            </FormLabel>
+                                                            <div className="flex">
+                                                                <Input
+                                                                    id="declared_weight_pz"
+                                                                    name="declared_weight_pz"
+                                                                    type="text"
+                                                                    value={
+                                                                        declaredWeightPz
+                                                                    }
+                                                                    readOnly
+                                                                    min="0"
+                                                                    className="rounded-r-none bg-muted"
+                                                                />
+                                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
+                                                                    gr/pz
+                                                                </span>
+                                                            </div>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.declared_weight_pz
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Note */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="notes">
+                                                                Note
+                                                            </FormLabel>
+                                                            <Textarea
+                                                                id="notes"
+                                                                name="notes"
+                                                                rows={3}
+                                                                value={notes}
+                                                                onChange={(e) =>
+                                                                    setNotes(
+                                                                        e.target
+                                                                            .value,
+                                                                    )
+                                                                }
+                                                            />
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.notes
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Operazioni */}
+                                                        <div className="grid gap-2">
+                                                            <div className="mb-3 flex gap-1">
+                                                                <label className="col-form-label w-[29%]">
+                                                                    Categoria
+                                                                </label>
+                                                                <label className="col-form-label w-[29%]">
+                                                                    Operazioni
+                                                                </label>
+                                                                <label className="col-form-label w-[12%] text-right">
+                                                                    Secondi
+                                                                </label>
+                                                                <label className="col-form-label w-[12%] text-right">
+                                                                    N° Op
+                                                                    <span className="ml-1 text-red-500">
+                                                                        *
+                                                                    </span>
+                                                                </label>
+                                                                <label className="col-form-label w-[12%] text-right">
+                                                                    Totale
+                                                                </label>
+                                                            </div>
+                                                            {operationRows.map(
+                                                                (row) => (
+                                                                    <div
+                                                                        key={
+                                                                            row.id
+                                                                        }
+                                                                        className="mb-3 flex items-center gap-1"
+                                                                    >
+                                                                        <div className="w-[29%]">
+                                                                            <Select
+                                                                                value={
+                                                                                    row.categoryUuid
+                                                                                }
+                                                                                onValueChange={(
+                                                                                    value,
+                                                                                ) =>
+                                                                                    updateOperationRow(
+                                                                                        row.id,
+                                                                                        {
+                                                                                            categoryUuid:
+                                                                                                value,
+                                                                                        },
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <SelectTrigger>
+                                                                                    <SelectValue placeholder="Seleziona la categoria..." />
+                                                                                </SelectTrigger>
+                                                                                <SelectContent>
+                                                                                    {operationCategories.map(
+                                                                                        (
+                                                                                            category,
+                                                                                        ) => (
+                                                                                            <SelectItem
+                                                                                                key={
+                                                                                                    category.uuid
+                                                                                                }
+                                                                                                value={
+                                                                                                    category.uuid
+                                                                                                }
+                                                                                            >
+                                                                                                {
+                                                                                                    category.code
+                                                                                                }{' '}
+                                                                                                -{' '}
+                                                                                                {
+                                                                                                    category.name
+                                                                                                }
+                                                                                            </SelectItem>
+                                                                                        ),
+                                                                                    )}
+                                                                                </SelectContent>
+                                                                            </Select>
+                                                                        </div>
+                                                                        <div className="w-[29%]">
+                                                                            <Select
+                                                                                value={
+                                                                                    row.operationUuid
+                                                                                }
+                                                                                onValueChange={(
+                                                                                    value,
+                                                                                ) => {
+                                                                                    updateOperationRow(
+                                                                                        row.id,
+                                                                                        {
+                                                                                            operationUuid:
+                                                                                                value,
+                                                                                        },
+                                                                                    );
+                                                                                }}
+                                                                                disabled={
+                                                                                    !row.categoryUuid
+                                                                                }
+                                                                            >
+                                                                                <SelectTrigger>
+                                                                                    <SelectValue placeholder="Seleziona l'operazione..." />
+                                                                                </SelectTrigger>
+                                                                                <SelectContent>
+                                                                                    {(
+                                                                                        operationsByCategory[
+                                                                                            row
+                                                                                                .categoryUuid
+                                                                                        ] ||
+                                                                                        []
+                                                                                    ).map(
+                                                                                        (
+                                                                                            operation,
+                                                                                        ) => (
+                                                                                            <SelectItem
+                                                                                                key={
+                                                                                                    operation.uuid
+                                                                                                }
+                                                                                                value={
+                                                                                                    operation.uuid
+                                                                                                }
+                                                                                            >
+                                                                                                {
+                                                                                                    operation.codice_univoco
+                                                                                                }{' '}
+                                                                                                -{' '}
+                                                                                                {
+                                                                                                    operation.descrizione
+                                                                                                }
+                                                                                            </SelectItem>
+                                                                                        ),
+                                                                                    )}
+                                                                                </SelectContent>
+                                                                            </Select>
+                                                                        </div>
+                                                                        <Input
+                                                                            type="text"
+                                                                            value={
+                                                                                row.secOp
+                                                                                    ? formatNumber(
+                                                                                          row.secOp,
+                                                                                      )
+                                                                                    : ''
+                                                                            }
+                                                                            readOnly
+                                                                            className="w-[12%] bg-muted text-right"
+                                                                        />
+                                                                        <Input
+                                                                            type="text"
+                                                                            value={
+                                                                                row.numOp
+                                                                                    ? formatInteger(
+                                                                                          row.numOp,
+                                                                                      )
+                                                                                    : ''
+                                                                            }
+                                                                            onChange={(
+                                                                                e,
+                                                                            ) => {
+                                                                                const formatted =
+                                                                                    formatInputNumber(
+                                                                                        e
+                                                                                            .target
+                                                                                            .value,
+                                                                                        false,
+                                                                                        true,
+                                                                                    ); // isInteger = true
+                                                                                const parsed =
+                                                                                    parseNumber(
+                                                                                        formatted,
+                                                                                    );
+                                                                                updateOperationRow(
+                                                                                    row.id,
+                                                                                    {
+                                                                                        numOp: Math.round(
+                                                                                            parsed,
+                                                                                        ),
+                                                                                    },
+                                                                                ); // Asegurar que sea entero
+                                                                            }}
+                                                                            onFocus={
+                                                                                handleInputFocus
+                                                                            }
+                                                                            required
+                                                                            min="1"
+                                                                            className="w-[12%] text-right"
+                                                                        />
+                                                                        <Input
+                                                                            type="text"
+                                                                            value={
+                                                                                row.totalSec
+                                                                                    ? formatNumber(
+                                                                                          row.totalSec,
+                                                                                      )
+                                                                                    : ''
+                                                                            }
+                                                                            readOnly
+                                                                            className="w-[12%] bg-muted text-right"
+                                                                        />
+                                                                        <Button
+                                                                            type="button"
+                                                                            variant="destructive"
+                                                                            size="sm"
+                                                                            onClick={() =>
+                                                                                removeOperationRow(
+                                                                                    row.id,
+                                                                                )
+                                                                            }
+                                                                            className="ml-1"
+                                                                        >
+                                                                            X
+                                                                        </Button>
+                                                                    </div>
+                                                                ),
+                                                            )}
+                                                            <Button
+                                                                type="button"
+                                                                variant="outline"
+                                                                onClick={
+                                                                    addOperationRow
+                                                                }
+                                                                className="mt-2"
+                                                            >
+                                                                Aggiungi
+                                                                operazione
+                                                            </Button>
+                                                        </div>
+
+                                                        {/* Tempo teorico (sec/cfz) */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="theoretical_time_cfz">
+                                                                Tempo teorico
+                                                                (sec/cfz)
+                                                            </FormLabel>
+                                                            <div className="flex">
+                                                                <Input
+                                                                    id="theoretical_time_cfz"
+                                                                    name="theoretical_time_cfz"
+                                                                    type="text"
+                                                                    value={
+                                                                        theoreticalTimeCfz
+                                                                    }
+                                                                    readOnly
+                                                                    className="rounded-r-none bg-muted text-right"
+                                                                />
+                                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
+                                                                    sec/cfz
+                                                                </span>
+                                                            </div>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.theoretical_time_cfz
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Imprevisti */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="unexpected">
+                                                                Imprevisti
+                                                            </FormLabel>
+                                                            <Input
+                                                                id="unexpected"
+                                                                name="unexpected"
+                                                                type="text"
+                                                                value={
+                                                                    unexpected
+                                                                }
+                                                                readOnly
+                                                                className="bg-muted text-right"
+                                                            />
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.unexpected
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Tempo teorico totale (sec/cfz) */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="total_theoretical_time">
+                                                                Tempo teorico
+                                                                totale (sec/cfz)
+                                                            </FormLabel>
+                                                            <div className="flex">
+                                                                <Input
+                                                                    id="total_theoretical_time"
+                                                                    name="total_theoretical_time"
+                                                                    type="text"
+                                                                    value={
+                                                                        totalTheoreticalTime
+                                                                    }
+                                                                    readOnly
+                                                                    className="rounded-r-none bg-muted text-right"
+                                                                />
+                                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
+                                                                    sec/cfz
+                                                                </span>
+                                                            </div>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.total_theoretical_time
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Tempo teorico (sec/pz) */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="theoretical_time">
+                                                                Tempo teorico
+                                                                (sec/pz)
+                                                            </FormLabel>
+                                                            <div className="flex">
+                                                                <Input
+                                                                    id="theoretical_time"
+                                                                    name="theoretical_time"
+                                                                    type="text"
+                                                                    value={
+                                                                        theoreticalTime
+                                                                    }
+                                                                    readOnly
+                                                                    className="rounded-r-none bg-muted text-right"
+                                                                />
+                                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
+                                                                    sec/pz
+                                                                </span>
+                                                            </div>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.theoretical_time
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Tempo produzione (sec/cfz) */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="production_time_cfz">
+                                                                Tempo produzione
+                                                                (sec/cfz)
+                                                            </FormLabel>
+                                                            <div className="flex">
+                                                                <Input
+                                                                    id="production_time_cfz"
+                                                                    name="production_time_cfz"
+                                                                    type="text"
+                                                                    value={
+                                                                        productionTimeCfz
+                                                                    }
+                                                                    readOnly
+                                                                    className="rounded-r-none bg-muted text-right"
+                                                                />
+                                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
+                                                                    sec/cfz
+                                                                </span>
+                                                            </div>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.production_time_cfz
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Tempo produzione (sec/pz) */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="production_time">
+                                                                Tempo produzione
+                                                                (sec/pz)
+                                                            </FormLabel>
+                                                            <div className="flex">
+                                                                <Input
+                                                                    id="production_time"
+                                                                    name="production_time"
+                                                                    type="text"
+                                                                    value={
+                                                                        productionTime
+                                                                    }
+                                                                    readOnly
+                                                                    className="rounded-r-none bg-muted text-right"
+                                                                />
+                                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
+                                                                    sec/pz
+                                                                </span>
+                                                            </div>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.production_time
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Media prevista (cfz/h/ps) */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="production_average_cfz">
+                                                                Media prevista
+                                                                (cfz/h/ps)
+                                                            </FormLabel>
+                                                            <div className="flex">
+                                                                <Input
+                                                                    id="production_average_cfz"
+                                                                    name="production_average_cfz"
+                                                                    type="text"
+                                                                    value={
+                                                                        productionAverageCfz
+                                                                    }
+                                                                    readOnly
+                                                                    className="rounded-r-none bg-muted text-right"
+                                                                />
+                                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
+                                                                    cfz/h/ps
+                                                                </span>
+                                                            </div>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.production_average_cfz
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Media prevista (pz/h/ps) */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="production_average_pz">
+                                                                Media prevista
+                                                                (pz/h/ps)
+                                                            </FormLabel>
+                                                            <div className="flex">
+                                                                <Input
+                                                                    id="production_average_pz"
+                                                                    name="production_average_pz"
+                                                                    type="text"
+                                                                    value={
+                                                                        productionAveragePz
+                                                                    }
+                                                                    readOnly
+                                                                    className="rounded-r-none bg-muted text-right"
+                                                                />
+                                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
+                                                                    pz/h/ps
+                                                                </span>
+                                                            </div>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.production_average_pz
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Addetti previsti */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="expected_workers">
+                                                                Addetti previsti
+                                                            </FormLabel>
+                                                            <Input
+                                                                id="expected_workers"
+                                                                name="expected_workers"
+                                                                type="text"
+                                                                value={
+                                                                    expectedWorkers
+                                                                }
+                                                                onChange={(
+                                                                    e,
+                                                                ) => {
+                                                                    const formatted =
+                                                                        formatInputNumber(
+                                                                            e
+                                                                                .target
+                                                                                .value,
+                                                                            false,
+                                                                            true,
+                                                                        );
+                                                                    setExpectedWorkers(
+                                                                        formatted,
+                                                                    );
+                                                                }}
+                                                                onFocus={
+                                                                    handleInputFocus
+                                                                }
+                                                                className="text-right"
+                                                            />
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.expected_workers
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Ricavo Manodopera prevista */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel
+                                                                htmlFor="expected_revenue"
+                                                                required
+                                                            >
+                                                                Ricavo
+                                                                Manodopera
+                                                                prevista
+                                                            </FormLabel>
+                                                            <div className="flex">
+                                                                <Input
+                                                                    id="expected_revenue"
+                                                                    name="expected_revenue"
+                                                                    type="text"
+                                                                    value={
+                                                                        expectedRevenue
+                                                                    }
+                                                                    onChange={(
+                                                                        e,
+                                                                    ) => {
+                                                                        const formatted =
+                                                                            formatInputNumber(
+                                                                                e
+                                                                                    .target
+                                                                                    .value,
+                                                                            );
+                                                                        setExpectedRevenue(
+                                                                            formatted,
+                                                                        );
+                                                                    }}
+                                                                    required
+                                                                    title="Inserisci un valore valido (es. 1.234.567,00000)"
+                                                                    className="rounded-r-none text-right"
+                                                                />
+                                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
+                                                                    €
+                                                                </span>
+                                                            </div>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.expected_revenue
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Tariffa mdo cfz */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="rate_cfz">
+                                                                Tariffa mdo cfz
+                                                            </FormLabel>
+                                                            <div className="flex">
+                                                                <Input
+                                                                    id="rate_cfz"
+                                                                    name="rate_cfz"
+                                                                    type="text"
+                                                                    value={
+                                                                        rateCfz
+                                                                    }
+                                                                    readOnly
+                                                                    className="rounded-r-none bg-muted text-right"
+                                                                />
+                                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
+                                                                    cfz
+                                                                </span>
+                                                            </div>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.rate_cfz
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Tariffa mdo pz */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="rate_pz">
+                                                                Tariffa mdo pz
+                                                            </FormLabel>
+                                                            <div className="flex">
+                                                                <Input
+                                                                    id="rate_pz"
+                                                                    name="rate_pz"
+                                                                    type="text"
+                                                                    value={
+                                                                        ratePz
+                                                                    }
+                                                                    readOnly
+                                                                    className="rounded-r-none bg-muted text-right"
+                                                                />
+                                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
+                                                                    pz
+                                                                </span>
+                                                            </div>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.rate_pz
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Tariffa mdo cfz arrotondata */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel
+                                                                htmlFor="rate_rounding_cfz"
+                                                                required
+                                                            >
+                                                                Tariffa mdo cfz
+                                                                arrotondata
+                                                            </FormLabel>
+                                                            <div className="flex">
+                                                                <Input
+                                                                    id="rate_rounding_cfz"
+                                                                    name="rate_rounding_cfz"
+                                                                    type="text"
+                                                                    value={
+                                                                        rateRoundingCfz
+                                                                    }
+                                                                    onChange={(
+                                                                        e,
+                                                                    ) => {
+                                                                        const formatted =
+                                                                            formatInputNumber(
+                                                                                e
+                                                                                    .target
+                                                                                    .value,
+                                                                            );
+                                                                        setRateRoundingCfz(
+                                                                            formatted,
+                                                                        );
+                                                                    }}
+                                                                    onFocus={
+                                                                        handleInputFocus
+                                                                    }
+                                                                    required
+                                                                    title="Inserisci un valore valido (es. 1.234.567,00000)"
+                                                                    className="rounded-r-none text-right"
+                                                                />
+                                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
+                                                                    cfz
+                                                                </span>
+                                                            </div>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.rate_rounding_cfz
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Aumento/sconto tariffa cfz */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel
+                                                                htmlFor="rate_increase_cfz"
+                                                                required
+                                                            >
+                                                                Aumento/sconto
+                                                                tariffa cfz
+                                                            </FormLabel>
+                                                            <div className="flex">
+                                                                <Input
+                                                                    id="rate_increase_cfz"
+                                                                    name="rate_increase_cfz"
+                                                                    type="text"
+                                                                    value={
+                                                                        rateIncreaseCfz
+                                                                    }
+                                                                    onChange={(
+                                                                        e,
+                                                                    ) => {
+                                                                        const formatted =
+                                                                            formatInputNumber(
+                                                                                e
+                                                                                    .target
+                                                                                    .value,
+                                                                                true,
+                                                                            );
+                                                                        setRateIncreaseCfz(
+                                                                            formatted,
+                                                                        );
+                                                                    }}
+                                                                    onFocus={
+                                                                        handleInputFocus
+                                                                    }
+                                                                    required
+                                                                    title="Inserisci un valore valido (es. 1.234.567,00000 o -1.234.567,00000)"
+                                                                    className="rounded-r-none text-right"
+                                                                />
+                                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
+                                                                    cfz
+                                                                </span>
+                                                            </div>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.rate_increase_cfz
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Tariffa mdo cfz arrotondata % */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="rate_rounding_cfz_perc">
+                                                                Tariffa mdo cfz
+                                                                arrotondata %
+                                                            </FormLabel>
+                                                            <div className="flex">
+                                                                <Input
+                                                                    id="rate_rounding_cfz_perc"
+                                                                    name="rate_rounding_cfz_perc"
+                                                                    type="text"
+                                                                    value={
+                                                                        rateRoundingCfzPerc
+                                                                    }
+                                                                    readOnly
+                                                                    className="rounded-r-none bg-muted text-right"
+                                                                />
+                                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
+                                                                    %
+                                                                </span>
+                                                            </div>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.rate_rounding_cfz_perc
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Tariffa definitiva mdo cfz */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="final_rate_cfz">
+                                                                Tariffa
+                                                                definitiva mdo
+                                                                cfz
+                                                            </FormLabel>
+                                                            <div className="flex">
+                                                                <Input
+                                                                    id="final_rate_cfz"
+                                                                    name="final_rate_cfz"
+                                                                    type="text"
+                                                                    value={
+                                                                        finalRateCfz
+                                                                    }
+                                                                    readOnly
+                                                                    className="rounded-r-none bg-muted text-right"
+                                                                />
+                                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
+                                                                    cfz
+                                                                </span>
+                                                            </div>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.final_rate_cfz
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Tariffa definitiva mdo pz */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="final_rate_pz">
+                                                                Tariffa
+                                                                definitiva mdo
+                                                                pz
+                                                            </FormLabel>
+                                                            <div className="flex">
+                                                                <Input
+                                                                    id="final_rate_pz"
+                                                                    name="final_rate_pz"
+                                                                    type="text"
+                                                                    value={
+                                                                        finalRatePz
+                                                                    }
+                                                                    readOnly
+                                                                    className="rounded-r-none bg-muted text-right"
+                                                                />
+                                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
+                                                                    pz
+                                                                </span>
+                                                            </div>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.final_rate_pz
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Euro materiali */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel
+                                                                htmlFor="materials_euro"
+                                                                required
+                                                            >
+                                                                Euro materiali
+                                                            </FormLabel>
+                                                            <div className="flex">
+                                                                <Input
+                                                                    id="materials_euro"
+                                                                    name="materials_euro"
+                                                                    type="text"
+                                                                    value={
+                                                                        materialsEuro
+                                                                    }
+                                                                    onChange={(
+                                                                        e,
+                                                                    ) => {
+                                                                        const formatted =
+                                                                            formatInputNumber(
+                                                                                e
+                                                                                    .target
+                                                                                    .value,
+                                                                            );
+                                                                        setMaterialsEuro(
+                                                                            formatted,
+                                                                        );
+                                                                    }}
+                                                                    onFocus={
+                                                                        handleInputFocus
+                                                                    }
+                                                                    required
+                                                                    className="rounded-r-none text-right"
+                                                                />
+                                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
+                                                                    €
+                                                                </span>
+                                                            </div>
+                                                            <small className="text-sm text-muted-foreground">
+                                                                Inserisci
+                                                                l'importo, ad
+                                                                esempio
+                                                                1.234.567,00000
+                                                            </small>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.materials_euro
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Euro logistica */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel
+                                                                htmlFor="logistics_euro"
+                                                                required
+                                                            >
+                                                                Euro logistica
+                                                            </FormLabel>
+                                                            <div className="flex">
+                                                                <Input
+                                                                    id="logistics_euro"
+                                                                    name="logistics_euro"
+                                                                    type="text"
+                                                                    value={
+                                                                        logisticsEuro
+                                                                    }
+                                                                    onChange={(
+                                                                        e,
+                                                                    ) => {
+                                                                        const formatted =
+                                                                            formatInputNumber(
+                                                                                e
+                                                                                    .target
+                                                                                    .value,
+                                                                            );
+                                                                        setLogisticsEuro(
+                                                                            formatted,
+                                                                        );
+                                                                    }}
+                                                                    onFocus={
+                                                                        handleInputFocus
+                                                                    }
+                                                                    required
+                                                                    className="rounded-r-none text-right"
+                                                                />
+                                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
+                                                                    €
+                                                                </span>
+                                                            </div>
+                                                            <small className="text-sm text-muted-foreground">
+                                                                Inserisci
+                                                                l'importo, ad
+                                                                esempio
+                                                                1.234.567,00000
+                                                            </small>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.logistics_euro
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Euro altro */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel
+                                                                htmlFor="other_euro"
+                                                                required
+                                                            >
+                                                                Euro altro
+                                                            </FormLabel>
+                                                            <div className="flex">
+                                                                <Input
+                                                                    id="other_euro"
+                                                                    name="other_euro"
+                                                                    type="text"
+                                                                    value={
+                                                                        otherEuro
+                                                                    }
+                                                                    onChange={(
+                                                                        e,
+                                                                    ) => {
+                                                                        const formatted =
+                                                                            formatInputNumber(
+                                                                                e
+                                                                                    .target
+                                                                                    .value,
+                                                                            );
+                                                                        setOtherEuro(
+                                                                            formatted,
+                                                                        );
+                                                                    }}
+                                                                    onFocus={
+                                                                        handleInputFocus
+                                                                    }
+                                                                    required
+                                                                    className="rounded-r-none text-right"
+                                                                />
+                                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
+                                                                    €
+                                                                </span>
+                                                            </div>
+                                                            <small className="text-sm text-muted-foreground">
+                                                                Inserisci
+                                                                l'importo, ad
+                                                                esempio
+                                                                1.234.567,00000
+                                                            </small>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.other_euro
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Tariffa totale cfz */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="total_rate_cfz">
+                                                                Tariffa totale
+                                                                cfz
+                                                            </FormLabel>
+                                                            <div className="flex">
+                                                                <Input
+                                                                    id="total_rate_cfz"
+                                                                    name="total_rate_cfz"
+                                                                    type="text"
+                                                                    value={
+                                                                        totalRateCfz
+                                                                    }
+                                                                    readOnly
+                                                                    className="rounded-r-none bg-muted text-right"
+                                                                />
+                                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
+                                                                    cfz
+                                                                </span>
+                                                            </div>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.total_rate_cfz
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Tariffa totale pz */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="total_rate_pz">
+                                                                Tariffa totale
+                                                                pz
+                                                            </FormLabel>
+                                                            <div className="flex">
+                                                                <Input
+                                                                    id="total_rate_pz"
+                                                                    name="total_rate_pz"
+                                                                    type="text"
+                                                                    value={
+                                                                        totalRatePz
+                                                                    }
+                                                                    readOnly
+                                                                    className="rounded-r-none bg-muted text-right"
+                                                                />
+                                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
+                                                                    pz
+                                                                </span>
+                                                            </div>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.total_rate_pz
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Note sull'offerta */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="offer_notes">
+                                                                Note
+                                                                sull'offerta
+                                                            </FormLabel>
+                                                            <Textarea
+                                                                id="offer_notes"
+                                                                name="offer_notes"
+                                                                rows={3}
+                                                                value={
+                                                                    offerNotes
+                                                                }
+                                                                onChange={(e) =>
+                                                                    setOfferNotes(
+                                                                        e.target
+                                                                            .value,
+                                                                    )
+                                                                }
+                                                                onFocus={
+                                                                    handleInputFocus
+                                                                }
+                                                            />
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.offer_notes
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* L&S Costo setup (%) */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="ls_setup_cost">
+                                                                L&S Costo setup
+                                                                (%)
+                                                            </FormLabel>
+                                                            <div className="flex">
+                                                                <Input
+                                                                    id="ls_setup_cost"
+                                                                    name="ls_setup_cost"
+                                                                    type="text"
+                                                                    value={
+                                                                        lsSetupCost
+                                                                    }
+                                                                    onChange={(
+                                                                        e,
+                                                                    ) => {
+                                                                        const formatted =
+                                                                            formatInputNumber(
+                                                                                e
+                                                                                    .target
+                                                                                    .value,
+                                                                            );
+                                                                        setLsSetupCost(
+                                                                            formatted,
+                                                                        );
+                                                                    }}
+                                                                    className="rounded-r-none text-right"
+                                                                />
+                                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
+                                                                    %
+                                                                </span>
+                                                            </div>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.ls_setup_cost
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* L&S Altri costi */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="ls_other_costs">
+                                                                L&S Altri costi
+                                                            </FormLabel>
+                                                            <div className="flex">
+                                                                <Input
+                                                                    id="ls_other_costs"
+                                                                    name="ls_other_costs"
+                                                                    type="text"
+                                                                    value={
+                                                                        lsOtherCosts
+                                                                    }
+                                                                    onChange={(
+                                                                        e,
+                                                                    ) => {
+                                                                        const formatted =
+                                                                            formatInputNumber(
+                                                                                e
+                                                                                    .target
+                                                                                    .value,
+                                                                            );
+                                                                        setLsOtherCosts(
+                                                                            formatted,
+                                                                        );
+                                                                    }}
+                                                                    onFocus={
+                                                                        handleInputFocus
+                                                                    }
+                                                                    title="Inserisci un importo valido in euro (es. 1.234.567,00000)"
+                                                                    className="rounded-r-none text-right"
+                                                                />
+                                                                <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
+                                                                    €
+                                                                </span>
+                                                            </div>
+                                                            <small className="text-sm text-muted-foreground">
+                                                                Inserisci
+                                                                l'importo, ad
+                                                                esempio
+                                                                1.234.567,00000
+                                                            </small>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.ls_other_costs
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Approvazione */}
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="approval_status">
+                                                                Approvazione
+                                                            </FormLabel>
+                                                            <Select
+                                                                name="approval_status"
+                                                                value={
+                                                                    approvalStatus
+                                                                }
+                                                                onValueChange={
+                                                                    setApprovalStatus
+                                                                }
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Seleziona lo stato di approvazione" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    <SelectItem value="0">
+                                                                        In
+                                                                        attesa
+                                                                        di
+                                                                        approvazione
+                                                                    </SelectItem>
+                                                                    <SelectItem value="1">
+                                                                        Approvata
+                                                                    </SelectItem>
+                                                                    <SelectItem value="2">
+                                                                        Respinta
+                                                                    </SelectItem>
+                                                                </SelectContent>
+                                                            </Select>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.approval_status
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        {/* Bottoni */}
+                                                        <div className="flex items-center gap-4 pt-4">
+                                                            <Button
+                                                                type="submit"
+                                                                disabled={
+                                                                    processing
+                                                                }
+                                                            >
+                                                                {processing
+                                                                    ? 'Creando...'
+                                                                    : 'Salva'}
+                                                            </Button>
+                                                            <Button
+                                                                type="button"
+                                                                variant="outline"
+                                                                onClick={
+                                                                    handleClose
+                                                                }
+                                                            >
+                                                                Chiudi
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </>
+                                        );
+                                    }}
+                                </Form>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
 
                 {/* Dialogo di conferma chiusura */}
                 <ConfirmCloseDialog

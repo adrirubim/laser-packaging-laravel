@@ -349,6 +349,11 @@ class OrderController extends Controller
      */
     protected function isValidStatusTransition(int $currentStatus, int $newStatus): bool
     {
+        // Si la orden ya está en SALDATO, no se permite ningún cambio de estado
+        if ($currentStatus === OrderStatus::SALDATO->value) {
+            return false;
+        }
+
         // Can always change to SOSPESO
         if ($newStatus === OrderStatus::SOSPESO->value) {
             return true;

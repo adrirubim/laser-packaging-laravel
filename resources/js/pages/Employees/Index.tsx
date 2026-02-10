@@ -14,7 +14,7 @@ import {
 import AppLayout from '@/layouts/app-layout';
 import employees from '@/routes/employees/index';
 import { type BreadcrumbItem } from '@/types';
-import { Head, router, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 
 type Employee = {
     id: number;
@@ -139,6 +139,20 @@ export default function EmployeesIndex() {
                 />
 
                 <FlashNotifications flash={flash} />
+
+                {employeesPaginated.total === 0 && (
+                    <div className="flex flex-col items-center justify-center gap-4 rounded-xl border border-sidebar-border/70 bg-card p-8 text-center dark:border-sidebar-border">
+                        <p className="text-muted-foreground">
+                            Nessun dipendente presente.
+                        </p>
+                        <Link
+                            href={employees.create().url}
+                            className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
+                        >
+                            Crea il primo dipendente
+                        </Link>
+                    </div>
+                )}
 
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="flex items-center justify-between gap-3">

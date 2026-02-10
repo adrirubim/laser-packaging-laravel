@@ -215,7 +215,7 @@ export default function ProductionAdvancements() {
         },
         {
             title: 'In Produzione',
-            href: '/orders/production-advancements',
+            href: orders.productionAdvancements().url,
         },
     ];
 

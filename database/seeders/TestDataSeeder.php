@@ -233,7 +233,7 @@ class TestDataSeeder extends Seeder
         // 5. Crear Empleados
         $this->command->info('👥 Creando empleados...');
         $employees = Employee::factory()->count(10)->create();
-        // Dipendente DEMO-ALL: tutti i campi (Personale → cercare DEMO-ALL)
+        // Dipendente DEMO-ALL: tutti i campi (Personale → cercare EMP-DEMO-ALL)
         $demoEmployee = Employee::factory()->create([
             'name' => 'Demo',
             'surname' => 'All',
@@ -242,64 +242,97 @@ class TestDataSeeder extends Seeder
             'removed' => false,
         ]);
         $employees->push($demoEmployee);
-        $this->command->info("   ✅ {$employees->count()} empleados creados (1 demo: EMP-DEMO-ALL)");
+        // Un paio di dipendenti con nomi italiani realistici per test
+        $rossi = Employee::factory()->create([
+            'name' => 'Marco',
+            'surname' => 'Rossi',
+            'matriculation_number' => 'EMP-ROSSI-01',
+            'portal_enabled' => true,
+            'removed' => false,
+        ]);
+        $employees->push($rossi);
+        $bianchi = Employee::factory()->create([
+            'name' => 'Laura',
+            'surname' => 'Bianchi',
+            'matriculation_number' => 'EMP-BIANCHI-01',
+            'portal_enabled' => false,
+            'removed' => false,
+        ]);
+        $employees->push($bianchi);
+        $this->command->info("   ✅ {$employees->count()} empleados creados (demo: EMP-DEMO-ALL, Rossi, Bianchi)");
 
-        // 5.1. Crear Contratos de Empleados
+        // 5.1. Crear Contratos de Empleados (pay_level 0-8, parità legacy; alcuni a tempo indeterminato)
         $this->command->info('📝 Creando contratos de empleados...');
         $contracts = collect();
         foreach ($employees as $employee) {
-            // Crear entre 1 y 3 contratos por empleado
             $contractCount = rand(1, 3);
             for ($i = 0; $i < $contractCount; $i++) {
-                // Data di inizio sempre presente (ultimi 2 anni)
                 $startDate = $faker->dateTimeBetween('-2 years', 'now');
-
-                // Determinare se il contratto è attivo o concluso
-                $isActive = $faker->boolean(70); // 70% activos, 30% finalizados
-
-                // Fecha de fin siempre presente:
-                // - Para contratos finalizados: entre start_date y ahora
-                // - Per contratti attivi: data futura (prossimi 1-3 anni)
-                if ($isActive) {
-                    $endDate = $faker->dateTimeBetween('+1 year', '+3 years');
-                } else {
-                    $endDate = $faker->dateTimeBetween($startDate, 'now');
+                $isActive = $faker->boolean(70);
+                // ~20% contratti a tempo indeterminato (end_date null)
+                $hasEndDate = $faker->boolean(80);
+                $endDate = null;
+                if ($hasEndDate) {
+                    if ($isActive) {
+                        $endDate = $faker->dateTimeBetween('+1 year', '+3 years');
+                    } else {
+                        $endDate = $faker->dateTimeBetween($startDate, 'now');
+                    }
                 }
 
-                // Proveedor siempre asignado (100%)
                 $supplierUuid = $suppliers->random()->uuid;
-
-                // Nivel de pago siempre presente (0-4)
-                $payLevel = $faker->numberBetween(0, 4);
+                // Livelli 0-8 (D1..A1) come in legacy; distribuzione più realistica (più bassi che alti)
+                $payLevel = $faker->numberBetween(0, 8);
 
                 $contract = EmployeeContract::factory()->create([
                     'employee_uuid' => $employee->uuid,
                     'supplier_uuid' => $supplierUuid,
                     'pay_level' => $payLevel,
                     'start_date' => $startDate->format('Y-m-d'),
-                    'end_date' => $endDate->format('Y-m-d'),
+                    'end_date' => $endDate ? $endDate->format('Y-m-d') : null,
                     'removed' => false,
                 ]);
                 $contracts->push($contract);
             }
         }
-        // Almeno 2 contratti per il dipendente DEMO-ALL (tutti i campi)
+        // Almeno 2 contratti per il dipendente DEMO-ALL
         $demoContractCount = $contracts->where('employee_uuid', $demoEmployee->uuid)->count();
         if ($demoContractCount < 2) {
             for ($i = $demoContractCount; $i < 2; $i++) {
                 $startDate = $faker->dateTimeBetween('-1 year', 'now');
-                $endDate = $faker->dateTimeBetween('+1 year', '+3 years');
+                $endDate = $faker->boolean(80) ? $faker->dateTimeBetween('+1 year', '+3 years') : null;
                 $contracts->push(EmployeeContract::factory()->create([
                     'employee_uuid' => $demoEmployee->uuid,
                     'supplier_uuid' => $demoSupplier->uuid,
-                    'pay_level' => $faker->numberBetween(0, 4),
+                    'pay_level' => $faker->numberBetween(0, 8),
                     'start_date' => $startDate->format('Y-m-d'),
-                    'end_date' => $endDate->format('Y-m-d'),
+                    'end_date' => $endDate ? $endDate->format('Y-m-d') : null,
                     'removed' => false,
                 ]));
             }
         }
-        $this->command->info("   ✅ {$contracts->count()} contratos de empleados creados");
+        // Esempio "proroga": Rossi ha un contratto scaduto e uno nuovo che inizia il giorno dopo (stesso datore)
+        $supplierForProroga = $suppliers->random();
+        $endFirstContract = $faker->dateTimeBetween('-6 months', '-1 month');
+        $startFirstContract = (clone $endFirstContract)->modify('-1 year');
+        $startSecondContract = (clone $endFirstContract)->modify('+1 day');
+        $contracts->push(EmployeeContract::factory()->create([
+            'employee_uuid' => $rossi->uuid,
+            'supplier_uuid' => $supplierForProroga->uuid,
+            'pay_level' => $faker->numberBetween(2, 5),
+            'start_date' => $startFirstContract->format('Y-m-d'),
+            'end_date' => $endFirstContract->format('Y-m-d'),
+            'removed' => false,
+        ]));
+        $contracts->push(EmployeeContract::factory()->create([
+            'employee_uuid' => $rossi->uuid,
+            'supplier_uuid' => $supplierForProroga->uuid,
+            'pay_level' => $faker->numberBetween(2, 5),
+            'start_date' => $startSecondContract->format('Y-m-d'),
+            'end_date' => (clone $startSecondContract)->modify('+2 years')->format('Y-m-d'),
+            'removed' => false,
+        ]));
+        $this->command->info("   ✅ {$contracts->count()} contratos de empleados creados (incl. ejemplo prórroga para Rossi)");
 
         // 6. Crear Tipos de Valor y Materiales y Maquinaria
         $this->command->info('🔧 Creando tipos de valor...');
@@ -1071,7 +1104,11 @@ class TestDataSeeder extends Seeder
 
         $this->command->info("   ✅ Artículos válidos para órdenes: {$validArticles->count()}");
 
-        // Órdenes Pianificato (status 0)
+        // Órdenes: tutti gli stati (0–6) e varietà di date di consegna per simulare la realtà.
+        // Negli stati aperti (0–4): prima ordine in ritardo (icona rossa), seconda urgente 0–3 giorni (gialla), altre normali (verde).
+        // Evaso/Saldato: date sempre nel passato (in lista icona verde per ordini chiusi).
+
+        // Órdenes Pianificato (status 0) – Variedad de fechas: in ritardo, urgente, normal (simula realidad)
         $ordersPianificato = collect();
         for ($i = 0; $i < min(5, $validArticles->count()); $i++) {
             $article = $validArticles->random();
@@ -1082,7 +1119,13 @@ class TestDataSeeder extends Seeder
                 continue;
             }
             $quantity = rand(100, 1000);
-            $deliveryDate = now()->addDays(rand(10, 45));
+            if ($i === 0) {
+                $deliveryDate = now()->subDays(rand(2, 14)); // In ritardo → icona rossa in lista
+            } elseif ($i === 1) {
+                $deliveryDate = now()->addDays(rand(1, 3)); // Urgente (0–3 giorni) → icona gialla
+            } else {
+                $deliveryDate = now()->addDays(rand(10, 45));
+            }
             $order = Order::factory()->create([
                 'article_uuid' => $article->uuid,
                 'order_production_number' => $orderProductionNumberService->generateNext(),
@@ -1148,7 +1191,7 @@ class TestDataSeeder extends Seeder
         }
         $this->command->info("   ✅ {$ordersPianificato->count()} órdenes Pianificato (status 0) creadas (1 demo con LAS-DEMO-ALL)");
 
-        // Órdenes In Allestimento (status 1)
+        // Órdenes In Allestimento (status 1) – Variedad fechas: ritardo, urgente, normal
         $ordersInAllestimento = collect();
         for ($i = 0; $i < min(5, $validArticles->count()); $i++) {
             $article = $validArticles->random();
@@ -1159,7 +1202,26 @@ class TestDataSeeder extends Seeder
                 continue;
             }
             $quantity = rand(100, 1000);
-            $deliveryDate = now()->addDays(rand(5, 25));
+            if ($i === 0) {
+                $deliveryDate = now()->subDays(rand(2, 10));
+            } elseif ($i === 1) {
+                $deliveryDate = now()->addDays(rand(1, 3));
+            } else {
+                $deliveryDate = now()->addDays(rand(5, 25));
+            }
+
+            // Semáforo más realista para fase In Allestimento:
+            // - Algunas órdenes completamente rojas (nada listo)
+            // - Otras parcialmente listas
+            // - Algunas totalmente verdes (listas para lanzar)
+            $semaforoPatterns = [
+                ['etichette' => 0, 'packaging' => 0, 'prodotto' => 0],
+                ['etichette' => 2, 'packaging' => 1, 'prodotto' => 0],
+                ['etichette' => 1, 'packaging' => 1, 'prodotto' => 0],
+                ['etichette' => 2, 'packaging' => 2, 'prodotto' => 1],
+                ['etichette' => 2, 'packaging' => 2, 'prodotto' => 2],
+            ];
+            $statusSemaforo = $semaforoPatterns[array_rand($semaforoPatterns)];
             $order = Order::factory()->create([
                 'article_uuid' => $article->uuid,
                 'order_production_number' => $orderProductionNumberService->generateNext(),
@@ -1182,11 +1244,47 @@ class TestDataSeeder extends Seeder
                 'indications_for_shop' => null,
                 'indications_for_production' => null,
                 'indications_for_delivery' => null,
-                'status_semaforo' => json_encode(['etichette' => 0, 'packaging' => 0, 'prodotto' => 0]),
+                'status_semaforo' => json_encode($statusSemaforo),
                 'motivazione' => null,
                 'autocontrollo' => false,
             ]);
             $ordersInAllestimento->push($order);
+        }
+        // Orden demo determinista In Allestimento
+        if ($validArticles->isNotEmpty()) {
+            $demoArticleStatus1 = $validArticles->first();
+            $offer = $demoArticleStatus1->offer;
+            $division = $offer->customerDivision;
+            $availableAddresses = $shippingAddresses->where('customerdivision_uuid', $division->uuid);
+            if ($availableAddresses->isNotEmpty()) {
+                $deliveryDate = now()->addDays(15);
+                $ordersInAllestimento->push(Order::factory()->create([
+                    'article_uuid' => $demoArticleStatus1->uuid,
+                    'order_production_number' => $orderProductionNumberService->generateNext(),
+                    'status' => Order::STATUS_IN_ALLESTIMENTO,
+                    'quantity' => 750,
+                    'worked_quantity' => 0,
+                    'delivery_requested_date' => $deliveryDate,
+                    'expected_production_start_date' => $deliveryDate->copy()->subDays(7),
+                    'customershippingaddress_uuid' => $availableAddresses->first()->uuid,
+                    'number_customer_reference_order' => 'REF-DEMO-STATUS-1',
+                    'line' => 1,
+                    'type_lot' => 1,
+                    'lot' => null,
+                    'expiration_date' => $deliveryDate->copy()->addDays(180),
+                    'external_labels' => 1,
+                    'pvp_labels' => 1,
+                    'ingredients_labels' => 1,
+                    'variable_data_labels' => 1,
+                    'label_of_jumpers' => 1,
+                    'indications_for_shop' => 'Demo stato 1 - shop',
+                    'indications_for_production' => 'Demo stato 1 - produzione',
+                    'indications_for_delivery' => 'Demo stato 1 - consegna',
+                    'status_semaforo' => json_encode(['etichette' => 2, 'packaging' => 2, 'prodotto' => 2]),
+                    'motivazione' => null,
+                    'autocontrollo' => false,
+                ]));
+            }
         }
         $this->command->info("   ✅ {$ordersInAllestimento->count()} órdenes In Allestimento (status 1) creadas");
 
@@ -1203,7 +1301,23 @@ class TestDataSeeder extends Seeder
             }
 
             $quantity = rand(100, 1000);
-            $deliveryDate = now()->addDays(rand(5, 30));
+            if ($i === 0) {
+                $deliveryDate = now()->subDays(rand(2, 7));
+            } elseif ($i === 1) {
+                $deliveryDate = now()->addDays(rand(1, 3));
+            } else {
+                $deliveryDate = now()->addDays(rand(5, 30));
+            }
+
+            // Semáforo para Lanciato: normalmente quasi tutto pronto,
+            // ma non sempre completamente verde
+            $semaforoPatternsLanciate = [
+                ['etichette' => 2, 'packaging' => 1, 'prodotto' => 0],
+                ['etichette' => 2, 'packaging' => 2, 'prodotto' => 1],
+                ['etichette' => 1, 'packaging' => 2, 'prodotto' => 1],
+                ['etichette' => 2, 'packaging' => 2, 'prodotto' => 2],
+            ];
+            $statusSemaforoLanciate = $semaforoPatternsLanciate[array_rand($semaforoPatternsLanciate)];
 
             $order = Order::factory()->create([
                 'article_uuid' => $article->uuid,
@@ -1227,19 +1341,51 @@ class TestDataSeeder extends Seeder
                 'indications_for_shop' => rand(0, 1) ? 'Indicaciones para tienda: '.$faker->sentence(10) : null,
                 'indications_for_production' => rand(0, 1) ? 'Indicaciones para producción: '.$faker->sentence(10) : null,
                 'indications_for_delivery' => rand(0, 1) ? 'Indicaciones para entrega: '.$faker->sentence(10) : null,
-                'status_semaforo' => json_encode([
-                    'etichette' => rand(0, 2),
-                    'packaging' => rand(0, 2),
-                    'prodotto' => rand(0, 2),
-                ]),
+                'status_semaforo' => json_encode($statusSemaforoLanciate),
                 'motivazione' => null,
                 'autocontrollo' => false,
             ]);
             $ordersLanciate->push($order);
         }
+        // Orden demo determinista Lanciato
+        if ($validArticles->isNotEmpty()) {
+            $demoArticleStatus2 = $validArticles->first();
+            $offer = $demoArticleStatus2->offer;
+            $division = $offer->customerDivision;
+            $availableAddresses = $shippingAddresses->where('customerdivision_uuid', $division->uuid);
+            if ($availableAddresses->isNotEmpty()) {
+                $deliveryDate = now()->addDays(20);
+                $ordersLanciate->push(Order::factory()->create([
+                    'article_uuid' => $demoArticleStatus2->uuid,
+                    'order_production_number' => $orderProductionNumberService->generateNext(),
+                    'status' => Order::STATUS_LANCIATO,
+                    'quantity' => 600,
+                    'worked_quantity' => 0,
+                    'delivery_requested_date' => $deliveryDate,
+                    'expected_production_start_date' => $deliveryDate->copy()->subDays(5),
+                    'customershippingaddress_uuid' => $availableAddresses->first()->uuid,
+                    'number_customer_reference_order' => 'REF-DEMO-STATUS-2',
+                    'line' => 2,
+                    'type_lot' => 1,
+                    'lot' => 'LOT-DEM02',
+                    'expiration_date' => $deliveryDate->copy()->addDays(200),
+                    'external_labels' => 1,
+                    'pvp_labels' => 1,
+                    'ingredients_labels' => 2,
+                    'variable_data_labels' => 1,
+                    'label_of_jumpers' => 0,
+                    'indications_for_shop' => 'Demo stato 2 - shop',
+                    'indications_for_production' => 'Demo stato 2 - produzione',
+                    'indications_for_delivery' => 'Demo stato 2 - consegna',
+                    'status_semaforo' => json_encode(['etichette' => 2, 'packaging' => 2, 'prodotto' => 1]),
+                    'motivazione' => null,
+                    'autocontrollo' => false,
+                ]));
+            }
+        }
         $this->command->info("   ✅ {$ordersLanciate->count()} órdenes Lanciate (status 2) creadas");
 
-        // Órdenes In Avanzamento (status 3)
+        // Órdenes In Avanzamento (status 3) – Variedad fechas: ritardo, urgente, normal (più 2 demo fisse sotto)
         $ordersInAvanzamento = collect();
         for ($i = 0; $i < min(12, $validArticles->count()); $i++) {
             $article = $validArticles->random();
@@ -1253,8 +1399,24 @@ class TestDataSeeder extends Seeder
 
             $quantity = rand(100, 1000);
             $workedQuantity = rand(10, (int) ($quantity * 0.8));
-            $deliveryDate = now()->addDays(rand(3, 20));
+            if ($i === 0) {
+                $deliveryDate = now()->subDays(rand(2, 10));
+            } elseif ($i === 1) {
+                $deliveryDate = now()->addDays(rand(1, 3));
+            } else {
+                $deliveryDate = now()->addDays(rand(3, 20));
+            }
             $startDate = now()->subDays(rand(1, 5));
+
+            // Semáforo per In Avanzamento: quasi sempre almeno giallo,
+            // spesso tutto verde quando l'ordine è vicino al completamento
+            $semaforoPatternsAvanzamento = [
+                ['etichette' => 1, 'packaging' => 1, 'prodotto' => 1],
+                ['etichette' => 2, 'packaging' => 1, 'prodotto' => 1],
+                ['etichette' => 2, 'packaging' => 2, 'prodotto' => 1],
+                ['etichette' => 2, 'packaging' => 2, 'prodotto' => 2],
+            ];
+            $statusSemaforoAvanzamento = $semaforoPatternsAvanzamento[array_rand($semaforoPatternsAvanzamento)];
 
             $order = Order::factory()->create([
                 'article_uuid' => $article->uuid,
@@ -1278,16 +1440,116 @@ class TestDataSeeder extends Seeder
                 'indications_for_shop' => rand(0, 1) ? 'Indicaciones para tienda: '.$faker->sentence(10) : null,
                 'indications_for_production' => rand(0, 1) ? 'Indicaciones para producción: '.$faker->sentence(10) : null,
                 'indications_for_delivery' => rand(0, 1) ? 'Indicaciones para entrega: '.$faker->sentence(10) : null,
-                'status_semaforo' => json_encode([
-                    'etichette' => rand(0, 2),
-                    'packaging' => rand(0, 2),
-                    'prodotto' => rand(0, 2),
-                ]),
+                'status_semaforo' => json_encode($statusSemaforoAvanzamento),
                 'motivazione' => null,
                 'autocontrollo' => $workedQuantity >= $quantity * 0.9,
             ]);
             $ordersInAvanzamento->push($order);
         }
+        // Orden demo determinista In Avanzamento
+        if ($validArticles->isNotEmpty()) {
+            $demoArticleStatus3 = $validArticles->first();
+            $offer = $demoArticleStatus3->offer;
+            $division = $offer->customerDivision;
+            $availableAddresses = $shippingAddresses->where('customerdivision_uuid', $division->uuid);
+            if ($availableAddresses->isNotEmpty()) {
+                $quantity = 800;
+                $workedQuantity = 500;
+                $deliveryDate = now()->addDays(10);
+                $startDate = now()->subDays(3);
+                $ordersInAvanzamento->push(Order::factory()->create([
+                    'article_uuid' => $demoArticleStatus3->uuid,
+                    'order_production_number' => $orderProductionNumberService->generateNext(),
+                    'status' => Order::STATUS_IN_AVANZAMENTO,
+                    'quantity' => $quantity,
+                    'worked_quantity' => $workedQuantity,
+                    'delivery_requested_date' => $deliveryDate,
+                    'expected_production_start_date' => $startDate,
+                    'customershippingaddress_uuid' => $availableAddresses->first()->uuid,
+                    'number_customer_reference_order' => 'REF-DEMO-STATUS-3',
+                    'line' => 3,
+                    'type_lot' => 2,
+                    'lot' => 'LOT-DEM03',
+                    'expiration_date' => $deliveryDate->copy()->addDays(150),
+                    'external_labels' => 2,
+                    'pvp_labels' => 2,
+                    'ingredients_labels' => 2,
+                    'variable_data_labels' => 2,
+                    'label_of_jumpers' => 1,
+                    'indications_for_shop' => 'Demo stato 3 - shop',
+                    'indications_for_production' => 'Demo stato 3 - produzione',
+                    'indications_for_delivery' => 'Demo stato 3 - consegna',
+                    'status_semaforo' => json_encode(['etichette' => 2, 'packaging' => 2, 'prodotto' => 2]),
+                    'motivazione' => null,
+                    'autocontrollo' => false,
+                ]));
+            }
+        }
+        // Demo urgenza: 2 ordini In Avanzamento per testare gli iconi in lista
+        // (triangolo rosso = in ritardo, triangolo giallo = urgente 0–3 giorni).
+        if ($validArticles->isNotEmpty() && $shippingAddresses->isNotEmpty()) {
+            $demoArt = $validArticles->first();
+            $demoDivision = $demoArt->offer->customerDivision;
+            $demoAddresses = $shippingAddresses->where('customerdivision_uuid', $demoDivision->uuid);
+            if ($demoAddresses->isNotEmpty()) {
+                $addr = $demoAddresses->first();
+                // Ordine in ritardo (data consegna nel passato) → icona rossa in lista
+                $ordersInAvanzamento->push(Order::factory()->create([
+                    'article_uuid' => $demoArt->uuid,
+                    'order_production_number' => $orderProductionNumberService->generateNext(),
+                    'status' => Order::STATUS_IN_AVANZAMENTO,
+                    'quantity' => 500,
+                    'worked_quantity' => 200,
+                    'delivery_requested_date' => now()->subDays(5),
+                    'expected_production_start_date' => now()->subDays(10),
+                    'customershippingaddress_uuid' => $addr->uuid,
+                    'number_customer_reference_order' => 'REF-DEMO-RITARDO',
+                    'line' => 1,
+                    'type_lot' => 1,
+                    'lot' => 'LOT-DEM-R',
+                    'expiration_date' => now()->addDays(90),
+                    'external_labels' => 1,
+                    'pvp_labels' => 1,
+                    'ingredients_labels' => 1,
+                    'variable_data_labels' => 1,
+                    'label_of_jumpers' => 0,
+                    'indications_for_shop' => null,
+                    'indications_for_production' => null,
+                    'indications_for_delivery' => null,
+                    'status_semaforo' => json_encode(['etichette' => 2, 'packaging' => 2, 'prodotto' => 2]),
+                    'motivazione' => null,
+                    'autocontrollo' => false,
+                ]));
+                // Ordine urgente (consegna tra 2 giorni) → icona gialla in lista
+                $ordersInAvanzamento->push(Order::factory()->create([
+                    'article_uuid' => $demoArt->uuid,
+                    'order_production_number' => $orderProductionNumberService->generateNext(),
+                    'status' => Order::STATUS_IN_AVANZAMENTO,
+                    'quantity' => 400,
+                    'worked_quantity' => 150,
+                    'delivery_requested_date' => now()->addDays(2),
+                    'expected_production_start_date' => now()->subDays(3),
+                    'customershippingaddress_uuid' => $addr->uuid,
+                    'number_customer_reference_order' => 'REF-DEMO-URGENTE',
+                    'line' => 2,
+                    'type_lot' => 1,
+                    'lot' => 'LOT-DEM-U',
+                    'expiration_date' => now()->addDays(120),
+                    'external_labels' => 1,
+                    'pvp_labels' => 1,
+                    'ingredients_labels' => 1,
+                    'variable_data_labels' => 1,
+                    'label_of_jumpers' => 0,
+                    'indications_for_shop' => null,
+                    'indications_for_production' => null,
+                    'indications_for_delivery' => null,
+                    'status_semaforo' => json_encode(['etichette' => 2, 'packaging' => 2, 'prodotto' => 2]),
+                    'motivazione' => null,
+                    'autocontrollo' => false,
+                ]));
+            }
+        }
+
         $this->command->info("   ✅ {$ordersInAvanzamento->count()} órdenes In Avanzamento (status 3) creadas");
 
         // Órdenes Sospese (status 4)
@@ -1313,7 +1575,22 @@ class TestDataSeeder extends Seeder
             }
 
             $quantity = rand(100, 1000);
-            $deliveryDate = now()->addDays(rand(5, 30));
+            if ($i === 0) {
+                $deliveryDate = now()->subDays(rand(2, 14));
+            } elseif ($i === 1) {
+                $deliveryDate = now()->addDays(rand(1, 3));
+            } else {
+                $deliveryDate = now()->addDays(rand(5, 30));
+            }
+
+            // Semáforo per Sospeso: motivazioni diverse, semaforo spesso "a metà"
+            $semaforoPatternsSospese = [
+                ['etichette' => 0, 'packaging' => 1, 'prodotto' => 1],
+                ['etichette' => 2, 'packaging' => 0, 'prodotto' => 1],
+                ['etichette' => 1, 'packaging' => 2, 'prodotto' => 0],
+                ['etichette' => 1, 'packaging' => 1, 'prodotto' => 1],
+            ];
+            $statusSemaforoSospese = $semaforoPatternsSospese[array_rand($semaforoPatternsSospese)];
 
             $order = Order::factory()->create([
                 'article_uuid' => $article->uuid,
@@ -1337,19 +1614,55 @@ class TestDataSeeder extends Seeder
                 'indications_for_shop' => rand(0, 1) ? 'Indicaciones para tienda: '.$faker->sentence(10) : null,
                 'indications_for_production' => rand(0, 1) ? 'Indicaciones para producción: '.$faker->sentence(10) : null,
                 'indications_for_delivery' => rand(0, 1) ? 'Indicaciones para entrega: '.$faker->sentence(10) : null,
-                'status_semaforo' => json_encode([
-                    'etichette' => rand(0, 2),
-                    'packaging' => rand(0, 2),
-                    'prodotto' => rand(0, 2),
-                ]),
+                'status_semaforo' => json_encode($statusSemaforoSospese),
                 'motivazione' => $motivazioni[array_rand($motivazioni)],
                 'autocontrollo' => false,
             ]);
             $ordersSospese->push($order);
         }
+        // Orden demo determinista Sospeso
+        if ($validArticles->isNotEmpty()) {
+            $demoArticleStatus4 = $validArticles->first();
+            $offer = $demoArticleStatus4->offer;
+            $division = $offer->customerDivision;
+            $availableAddresses = $shippingAddresses->where('customerdivision_uuid', $division->uuid);
+            if ($availableAddresses->isNotEmpty()) {
+                $quantity = 900;
+                $deliveryDate = now()->addDays(12);
+                $ordersSospese->push(Order::factory()->create([
+                    'article_uuid' => $demoArticleStatus4->uuid,
+                    'order_production_number' => $orderProductionNumberService->generateNext(),
+                    'status' => Order::STATUS_SOSPESO,
+                    'quantity' => $quantity,
+                    'worked_quantity' => 300,
+                    'delivery_requested_date' => $deliveryDate,
+                    'expected_production_start_date' => now()->subDays(4),
+                    'customershippingaddress_uuid' => $availableAddresses->first()->uuid,
+                    'number_customer_reference_order' => 'REF-DEMO-STATUS-4',
+                    'line' => 4,
+                    'type_lot' => 1,
+                    'lot' => 'LOT-DEM04',
+                    'expiration_date' => $deliveryDate->copy()->addDays(200),
+                    'external_labels' => 1,
+                    'pvp_labels' => 1,
+                    'ingredients_labels' => 1,
+                    'variable_data_labels' => 1,
+                    'label_of_jumpers' => 1,
+                    'indications_for_shop' => 'Demo stato 4 - shop',
+                    'indications_for_production' => 'Demo stato 4 - produzione',
+                    'indications_for_delivery' => 'Demo stato 4 - consegna',
+                    'status_semaforo' => json_encode(['etichette' => 1, 'packaging' => 2, 'prodotto' => 0]),
+                    'motivazione' => 'Demo sospensione – ordine stato 4.',
+                    'autocontrollo' => false,
+                ]));
+            }
+        }
         $this->command->info("   ✅ {$ordersSospese->count()} órdenes Sospese (status 4) creadas");
 
         // Órdenes Evaso (status 5) - Completate
+        // Coherente: la data di consegna è nel passato (ordine già evaso).
+        // In lista, per status 5 e 6 la colonna "Data di consegna" mostra sempre
+        // icona verde (nessun "pericolo"): ordine chiuso = non ha senso segnalare ritardo.
         $ordersEvaso = collect();
         for ($i = 0; $i < min(15, $validArticles->count()); $i++) {
             $article = $validArticles->random();
@@ -1412,6 +1725,8 @@ class TestDataSeeder extends Seeder
         $this->command->info("   ✅ {$ordersEvaso->count()} órdenes Evaso (status 5) creadas");
 
         // Órdenes Saldato (status 6) - Completate
+        // Coherente: data di consegna nel passato (ordine saldato).
+        // In lista si mostra sempre icona verde (nessun pericolo) per coerenza con la UI.
         $ordersSaldato = collect();
         for ($i = 0; $i < min(10, $validArticles->count()); $i++) {
             $article = $validArticles->random();

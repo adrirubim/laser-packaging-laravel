@@ -52,17 +52,25 @@ class EmployeeContract extends Model
     ];
 
     /**
-     * Pay level constants.
+     * Pay level constants (parità con legacy 0–8).
      */
-    const PAY_LEVEL_0 = 0; // C3 (ex 5a)
+    const PAY_LEVEL_0 = 0;  // D1 (ex 2a)
 
-    const PAY_LEVEL_1 = 1; // B1 (ex 5a Super)
+    const PAY_LEVEL_1 = 1;  // D2 (ex 3a)
 
-    const PAY_LEVEL_2 = 2; // B2 (ex 6a)
+    const PAY_LEVEL_2 = 2;  // C1 (ex 3a Super)
 
-    const PAY_LEVEL_3 = 3; // B3 (ex 7a)
+    const PAY_LEVEL_3 = 3;  // C2 (ex 4a)
 
-    const PAY_LEVEL_4 = 4; // A1 (ex 8a Quadri)
+    const PAY_LEVEL_4 = 4;  // C3 (ex 5a)
+
+    const PAY_LEVEL_5 = 5;  // B1 (ex 5a Super)
+
+    const PAY_LEVEL_6 = 6;  // B2 (ex 6a)
+
+    const PAY_LEVEL_7 = 7;  // B3 (ex 7a)
+
+    const PAY_LEVEL_8 = 8;  // A1 (ex 8a Quadri)
 
     /**
      * Get pay level label.
@@ -70,11 +78,15 @@ class EmployeeContract extends Model
     public function getPayLevelLabelAttribute(): string
     {
         return match ($this->pay_level) {
-            0 => 'C3 (ex 5a)',
-            1 => 'B1 (ex 5a Super)',
-            2 => 'B2 (ex 6a)',
-            3 => 'B3 (ex 7a)',
-            4 => 'A1 (ex 8a Quadri)',
+            0 => 'D1 (ex 2a)',
+            1 => 'D2 (ex 3a)',
+            2 => 'C1 (ex 3a Super)',
+            3 => 'C2 (ex 4a)',
+            4 => 'C3 (ex 5a)',
+            5 => 'B1 (ex 5a Super)',
+            6 => 'B2 (ex 6a)',
+            7 => 'B3 (ex 7a)',
+            8 => 'A1 (ex 8a Quadri)',
             default => 'N/D',
         };
     }

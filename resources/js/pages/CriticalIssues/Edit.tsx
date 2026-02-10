@@ -1,3 +1,4 @@
+import { ConfirmCloseDialog } from '@/components/confirm-close-dialog';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,7 +13,8 @@ import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import criticalIssues from '@/routes/critical-issues/index';
 import { type BreadcrumbItem } from '@/types';
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, router } from '@inertiajs/react';
+import { useState } from 'react';
 
 type CriticalIssue = {
     id: number;
@@ -29,6 +31,7 @@ export default function CriticalIssuesEdit({
     criticalIssue,
     errors: serverErrors,
 }: CriticalIssuesEditProps) {
+    const [showCloseConfirm, setShowCloseConfirm] = useState(false);
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Criticità',
@@ -51,97 +54,118 @@ export default function CriticalIssuesEdit({
             <Head title={`Modifica Criticità ${criticalIssue.name}`} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Gestione Criticità</CardTitle>
-                        <CardDescription>Modifica</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Form
-                            action={
-                                criticalIssues.update({
-                                    criticalIssue: criticalIssue.uuid,
-                                }).url
-                            }
-                            method="put"
-                            className="space-y-6"
-                        >
-                            {({ processing, errors }) => {
-                                const allErrors = {
-                                    ...errors,
-                                    ...serverErrors,
-                                };
+                <div className="flex w-full justify-center">
+                    <div className="w-full max-w-4xl space-y-5">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Modifica Criticità</CardTitle>
+                                <CardDescription>
+                                    Aggiorna le informazioni della criticità.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Form
+                                    action={
+                                        criticalIssues.update({
+                                            criticalIssue: criticalIssue.uuid,
+                                        }).url
+                                    }
+                                    method="put"
+                                    className="space-y-6"
+                                >
+                                    {({ processing, errors }) => {
+                                        const allErrors = {
+                                            ...errors,
+                                            ...serverErrors,
+                                        };
 
-                                return (
-                                    <>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="uuid">UUID</Label>
-                                            <Input
-                                                id="uuid"
-                                                name="uuid"
-                                                defaultValue={
-                                                    criticalIssue.uuid
-                                                }
-                                                readOnly
-                                                className="bg-muted"
-                                            />
-                                        </div>
+                                        return (
+                                            <>
+                                                <div className="grid gap-2">
+                                                    <Label htmlFor="uuid">
+                                                        UUID
+                                                    </Label>
+                                                    <Input
+                                                        id="uuid"
+                                                        name="uuid"
+                                                        defaultValue={
+                                                            criticalIssue.uuid
+                                                        }
+                                                        readOnly
+                                                        className="bg-muted"
+                                                    />
+                                                </div>
 
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="name">
-                                                Nome Criticità *
-                                            </Label>
-                                            <Input
-                                                id="name"
-                                                name="name"
-                                                required
-                                                defaultValue={
-                                                    criticalIssue.name
-                                                }
-                                                placeholder="Nome Criticità"
-                                                maxLength={255}
-                                                aria-describedby="name-help"
-                                            />
-                                            <p
-                                                id="name-help"
-                                                className="text-xs text-muted-foreground"
-                                            >
-                                                Inserisci il nome della
-                                                criticità (massimo 255
-                                                caratteri).
-                                            </p>
-                                            <InputError
-                                                message={allErrors.name}
-                                            />
-                                        </div>
+                                                <div className="grid gap-2">
+                                                    <Label htmlFor="name">
+                                                        Nome Criticità *
+                                                    </Label>
+                                                    <Input
+                                                        id="name"
+                                                        name="name"
+                                                        required
+                                                        defaultValue={
+                                                            criticalIssue.name
+                                                        }
+                                                        placeholder="Nome Criticità"
+                                                        maxLength={255}
+                                                        aria-describedby="name-help"
+                                                    />
+                                                    <p
+                                                        id="name-help"
+                                                        className="text-xs text-muted-foreground"
+                                                    >
+                                                        Inserisci il nome della
+                                                        criticità (massimo 255
+                                                        caratteri).
+                                                    </p>
+                                                    <InputError
+                                                        message={allErrors.name}
+                                                    />
+                                                </div>
 
-                                        <div className="flex items-center justify-end gap-3 pt-4">
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                onClick={() =>
-                                                    window.history.back()
-                                                }
-                                                disabled={processing}
-                                            >
-                                                Annulla
-                                            </Button>
-                                            <Button
-                                                type="submit"
-                                                disabled={processing}
-                                            >
-                                                {processing
-                                                    ? 'Salvando...'
-                                                    : 'Salva'}
-                                            </Button>
-                                        </div>
-                                    </>
-                                );
-                            }}
-                        </Form>
-                    </CardContent>
-                </Card>
+                                                <div className="flex items-center gap-4">
+                                                    <Button
+                                                        type="submit"
+                                                        disabled={processing}
+                                                    >
+                                                        {processing
+                                                            ? 'Aggiornando...'
+                                                            : 'Aggiorna Criticità'}
+                                                    </Button>
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        onClick={() =>
+                                                            setShowCloseConfirm(
+                                                                true,
+                                                            )
+                                                        }
+                                                    >
+                                                        Annulla
+                                                    </Button>
+                                                </div>
+                                            </>
+                                        );
+                                    }}
+                                </Form>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
             </div>
+            <ConfirmCloseDialog
+                open={showCloseConfirm}
+                onOpenChange={setShowCloseConfirm}
+                onConfirm={() => {
+                    setShowCloseConfirm(false);
+                    router.visit(
+                        criticalIssues.show({
+                            criticalIssue: criticalIssue.uuid,
+                        }).url,
+                    );
+                }}
+            />
         </AppLayout>
     );
 }

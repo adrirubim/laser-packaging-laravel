@@ -55,9 +55,20 @@ class UpdateOrderAction
                 }
             }
 
-            // Aggiornare stato automaticamente se worked_quantity > 0 e status <= LANCIATO
-            if ($order->status <= OrderStatus::LANCIATO->value && ($validated['worked_quantity'] ?? $order->worked_quantity) > 0) {
-                $validated['status'] = OrderStatus::IN_AVANZAMENTO->value;
+            // Gestione automatica dello stato in base alla worked_quantity
+            // Se la quantità lavorata aumenta rispetto al valore corrente e
+            // lo stato è ancora fino a LANCIATO (0,1,2), passare a IN_AVANZAMENTO (3)
+            if (array_key_exists('worked_quantity', $validated)) {
+                $previousWorkedQuantity = (float) ($order->worked_quantity ?? 0);
+                $newWorkedQuantity = (float) $validated['worked_quantity'];
+
+                if (
+                    $newWorkedQuantity > $previousWorkedQuantity &&
+                    $order->status <= OrderStatus::LANCIATO->value &&
+                    ! array_key_exists('status', $validated)
+                ) {
+                    $validated['status'] = OrderStatus::IN_AVANZAMENTO->value;
+                }
             }
 
             $order->update($validated);

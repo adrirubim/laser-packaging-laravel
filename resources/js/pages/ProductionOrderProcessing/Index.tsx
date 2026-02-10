@@ -379,7 +379,7 @@ export default function ProductionOrderProcessingIndex() {
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Ordini',
-            href: '/orders',
+            href: ordersRoutes.index().url,
         },
         {
             title: 'Gestione Lavorazione Ordini',

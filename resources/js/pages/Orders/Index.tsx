@@ -74,6 +74,11 @@ type Order = {
     delivery_requested_date?: string | null;
     status: number;
     article?: Article | null;
+    status_semaforo?: {
+        etichette: number;
+        packaging: number;
+        prodotto: number;
+    } | null;
 };
 
 type OrdersIndexProps = {
@@ -163,6 +168,25 @@ export default function OrdersIndex() {
     const [selectedOrders, setSelectedOrders] = useState<Set<string>>(
         new Set(),
     );
+
+    // Legacy: la tabella Ordini NON mostra Semafori né Q.tà Lavorata/Progresso
+    // (order.php: status_semaforo e worked_quantity hanno visible => false).
+    // Le colonne Progresso e Semaforo sono nascoste di default; l'utente può attivarle dal menu colonne.
+    function getDefaultVisibleColumns(): Record<string, boolean> {
+        return {
+            id: true,
+            order_production_number: true,
+            number_customer_reference_order: true,
+            line: true,
+            cod_article_las: true,
+            quantity: true,
+            progress: false,
+            semaforo: false,
+            delivery_requested_date: true,
+            status: true,
+            actions: true,
+        };
+    }
     const [visibleColumns, setVisibleColumns] = useState<
         Record<string, boolean>
     >(() => {
@@ -171,32 +195,10 @@ export default function OrdersIndex() {
             try {
                 return JSON.parse(saved);
             } catch {
-                return {
-                    id: true,
-                    order_production_number: true,
-                    number_customer_reference_order: true,
-                    line: true,
-                    cod_article_las: true,
-                    quantity: true,
-                    progress: true,
-                    delivery_requested_date: true,
-                    status: true,
-                    actions: true,
-                };
+                return getDefaultVisibleColumns();
             }
         }
-        return {
-            id: true,
-            order_production_number: true,
-            number_customer_reference_order: true,
-            line: true,
-            cod_article_las: true,
-            quantity: true,
-            progress: true,
-            delivery_requested_date: true,
-            status: true,
-            actions: true,
-        };
+        return getDefaultVisibleColumns();
     });
     const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
     const [showColumnSettings, setShowColumnSettings] = useState(false);
@@ -392,6 +394,15 @@ export default function OrdersIndex() {
     const getUrgencyStatus = (
         order: Order,
     ): { type: 'overdue' | 'urgent' | 'normal'; icon: React.ReactElement } => {
+        // Per ordini completati (Evaso/Saldato) non ha senso segnalare ritardi:
+        // mostriamo sempre lo stato \"ok\".
+        if (order.status === 5 || order.status === 6) {
+            return {
+                type: 'normal',
+                icon: <CheckCircle2 className="h-4 w-4 text-emerald-500" />,
+            };
+        }
+
         if (!order.delivery_requested_date) {
             return {
                 type: 'normal',
@@ -648,6 +659,7 @@ export default function OrdersIndex() {
             'article',
             'quantity',
             'progress',
+            'semaforo',
             'delivery_date',
             'status',
             'actions',
@@ -1615,12 +1627,12 @@ export default function OrdersIndex() {
                                 { key: 'article', label: 'Articolo' },
                                 { key: 'quantity', label: 'Quantità' },
                                 { key: 'progress', label: 'Progresso' },
+                                { key: 'semaforo', label: 'Semaforo' },
                                 {
                                     key: 'delivery_date',
                                     label: 'Data consegna',
                                 },
                                 { key: 'status', label: 'Stato' },
-                                { key: 'actions', label: 'Azioni' },
                             ].map((col) => (
                                 <label
                                     key={col.key}
@@ -1781,6 +1793,12 @@ export default function OrdersIndex() {
                                                     Progresso
                                                 </th>
                                             )}
+                                            {visibleColumns['semaforo'] !==
+                                                false && (
+                                                <th className="border-b px-3 py-2 font-medium">
+                                                    Semaforo
+                                                </th>
+                                            )}
                                             {visibleColumns['delivery_date'] !==
                                                 false && (
                                                 <SortableTableHeader
@@ -1811,12 +1829,9 @@ export default function OrdersIndex() {
                                                     Stato
                                                 </SortableTableHeader>
                                             )}
-                                            {visibleColumns['actions'] !==
-                                                false && (
-                                                <th className="border-b px-3 py-2 text-right font-medium">
-                                                    Azioni
-                                                </th>
-                                            )}
+                                            <th className="border-b px-3 py-2 text-right font-medium">
+                                                Azioni
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -2051,6 +2066,85 @@ export default function OrdersIndex() {
                                                                 </td>
                                                             )}
                                                             {visibleColumns[
+                                                                'semaforo'
+                                                            ] !== false && (
+                                                                <td className="px-3 py-2 text-xs">
+                                                                    {order.status ===
+                                                                    1 ? (
+                                                                        <div className="flex items-center gap-2">
+                                                                            {(() => {
+                                                                                const semaforo =
+                                                                                    order.status_semaforo ?? {
+                                                                                        etichette: 0,
+                                                                                        packaging: 0,
+                                                                                        prodotto: 0,
+                                                                                    };
+
+                                                                                return (
+                                                                                    <>
+                                                                                        <span className="inline-flex items-center gap-1">
+                                                                                            <span className="text-[10px] font-semibold">
+                                                                                                E:
+                                                                                            </span>
+                                                                                            <span
+                                                                                                className={`h-3 w-3 rounded-full ${
+                                                                                                    semaforo.etichette ===
+                                                                                                    0
+                                                                                                        ? 'bg-red-500'
+                                                                                                        : semaforo.etichette ===
+                                                                                                            1
+                                                                                                          ? 'bg-yellow-400'
+                                                                                                          : 'bg-green-500'
+                                                                                                }`}
+                                                                                                title="Etichette"
+                                                                                            />
+                                                                                        </span>
+                                                                                        <span className="inline-flex items-center gap-1">
+                                                                                            <span className="text-[10px] font-semibold">
+                                                                                                P:
+                                                                                            </span>
+                                                                                            <span
+                                                                                                className={`h-3 w-3 rounded-full ${
+                                                                                                    semaforo.packaging ===
+                                                                                                    0
+                                                                                                        ? 'bg-red-500'
+                                                                                                        : semaforo.packaging ===
+                                                                                                            1
+                                                                                                          ? 'bg-yellow-400'
+                                                                                                          : 'bg-green-500'
+                                                                                                }`}
+                                                                                                title="Packaging"
+                                                                                            />
+                                                                                        </span>
+                                                                                        <span className="inline-flex items-center gap-1">
+                                                                                            <span className="text-[10px] font-semibold">
+                                                                                                P:
+                                                                                            </span>
+                                                                                            <span
+                                                                                                className={`h-3 w-3 rounded-full ${
+                                                                                                    semaforo.prodotto ===
+                                                                                                    0
+                                                                                                        ? 'bg-red-500'
+                                                                                                        : semaforo.prodotto ===
+                                                                                                            1
+                                                                                                          ? 'bg-yellow-400'
+                                                                                                          : 'bg-green-500'
+                                                                                                }`}
+                                                                                                title="Prodotto"
+                                                                                            />
+                                                                                        </span>
+                                                                                    </>
+                                                                                );
+                                                                            })()}
+                                                                        </div>
+                                                                    ) : (
+                                                                        <span className="text-muted-foreground">
+                                                                            -
+                                                                        </span>
+                                                                    )}
+                                                                </td>
+                                                            )}
+                                                            {visibleColumns[
                                                                 'delivery_date'
                                                             ] !== false && (
                                                                 <td className="px-3 py-2 text-xs">
@@ -2279,126 +2373,231 @@ export default function OrdersIndex() {
                                                         }
                                                     </Link>
                                                 </div>
-                                                {order.article && (
-                                                    <div className="text-sm text-muted-foreground">
-                                                        {
-                                                            order.article
-                                                                .cod_article_las
-                                                        }
-                                                        {order.article
-                                                            .article_descr && (
-                                                            <span
-                                                                className="ml-2 text-xs"
-                                                                title={
-                                                                    order
+                                                {visibleColumns['article'] !==
+                                                    false &&
+                                                    order.article && (
+                                                        <div className="text-sm text-muted-foreground">
+                                                            {
+                                                                order.article
+                                                                    .cod_article_las
+                                                            }
+                                                            {order.article
+                                                                .article_descr && (
+                                                                <span
+                                                                    className="ml-2 text-xs"
+                                                                    title={
+                                                                        order
+                                                                            .article
+                                                                            .article_descr
+                                                                    }
+                                                                >
+                                                                    {order
                                                                         .article
                                                                         .article_descr
-                                                                }
-                                                            >
-                                                                {order.article
-                                                                    .article_descr
-                                                                    .length > 30
-                                                                    ? order.article.article_descr.substring(
-                                                                          0,
-                                                                          30,
-                                                                      ) + '...'
-                                                                    : order
-                                                                          .article
-                                                                          .article_descr}
-                                                            </span>
-                                                        )}
+                                                                        .length >
+                                                                    30
+                                                                        ? order.article.article_descr.substring(
+                                                                              0,
+                                                                              30,
+                                                                          ) +
+                                                                          '...'
+                                                                        : order
+                                                                              .article
+                                                                              .article_descr}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                {(visibleColumns[
+                                                    'number_customer_reference_order'
+                                                ] !== false &&
+                                                    order.number_customer_reference_order) ||
+                                                (visibleColumns['line'] !==
+                                                    false &&
+                                                    order.line != null) ? (
+                                                    <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0 text-xs text-muted-foreground">
+                                                        {visibleColumns[
+                                                            'number_customer_reference_order'
+                                                        ] !== false &&
+                                                            order.number_customer_reference_order && (
+                                                                <span>
+                                                                    Cliente:{' '}
+                                                                    {
+                                                                        order.number_customer_reference_order
+                                                                    }
+                                                                </span>
+                                                            )}
+                                                        {visibleColumns[
+                                                            'line'
+                                                        ] !== false &&
+                                                            order.line !=
+                                                                null && (
+                                                                <span>
+                                                                    Riga:{' '}
+                                                                    {order.line}
+                                                                </span>
+                                                            )}
                                                     </div>
-                                                )}
+                                                ) : null}
                                             </div>
-                                            <span
-                                                className={`inline-flex items-center rounded-full border px-2 py-1 text-xs font-medium ${getOrderStatusColor(order.status)}`}
-                                            >
-                                                {getOrderStatusLabel(
-                                                    order.status,
-                                                )}
-                                            </span>
+                                            {visibleColumns['status'] !==
+                                                false && (
+                                                <span
+                                                    className={`inline-flex items-center rounded-full border px-2 py-1 text-xs font-medium ${getOrderStatusColor(order.status)}`}
+                                                >
+                                                    {getOrderStatusLabel(
+                                                        order.status,
+                                                    )}
+                                                </span>
+                                            )}
                                         </div>
 
-                                        {parseDecimal(order.quantity) > 0 && (
-                                            <div className="mb-3">
-                                                <div className="mb-1 flex items-center justify-between text-xs">
+                                        {visibleColumns['progress'] !== false &&
+                                            parseDecimal(order.quantity) >
+                                                0 && (
+                                                <div className="mb-3">
+                                                    <div className="mb-1 flex items-center justify-between text-xs">
+                                                        <span className="text-muted-foreground">
+                                                            Progresso
+                                                        </span>
+                                                        <span className="font-medium">
+                                                            {progress}%
+                                                        </span>
+                                                    </div>
+                                                    <div className="h-2 w-full rounded-full bg-muted">
+                                                        <div
+                                                            className={`h-2 rounded-full transition-all ${getProgressColor(progress)}`}
+                                                            style={{
+                                                                width: `${progress}%`,
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                        {visibleColumns['semaforo'] !== false &&
+                                            order.status === 1 && (
+                                                <div className="mb-3 flex items-center gap-2 text-xs">
                                                     <span className="text-muted-foreground">
-                                                        Progresso
+                                                        Semaforo:
                                                     </span>
-                                                    <span className="font-medium">
-                                                        {progress}%
-                                                    </span>
+                                                    {(() => {
+                                                        const semaforo =
+                                                            order.status_semaforo ?? {
+                                                                etichette: 0,
+                                                                packaging: 0,
+                                                                prodotto: 0,
+                                                            };
+                                                        return (
+                                                            <span className="flex items-center gap-1">
+                                                                <span
+                                                                    className={`h-2.5 w-2.5 rounded-full ${
+                                                                        semaforo.etichette ===
+                                                                        0
+                                                                            ? 'bg-red-500'
+                                                                            : semaforo.etichette ===
+                                                                                1
+                                                                              ? 'bg-yellow-400'
+                                                                              : 'bg-green-500'
+                                                                    }`}
+                                                                    title="Etichette"
+                                                                />
+                                                                <span
+                                                                    className={`h-2.5 w-2.5 rounded-full ${
+                                                                        semaforo.packaging ===
+                                                                        0
+                                                                            ? 'bg-red-500'
+                                                                            : semaforo.packaging ===
+                                                                                1
+                                                                              ? 'bg-yellow-400'
+                                                                              : 'bg-green-500'
+                                                                    }`}
+                                                                    title="Packaging"
+                                                                />
+                                                                <span
+                                                                    className={`h-2.5 w-2.5 rounded-full ${
+                                                                        semaforo.prodotto ===
+                                                                        0
+                                                                            ? 'bg-red-500'
+                                                                            : semaforo.prodotto ===
+                                                                                1
+                                                                              ? 'bg-yellow-400'
+                                                                              : 'bg-green-500'
+                                                                    }`}
+                                                                    title="Prodotto"
+                                                                />
+                                                            </span>
+                                                        );
+                                                    })()}
                                                 </div>
-                                                <div className="h-2 w-full rounded-full bg-muted">
-                                                    <div
-                                                        className={`h-2 rounded-full transition-all ${getProgressColor(progress)}`}
-                                                        style={{
-                                                            width: `${progress}%`,
-                                                        }}
-                                                    />
-                                                </div>
-                                            </div>
-                                        )}
+                                            )}
 
                                         <div className="mb-3 grid grid-cols-2 gap-2 text-xs">
-                                            {order.quantity !== null && (
-                                                <div>
-                                                    <span className="text-muted-foreground">
-                                                        Quantità:{' '}
-                                                    </span>
-                                                    <span className="font-medium">
-                                                        {(() => {
-                                                            const qty =
-                                                                order.quantity;
-                                                            if (
-                                                                qty === null ||
-                                                                qty ===
-                                                                    undefined
-                                                            )
-                                                                return '-';
-                                                            const numQty =
-                                                                typeof qty ===
-                                                                'string'
-                                                                    ? parseFloat(
-                                                                          qty,
-                                                                      )
-                                                                    : qty;
-                                                            return isNaN(numQty)
-                                                                ? '-'
-                                                                : numQty.toFixed(
-                                                                      2,
-                                                                  );
-                                                        })()}
-                                                    </span>
-                                                </div>
-                                            )}
-                                            {order.delivery_requested_date && (
-                                                <div className="flex items-center gap-1">
-                                                    <span
-                                                        title={
-                                                            urgency.type ===
-                                                            'overdue'
-                                                                ? 'Ordine in ritardo'
-                                                                : urgency.type ===
-                                                                    'urgent'
-                                                                  ? 'Ordine urgente'
-                                                                  : 'A tempo'
-                                                        }
-                                                    >
-                                                        {urgency.icon}
-                                                    </span>
-                                                    <span className="text-muted-foreground">
-                                                        Consegna:{' '}
-                                                    </span>
-                                                    <span className="font-medium">
-                                                        {new Date(
-                                                            order.delivery_requested_date,
-                                                        ).toLocaleDateString(
-                                                            'it-IT',
-                                                        )}
-                                                    </span>
-                                                </div>
-                                            )}
+                                            {visibleColumns['quantity'] !==
+                                                false &&
+                                                order.quantity !== null && (
+                                                    <div>
+                                                        <span className="text-muted-foreground">
+                                                            Quantità:{' '}
+                                                        </span>
+                                                        <span className="font-medium">
+                                                            {(() => {
+                                                                const qty =
+                                                                    order.quantity;
+                                                                if (
+                                                                    qty ===
+                                                                        null ||
+                                                                    qty ===
+                                                                        undefined
+                                                                )
+                                                                    return '-';
+                                                                const numQty =
+                                                                    typeof qty ===
+                                                                    'string'
+                                                                        ? parseFloat(
+                                                                              qty,
+                                                                          )
+                                                                        : qty;
+                                                                return isNaN(
+                                                                    numQty,
+                                                                )
+                                                                    ? '-'
+                                                                    : numQty.toFixed(
+                                                                          2,
+                                                                      );
+                                                            })()}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            {visibleColumns['delivery_date'] !==
+                                                false &&
+                                                order.delivery_requested_date && (
+                                                    <div className="flex items-center gap-1">
+                                                        <span
+                                                            title={
+                                                                urgency.type ===
+                                                                'overdue'
+                                                                    ? 'Ordine in ritardo'
+                                                                    : urgency.type ===
+                                                                        'urgent'
+                                                                      ? 'Ordine urgente'
+                                                                      : 'A tempo'
+                                                            }
+                                                        >
+                                                            {urgency.icon}
+                                                        </span>
+                                                        <span className="text-muted-foreground">
+                                                            Consegna:{' '}
+                                                        </span>
+                                                        <span className="font-medium">
+                                                            {new Date(
+                                                                order.delivery_requested_date,
+                                                            ).toLocaleDateString(
+                                                                'it-IT',
+                                                            )}
+                                                        </span>
+                                                    </div>
+                                                )}
                                         </div>
 
                                         <div className="flex items-center justify-end gap-2 border-t pt-2">

@@ -24,7 +24,7 @@ class EmployeeContractFactory extends Factory
             'uuid' => \Illuminate\Support\Str::uuid()->toString(),
             'employee_uuid' => fn () => Employee::factory()->create()->uuid,
             'supplier_uuid' => null, // Nullable by default, can be overridden in tests
-            'pay_level' => $this->faker->numberBetween(0, 4),
+            'pay_level' => $this->faker->numberBetween(0, 8),
             'start_date' => $this->faker->date(),
             'end_date' => $this->faker->optional()->date(),
             'removed' => false,

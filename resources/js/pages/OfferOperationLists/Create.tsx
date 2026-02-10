@@ -66,159 +66,182 @@ export default function OfferOperationListsCreate({
             <Head title="Nuova Assegnazione Operazione" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Nuova Assegnazione Operazione</CardTitle>
-                        <CardDescription>
-                            Compila i campi per assegnare un'operazione a
-                            un'offerta.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Form
-                            action={offerOperationLists.store().url}
-                            method="post"
-                            className="space-y-6"
-                        >
-                            {({ processing, errors }) => {
-                                const allErrors = {
-                                    ...errors,
-                                    ...serverErrors,
-                                };
+                <div className="flex w-full justify-center">
+                    <div className="w-full max-w-4xl space-y-5">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>
+                                    Nuova Assegnazione Operazione
+                                </CardTitle>
+                                <CardDescription>
+                                    Compila i campi per assegnare un'operazione
+                                    a un'offerta.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Form
+                                    action={offerOperationLists.store().url}
+                                    method="post"
+                                    className="space-y-6"
+                                >
+                                    {({ processing, errors }) => {
+                                        const allErrors = {
+                                            ...errors,
+                                            ...serverErrors,
+                                        };
 
-                                return (
-                                    <>
-                                        <div className="grid gap-2">
-                                            <FormLabel
-                                                htmlFor="offer_uuid"
-                                                required
-                                            >
-                                                Offerta
-                                            </FormLabel>
-                                            <input
-                                                type="hidden"
-                                                name="offer_uuid"
-                                                value={selectedOffer}
-                                            />
-                                            <Select
-                                                value={
-                                                    selectedOffer || undefined
-                                                }
-                                                onValueChange={setSelectedOffer}
-                                                required
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Seleziona un'offerta" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {offers.map((offer) => (
-                                                        <SelectItem
-                                                            key={offer.uuid}
-                                                            value={offer.uuid}
-                                                        >
-                                                            {offer.offer_number}{' '}
-                                                            -{' '}
-                                                            {offer.provisional_description ||
-                                                                'Senza descrizione'}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            <InputError
-                                                message={allErrors.offer_uuid}
-                                            />
-                                        </div>
+                                        return (
+                                            <>
+                                                <div className="grid gap-2">
+                                                    <FormLabel
+                                                        htmlFor="offer_uuid"
+                                                        required
+                                                    >
+                                                        Offerta
+                                                    </FormLabel>
+                                                    <input
+                                                        type="hidden"
+                                                        name="offer_uuid"
+                                                        value={selectedOffer}
+                                                    />
+                                                    <Select
+                                                        value={
+                                                            selectedOffer ||
+                                                            undefined
+                                                        }
+                                                        onValueChange={
+                                                            setSelectedOffer
+                                                        }
+                                                        required
+                                                    >
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Seleziona un'offerta" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {offers.map(
+                                                                (offer) => (
+                                                                    <SelectItem
+                                                                        key={
+                                                                            offer.uuid
+                                                                        }
+                                                                        value={
+                                                                            offer.uuid
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            offer.offer_number
+                                                                        }{' '}
+                                                                        -{' '}
+                                                                        {offer.provisional_description ||
+                                                                            'Senza descrizione'}
+                                                                    </SelectItem>
+                                                                ),
+                                                            )}
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <InputError
+                                                        message={
+                                                            allErrors.offer_uuid
+                                                        }
+                                                    />
+                                                </div>
 
-                                        <div className="grid gap-2">
-                                            <FormLabel
-                                                htmlFor="offeroperation_uuid"
-                                                required
-                                            >
-                                                Operazione
-                                            </FormLabel>
-                                            <Select
-                                                name="offeroperation_uuid"
-                                                required
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Seleziona un'operazione" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {operations.map(
-                                                        (operation) => (
-                                                            <SelectItem
-                                                                key={
-                                                                    operation.uuid
-                                                                }
-                                                                value={
-                                                                    operation.uuid
-                                                                }
-                                                            >
-                                                                {operation.code}{' '}
-                                                                -{' '}
-                                                                {operation.description ||
-                                                                    'Senza descrizione'}
-                                                            </SelectItem>
-                                                        ),
-                                                    )}
-                                                </SelectContent>
-                                            </Select>
-                                            <InputError
-                                                message={
-                                                    allErrors.offeroperation_uuid
-                                                }
-                                            />
-                                        </div>
+                                                <div className="grid gap-2">
+                                                    <FormLabel
+                                                        htmlFor="offeroperation_uuid"
+                                                        required
+                                                    >
+                                                        Operazione
+                                                    </FormLabel>
+                                                    <Select
+                                                        name="offeroperation_uuid"
+                                                        required
+                                                    >
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Seleziona un'operazione" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {operations.map(
+                                                                (operation) => (
+                                                                    <SelectItem
+                                                                        key={
+                                                                            operation.uuid
+                                                                        }
+                                                                        value={
+                                                                            operation.uuid
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            operation.code
+                                                                        }{' '}
+                                                                        -{' '}
+                                                                        {operation.description ||
+                                                                            'Senza descrizione'}
+                                                                    </SelectItem>
+                                                                ),
+                                                            )}
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <InputError
+                                                        message={
+                                                            allErrors.offeroperation_uuid
+                                                        }
+                                                    />
+                                                </div>
 
-                                        <div className="grid gap-2">
-                                            <FormLabel
-                                                htmlFor="num_op"
-                                                required
-                                            >
-                                                Numero operazione
-                                            </FormLabel>
-                                            <Input
-                                                id="num_op"
-                                                name="num_op"
-                                                type="number"
-                                                step="0.01"
-                                                required
-                                                min="0"
-                                                placeholder="0.00"
-                                            />
-                                            <InputError
-                                                message={allErrors.num_op}
-                                            />
-                                        </div>
+                                                <div className="grid gap-2">
+                                                    <FormLabel
+                                                        htmlFor="num_op"
+                                                        required
+                                                    >
+                                                        Numero operazione
+                                                    </FormLabel>
+                                                    <Input
+                                                        id="num_op"
+                                                        name="num_op"
+                                                        type="number"
+                                                        step="0.01"
+                                                        required
+                                                        min="0"
+                                                        placeholder="0.00"
+                                                    />
+                                                    <InputError
+                                                        message={
+                                                            allErrors.num_op
+                                                        }
+                                                    />
+                                                </div>
 
-                                        <div className="flex items-center gap-4">
-                                            <Button
-                                                type="submit"
-                                                disabled={processing}
-                                            >
-                                                {processing
-                                                    ? 'Salvando...'
-                                                    : 'Aggiungi operazione'}
-                                            </Button>
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                onClick={() =>
-                                                    router.visit(
-                                                        offerOperationLists.index()
-                                                            .url,
-                                                    )
-                                                }
-                                            >
-                                                Annulla
-                                            </Button>
-                                        </div>
-                                    </>
-                                );
-                            }}
-                        </Form>
-                    </CardContent>
-                </Card>
+                                                <div className="flex items-center gap-4">
+                                                    <Button
+                                                        type="submit"
+                                                        disabled={processing}
+                                                    >
+                                                        {processing
+                                                            ? 'Salvando...'
+                                                            : 'Aggiungi operazione'}
+                                                    </Button>
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        onClick={() =>
+                                                            router.visit(
+                                                                offerOperationLists.index()
+                                                                    .url,
+                                                            )
+                                                        }
+                                                    >
+                                                        Annulla
+                                                    </Button>
+                                                </div>
+                                            </>
+                                        );
+                                    }}
+                                </Form>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
             </div>
         </AppLayout>
     );

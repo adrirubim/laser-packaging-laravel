@@ -37,76 +37,80 @@ export default function CriticalIssuesCreate({
             <Head title="Crea Criticità" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Gestione Criticità</CardTitle>
-                        <CardDescription>Inserimento</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Form
-                            action={criticalIssues.store().url}
-                            method="post"
-                            className="space-y-6"
-                        >
-                            {({ processing, errors }) => {
-                                const allErrors = {
-                                    ...errors,
-                                    ...serverErrors,
-                                };
+                <div className="flex w-full justify-center">
+                    <div className="w-full max-w-4xl space-y-5">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Gestione Criticità</CardTitle>
+                                <CardDescription>Inserimento</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Form
+                                    action={criticalIssues.store().url}
+                                    method="post"
+                                    className="space-y-6"
+                                >
+                                    {({ processing, errors }) => {
+                                        const allErrors = {
+                                            ...errors,
+                                            ...serverErrors,
+                                        };
 
-                                return (
-                                    <>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="name">
-                                                Nome Criticità *
-                                            </Label>
-                                            <Input
-                                                id="name"
-                                                name="name"
-                                                required
-                                                placeholder="Nome Criticità"
-                                                maxLength={255}
-                                                aria-describedby="name-help"
-                                            />
-                                            <p
-                                                id="name-help"
-                                                className="text-xs text-muted-foreground"
-                                            >
-                                                Inserisci il nome della
-                                                criticità (massimo 255
-                                                caratteri).
-                                            </p>
-                                            <InputError
-                                                message={allErrors.name}
-                                            />
-                                        </div>
+                                        return (
+                                            <>
+                                                <div className="grid gap-2">
+                                                    <Label htmlFor="name">
+                                                        Nome Criticità *
+                                                    </Label>
+                                                    <Input
+                                                        id="name"
+                                                        name="name"
+                                                        required
+                                                        placeholder="Nome Criticità"
+                                                        maxLength={255}
+                                                        aria-describedby="name-help"
+                                                    />
+                                                    <p
+                                                        id="name-help"
+                                                        className="text-xs text-muted-foreground"
+                                                    >
+                                                        Inserisci il nome della
+                                                        criticità (massimo 255
+                                                        caratteri).
+                                                    </p>
+                                                    <InputError
+                                                        message={allErrors.name}
+                                                    />
+                                                </div>
 
-                                        <div className="flex items-center justify-end gap-3 pt-4">
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                onClick={() =>
-                                                    window.history.back()
-                                                }
-                                                disabled={processing}
-                                            >
-                                                Annulla
-                                            </Button>
-                                            <Button
-                                                type="submit"
-                                                disabled={processing}
-                                            >
-                                                {processing
-                                                    ? 'Salvando...'
-                                                    : 'Salva'}
-                                            </Button>
-                                        </div>
-                                    </>
-                                );
-                            }}
-                        </Form>
-                    </CardContent>
-                </Card>
+                                                <div className="flex items-center justify-end gap-3 pt-4">
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        onClick={() =>
+                                                            window.history.back()
+                                                        }
+                                                        disabled={processing}
+                                                    >
+                                                        Annulla
+                                                    </Button>
+                                                    <Button
+                                                        type="submit"
+                                                        disabled={processing}
+                                                    >
+                                                        {processing
+                                                            ? 'Salvando...'
+                                                            : 'Salva'}
+                                                    </Button>
+                                                </div>
+                                            </>
+                                        );
+                                    }}
+                                </Form>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
             </div>
         </AppLayout>
     );

@@ -1,3 +1,5 @@
+import { ConfirmCloseDialog } from '@/components/confirm-close-dialog';
+import { FormValidationNotification } from '@/components/form-validation-notification';
 import { FormLabel } from '@/components/FormLabel';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -79,6 +81,7 @@ export default function PalletizationInstructionsEdit({
     const [unitsPallet, setUnitsPallet] = useState<string>(
         instruction.units_pallet?.toString() || '',
     );
+    const [showCloseConfirm, setShowCloseConfirm] = useState(false);
 
     // Calcolare volume al cambio dimensioni
     useEffect(() => {
@@ -173,9 +176,17 @@ export default function PalletizationInstructionsEdit({
                                             ...errors,
                                             ...serverErrors,
                                         };
+                                        const hasAttemptedSubmit =
+                                            Object.keys(allErrors).length > 0;
 
                                         return (
                                             <>
+                                                <FormValidationNotification
+                                                    errors={allErrors}
+                                                    hasAttemptedSubmit={
+                                                        hasAttemptedSubmit
+                                                    }
+                                                />
                                                 <div className="grid gap-2">
                                                     <div className="flex items-center gap-2">
                                                         <FormLabel
@@ -562,13 +573,8 @@ export default function PalletizationInstructionsEdit({
                                                         type="button"
                                                         variant="outline"
                                                         onClick={() =>
-                                                            router.visit(
-                                                                articles.palletizationInstructions.show(
-                                                                    {
-                                                                        palletizationInstruction:
-                                                                            instruction.uuid,
-                                                                    },
-                                                                ).url,
+                                                            setShowCloseConfirm(
+                                                                true,
                                                             )
                                                         }
                                                     >
@@ -584,6 +590,18 @@ export default function PalletizationInstructionsEdit({
                     </div>
                 </div>
             </div>
+            <ConfirmCloseDialog
+                open={showCloseConfirm}
+                onOpenChange={setShowCloseConfirm}
+                onConfirm={() => {
+                    setShowCloseConfirm(false);
+                    router.visit(
+                        articles.palletizationInstructions.show({
+                            palletizationInstruction: instruction.uuid,
+                        }).url,
+                    );
+                }}
+            />
         </AppLayout>
     );
 }

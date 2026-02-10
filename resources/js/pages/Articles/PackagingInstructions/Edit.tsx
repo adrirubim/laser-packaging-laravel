@@ -1,3 +1,5 @@
+import { ConfirmCloseDialog } from '@/components/confirm-close-dialog';
+import { FormValidationNotification } from '@/components/form-validation-notification';
 import { FormLabel } from '@/components/FormLabel';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -41,6 +43,7 @@ export default function PackagingInstructionsEdit({
     const [selectedFileName, setSelectedFileName] = useState<string | null>(
         null,
     );
+    const [showCloseConfirm, setShowCloseConfirm] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
@@ -95,9 +98,17 @@ export default function PackagingInstructionsEdit({
                                             ...errors,
                                             ...serverErrors,
                                         };
+                                        const hasAttemptedSubmit =
+                                            Object.keys(allErrors).length > 0;
 
                                         return (
                                             <>
+                                                <FormValidationNotification
+                                                    errors={allErrors}
+                                                    hasAttemptedSubmit={
+                                                        hasAttemptedSubmit
+                                                    }
+                                                />
                                                 <div className="grid gap-2">
                                                     <div className="flex items-center gap-2">
                                                         <FormLabel
@@ -231,13 +242,8 @@ export default function PackagingInstructionsEdit({
                                                         type="button"
                                                         variant="outline"
                                                         onClick={() =>
-                                                            router.visit(
-                                                                articles.packagingInstructions.show(
-                                                                    {
-                                                                        packagingInstruction:
-                                                                            instruction.uuid,
-                                                                    },
-                                                                ).url,
+                                                            setShowCloseConfirm(
+                                                                true,
                                                             )
                                                         }
                                                     >
@@ -253,6 +259,18 @@ export default function PackagingInstructionsEdit({
                     </div>
                 </div>
             </div>
+            <ConfirmCloseDialog
+                open={showCloseConfirm}
+                onOpenChange={setShowCloseConfirm}
+                onConfirm={() => {
+                    setShowCloseConfirm(false);
+                    router.visit(
+                        articles.packagingInstructions.show({
+                            packagingInstruction: instruction.uuid,
+                        }).url,
+                    );
+                }}
+            />
         </AppLayout>
     );
 }

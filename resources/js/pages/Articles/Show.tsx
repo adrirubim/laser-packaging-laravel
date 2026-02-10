@@ -287,6 +287,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                 href={
                                     articles.edit({ article: article.uuid }).url
                                 }
+                                aria-label="Modifica articolo"
                             >
                                 <Edit className="mr-2 h-4 w-4" />
                                 Modifica
@@ -301,6 +302,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                         },
                                     }).url
                                 }
+                                aria-label="Duplica articolo"
                             >
                                 <Copy className="mr-2 h-4 w-4" />
                                 Duplica
@@ -316,6 +318,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                             article: article.uuid,
                                         }).url;
                                 }}
+                                aria-label="Scarica layout linea"
                             >
                                 <Download className="mr-2 h-4 w-4" />
                                 Scarica layout
@@ -326,6 +329,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             size="sm"
                             onClick={() => setShowDeleteDialog(true)}
                             disabled={isDeleting}
+                            aria-label="Elimina articolo"
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
                             Elimina

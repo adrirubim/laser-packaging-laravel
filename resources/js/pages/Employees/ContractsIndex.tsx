@@ -33,7 +33,14 @@ import AppLayout from '@/layouts/app-layout';
 import * as contractsRoutes from '@/routes/employees/contracts/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
-import { Edit, Eye, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
+import {
+    CalendarPlus,
+    Edit,
+    Eye,
+    MoreHorizontal,
+    Plus,
+    Trash2,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 type Employee = {
@@ -88,11 +95,15 @@ type ContractsIndexProps = {
 };
 
 const PAY_LEVEL_LABELS: Record<number, string> = {
-    0: 'C3 (ex 5a)',
-    1: 'B1 (ex 5a Super)',
-    2: 'B2 (ex 6a)',
-    3: 'B3 (ex 7a)',
-    4: 'A1 (ex 8a Quadri)',
+    0: 'D1 (ex 2a)',
+    1: 'D2 (ex 3a)',
+    2: 'C1 (ex 3a Super)',
+    3: 'C2 (ex 4a)',
+    4: 'C3 (ex 5a)',
+    5: 'B1 (ex 5a Super)',
+    6: 'B2 (ex 6a)',
+    7: 'B3 (ex 7a)',
+    8: 'A1 (ex 8a Quadri)',
 };
 
 export default function ContractsIndex() {
@@ -214,8 +225,11 @@ export default function ContractsIndex() {
         );
     };
 
-    const formatDate = (dateString: string | null | undefined): string => {
-        if (!dateString) return '-';
+    const formatDate = (
+        dateString: string | null | undefined,
+        emptyLabel: string = '-',
+    ): string => {
+        if (!dateString) return emptyLabel;
         const date = new Date(dateString);
         return date.toLocaleDateString('it-IT', {
             year: 'numeric',
@@ -273,6 +287,21 @@ export default function ContractsIndex() {
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <FlashNotifications flash={flash} />
+
+                {contractsPaginated.total === 0 && (
+                    <div className="flex flex-col items-center justify-center gap-4 rounded-xl border border-sidebar-border/70 bg-card p-8 text-center dark:border-sidebar-border">
+                        <p className="text-muted-foreground">
+                            Nessun contratto presente.
+                        </p>
+                        <Link
+                            href={contractsRoutes.create().url}
+                            className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
+                        >
+                            <Plus className="mr-2 h-4 w-4" />
+                            Crea il primo contratto
+                        </Link>
+                    </div>
+                )}
 
                 <div className="flex items-center justify-between gap-3">
                     <div>
@@ -529,7 +558,10 @@ export default function ContractsIndex() {
                                             {formatDate(contract.start_date)}
                                         </td>
                                         <td className="px-3 py-2 text-xs">
-                                            {formatDate(contract.end_date)}
+                                            {formatDate(
+                                                contract.end_date,
+                                                'Indeterminato',
+                                            )}
                                         </td>
                                         <td className="px-3 py-2 text-right text-xs">
                                             <DropdownMenu>
@@ -565,6 +597,18 @@ export default function ContractsIndex() {
                                                     >
                                                         <Edit className="mr-2 h-4 w-4" />
                                                         Modifica
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem asChild>
+                                                        <Link
+                                                            href={
+                                                                contractsRoutes.create()
+                                                                    .url +
+                                                                `?proroga=${contract.uuid}`
+                                                            }
+                                                        >
+                                                            <CalendarPlus className="mr-2 h-4 w-4" />
+                                                            Proroga
+                                                        </Link>
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
                                                         variant="destructive"
@@ -670,6 +714,18 @@ export default function ContractsIndex() {
                                             >
                                                 <Edit className="mr-2 h-4 w-4" />
                                                 Modifica
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem asChild>
+                                                <Link
+                                                    href={
+                                                        contractsRoutes.create()
+                                                            .url +
+                                                        `?proroga=${contract.uuid}`
+                                                    }
+                                                >
+                                                    <CalendarPlus className="mr-2 h-4 w-4" />
+                                                    Proroga
+                                                </Link>
                                             </DropdownMenuItem>
                                             <DropdownMenuItem
                                                 variant="destructive"
@@ -804,18 +860,18 @@ export default function ContractsIndex() {
                                         )}
                                     </p>
                                 </div>
-                                {viewDialog.contract.end_date && (
-                                    <div>
-                                        <Label className="text-xs text-muted-foreground">
-                                            Data Fine
-                                        </Label>
-                                        <p className="text-sm">
-                                            {formatDate(
-                                                viewDialog.contract.end_date,
-                                            )}
-                                        </p>
-                                    </div>
-                                )}
+                                <div>
+                                    <Label className="text-xs text-muted-foreground">
+                                        Data Fine
+                                    </Label>
+                                    <p className="text-sm">
+                                        {formatDate(
+                                            viewDialog.contract.end_date ??
+                                                null,
+                                            'Indeterminato',
+                                        )}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     )}
@@ -839,12 +895,13 @@ export default function ContractsIndex() {
                 }
                 onConfirm={handleDeleteConfirm}
                 isLoading={isDeleting}
-                title="Conferma eliminazione"
-                description={`Sei sicuro di voler eliminare il contratto di ${
+                title="Conferma eliminazione contratto"
+                description="Sei sicuro di voler eliminare questo contratto? L'azione non può essere annullata."
+                itemName={
                     deleteDialog.contract?.employee
                         ? `${deleteDialog.contract.employee.surname} ${deleteDialog.contract.employee.name}`
-                        : 'questo dipendente'
-                }? Questa azione non può essere annullata. Il contratto verrà eliminato definitivamente.`}
+                        : undefined
+                }
             />
         </AppLayout>
     );

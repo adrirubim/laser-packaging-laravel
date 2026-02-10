@@ -1,3 +1,5 @@
+import { ConfirmCloseDialog } from '@/components/confirm-close-dialog';
+import { FormValidationNotification } from '@/components/form-validation-notification';
 import { FormLabel } from '@/components/FormLabel';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -56,6 +58,7 @@ export default function ProductionOrderProcessingCreate({
     const [selectedOrder, setSelectedOrder] = useState<string>('');
     const [quantity, setQuantity] = useState<string>('');
     const [processedDatetime, setProcessedDatetime] = useState<string>('');
+    const [showCloseConfirm, setShowCloseConfirm] = useState(false);
 
     // Formattare data/ora attuale per input datetime-local
     useEffect(() => {
@@ -78,6 +81,13 @@ export default function ProductionOrderProcessingCreate({
         processed_datetime: serverErrors.processed_datetime,
     };
 
+    const validationErrors = Object.fromEntries(
+        Object.entries(allErrors).filter(
+            (entry): entry is [string, string] =>
+                typeof entry[1] === 'string' && entry[1].length > 0,
+        ),
+    ) as Record<string, string>;
+
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Avanzamenti Di Produzione',
@@ -94,164 +104,202 @@ export default function ProductionOrderProcessingCreate({
             <Head title="Crea Lavorazione Ordine" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-2xl font-bold">
-                            Crea Lavorazione Ordine
-                        </h1>
-                        <p className="text-muted-foreground">
-                            Registra una nuova lavorazione di ordine
-                        </p>
+                <div className="flex w-full justify-center">
+                    <div className="w-full max-w-4xl space-y-5">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h1 className="text-2xl font-bold">
+                                    Crea Lavorazione Ordine
+                                </h1>
+                                <p className="text-muted-foreground">
+                                    Registra una nuova lavorazione di ordine
+                                </p>
+                            </div>
+                            <Button
+                                variant="outline"
+                                onClick={() => setShowCloseConfirm(true)}
+                            >
+                                <ArrowLeft className="mr-2 h-4 w-4" />
+                                Indietro
+                            </Button>
+                        </div>
+
+                        <FormValidationNotification
+                            errors={validationErrors}
+                            message="Correggi gli errori nel modulo prima di salvare."
+                        />
+
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Dettagli Lavorazione</CardTitle>
+                                <CardDescription>
+                                    Compila i campi per registrare una nuova
+                                    lavorazione di ordine
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Form
+                                    action={
+                                        productionOrderProcessing.store().url
+                                    }
+                                    method="post"
+                                    className="space-y-6"
+                                >
+                                    {/* Dipendente */}
+                                    <div className="grid gap-2">
+                                        <FormLabel
+                                            htmlFor="employee_uuid"
+                                            required
+                                        >
+                                            Dipendente
+                                        </FormLabel>
+                                        <Select
+                                            name="employee_uuid"
+                                            value={selectedEmployee || ''}
+                                            onValueChange={setSelectedEmployee}
+                                            required
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Seleziona il dipendente..." />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {employees.map((employee) => (
+                                                    <SelectItem
+                                                        key={employee.uuid}
+                                                        value={employee.uuid}
+                                                    >
+                                                        {employee.surname}{' '}
+                                                        {employee.name} (
+                                                        {
+                                                            employee.matriculation_number
+                                                        }
+                                                        )
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <InputError
+                                            message={allErrors.employee_uuid}
+                                        />
+                                    </div>
+
+                                    {/* Ordine */}
+                                    <div className="grid gap-2">
+                                        <FormLabel
+                                            htmlFor="order_uuid"
+                                            required
+                                        >
+                                            Ordine
+                                        </FormLabel>
+                                        <Select
+                                            name="order_uuid"
+                                            value={selectedOrder || ''}
+                                            onValueChange={setSelectedOrder}
+                                            required
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Seleziona l'ordine..." />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {orders.map((order) => (
+                                                    <SelectItem
+                                                        key={order.uuid}
+                                                        value={order.uuid}
+                                                    >
+                                                        {
+                                                            order.order_production_number
+                                                        }
+                                                        {order.article_descr &&
+                                                            ` - ${order.article_descr}`}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <InputError
+                                            message={allErrors.order_uuid}
+                                        />
+                                    </div>
+
+                                    {/* Quantità */}
+                                    <div className="grid gap-2">
+                                        <FormLabel htmlFor="quantity" required>
+                                            Quantità
+                                        </FormLabel>
+                                        <Input
+                                            id="quantity"
+                                            name="quantity"
+                                            type="number"
+                                            step="0.01"
+                                            min="0.01"
+                                            value={quantity}
+                                            onChange={(e) =>
+                                                setQuantity(e.target.value)
+                                            }
+                                            placeholder="Inserisci la quantità lavorata"
+                                            required
+                                        />
+                                        <InputError
+                                            message={allErrors.quantity}
+                                        />
+                                    </div>
+
+                                    {/* Data e Ora Lavorazione */}
+                                    <div className="grid gap-2">
+                                        <FormLabel
+                                            htmlFor="processed_datetime"
+                                            required
+                                        >
+                                            Data e Ora Lavorazione
+                                        </FormLabel>
+                                        <Input
+                                            id="processed_datetime"
+                                            name="processed_datetime"
+                                            type="datetime-local"
+                                            value={processedDatetime}
+                                            onChange={(e) =>
+                                                setProcessedDatetime(
+                                                    e.target.value,
+                                                )
+                                            }
+                                            required
+                                        />
+                                        <InputError
+                                            message={
+                                                allErrors.processed_datetime
+                                            }
+                                        />
+                                    </div>
+
+                                    {/* Pulsanti */}
+                                    <div className="flex justify-end gap-3 pt-4">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            onClick={() =>
+                                                setShowCloseConfirm(true)
+                                            }
+                                        >
+                                            Annulla
+                                        </Button>
+                                        <Button type="submit">Salva</Button>
+                                    </div>
+                                </Form>
+                            </CardContent>
+                        </Card>
                     </div>
-                    <Button
-                        variant="outline"
-                        onClick={() =>
-                            router.visit(productionOrderProcessing.index().url)
-                        }
-                    >
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        Indietro
-                    </Button>
                 </div>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Dettagli Lavorazione</CardTitle>
-                        <CardDescription>
-                            Compila i campi per registrare una nuova lavorazione
-                            di ordine
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Form
-                            action={productionOrderProcessing.store().url}
-                            method="post"
-                            className="space-y-6"
-                        >
-                            {/* Dipendente */}
-                            <div className="grid gap-2">
-                                <FormLabel htmlFor="employee_uuid" required>
-                                    Dipendente
-                                </FormLabel>
-                                <Select
-                                    name="employee_uuid"
-                                    value={selectedEmployee || ''}
-                                    onValueChange={setSelectedEmployee}
-                                    required
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Seleziona il dipendente..." />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {employees.map((employee) => (
-                                            <SelectItem
-                                                key={employee.uuid}
-                                                value={employee.uuid}
-                                            >
-                                                {employee.surname}{' '}
-                                                {employee.name} (
-                                                {employee.matriculation_number})
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <InputError message={allErrors.employee_uuid} />
-                            </div>
-
-                            {/* Ordine */}
-                            <div className="grid gap-2">
-                                <FormLabel htmlFor="order_uuid" required>
-                                    Ordine
-                                </FormLabel>
-                                <Select
-                                    name="order_uuid"
-                                    value={selectedOrder || ''}
-                                    onValueChange={setSelectedOrder}
-                                    required
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Seleziona l'ordine..." />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {orders.map((order) => (
-                                            <SelectItem
-                                                key={order.uuid}
-                                                value={order.uuid}
-                                            >
-                                                {order.order_production_number}
-                                                {order.article_descr &&
-                                                    ` - ${order.article_descr}`}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <InputError message={allErrors.order_uuid} />
-                            </div>
-
-                            {/* Quantità */}
-                            <div className="grid gap-2">
-                                <FormLabel htmlFor="quantity" required>
-                                    Quantità
-                                </FormLabel>
-                                <Input
-                                    id="quantity"
-                                    name="quantity"
-                                    type="number"
-                                    step="0.01"
-                                    min="0.01"
-                                    value={quantity}
-                                    onChange={(e) =>
-                                        setQuantity(e.target.value)
-                                    }
-                                    placeholder="Inserisci la quantità lavorata"
-                                    required
-                                />
-                                <InputError message={allErrors.quantity} />
-                            </div>
-
-                            {/* Data e Ora Lavorazione */}
-                            <div className="grid gap-2">
-                                <FormLabel
-                                    htmlFor="processed_datetime"
-                                    required
-                                >
-                                    Data e Ora Lavorazione
-                                </FormLabel>
-                                <Input
-                                    id="processed_datetime"
-                                    name="processed_datetime"
-                                    type="datetime-local"
-                                    value={processedDatetime}
-                                    onChange={(e) =>
-                                        setProcessedDatetime(e.target.value)
-                                    }
-                                    required
-                                />
-                                <InputError
-                                    message={allErrors.processed_datetime}
-                                />
-                            </div>
-
-                            {/* Pulsanti */}
-                            <div className="flex justify-end gap-3 pt-4">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() =>
-                                        router.visit(
-                                            productionOrderProcessing.index()
-                                                .url,
-                                        )
-                                    }
-                                >
-                                    Annulla
-                                </Button>
-                                <Button type="submit">Salva</Button>
-                            </div>
-                        </Form>
-                    </CardContent>
-                </Card>
             </div>
+
+            <ConfirmCloseDialog
+                open={showCloseConfirm}
+                onOpenChange={setShowCloseConfirm}
+                onConfirm={() => {
+                    setShowCloseConfirm(false);
+                    router.visit(productionOrderProcessing.index().url);
+                }}
+                title="Conferma chiusura"
+                description="Sei sicuro di voler uscire? I dati non salvati andranno persi."
+            />
         </AppLayout>
     );
 }

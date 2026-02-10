@@ -37,84 +37,92 @@ export default function MaterialsCreate({
             <Head title="Crea materiale" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Crea nuovo materiale</CardTitle>
-                        <CardDescription>
-                            Compila i campi per creare un nuovo materiale
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Form
-                            action={materials.store().url}
-                            method="post"
-                            className="space-y-6"
-                        >
-                            {({ processing, errors }) => {
-                                const allErrors = {
-                                    ...errors,
-                                    ...serverErrors,
-                                };
+                <div className="flex w-full justify-center">
+                    <div className="w-full max-w-4xl space-y-5">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Crea nuovo materiale</CardTitle>
+                                <CardDescription>
+                                    Compila i campi per creare un nuovo
+                                    materiale
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Form
+                                    action={materials.store().url}
+                                    method="post"
+                                    className="space-y-6"
+                                >
+                                    {({ processing, errors }) => {
+                                        const allErrors = {
+                                            ...errors,
+                                            ...serverErrors,
+                                        };
 
-                                return (
-                                    <>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="cod">
-                                                Codice *
-                                            </Label>
-                                            <Input
-                                                id="cod"
-                                                name="cod"
-                                                required
-                                                placeholder="Codice materiale"
-                                            />
-                                            <InputError
-                                                message={allErrors.cod}
-                                            />
-                                        </div>
+                                        return (
+                                            <>
+                                                <div className="grid gap-2">
+                                                    <Label htmlFor="cod">
+                                                        Codice *
+                                                    </Label>
+                                                    <Input
+                                                        id="cod"
+                                                        name="cod"
+                                                        required
+                                                        placeholder="Codice materiale"
+                                                    />
+                                                    <InputError
+                                                        message={allErrors.cod}
+                                                    />
+                                                </div>
 
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="description">
-                                                Descrizione *
-                                            </Label>
-                                            <Input
-                                                id="description"
-                                                name="description"
-                                                required
-                                                placeholder="Descrizione materiale"
-                                            />
-                                            <InputError
-                                                message={allErrors.description}
-                                            />
-                                        </div>
+                                                <div className="grid gap-2">
+                                                    <Label htmlFor="description">
+                                                        Descrizione *
+                                                    </Label>
+                                                    <Input
+                                                        id="description"
+                                                        name="description"
+                                                        required
+                                                        placeholder="Descrizione materiale"
+                                                    />
+                                                    <InputError
+                                                        message={
+                                                            allErrors.description
+                                                        }
+                                                    />
+                                                </div>
 
-                                        <div className="flex items-center gap-4">
-                                            <Button
-                                                type="submit"
-                                                disabled={processing}
-                                            >
-                                                {processing
-                                                    ? 'Creando...'
-                                                    : 'Crea materiale'}
-                                            </Button>
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                onClick={() =>
-                                                    router.visit(
-                                                        materials.index().url,
-                                                    )
-                                                }
-                                            >
-                                                Annulla
-                                            </Button>
-                                        </div>
-                                    </>
-                                );
-                            }}
-                        </Form>
-                    </CardContent>
-                </Card>
+                                                <div className="flex items-center gap-4">
+                                                    <Button
+                                                        type="submit"
+                                                        disabled={processing}
+                                                    >
+                                                        {processing
+                                                            ? 'Creando...'
+                                                            : 'Crea materiale'}
+                                                    </Button>
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        onClick={() =>
+                                                            router.visit(
+                                                                materials.index()
+                                                                    .url,
+                                                            )
+                                                        }
+                                                    >
+                                                        Annulla
+                                                    </Button>
+                                                </div>
+                                            </>
+                                        );
+                                    }}
+                                </Form>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
             </div>
         </AppLayout>
     );

@@ -80,192 +80,222 @@ export default function MachineryEdit() {
                 key="main"
                 className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
             >
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Modifica Macchinario</CardTitle>
-                        <CardDescription>
-                            Aggiorna le informazioni del macchinario
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <form
-                            className="space-y-6"
-                            onSubmit={(e) => {
-                                e.preventDefault();
-                                form.put(
-                                    machineryRoutes.update({
-                                        machinery: machinery.uuid,
-                                    }).url,
-                                );
-                            }}
-                        >
-                            {(() => {
-                                const allErrors = {
-                                    ...form.errors,
-                                    ...serverErrors,
-                                };
-                                const formData = form.data;
+                <div className="flex w-full justify-center">
+                    <div className="w-full max-w-4xl space-y-5">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Modifica Macchinario</CardTitle>
+                                <CardDescription>
+                                    Aggiorna le informazioni del macchinario
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <form
+                                    className="space-y-6"
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        form.put(
+                                            machineryRoutes.update({
+                                                machinery: machinery.uuid,
+                                            }).url,
+                                        );
+                                    }}
+                                >
+                                    {(() => {
+                                        const allErrors = {
+                                            ...form.errors,
+                                            ...serverErrors,
+                                        };
+                                        const formData = form.data;
 
-                                return (
-                                    <>
-                                        <div key="cod" className="grid gap-2">
-                                            <FormLabel htmlFor="cod" required>
-                                                Codice
-                                            </FormLabel>
-                                            <Input
-                                                id="cod"
-                                                name="cod"
-                                                value={formData.cod}
-                                                onChange={(e) =>
-                                                    form.setData(
-                                                        'cod',
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                required
-                                            />
-                                            <InputError
-                                                message={allErrors.cod}
-                                            />
-                                        </div>
+                                        return (
+                                            <>
+                                                <div
+                                                    key="cod"
+                                                    className="grid gap-2"
+                                                >
+                                                    <FormLabel
+                                                        htmlFor="cod"
+                                                        required
+                                                    >
+                                                        Codice
+                                                    </FormLabel>
+                                                    <Input
+                                                        id="cod"
+                                                        name="cod"
+                                                        value={formData.cod}
+                                                        onChange={(e) =>
+                                                            form.setData(
+                                                                'cod',
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                        required
+                                                    />
+                                                    <InputError
+                                                        message={allErrors.cod}
+                                                    />
+                                                </div>
 
-                                        <div
-                                            key="description"
-                                            className="grid gap-2"
-                                        >
-                                            <FormLabel
-                                                htmlFor="description"
-                                                required
-                                            >
-                                                Descrizione
-                                            </FormLabel>
-                                            <Input
-                                                id="description"
-                                                name="description"
-                                                value={formData.description}
-                                                onChange={(e) =>
-                                                    form.setData(
-                                                        'description',
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                required
-                                            />
-                                            <InputError
-                                                message={allErrors.description}
-                                            />
-                                        </div>
+                                                <div
+                                                    key="description"
+                                                    className="grid gap-2"
+                                                >
+                                                    <FormLabel
+                                                        htmlFor="description"
+                                                        required
+                                                    >
+                                                        Descrizione
+                                                    </FormLabel>
+                                                    <Input
+                                                        id="description"
+                                                        name="description"
+                                                        value={
+                                                            formData.description
+                                                        }
+                                                        onChange={(e) =>
+                                                            form.setData(
+                                                                'description',
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                        required
+                                                    />
+                                                    <InputError
+                                                        message={
+                                                            allErrors.description
+                                                        }
+                                                    />
+                                                </div>
 
-                                        <div
-                                            key="parameter"
-                                            className="grid gap-2"
-                                        >
-                                            <FormLabel htmlFor="parameter">
-                                                Parametro
-                                            </FormLabel>
-                                            <Input
-                                                id="parameter"
-                                                name="parameter"
-                                                value={formData.parameter}
-                                                onChange={(e) =>
-                                                    form.setData(
-                                                        'parameter',
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                placeholder="Parametro"
-                                            />
-                                            <InputError
-                                                message={allErrors.parameter}
-                                            />
-                                        </div>
+                                                <div
+                                                    key="parameter"
+                                                    className="grid gap-2"
+                                                >
+                                                    <FormLabel htmlFor="parameter">
+                                                        Parametro
+                                                    </FormLabel>
+                                                    <Input
+                                                        id="parameter"
+                                                        name="parameter"
+                                                        value={
+                                                            formData.parameter
+                                                        }
+                                                        onChange={(e) =>
+                                                            form.setData(
+                                                                'parameter',
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                        placeholder="Parametro"
+                                                    />
+                                                    <InputError
+                                                        message={
+                                                            allErrors.parameter
+                                                        }
+                                                    />
+                                                </div>
 
-                                        <div
-                                            key="value_type_uuid"
-                                            className="grid gap-2"
-                                        >
-                                            <FormLabel htmlFor="value_type_uuid">
-                                                Tipo Valore
-                                            </FormLabel>
-                                            <Select
-                                                name="value_type_uuid"
-                                                value={
-                                                    formData.value_type_uuid ??
-                                                    '__none'
-                                                }
-                                                onValueChange={(value) =>
-                                                    form.setData(
-                                                        'value_type_uuid',
-                                                        value === '__none'
-                                                            ? null
-                                                            : value,
-                                                    )
-                                                }
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Seleziona tipo valore" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {[
-                                                        <SelectItem
-                                                            key="__none"
-                                                            value="__none"
-                                                        >
-                                                            Nessuno
-                                                        </SelectItem>,
-                                                        ...(
-                                                            valueTypes ?? []
-                                                        ).map((vt) => (
-                                                            <SelectItem
-                                                                key={vt.uuid}
-                                                                value={vt.uuid}
-                                                            >
-                                                                {`ID: ${vt.id}`}
-                                                            </SelectItem>
-                                                        )),
-                                                    ]}
-                                                </SelectContent>
-                                            </Select>
-                                            <InputError
-                                                message={
-                                                    allErrors.value_type_uuid
-                                                }
-                                            />
-                                        </div>
+                                                <div
+                                                    key="value_type_uuid"
+                                                    className="grid gap-2"
+                                                >
+                                                    <FormLabel htmlFor="value_type_uuid">
+                                                        Tipo Valore
+                                                    </FormLabel>
+                                                    <Select
+                                                        name="value_type_uuid"
+                                                        value={
+                                                            formData.value_type_uuid ??
+                                                            '__none'
+                                                        }
+                                                        onValueChange={(
+                                                            value,
+                                                        ) =>
+                                                            form.setData(
+                                                                'value_type_uuid',
+                                                                value ===
+                                                                    '__none'
+                                                                    ? null
+                                                                    : value,
+                                                            )
+                                                        }
+                                                    >
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Seleziona tipo valore" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {[
+                                                                <SelectItem
+                                                                    key="__none"
+                                                                    value="__none"
+                                                                >
+                                                                    Nessuno
+                                                                </SelectItem>,
+                                                                ...(
+                                                                    valueTypes ??
+                                                                    []
+                                                                ).map((vt) => (
+                                                                    <SelectItem
+                                                                        key={
+                                                                            vt.uuid
+                                                                        }
+                                                                        value={
+                                                                            vt.uuid
+                                                                        }
+                                                                    >
+                                                                        {`ID: ${vt.id}`}
+                                                                    </SelectItem>
+                                                                )),
+                                                            ]}
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <InputError
+                                                        message={
+                                                            allErrors.value_type_uuid
+                                                        }
+                                                    />
+                                                </div>
 
-                                        <div
-                                            key="actions"
-                                            className="flex items-center gap-4"
-                                        >
-                                            <Button
-                                                type="submit"
-                                                disabled={form.processing}
-                                            >
-                                                {form.processing
-                                                    ? 'Aggiornamento...'
-                                                    : 'Aggiorna Macchinario'}
-                                            </Button>
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                onClick={() =>
-                                                    router.visit(
-                                                        machineryRoutes.show({
-                                                            machinery:
-                                                                machinery.uuid,
-                                                        }).url,
-                                                    )
-                                                }
-                                            >
-                                                Annulla
-                                            </Button>
-                                        </div>
-                                    </>
-                                );
-                            })()}
-                        </form>
-                    </CardContent>
-                </Card>
+                                                <div
+                                                    key="actions"
+                                                    className="flex items-center gap-4"
+                                                >
+                                                    <Button
+                                                        type="submit"
+                                                        disabled={
+                                                            form.processing
+                                                        }
+                                                    >
+                                                        {form.processing
+                                                            ? 'Aggiornamento...'
+                                                            : 'Aggiorna Macchinario'}
+                                                    </Button>
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        onClick={() =>
+                                                            router.visit(
+                                                                machineryRoutes.show(
+                                                                    {
+                                                                        machinery:
+                                                                            machinery.uuid,
+                                                                    },
+                                                                ).url,
+                                                            )
+                                                        }
+                                                    >
+                                                        Annulla
+                                                    </Button>
+                                                </div>
+                                            </>
+                                        );
+                                    })()}
+                                </form>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
             </div>
         </AppLayout>
     );

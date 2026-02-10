@@ -9,10 +9,11 @@ import {
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
+import * as contractsRoutes from '@/routes/employees/contracts/index';
 import employees from '@/routes/employees/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
-import { Download, Loader2 } from 'lucide-react';
+import { Download, FileText, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 
 type Contract = {
@@ -117,7 +118,7 @@ export default function EmployeesShow({ employee }: EmployeesShowProps) {
                             Matricola: {employee.matriculation_number}
                         </p>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                         <Button
                             variant="outline"
                             onClick={(e) => {
@@ -125,6 +126,7 @@ export default function EmployeesShow({ employee }: EmployeesShowProps) {
                                 handleDownloadBarcode();
                             }}
                             disabled={downloadingBarcode}
+                            aria-label="Scarica codice a barre per accesso portale"
                         >
                             {downloadingBarcode ? (
                                 <>
@@ -137,6 +139,12 @@ export default function EmployeesShow({ employee }: EmployeesShowProps) {
                                     Scarica barcode
                                 </>
                             )}
+                        </Button>
+                        <Button asChild variant="outline">
+                            <Link href={contractsRoutes.index().url}>
+                                <FileText className="mr-2 h-4 w-4" />
+                                Gestisci contratti
+                            </Link>
                         </Button>
                         <Button asChild variant="outline">
                             <Link

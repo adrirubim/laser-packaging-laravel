@@ -77,6 +77,7 @@ type ArticlesIndexProps = {
         data: Article[];
         current_page: number;
         last_page: number;
+        total: number;
         links: { url: string | null; label: string; active: boolean }[];
     };
     offers: Offer[];
@@ -455,10 +456,23 @@ export default function ArticlesIndex() {
                     <div className="relative h-full w-full overflow-auto">
                         <div className="block space-y-3 p-4 md:hidden">
                             {articlesPaginated.data.length === 0 ? (
-                                <div className="py-8 text-center text-sm text-muted-foreground">
-                                    Nessun articolo trovato per i filtri
-                                    attuali.
-                                </div>
+                                (articlesPaginated.total ?? 0) === 0 ? (
+                                    <div className="flex flex-col items-center justify-center gap-4 py-12 text-center">
+                                        <p className="text-sm text-muted-foreground">
+                                            Nessun articolo. Crea il primo.
+                                        </p>
+                                        <Button asChild>
+                                            <Link href={articles.create().url}>
+                                                Crea articolo
+                                            </Link>
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    <div className="py-8 text-center text-sm text-muted-foreground">
+                                        Nessun articolo trovato per i filtri
+                                        attuali.
+                                    </div>
+                                )
                             ) : (
                                 articlesPaginated.data.map((article) => (
                                     <div
@@ -678,8 +692,27 @@ export default function ArticlesIndex() {
                                             colSpan={9}
                                             className="px-3 py-8 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessun articolo trovato per i filtri
-                                            attuali.
+                                            {(articlesPaginated.total ?? 0) ===
+                                            0 ? (
+                                                <div className="flex flex-col items-center justify-center gap-3">
+                                                    <p>
+                                                        Nessun articolo. Crea il
+                                                        primo.
+                                                    </p>
+                                                    <Button asChild size="sm">
+                                                        <Link
+                                                            href={
+                                                                articles.create()
+                                                                    .url
+                                                            }
+                                                        >
+                                                            Crea articolo
+                                                        </Link>
+                                                    </Button>
+                                                </div>
+                                            ) : (
+                                                'Nessun articolo trovato per i filtri attuali.'
+                                            )}
                                         </td>
                                     </tr>
                                 )}
@@ -877,7 +910,9 @@ export default function ArticlesIndex() {
                     links={articlesPaginated.links}
                     currentPage={articlesPaginated.current_page}
                     lastPage={articlesPaginated.last_page}
-                    totalItems={articlesPaginated.data.length}
+                    totalItems={
+                        articlesPaginated.total ?? articlesPaginated.data.length
+                    }
                 />
 
                 <ConfirmDeleteDialog

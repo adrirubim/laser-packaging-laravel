@@ -937,2058 +937,306 @@ export default function ArticlesCreate({
             <Head title="Crea Articolo" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                {actualSourceArticle && (
-                    <Alert>
-                        <Info className="h-4 w-4" />
-                        <AlertDescription>
-                            Stai duplicando l'articolo{' '}
-                            <strong>
-                                {actualSourceArticle.cod_article_las}
-                            </strong>
-                            . I dati verranno precompilati, ma puoi modificarli
-                            prima di salvare.
-                        </AlertDescription>
-                    </Alert>
-                )}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>
-                            {actualSourceArticle
-                                ? 'Duplica Articolo'
-                                : 'Crea Nuovo Articolo'}
-                        </CardTitle>
-                        <CardDescription>
-                            {actualSourceArticle
-                                ? "Modifica i dettagli per creare una copia dell'articolo"
-                                : 'Compila i dettagli per creare un nuovo articolo'}
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Form
-                            action={articles.store().url}
-                            method="post"
-                            encType="multipart/form-data"
-                            className="space-y-6"
-                        >
-                            {({ processing, errors }) => {
-                                const allErrors = {
-                                    ...errors,
-                                    ...serverErrors,
-                                };
-                                const hasAttemptedSubmit =
-                                    Object.keys(allErrors).length > 0;
+                <div className="flex w-full justify-center">
+                    <div className="w-full max-w-4xl space-y-5">
+                        {actualSourceArticle && (
+                            <Alert>
+                                <Info className="h-4 w-4" />
+                                <AlertDescription>
+                                    <strong>
+                                        Duplicazione di{' '}
+                                        {actualSourceArticle.cod_article_las}
+                                    </strong>
+                                    {actualSourceArticle.article_descr
+                                        ? ` – ${actualSourceArticle.article_descr}`
+                                        : ''}
+                                    . I dati sono precompilati; modificali se
+                                    necessario e salva come nuovo articolo.
+                                </AlertDescription>
+                            </Alert>
+                        )}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>
+                                    {actualSourceArticle
+                                        ? 'Duplicazione articolo'
+                                        : 'Crea Nuovo Articolo'}
+                                </CardTitle>
+                                <CardDescription>
+                                    {actualSourceArticle
+                                        ? 'Salva come nuevo articolo con un nuovo codice LAS.'
+                                        : 'Compila i dettagli per creare un nuovo articolo'}
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Form
+                                    action={articles.store().url}
+                                    method="post"
+                                    encType="multipart/form-data"
+                                    className="space-y-6"
+                                >
+                                    {({ processing, errors }) => {
+                                        const allErrors = {
+                                            ...errors,
+                                            ...serverErrors,
+                                        };
+                                        const hasAttemptedSubmit =
+                                            Object.keys(allErrors).length > 0;
 
-                                return (
-                                    <>
-                                        <FormValidationNotification
-                                            errors={allErrors}
-                                            hasAttemptedSubmit={
-                                                hasAttemptedSubmit
-                                            }
-                                        />
-                                        {actualSourceArticle && (
-                                            <input
-                                                type="hidden"
-                                                name="source_article_uuid"
-                                                value={actualSourceArticle.uuid}
-                                            />
-                                        )}
-                                        {/* Input nascosti per checkbox (per inviare 0 se non selezionati) */}
-                                        <input
-                                            type="hidden"
-                                            name="visibility_cod"
-                                            value={visibilityCod ? 1 : 0}
-                                        />
-                                        <input
-                                            type="hidden"
-                                            name="stock_managed"
-                                            value={stockManaged ? 1 : 0}
-                                        />
-                                        <input
-                                            type="hidden"
-                                            name="allergens"
-                                            value={allergens ? 1 : 0}
-                                        />
-                                        <input
-                                            type="hidden"
-                                            name="production_approval_checkbox"
-                                            value={
-                                                productionApprovalCheckbox
-                                                    ? 1
-                                                    : 0
-                                            }
-                                        />
-                                        <input
-                                            type="hidden"
-                                            name="approv_quality_checkbox"
-                                            value={
-                                                approvQualityCheckbox ? 1 : 0
-                                            }
-                                        />
-                                        <input
-                                            type="hidden"
-                                            name="commercial_approval_checkbox"
-                                            value={
-                                                commercialApprovalCheckbox
-                                                    ? 1
-                                                    : 0
-                                            }
-                                        />
-                                        <input
-                                            type="hidden"
-                                            name="client_approval_checkbox"
-                                            value={
-                                                clientApprovalCheckbox ? 1 : 0
-                                            }
-                                        />
-
-                                        {/* Input nascosti per relazioni many-to-many */}
-                                        {machineryRows
-                                            .filter(
-                                                (row) =>
-                                                    row.machineryUuid &&
-                                                    row.value,
-                                            )
-                                            .map((row, idx) => (
-                                                <input
-                                                    key={`machinery-${idx}`}
-                                                    type="hidden"
-                                                    name={`machinery[${idx}][machinery_uuid]`}
-                                                    value={row.machineryUuid}
+                                        return (
+                                            <>
+                                                <FormValidationNotification
+                                                    errors={allErrors}
+                                                    hasAttemptedSubmit={
+                                                        hasAttemptedSubmit
+                                                    }
                                                 />
-                                            ))}
-                                        {machineryRows
-                                            .filter(
-                                                (row) =>
-                                                    row.machineryUuid &&
-                                                    row.value,
-                                            )
-                                            .map((row, idx) => (
+                                                {actualSourceArticle && (
+                                                    <input
+                                                        type="hidden"
+                                                        name="source_article_uuid"
+                                                        value={
+                                                            actualSourceArticle.uuid
+                                                        }
+                                                    />
+                                                )}
+                                                {/* Input nascosti per checkbox (per inviare 0 se non selezionati) */}
                                                 <input
-                                                    key={`machinery-value-${idx}`}
                                                     type="hidden"
-                                                    name={`machinery[${idx}][value]`}
-                                                    value={row.value}
-                                                />
-                                            ))}
-                                        {materialRows
-                                            .filter((row) => row.materialUuid)
-                                            .map((row, idx) => (
-                                                <input
-                                                    key={`material-${idx}`}
-                                                    type="hidden"
-                                                    name={`materials[${idx}]`}
-                                                    value={row.materialUuid}
-                                                />
-                                            ))}
-                                        {criticalIssueRows
-                                            .filter(
-                                                (row) => row.criticalIssueUuid,
-                                            )
-                                            .map((row, idx) => (
-                                                <input
-                                                    key={`critical-${idx}`}
-                                                    type="hidden"
-                                                    name={`critical_issues[${idx}]`}
+                                                    name="visibility_cod"
                                                     value={
-                                                        row.criticalIssueUuid
+                                                        visibilityCod ? 1 : 0
                                                     }
                                                 />
-                                            ))}
-                                        {packagingInstructionRows
-                                            .filter(
-                                                (row) => row.instructionUuid,
-                                            )
-                                            .map((row, idx) => (
                                                 <input
-                                                    key={`packaging-${idx}`}
                                                     type="hidden"
-                                                    name={`packaging_instructions[${idx}]`}
-                                                    value={row.instructionUuid}
+                                                    name="stock_managed"
+                                                    value={stockManaged ? 1 : 0}
                                                 />
-                                            ))}
-                                        {operatingInstructionRows
-                                            .filter(
-                                                (row) => row.instructionUuid,
-                                            )
-                                            .map((row, idx) => (
                                                 <input
-                                                    key={`operating-${idx}`}
                                                     type="hidden"
-                                                    name={`operating_instructions[${idx}]`}
-                                                    value={row.instructionUuid}
+                                                    name="allergens"
+                                                    value={allergens ? 1 : 0}
                                                 />
-                                            ))}
-                                        {palletizingInstructionRows
-                                            .filter(
-                                                (row) => row.instructionUuid,
-                                            )
-                                            .map((row, idx) => (
                                                 <input
-                                                    key={`palletizing-${idx}`}
                                                     type="hidden"
-                                                    name={`palletizing_instructions[${idx}]`}
-                                                    value={row.instructionUuid}
+                                                    name="production_approval_checkbox"
+                                                    value={
+                                                        productionApprovalCheckbox
+                                                            ? 1
+                                                            : 0
+                                                    }
                                                 />
-                                            ))}
-                                        {checkMaterialRows
-                                            .filter(
-                                                (row) =>
-                                                    row.materialUuid &&
-                                                    row.um &&
-                                                    row.quantityExpected &&
-                                                    row.quantityEffective,
-                                            )
-                                            .map((row, idx) => (
-                                                <>
-                                                    <input
-                                                        key={`check-material-${idx}-uuid`}
-                                                        type="hidden"
-                                                        name={`check_materials[${idx}][material_uuid]`}
-                                                        value={row.materialUuid}
-                                                    />
-                                                    <input
-                                                        key={`check-material-${idx}-um`}
-                                                        type="hidden"
-                                                        name={`check_materials[${idx}][um]`}
-                                                        value={row.um}
-                                                    />
-                                                    <input
-                                                        key={`check-material-${idx}-expected`}
-                                                        type="hidden"
-                                                        name={`check_materials[${idx}][quantity_expected]`}
-                                                        value={
-                                                            row.quantityExpected
-                                                        }
-                                                    />
-                                                    <input
-                                                        key={`check-material-${idx}-effective`}
-                                                        type="hidden"
-                                                        name={`check_materials[${idx}][quantity_effective]`}
-                                                        value={
-                                                            row.quantityEffective
-                                                        }
-                                                    />
-                                                </>
-                                            ))}
-                                        <div className="grid gap-2">
-                                            <FormLabel
-                                                htmlFor="offer_uuid"
-                                                required
-                                            >
-                                                Offerta
-                                            </FormLabel>
-                                            <Select
-                                                name="offer_uuid"
-                                                value={selectedOffer}
-                                                onValueChange={
-                                                    handleOfferChange
-                                                }
-                                                required
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Seleziona un'offerta" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {offers.map((offer) => (
-                                                        <SelectItem
-                                                            key={offer.uuid}
-                                                            value={offer.uuid}
-                                                        >
-                                                            {offer.offer_number}{' '}
-                                                            -{' '}
-                                                            {offer.description ||
-                                                                'Senza descrizione'}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            <InputError
-                                                message={allErrors.offer_uuid}
-                                            />
-                                        </div>
-
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="cod_article_las">
-                                                Codice LAS
-                                            </FormLabel>
-                                            <Input
-                                                id="cod_article_las"
-                                                name="cod_article_las"
-                                                value={codArticleLas}
-                                                onChange={(e) =>
-                                                    setCodArticleLas(
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                onBlur={
-                                                    codArticleLasValidation.onBlur
-                                                }
-                                                placeholder="Lascia vuoto per generazione automatica"
-                                                maxLength={255}
-                                                aria-invalid={
-                                                    codArticleLasValidation.error
-                                                        ? 'true'
-                                                        : 'false'
-                                                }
-                                                className={
-                                                    codArticleLasValidation.error
-                                                        ? 'border-destructive'
-                                                        : ''
-                                                }
-                                            />
-                                            {codArticleLasValidation.error && (
-                                                <p className="text-xs text-destructive">
-                                                    {
-                                                        codArticleLasValidation.error
+                                                <input
+                                                    type="hidden"
+                                                    name="approv_quality_checkbox"
+                                                    value={
+                                                        approvQualityCheckbox
+                                                            ? 1
+                                                            : 0
                                                     }
-                                                </p>
-                                            )}
-                                            <InputError
-                                                message={
-                                                    allErrors.cod_article_las
-                                                }
-                                            />
-                                        </div>
-
-                                        <div className="grid gap-2">
-                                            <FormLabel
-                                                htmlFor="article_descr"
-                                                required
-                                            >
-                                                Descrizione
-                                            </FormLabel>
-                                            <Input
-                                                id="article_descr"
-                                                name="article_descr"
-                                                value={articleDescr}
-                                                onChange={(e) =>
-                                                    setArticleDescr(
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                onBlur={
-                                                    articleDescrValidation.onBlur
-                                                }
-                                                required
-                                                placeholder="Descrizione articolo"
-                                                maxLength={255}
-                                                aria-invalid={
-                                                    articleDescrValidation.error
-                                                        ? 'true'
-                                                        : 'false'
-                                                }
-                                                className={
-                                                    articleDescrValidation.error
-                                                        ? 'border-destructive'
-                                                        : ''
-                                                }
-                                            />
-                                            {articleDescrValidation.error && (
-                                                <p className="text-xs text-destructive">
-                                                    {
-                                                        articleDescrValidation.error
-                                                    }
-                                                </p>
-                                            )}
-                                            <InputError
-                                                message={
-                                                    allErrors.article_descr
-                                                }
-                                            />
-                                        </div>
-
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="cod_article_client">
-                                                Codice Cliente
-                                            </FormLabel>
-                                            <Input
-                                                id="cod_article_client"
-                                                name="cod_article_client"
-                                                defaultValue={
-                                                    actualSourceArticle?.cod_article_client ||
-                                                    codArticleClientFromOffer ||
-                                                    props.codArticleClientFromOffer ||
-                                                    ''
-                                                }
-                                                placeholder="Codice articolo cliente"
-                                            />
-                                            <InputError
-                                                message={
-                                                    allErrors.cod_article_client
-                                                }
-                                            />
-                                        </div>
-
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="additional_descr">
-                                                Descrizione Aggiuntiva
-                                            </FormLabel>
-                                            <Textarea
-                                                id="additional_descr"
-                                                name="additional_descr"
-                                                defaultValue={
-                                                    actualSourceArticle?.additional_descr ||
-                                                    additionalDescrFromOffer ||
-                                                    props.additionalDescrFromOffer ||
-                                                    ''
-                                                }
-                                                placeholder="Descrizione aggiuntiva dell'articolo"
-                                                rows={3}
-                                            />
-                                            <InputError
-                                                message={
-                                                    allErrors.additional_descr
-                                                }
-                                            />
-                                        </div>
-
-                                        <div className="flex items-center space-x-2">
-                                            <Checkbox
-                                                id="visibility_cod"
-                                                name="visibility_cod"
-                                                checked={visibilityCod}
-                                                onCheckedChange={(checked) =>
-                                                    setVisibilityCod(
-                                                        checked === true,
-                                                    )
-                                                }
-                                            />
-                                            <label
-                                                htmlFor="visibility_cod"
-                                                className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                            >
-                                                Visibilità codice LAS su ordine
-                                            </label>
-                                        </div>
-
-                                        <div className="flex items-center space-x-2">
-                                            <Checkbox
-                                                id="stock_managed"
-                                                name="stock_managed"
-                                                checked={stockManaged}
-                                                onCheckedChange={(checked) =>
-                                                    setStockManaged(
-                                                        checked === true,
-                                                    )
-                                                }
-                                            />
-                                            <label
-                                                htmlFor="stock_managed"
-                                                className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                            >
-                                                Articolo gestito a magazzino
-                                            </label>
-                                        </div>
-
-                                        {actualUm && (
-                                            <div className="grid gap-2">
-                                                <FormLabel htmlFor="um">
-                                                    U.m.
-                                                </FormLabel>
-                                                <Input
-                                                    id="um"
-                                                    name="um"
-                                                    value={actualUm}
-                                                    readOnly
-                                                    className="bg-muted"
                                                 />
-                                            </div>
-                                        )}
+                                                <input
+                                                    type="hidden"
+                                                    name="commercial_approval_checkbox"
+                                                    value={
+                                                        commercialApprovalCheckbox
+                                                            ? 1
+                                                            : 0
+                                                    }
+                                                />
+                                                <input
+                                                    type="hidden"
+                                                    name="client_approval_checkbox"
+                                                    value={
+                                                        clientApprovalCheckbox
+                                                            ? 1
+                                                            : 0
+                                                    }
+                                                />
 
-                                        <div className="grid gap-2">
-                                            <FormLabel
-                                                htmlFor="lot_attribution"
-                                                required
-                                            >
-                                                Attribuzione lotto
-                                            </FormLabel>
-                                            <Select
-                                                name="lot_attribution"
-                                                value={lotAttribution}
-                                                onValueChange={
-                                                    setLotAttribution
-                                                }
-                                                required
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Seleziona attribuzione lotto" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {actualLotAttributionList.map(
-                                                        (option) => (
-                                                            <SelectItem
-                                                                key={option.key}
-                                                                value={option.key.toString()}
-                                                            >
-                                                                {option.value}
-                                                            </SelectItem>
-                                                        ),
-                                                    )}
-                                                </SelectContent>
-                                            </Select>
-                                            <InputError
-                                                message={
-                                                    allErrors.lot_attribution
-                                                }
-                                            />
-                                        </div>
-
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="expiration_attribution">
-                                                Attribuzione scadenza
-                                            </FormLabel>
-                                            <Select
-                                                name="expiration_attribution"
-                                                value={expirationAttribution}
-                                                onValueChange={
-                                                    setExpirationAttribution
-                                                }
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Seleziona attribuzione scadenza" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {actualExpirationAttributionList.map(
-                                                        (option) => (
-                                                            <SelectItem
-                                                                key={option.key}
-                                                                value={option.key.toString()}
-                                                            >
-                                                                {option.value}
-                                                            </SelectItem>
-                                                        ),
-                                                    )}
-                                                </SelectContent>
-                                            </Select>
-                                            <InputError
-                                                message={
-                                                    allErrors.expiration_attribution
-                                                }
-                                            />
-                                        </div>
-
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="ean">
-                                                EAN
-                                            </FormLabel>
-                                            <Input
-                                                id="ean"
-                                                name="ean"
-                                                value={ean}
-                                                onChange={(e) =>
-                                                    setEan(e.target.value)
-                                                }
-                                                placeholder="EAN"
-                                            />
-                                            <InputError
-                                                message={allErrors.ean}
-                                            />
-                                        </div>
-
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="db">
-                                                DB
-                                            </FormLabel>
-                                            <Select
-                                                name="db"
-                                                value={db}
-                                                onValueChange={setDb}
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Seleziona DB" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {actualDbList.map(
-                                                        (option) => (
-                                                            <SelectItem
-                                                                key={option.key}
-                                                                value={option.key.toString()}
-                                                            >
-                                                                {option.value}
-                                                            </SelectItem>
-                                                        ),
-                                                    )}
-                                                </SelectContent>
-                                            </Select>
-                                            <InputError
-                                                message={allErrors.db}
-                                            />
-                                        </div>
-
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="article_category">
-                                                Categoria
-                                            </FormLabel>
-                                            <Select
-                                                name="article_category"
-                                                defaultValue={
-                                                    actualSourceArticle?.article_category ||
-                                                    undefined
-                                                }
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Seleziona una categoria" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {categories.map(
-                                                        (category) => (
-                                                            <SelectItem
-                                                                key={
-                                                                    category.uuid
-                                                                }
-                                                                value={
-                                                                    category.uuid
-                                                                }
-                                                            >
-                                                                {category.name}
-                                                            </SelectItem>
-                                                        ),
-                                                    )}
-                                                </SelectContent>
-                                            </Select>
-                                            <InputError
-                                                message={
-                                                    allErrors.article_category
-                                                }
-                                            />
-                                        </div>
-
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="pallet_uuid">
-                                                Tipo di Pallet
-                                            </FormLabel>
-                                            <Select
-                                                name="pallet_uuid"
-                                                defaultValue={
-                                                    actualSourceArticle?.pallet_uuid ||
-                                                    undefined
-                                                }
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Seleziona un tipo di pallet" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {palletTypes.map(
-                                                        (pallet) => (
-                                                            <SelectItem
-                                                                key={
-                                                                    pallet.uuid
-                                                                }
-                                                                value={
-                                                                    pallet.uuid
-                                                                }
-                                                            >
-                                                                {pallet.cod} -{' '}
-                                                                {pallet.description ||
-                                                                    'Senza descrizione'}
-                                                            </SelectItem>
-                                                        ),
-                                                    )}
-                                                </SelectContent>
-                                            </Select>
-                                            <InputError
-                                                message={allErrors.pallet_uuid}
-                                            />
-                                        </div>
-
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="plan_packaging">
-                                                Piano Imballaggio
-                                            </FormLabel>
-                                            <Input
-                                                id="plan_packaging"
-                                                name="plan_packaging"
-                                                type="number"
-                                                min="0"
-                                                step="0.01"
-                                                value={planPackaging}
-                                                onChange={(e) =>
-                                                    setPlanPackaging(
-                                                        e.target.value,
+                                                {/* Input nascosti per relazioni many-to-many */}
+                                                {machineryRows
+                                                    .filter(
+                                                        (row) =>
+                                                            row.machineryUuid &&
+                                                            row.value,
                                                     )
-                                                }
-                                                onBlur={
-                                                    planPackagingValidation.onBlur
-                                                }
-                                                placeholder="0"
-                                                aria-invalid={
-                                                    planPackagingValidation.error
-                                                        ? 'true'
-                                                        : 'false'
-                                                }
-                                                className={
-                                                    planPackagingValidation.error
-                                                        ? 'border-destructive'
-                                                        : ''
-                                                }
-                                            />
-                                            {planPackagingValidation.error && (
-                                                <p className="text-xs text-destructive">
-                                                    {
-                                                        planPackagingValidation.error
-                                                    }
-                                                </p>
-                                            )}
-                                            <p className="text-xs text-muted-foreground">
-                                                Numero di pezzi per confezione.
-                                            </p>
-                                            <InputError
-                                                message={
-                                                    allErrors.plan_packaging
-                                                }
-                                            />
-                                        </div>
-
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="pallet_plans">
-                                                Piani Pallet
-                                            </FormLabel>
-                                            <Input
-                                                id="pallet_plans"
-                                                name="pallet_plans"
-                                                type="number"
-                                                min="0"
-                                                step="0.01"
-                                                value={palletPlans}
-                                                onChange={(e) =>
-                                                    setPalletPlans(
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                onBlur={
-                                                    palletPlansValidation.onBlur
-                                                }
-                                                placeholder="0"
-                                                aria-invalid={
-                                                    palletPlansValidation.error
-                                                        ? 'true'
-                                                        : 'false'
-                                                }
-                                                className={
-                                                    palletPlansValidation.error
-                                                        ? 'border-destructive'
-                                                        : ''
-                                                }
-                                            />
-                                            {palletPlansValidation.error && (
-                                                <p className="text-xs text-destructive">
-                                                    {
-                                                        palletPlansValidation.error
-                                                    }
-                                                </p>
-                                            )}
-                                            <p className="text-xs text-muted-foreground">
-                                                Numero di piani per pallet.
-                                            </p>
-                                            <InputError
-                                                message={allErrors.pallet_plans}
-                                            />
-                                        </div>
-
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="line_layout_file">
-                                                Allegato Layout Linea
-                                            </FormLabel>
-                                            <Input
-                                                id="line_layout_file"
-                                                name="line_layout_file"
-                                                type="file"
-                                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif"
-                                                onChange={(event) => {
-                                                    const file =
-                                                        event.target.files?.[0];
-                                                    setLineLayoutFileName(
-                                                        file ? file.name : null,
-                                                    );
-                                                }}
-                                            />
-                                            {actualSourceArticle?.line_layout && (
-                                                <p className="text-xs text-muted-foreground">
-                                                    Allegato attuale:{' '}
-                                                    {
-                                                        actualSourceArticle.line_layout
-                                                    }{' '}
-                                                    (verrà copiato se non
-                                                    selezioni un nuovo allegato)
-                                                </p>
-                                            )}
-                                            {lineLayoutFileName && (
-                                                <p className="text-xs text-muted-foreground">
-                                                    Nuovo allegato selezionato:{' '}
-                                                    <span className="font-mono">
-                                                        {lineLayoutFileName}
-                                                    </span>
-                                                </p>
-                                            )}
-                                            <InputError
-                                                message={
-                                                    allErrors.line_layout_file
-                                                }
-                                            />
-                                        </div>
-
-                                        {/* Elenco macchinari e parametri */}
-                                        <Card>
-                                            <CardHeader>
-                                                <CardTitle className="text-lg">
-                                                    Elenco macchinari e
-                                                    parametri
-                                                </CardTitle>
-                                            </CardHeader>
-                                            <CardContent className="space-y-4">
-                                                <div className="space-y-3">
-                                                    {machineryRows.map(
-                                                        (row) => {
-                                                            const selectedMachinery =
-                                                                actualMachinery.find(
-                                                                    (m) =>
-                                                                        m.uuid ===
-                                                                        row.machineryUuid,
-                                                                );
-                                                            const valueType =
-                                                                selectedMachinery?.valuetype ||
-                                                                row.valueType ||
-                                                                '';
-                                                            const isListType =
-                                                                valueType &&
-                                                                valueType.includes(
-                                                                    ',',
-                                                                ) &&
-                                                                valueType !==
-                                                                    'testo' &&
-                                                                valueType !==
-                                                                    'numero';
-                                                            const listOptions =
-                                                                isListType
-                                                                    ? valueType
-                                                                          .split(
-                                                                              ',',
-                                                                          )
-                                                                          .map(
-                                                                              (
-                                                                                  v,
-                                                                                  i,
-                                                                              ) => ({
-                                                                                  key: i,
-                                                                                  value: v.trim(),
-                                                                              }),
-                                                                          )
-                                                                    : [];
-
-                                                            return (
-                                                                <div
-                                                                    key={row.id}
-                                                                    className="grid grid-cols-12 items-end gap-2"
-                                                                >
-                                                                    <div className="col-span-7">
-                                                                        <Select
-                                                                            value={
-                                                                                row.machineryUuid
-                                                                            }
-                                                                            onValueChange={(
-                                                                                value,
-                                                                            ) =>
-                                                                                handleMachineryChange(
-                                                                                    row.id,
-                                                                                    value,
-                                                                                )
-                                                                            }
-                                                                        >
-                                                                            <SelectTrigger>
-                                                                                <SelectValue placeholder="Seleziona macchinario..." />
-                                                                            </SelectTrigger>
-                                                                            <SelectContent>
-                                                                                {actualMachinery.map(
-                                                                                    (
-                                                                                        machinery,
-                                                                                    ) => (
-                                                                                        <SelectItem
-                                                                                            key={
-                                                                                                machinery.uuid
-                                                                                            }
-                                                                                            value={
-                                                                                                machinery.uuid
-                                                                                            }
-                                                                                        >
-                                                                                            {
-                                                                                                machinery.cod
-                                                                                            }{' '}
-                                                                                            -{' '}
-                                                                                            {machinery.description ||
-                                                                                                ''}{' '}
-                                                                                            {machinery.parameter
-                                                                                                ? `- ${machinery.parameter}`
-                                                                                                : ''}
-                                                                                        </SelectItem>
-                                                                                    ),
-                                                                                )}
-                                                                            </SelectContent>
-                                                                        </Select>
-                                                                    </div>
-                                                                    <div className="col-span-4">
-                                                                        {!row.machineryUuid ? (
-                                                                            <Input
-                                                                                readOnly
-                                                                                placeholder="Valore"
-                                                                                className="bg-muted"
-                                                                            />
-                                                                        ) : valueType ===
-                                                                          'testo' ? (
-                                                                            <Input
-                                                                                value={
-                                                                                    row.value
-                                                                                }
-                                                                                onChange={(
-                                                                                    e,
-                                                                                ) =>
-                                                                                    updateMachineryRow(
-                                                                                        row.id,
-                                                                                        'value',
-                                                                                        e
-                                                                                            .target
-                                                                                            .value,
-                                                                                    )
-                                                                                }
-                                                                                placeholder="Valore"
-                                                                            />
-                                                                        ) : valueType ===
-                                                                          'numero' ? (
-                                                                            <Input
-                                                                                type="number"
-                                                                                step="0.01"
-                                                                                value={
-                                                                                    row.value
-                                                                                }
-                                                                                onChange={(
-                                                                                    e,
-                                                                                ) =>
-                                                                                    updateMachineryRow(
-                                                                                        row.id,
-                                                                                        'value',
-                                                                                        e
-                                                                                            .target
-                                                                                            .value,
-                                                                                    )
-                                                                                }
-                                                                                placeholder="Valore"
-                                                                            />
-                                                                        ) : isListType ? (
-                                                                            <Select
-                                                                                value={
-                                                                                    row.value
-                                                                                }
-                                                                                onValueChange={(
-                                                                                    value,
-                                                                                ) =>
-                                                                                    updateMachineryRow(
-                                                                                        row.id,
-                                                                                        'value',
-                                                                                        value,
-                                                                                    )
-                                                                                }
-                                                                            >
-                                                                                <SelectTrigger>
-                                                                                    <SelectValue placeholder="Seleziona un valore" />
-                                                                                </SelectTrigger>
-                                                                                <SelectContent>
-                                                                                    {listOptions.map(
-                                                                                        (
-                                                                                            option,
-                                                                                        ) => (
-                                                                                            <SelectItem
-                                                                                                key={
-                                                                                                    option.key
-                                                                                                }
-                                                                                                value={option.key.toString()}
-                                                                                            >
-                                                                                                {
-                                                                                                    option.value
-                                                                                                }
-                                                                                            </SelectItem>
-                                                                                        ),
-                                                                                    )}
-                                                                                </SelectContent>
-                                                                            </Select>
-                                                                        ) : (
-                                                                            <Input
-                                                                                readOnly
-                                                                                placeholder="Valore"
-                                                                                className="bg-muted"
-                                                                            />
-                                                                        )}
-                                                                    </div>
-                                                                    <div className="col-span-1">
-                                                                        <Button
-                                                                            type="button"
-                                                                            variant="destructive"
-                                                                            size="sm"
-                                                                            onClick={() =>
-                                                                                removeMachineryRow(
-                                                                                    row.id,
-                                                                                )
-                                                                            }
-                                                                        >
-                                                                            <X className="h-4 w-4" />
-                                                                        </Button>
-                                                                    </div>
-                                                                </div>
-                                                            );
-                                                        },
-                                                    )}
-                                                </div>
-                                                <Button
-                                                    type="button"
-                                                    variant="outline"
-                                                    onClick={addMachineryRow}
-                                                >
-                                                    <Plus className="mr-2 h-4 w-4" />
-                                                    Aggiungi macchinario
-                                                </Button>
-                                            </CardContent>
-                                        </Card>
-
-                                        {/* Istruzioni di confezionamento */}
-                                        <Card>
-                                            <CardHeader>
-                                                <CardTitle className="text-lg">
-                                                    Istruzioni di
-                                                    confezionamento
-                                                </CardTitle>
-                                            </CardHeader>
-                                            <CardContent className="space-y-4">
-                                                <div className="space-y-3">
-                                                    {packagingInstructionRows.map(
-                                                        (row) => (
-                                                            <div
-                                                                key={row.id}
-                                                                className="grid grid-cols-12 items-end gap-2"
-                                                            >
-                                                                <div className="col-span-11">
-                                                                    <Select
-                                                                        value={
-                                                                            row.instructionUuid
-                                                                        }
-                                                                        onValueChange={(
-                                                                            value,
-                                                                        ) =>
-                                                                            updatePackagingInstructionRow(
-                                                                                row.id,
-                                                                                value,
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        <SelectTrigger>
-                                                                            <SelectValue placeholder="Seleziona istruzioni di confezionamento..." />
-                                                                        </SelectTrigger>
-                                                                        <SelectContent>
-                                                                            {actualPackagingInstructions.map(
-                                                                                (
-                                                                                    instruction,
-                                                                                ) => (
-                                                                                    <SelectItem
-                                                                                        key={
-                                                                                            instruction.uuid
-                                                                                        }
-                                                                                        value={
-                                                                                            instruction.uuid
-                                                                                        }
-                                                                                    >
-                                                                                        {
-                                                                                            instruction.code
-                                                                                        }{' '}
-                                                                                        {instruction.number
-                                                                                            ? `- ${instruction.number}`
-                                                                                            : ''}
-                                                                                    </SelectItem>
-                                                                                ),
-                                                                            )}
-                                                                        </SelectContent>
-                                                                    </Select>
-                                                                </div>
-                                                                <div className="col-span-1">
-                                                                    <Button
-                                                                        type="button"
-                                                                        variant="destructive"
-                                                                        size="sm"
-                                                                        onClick={() =>
-                                                                            removePackagingInstructionRow(
-                                                                                row.id,
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        <X className="h-4 w-4" />
-                                                                    </Button>
-                                                                </div>
-                                                            </div>
-                                                        ),
-                                                    )}
-                                                </div>
-                                                <Button
-                                                    type="button"
-                                                    variant="outline"
-                                                    onClick={
-                                                        addPackagingInstructionRow
-                                                    }
-                                                >
-                                                    <Plus className="mr-2 h-4 w-4" />
-                                                    Aggiungi istruzioni di
-                                                    confezionamento
-                                                </Button>
-                                            </CardContent>
-                                        </Card>
-
-                                        {/* Istruzioni di pallettizzazione */}
-                                        <Card>
-                                            <CardHeader>
-                                                <CardTitle className="text-lg">
-                                                    Istruzioni di
-                                                    pallettizzazione
-                                                </CardTitle>
-                                            </CardHeader>
-                                            <CardContent className="space-y-4">
-                                                <div className="space-y-3">
-                                                    {palletizingInstructionRows.map(
-                                                        (row) => (
-                                                            <div
-                                                                key={row.id}
-                                                                className="grid grid-cols-12 items-end gap-2"
-                                                            >
-                                                                <div className="col-span-11">
-                                                                    <Select
-                                                                        value={
-                                                                            row.instructionUuid
-                                                                        }
-                                                                        onValueChange={(
-                                                                            value,
-                                                                        ) =>
-                                                                            updatePalletizingInstructionRow(
-                                                                                row.id,
-                                                                                value,
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        <SelectTrigger>
-                                                                            <SelectValue placeholder="Seleziona istruzioni di pallettizzazione..." />
-                                                                        </SelectTrigger>
-                                                                        <SelectContent>
-                                                                            {actualPalletizingInstructions.map(
-                                                                                (
-                                                                                    instruction,
-                                                                                ) => (
-                                                                                    <SelectItem
-                                                                                        key={
-                                                                                            instruction.uuid
-                                                                                        }
-                                                                                        value={
-                                                                                            instruction.uuid
-                                                                                        }
-                                                                                    >
-                                                                                        {
-                                                                                            instruction.code
-                                                                                        }{' '}
-                                                                                        {instruction.number
-                                                                                            ? `- ${instruction.number}`
-                                                                                            : ''}
-                                                                                    </SelectItem>
-                                                                                ),
-                                                                            )}
-                                                                        </SelectContent>
-                                                                    </Select>
-                                                                </div>
-                                                                <div className="col-span-1">
-                                                                    <Button
-                                                                        type="button"
-                                                                        variant="destructive"
-                                                                        size="sm"
-                                                                        onClick={() =>
-                                                                            removePalletizingInstructionRow(
-                                                                                row.id,
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        <X className="h-4 w-4" />
-                                                                    </Button>
-                                                                </div>
-                                                            </div>
-                                                        ),
-                                                    )}
-                                                </div>
-                                                <Button
-                                                    type="button"
-                                                    variant="outline"
-                                                    onClick={
-                                                        addPalletizingInstructionRow
-                                                    }
-                                                >
-                                                    <Plus className="mr-2 h-4 w-4" />
-                                                    Aggiungi istruzioni di
-                                                    pallettizzazione
-                                                </Button>
-                                            </CardContent>
-                                        </Card>
-
-                                        {/* Istruzioni operative */}
-                                        <Card>
-                                            <CardHeader>
-                                                <CardTitle className="text-lg">
-                                                    Istruzioni operative
-                                                </CardTitle>
-                                            </CardHeader>
-                                            <CardContent className="space-y-4">
-                                                <div className="space-y-3">
-                                                    {operatingInstructionRows.map(
-                                                        (row) => (
-                                                            <div
-                                                                key={row.id}
-                                                                className="grid grid-cols-12 items-end gap-2"
-                                                            >
-                                                                <div className="col-span-11">
-                                                                    <Select
-                                                                        value={
-                                                                            row.instructionUuid
-                                                                        }
-                                                                        onValueChange={(
-                                                                            value,
-                                                                        ) =>
-                                                                            updateOperatingInstructionRow(
-                                                                                row.id,
-                                                                                value,
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        <SelectTrigger>
-                                                                            <SelectValue placeholder="Seleziona istruzioni operative..." />
-                                                                        </SelectTrigger>
-                                                                        <SelectContent>
-                                                                            {actualOperatingInstructions.map(
-                                                                                (
-                                                                                    instruction,
-                                                                                ) => (
-                                                                                    <SelectItem
-                                                                                        key={
-                                                                                            instruction.uuid
-                                                                                        }
-                                                                                        value={
-                                                                                            instruction.uuid
-                                                                                        }
-                                                                                    >
-                                                                                        {
-                                                                                            instruction.code
-                                                                                        }{' '}
-                                                                                        {instruction.number
-                                                                                            ? `- ${instruction.number}`
-                                                                                            : ''}
-                                                                                    </SelectItem>
-                                                                                ),
-                                                                            )}
-                                                                        </SelectContent>
-                                                                    </Select>
-                                                                </div>
-                                                                <div className="col-span-1">
-                                                                    <Button
-                                                                        type="button"
-                                                                        variant="destructive"
-                                                                        size="sm"
-                                                                        onClick={() =>
-                                                                            removeOperatingInstructionRow(
-                                                                                row.id,
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        <X className="h-4 w-4" />
-                                                                    </Button>
-                                                                </div>
-                                                            </div>
-                                                        ),
-                                                    )}
-                                                </div>
-                                                <Button
-                                                    type="button"
-                                                    variant="outline"
-                                                    onClick={
-                                                        addOperatingInstructionRow
-                                                    }
-                                                >
-                                                    <Plus className="mr-2 h-4 w-4" />
-                                                    Aggiungi istruzioni
-                                                    operative
-                                                </Button>
-                                            </CardContent>
-                                        </Card>
-
-                                        {/* Materiali di consumo non a DB */}
-                                        <Card>
-                                            <CardHeader>
-                                                <CardTitle className="text-lg">
-                                                    Materiali di consumo non a
-                                                    DB
-                                                </CardTitle>
-                                            </CardHeader>
-                                            <CardContent className="space-y-4">
-                                                <div className="space-y-3">
-                                                    {materialRows.map((row) => (
-                                                        <div
-                                                            key={row.id}
-                                                            className="grid grid-cols-12 items-end gap-2"
-                                                        >
-                                                            <div className="col-span-11">
-                                                                <Select
-                                                                    value={
-                                                                        row.materialUuid
-                                                                    }
-                                                                    onValueChange={(
-                                                                        value,
-                                                                    ) =>
-                                                                        updateMaterialRow(
-                                                                            row.id,
-                                                                            value,
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    <SelectTrigger>
-                                                                        <SelectValue placeholder="Seleziona materiali di consumo non a DB..." />
-                                                                    </SelectTrigger>
-                                                                    <SelectContent>
-                                                                        {actualMaterials.map(
-                                                                            (
-                                                                                material,
-                                                                            ) => (
-                                                                                <SelectItem
-                                                                                    key={
-                                                                                        material.uuid
-                                                                                    }
-                                                                                    value={
-                                                                                        material.uuid
-                                                                                    }
-                                                                                >
-                                                                                    {
-                                                                                        material.cod
-                                                                                    }{' '}
-                                                                                    -{' '}
-                                                                                    {material.description ||
-                                                                                        'Senza descrizione'}
-                                                                                </SelectItem>
-                                                                            ),
-                                                                        )}
-                                                                    </SelectContent>
-                                                                </Select>
-                                                            </div>
-                                                            <div className="col-span-1">
-                                                                <Button
-                                                                    type="button"
-                                                                    variant="destructive"
-                                                                    size="sm"
-                                                                    onClick={() =>
-                                                                        removeMaterialRow(
-                                                                            row.id,
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    <X className="h-4 w-4" />
-                                                                </Button>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                                <Button
-                                                    type="button"
-                                                    variant="outline"
-                                                    onClick={addMaterialRow}
-                                                >
-                                                    <Plus className="mr-2 h-4 w-4" />
-                                                    Aggiungi materiali
-                                                </Button>
-                                            </CardContent>
-                                        </Card>
-
-                                        {/* Criticità */}
-                                        <Card>
-                                            <CardHeader>
-                                                <CardTitle className="text-lg">
-                                                    Criticità
-                                                </CardTitle>
-                                            </CardHeader>
-                                            <CardContent className="space-y-4">
-                                                <div className="space-y-3">
-                                                    {criticalIssueRows.map(
-                                                        (row) => (
-                                                            <div
-                                                                key={row.id}
-                                                                className="grid grid-cols-12 items-end gap-2"
-                                                            >
-                                                                <div className="col-span-11">
-                                                                    <Select
-                                                                        value={
-                                                                            row.criticalIssueUuid
-                                                                        }
-                                                                        onValueChange={(
-                                                                            value,
-                                                                        ) =>
-                                                                            updateCriticalIssueRow(
-                                                                                row.id,
-                                                                                value,
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        <SelectTrigger>
-                                                                            <SelectValue placeholder="Seleziona criticità..." />
-                                                                        </SelectTrigger>
-                                                                        <SelectContent>
-                                                                            {actualCriticalIssues.map(
-                                                                                (
-                                                                                    critical,
-                                                                                ) => (
-                                                                                    <SelectItem
-                                                                                        key={
-                                                                                            critical.uuid
-                                                                                        }
-                                                                                        value={
-                                                                                            critical.uuid
-                                                                                        }
-                                                                                    >
-                                                                                        {
-                                                                                            critical.name
-                                                                                        }
-                                                                                    </SelectItem>
-                                                                                ),
-                                                                            )}
-                                                                        </SelectContent>
-                                                                    </Select>
-                                                                </div>
-                                                                <div className="col-span-1">
-                                                                    <Button
-                                                                        type="button"
-                                                                        variant="destructive"
-                                                                        size="sm"
-                                                                        onClick={() =>
-                                                                            removeCriticalIssueRow(
-                                                                                row.id,
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        <X className="h-4 w-4" />
-                                                                    </Button>
-                                                                </div>
-                                                            </div>
-                                                        ),
-                                                    )}
-                                                </div>
-                                                <Button
-                                                    type="button"
-                                                    variant="outline"
-                                                    onClick={
-                                                        addCriticalIssueRow
-                                                    }
-                                                >
-                                                    <Plus className="mr-2 h-4 w-4" />
-                                                    Aggiungi criticità
-                                                </Button>
-                                            </CardContent>
-                                        </Card>
-
-                                        {/* Verifica consumi materiali o prodotti */}
-                                        <Card>
-                                            <CardHeader>
-                                                <CardTitle className="text-lg">
-                                                    Verifica consumi materiali o
-                                                    prodotti
-                                                </CardTitle>
-                                            </CardHeader>
-                                            <CardContent className="space-y-4">
-                                                <div className="space-y-3">
-                                                    {checkMaterialRows.map(
-                                                        (row) => (
-                                                            <div
-                                                                key={row.id}
-                                                                className="grid grid-cols-12 items-end gap-2"
-                                                            >
-                                                                <div className="col-span-5">
-                                                                    <Select
-                                                                        value={
-                                                                            row.materialUuid
-                                                                        }
-                                                                        onValueChange={(
-                                                                            value,
-                                                                        ) =>
-                                                                            updateCheckMaterialRow(
-                                                                                row.id,
-                                                                                'materialUuid',
-                                                                                value,
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        <SelectTrigger>
-                                                                            <SelectValue placeholder="Materiale..." />
-                                                                        </SelectTrigger>
-                                                                        <SelectContent>
-                                                                            {actualMaterials.map(
-                                                                                (
-                                                                                    material,
-                                                                                ) => (
-                                                                                    <SelectItem
-                                                                                        key={
-                                                                                            material.uuid
-                                                                                        }
-                                                                                        value={
-                                                                                            material.uuid
-                                                                                        }
-                                                                                    >
-                                                                                        {
-                                                                                            material.cod
-                                                                                        }{' '}
-                                                                                        -{' '}
-                                                                                        {material.description ||
-                                                                                            'Senza descrizione'}
-                                                                                    </SelectItem>
-                                                                                ),
-                                                                            )}
-                                                                        </SelectContent>
-                                                                    </Select>
-                                                                </div>
-                                                                <div className="col-span-2">
-                                                                    <Input
-                                                                        value={
-                                                                            row.um
-                                                                        }
-                                                                        onChange={(
-                                                                            e,
-                                                                        ) =>
-                                                                            updateCheckMaterialRow(
-                                                                                row.id,
-                                                                                'um',
-                                                                                e
-                                                                                    .target
-                                                                                    .value,
-                                                                            )
-                                                                        }
-                                                                        placeholder="U.M."
-                                                                    />
-                                                                </div>
-                                                                <div className="col-span-2">
-                                                                    <Input
-                                                                        type="number"
-                                                                        step="0.01"
-                                                                        value={
-                                                                            row.quantityExpected
-                                                                        }
-                                                                        onChange={(
-                                                                            e,
-                                                                        ) =>
-                                                                            updateCheckMaterialRow(
-                                                                                row.id,
-                                                                                'quantityExpected',
-                                                                                e
-                                                                                    .target
-                                                                                    .value,
-                                                                            )
-                                                                        }
-                                                                        placeholder="q.tà prev"
-                                                                    />
-                                                                </div>
-                                                                <div className="col-span-2">
-                                                                    <Input
-                                                                        type="number"
-                                                                        step="0.01"
-                                                                        value={
-                                                                            row.quantityEffective
-                                                                        }
-                                                                        onChange={(
-                                                                            e,
-                                                                        ) =>
-                                                                            updateCheckMaterialRow(
-                                                                                row.id,
-                                                                                'quantityEffective',
-                                                                                e
-                                                                                    .target
-                                                                                    .value,
-                                                                            )
-                                                                        }
-                                                                        placeholder="q.tà effett"
-                                                                    />
-                                                                </div>
-                                                                <div className="col-span-1">
-                                                                    <Button
-                                                                        type="button"
-                                                                        variant="destructive"
-                                                                        size="sm"
-                                                                        onClick={() =>
-                                                                            removeCheckMaterialRow(
-                                                                                row.id,
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        <X className="h-4 w-4" />
-                                                                    </Button>
-                                                                </div>
-                                                            </div>
-                                                        ),
-                                                    )}
-                                                </div>
-                                                <Button
-                                                    type="button"
-                                                    variant="outline"
-                                                    onClick={
-                                                        addCheckMaterialRow
-                                                    }
-                                                >
-                                                    <Plus className="mr-2 h-4 w-4" />
-                                                    Aggiungi verifica
-                                                </Button>
-                                            </CardContent>
-                                        </Card>
-
-                                        {/* Sezione Etichette */}
-                                        <Card>
-                                            <CardHeader>
-                                                <CardTitle className="text-lg">
-                                                    Etichette
-                                                </CardTitle>
-                                            </CardHeader>
-                                            <CardContent className="space-y-4">
-                                                <div className="grid gap-2">
-                                                    <FormLabel htmlFor="labels_external">
-                                                        Etichette esterne
-                                                    </FormLabel>
-                                                    <Select
-                                                        name="labels_external"
-                                                        value={labelsExternal}
-                                                        onValueChange={
-                                                            setLabelsExternal
-                                                        }
-                                                    >
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona etichette esterne" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {actualLabelsExternalList.map(
-                                                                (option) => (
-                                                                    <SelectItem
-                                                                        key={
-                                                                            option.key
-                                                                        }
-                                                                        value={option.key.toString()}
-                                                                    >
-                                                                        {
-                                                                            option.value
-                                                                        }
-                                                                    </SelectItem>
-                                                                ),
-                                                            )}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-
-                                                <div className="grid gap-2">
-                                                    <FormLabel htmlFor="labels_pvp">
-                                                        Etichette pvp
-                                                    </FormLabel>
-                                                    <Select
-                                                        name="labels_pvp"
-                                                        value={labelsPvp}
-                                                        onValueChange={
-                                                            setLabelsPvp
-                                                        }
-                                                    >
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona etichetta pvp" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {actualLabelsPvpList.map(
-                                                                (option) => (
-                                                                    <SelectItem
-                                                                        key={
-                                                                            option.key
-                                                                        }
-                                                                        value={option.key.toString()}
-                                                                    >
-                                                                        {
-                                                                            option.value
-                                                                        }
-                                                                    </SelectItem>
-                                                                ),
-                                                            )}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-
-                                                <div className="grid gap-2">
-                                                    <FormLabel htmlFor="value_pvp">
-                                                        Valore pvp
-                                                    </FormLabel>
-                                                    <div className="flex items-center gap-2">
-                                                        <Input
-                                                            id="value_pvp"
-                                                            name="value_pvp"
-                                                            type="number"
-                                                            step="0.01"
-                                                            value={valuePvp}
-                                                            onChange={(e) =>
-                                                                setValuePvp(
-                                                                    e.target
-                                                                        .value,
-                                                                )
+                                                    .map((row, idx) => (
+                                                        <input
+                                                            key={`machinery-${idx}`}
+                                                            type="hidden"
+                                                            name={`machinery[${idx}][machinery_uuid]`}
+                                                            value={
+                                                                row.machineryUuid
                                                             }
-                                                            placeholder="0.00"
-                                                            className="text-right"
                                                         />
-                                                        <span className="text-sm text-muted-foreground">
-                                                            pvp
-                                                        </span>
-                                                    </div>
-                                                </div>
-
-                                                <div className="grid gap-2">
-                                                    <FormLabel htmlFor="labels_ingredient">
-                                                        Etichette ingredienti
-                                                    </FormLabel>
-                                                    <Select
-                                                        name="labels_ingredient"
-                                                        value={labelsIngredient}
-                                                        onValueChange={
-                                                            setLabelsIngredient
-                                                        }
-                                                    >
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona etichetta ingrediente" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {actualLabelsIngredientList.map(
-                                                                (option) => (
-                                                                    <SelectItem
-                                                                        key={
-                                                                            option.key
-                                                                        }
-                                                                        value={option.key.toString()}
-                                                                    >
-                                                                        {
-                                                                            option.value
-                                                                        }
-                                                                    </SelectItem>
-                                                                ),
-                                                            )}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-
-                                                <div className="grid gap-2">
-                                                    <FormLabel htmlFor="labels_data_variable">
-                                                        Etichette dati variabili
-                                                    </FormLabel>
-                                                    <Select
-                                                        name="labels_data_variable"
-                                                        value={
-                                                            labelsDataVariable
-                                                        }
-                                                        onValueChange={
-                                                            setLabelsDataVariable
-                                                        }
-                                                    >
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona etichetta dati variabili" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {actualLabelsDataVariableList.map(
-                                                                (option) => (
-                                                                    <SelectItem
-                                                                        key={
-                                                                            option.key
-                                                                        }
-                                                                        value={option.key.toString()}
-                                                                    >
-                                                                        {
-                                                                            option.value
-                                                                        }
-                                                                    </SelectItem>
-                                                                ),
-                                                            )}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-
-                                                <div className="grid gap-2">
-                                                    <FormLabel htmlFor="label_of_jumpers">
-                                                        Etichetta cavallotti
-                                                    </FormLabel>
-                                                    <Select
-                                                        name="label_of_jumpers"
-                                                        value={labelOfJumpers}
-                                                        onValueChange={
-                                                            setLabelOfJumpers
-                                                        }
-                                                    >
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona etichetta cavallotto" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {actualLabelOfJumpersList.map(
-                                                                (option) => (
-                                                                    <SelectItem
-                                                                        key={
-                                                                            option.key
-                                                                        }
-                                                                        value={option.key.toString()}
-                                                                    >
-                                                                        {
-                                                                            option.value
-                                                                        }
-                                                                    </SelectItem>
-                                                                ),
-                                                            )}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-
-                                        {/* Sezione Peso e Controllo */}
-                                        <Card>
-                                            <CardHeader>
-                                                <CardTitle className="text-lg">
-                                                    Peso e Controllo
-                                                </CardTitle>
-                                            </CardHeader>
-                                            <CardContent className="space-y-4">
-                                                <div className="grid gap-2">
-                                                    <FormLabel htmlFor="weight_kg">
-                                                        Peso collo
-                                                    </FormLabel>
-                                                    <div className="flex items-center gap-2">
-                                                        <Input
-                                                            id="weight_kg"
-                                                            name="weight_kg"
-                                                            type="number"
-                                                            step="0.001"
-                                                            value={weightKg}
-                                                            onChange={(e) =>
-                                                                setWeightKg(
-                                                                    e.target
-                                                                        .value,
-                                                                )
+                                                    ))}
+                                                {machineryRows
+                                                    .filter(
+                                                        (row) =>
+                                                            row.machineryUuid &&
+                                                            row.value,
+                                                    )
+                                                    .map((row, idx) => (
+                                                        <input
+                                                            key={`machinery-value-${idx}`}
+                                                            type="hidden"
+                                                            name={`machinery[${idx}][value]`}
+                                                            value={row.value}
+                                                        />
+                                                    ))}
+                                                {materialRows
+                                                    .filter(
+                                                        (row) =>
+                                                            row.materialUuid,
+                                                    )
+                                                    .map((row, idx) => (
+                                                        <input
+                                                            key={`material-${idx}`}
+                                                            type="hidden"
+                                                            name={`materials[${idx}]`}
+                                                            value={
+                                                                row.materialUuid
                                                             }
-                                                            placeholder="0.000"
-                                                            className="text-right"
                                                         />
-                                                        <span className="text-sm text-muted-foreground">
-                                                            kg
-                                                        </span>
-                                                    </div>
-                                                </div>
-
-                                                <div className="grid gap-2">
-                                                    <FormLabel htmlFor="nominal_weight_control">
-                                                        Controllo peso
-                                                    </FormLabel>
-                                                    <Select
-                                                        name="nominal_weight_control"
-                                                        value={
-                                                            nominalWeightControl
-                                                        }
-                                                        onValueChange={
-                                                            setNominalWeightControl
-                                                        }
-                                                    >
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona controllo peso" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {actualNominalWeightControlList.map(
-                                                                (option) => (
-                                                                    <SelectItem
-                                                                        key={
-                                                                            option.key
-                                                                        }
-                                                                        value={option.key.toString()}
-                                                                    >
-                                                                        {
-                                                                            option.value
-                                                                        }
-                                                                    </SelectItem>
-                                                                ),
-                                                            )}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-
-                                                <div className="grid gap-2">
-                                                    <FormLabel htmlFor="weight_unit_of_measur">
-                                                        Unità di misura
-                                                    </FormLabel>
-                                                    <Input
-                                                        id="weight_unit_of_measur"
-                                                        name="weight_unit_of_measur"
-                                                        value={
-                                                            weightUnitOfMeasur
-                                                        }
-                                                        onChange={(e) =>
-                                                            setWeightUnitOfMeasur(
-                                                                e.target.value,
-                                                            )
-                                                        }
-                                                        placeholder="Unità di misura"
-                                                    />
-                                                </div>
-
-                                                <div className="grid gap-2">
-                                                    <FormLabel htmlFor="weight_value">
-                                                        Valore
-                                                    </FormLabel>
-                                                    <Input
-                                                        id="weight_value"
-                                                        name="weight_value"
-                                                        type="number"
-                                                        step="0.001"
-                                                        value={weightValue}
-                                                        onChange={(e) =>
-                                                            setWeightValue(
-                                                                e.target.value,
-                                                            )
-                                                        }
-                                                        placeholder="0.000"
-                                                        className="text-right"
-                                                    />
-                                                </div>
-
-                                                <div className="grid gap-2">
-                                                    <FormLabel htmlFor="object_control_weight">
-                                                        Oggetto del controllo
-                                                    </FormLabel>
-                                                    <Select
-                                                        name="object_control_weight"
-                                                        value={
-                                                            objectControlWeight
-                                                        }
-                                                        onValueChange={
-                                                            setObjectControlWeight
-                                                        }
-                                                    >
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona oggetto del controllo" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {actualObjectControlWeightList.map(
-                                                                (option) => (
-                                                                    <SelectItem
-                                                                        key={
-                                                                            option.key
-                                                                        }
-                                                                        value={option.key.toString()}
-                                                                    >
-                                                                        {
-                                                                            option.value
-                                                                        }
-                                                                    </SelectItem>
-                                                                ),
-                                                            )}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-
-                                        {/* Sezione Campi Aggiuntivi */}
-                                        <Card>
-                                            <CardHeader>
-                                                <CardTitle className="text-lg">
-                                                    Altri Campi
-                                                </CardTitle>
-                                            </CardHeader>
-                                            <CardContent className="space-y-4">
-                                                <div className="flex items-center space-x-2">
-                                                    <Checkbox
-                                                        id="allergens"
-                                                        name="allergens"
-                                                        checked={allergens}
-                                                        onCheckedChange={(
-                                                            checked,
-                                                        ) =>
-                                                            setAllergens(
-                                                                checked ===
-                                                                    true,
-                                                            )
-                                                        }
-                                                    />
-                                                    <label
-                                                        htmlFor="allergens"
-                                                        className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                                    >
-                                                        Allergeni
-                                                    </label>
-                                                </div>
-
-                                                <div className="grid gap-2">
-                                                    <FormLabel htmlFor="pallet_sheet">
-                                                        Foglio pallet richiesto
-                                                        da cliente
-                                                    </FormLabel>
-                                                    <Select
-                                                        name="pallet_sheet"
-                                                        value={palletSheet}
-                                                        onValueChange={
-                                                            setPalletSheet
-                                                        }
-                                                    >
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona foglio pallet" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {actualPalletSheets.map(
-                                                                (sheet) => (
-                                                                    <SelectItem
-                                                                        key={
-                                                                            sheet.uuid
-                                                                        }
-                                                                        value={
-                                                                            sheet.uuid
-                                                                        }
-                                                                    >
-                                                                        {
-                                                                            sheet.code
-                                                                        }{' '}
-                                                                        -{' '}
-                                                                        {sheet.description ||
-                                                                            'Senza descrizione'}
-                                                                    </SelectItem>
-                                                                ),
-                                                            )}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-
+                                                    ))}
+                                                {criticalIssueRows
+                                                    .filter(
+                                                        (row) =>
+                                                            row.criticalIssueUuid,
+                                                    )
+                                                    .map((row, idx) => (
+                                                        <input
+                                                            key={`critical-${idx}`}
+                                                            type="hidden"
+                                                            name={`critical_issues[${idx}]`}
+                                                            value={
+                                                                row.criticalIssueUuid
+                                                            }
+                                                        />
+                                                    ))}
+                                                {packagingInstructionRows
+                                                    .filter(
+                                                        (row) =>
+                                                            row.instructionUuid,
+                                                    )
+                                                    .map((row, idx) => (
+                                                        <input
+                                                            key={`packaging-${idx}`}
+                                                            type="hidden"
+                                                            name={`packaging_instructions[${idx}]`}
+                                                            value={
+                                                                row.instructionUuid
+                                                            }
+                                                        />
+                                                    ))}
+                                                {operatingInstructionRows
+                                                    .filter(
+                                                        (row) =>
+                                                            row.instructionUuid,
+                                                    )
+                                                    .map((row, idx) => (
+                                                        <input
+                                                            key={`operating-${idx}`}
+                                                            type="hidden"
+                                                            name={`operating_instructions[${idx}]`}
+                                                            value={
+                                                                row.instructionUuid
+                                                            }
+                                                        />
+                                                    ))}
+                                                {palletizingInstructionRows
+                                                    .filter(
+                                                        (row) =>
+                                                            row.instructionUuid,
+                                                    )
+                                                    .map((row, idx) => (
+                                                        <input
+                                                            key={`palletizing-${idx}`}
+                                                            type="hidden"
+                                                            name={`palletizing_instructions[${idx}]`}
+                                                            value={
+                                                                row.instructionUuid
+                                                            }
+                                                        />
+                                                    ))}
+                                                {checkMaterialRows
+                                                    .filter(
+                                                        (row) =>
+                                                            row.materialUuid &&
+                                                            row.um &&
+                                                            row.quantityExpected &&
+                                                            row.quantityEffective,
+                                                    )
+                                                    .map((row, idx) => (
+                                                        <>
+                                                            <input
+                                                                key={`check-material-${idx}-uuid`}
+                                                                type="hidden"
+                                                                name={`check_materials[${idx}][material_uuid]`}
+                                                                value={
+                                                                    row.materialUuid
+                                                                }
+                                                            />
+                                                            <input
+                                                                key={`check-material-${idx}-um`}
+                                                                type="hidden"
+                                                                name={`check_materials[${idx}][um]`}
+                                                                value={row.um}
+                                                            />
+                                                            <input
+                                                                key={`check-material-${idx}-expected`}
+                                                                type="hidden"
+                                                                name={`check_materials[${idx}][quantity_expected]`}
+                                                                value={
+                                                                    row.quantityExpected
+                                                                }
+                                                            />
+                                                            <input
+                                                                key={`check-material-${idx}-effective`}
+                                                                type="hidden"
+                                                                name={`check_materials[${idx}][quantity_effective]`}
+                                                                value={
+                                                                    row.quantityEffective
+                                                                }
+                                                            />
+                                                        </>
+                                                    ))}
                                                 <div className="grid gap-2">
                                                     <FormLabel
-                                                        htmlFor="model_uuid"
+                                                        htmlFor="offer_uuid"
                                                         required
                                                     >
-                                                        Modello CQ
+                                                        Offerta
                                                     </FormLabel>
                                                     <Select
-                                                        name="model_uuid"
-                                                        value={modelUuid}
+                                                        name="offer_uuid"
+                                                        value={selectedOffer}
                                                         onValueChange={
-                                                            setModelUuid
+                                                            handleOfferChange
                                                         }
                                                         required
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona modello CQ" />
+                                                            <SelectValue placeholder="Seleziona un'offerta" />
                                                         </SelectTrigger>
                                                         <SelectContent>
-                                                            {actualCqModels.map(
-                                                                (model) => (
+                                                            {offers.map(
+                                                                (offer) => (
                                                                     <SelectItem
                                                                         key={
-                                                                            model.uuid
+                                                                            offer.uuid
                                                                         }
                                                                         value={
-                                                                            model.uuid
+                                                                            offer.uuid
                                                                         }
                                                                     >
                                                                         {
-                                                                            model.cod_model
+                                                                            offer.offer_number
                                                                         }{' '}
                                                                         -{' '}
-                                                                        {model.description_model ||
+                                                                        {offer.description ||
                                                                             'Senza descrizione'}
                                                                     </SelectItem>
                                                                 ),
@@ -2997,27 +1245,227 @@ export default function ArticlesCreate({
                                                     </Select>
                                                     <InputError
                                                         message={
-                                                            allErrors.model_uuid
+                                                            allErrors.offer_uuid
                                                         }
                                                     />
                                                 </div>
 
                                                 <div className="grid gap-2">
-                                                    <FormLabel htmlFor="customer_samples_list">
-                                                        Campioni cliente
+                                                    <FormLabel htmlFor="cod_article_las">
+                                                        Codice LAS
+                                                    </FormLabel>
+                                                    <Input
+                                                        id="cod_article_las"
+                                                        name="cod_article_las"
+                                                        value={codArticleLas}
+                                                        onChange={(e) =>
+                                                            setCodArticleLas(
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                        onBlur={
+                                                            codArticleLasValidation.onBlur
+                                                        }
+                                                        placeholder="Lascia vuoto per generazione automatica"
+                                                        maxLength={255}
+                                                        aria-invalid={
+                                                            codArticleLasValidation.error
+                                                                ? 'true'
+                                                                : 'false'
+                                                        }
+                                                        className={
+                                                            codArticleLasValidation.error
+                                                                ? 'border-destructive'
+                                                                : ''
+                                                        }
+                                                    />
+                                                    {codArticleLasValidation.error && (
+                                                        <p className="text-xs text-destructive">
+                                                            {
+                                                                codArticleLasValidation.error
+                                                            }
+                                                        </p>
+                                                    )}
+                                                    <InputError
+                                                        message={
+                                                            allErrors.cod_article_las
+                                                        }
+                                                    />
+                                                </div>
+
+                                                <div className="grid gap-2">
+                                                    <FormLabel
+                                                        htmlFor="article_descr"
+                                                        required
+                                                    >
+                                                        Descrizione
+                                                    </FormLabel>
+                                                    <Input
+                                                        id="article_descr"
+                                                        name="article_descr"
+                                                        value={articleDescr}
+                                                        onChange={(e) =>
+                                                            setArticleDescr(
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                        onBlur={
+                                                            articleDescrValidation.onBlur
+                                                        }
+                                                        required
+                                                        placeholder="Descrizione articolo"
+                                                        maxLength={255}
+                                                        aria-invalid={
+                                                            articleDescrValidation.error
+                                                                ? 'true'
+                                                                : 'false'
+                                                        }
+                                                        className={
+                                                            articleDescrValidation.error
+                                                                ? 'border-destructive'
+                                                                : ''
+                                                        }
+                                                    />
+                                                    {articleDescrValidation.error && (
+                                                        <p className="text-xs text-destructive">
+                                                            {
+                                                                articleDescrValidation.error
+                                                            }
+                                                        </p>
+                                                    )}
+                                                    <InputError
+                                                        message={
+                                                            allErrors.article_descr
+                                                        }
+                                                    />
+                                                </div>
+
+                                                <div className="grid gap-2">
+                                                    <FormLabel htmlFor="cod_article_client">
+                                                        Codice Cliente
+                                                    </FormLabel>
+                                                    <Input
+                                                        id="cod_article_client"
+                                                        name="cod_article_client"
+                                                        defaultValue={
+                                                            actualSourceArticle?.cod_article_client ||
+                                                            codArticleClientFromOffer ||
+                                                            props.codArticleClientFromOffer ||
+                                                            ''
+                                                        }
+                                                        placeholder="Codice articolo cliente"
+                                                    />
+                                                    <InputError
+                                                        message={
+                                                            allErrors.cod_article_client
+                                                        }
+                                                    />
+                                                </div>
+
+                                                <div className="grid gap-2">
+                                                    <FormLabel htmlFor="additional_descr">
+                                                        Descrizione Aggiuntiva
+                                                    </FormLabel>
+                                                    <Textarea
+                                                        id="additional_descr"
+                                                        name="additional_descr"
+                                                        defaultValue={
+                                                            actualSourceArticle?.additional_descr ||
+                                                            additionalDescrFromOffer ||
+                                                            props.additionalDescrFromOffer ||
+                                                            ''
+                                                        }
+                                                        placeholder="Descrizione aggiuntiva dell'articolo"
+                                                        rows={3}
+                                                    />
+                                                    <InputError
+                                                        message={
+                                                            allErrors.additional_descr
+                                                        }
+                                                    />
+                                                </div>
+
+                                                <div className="flex items-center space-x-2">
+                                                    <Checkbox
+                                                        id="visibility_cod"
+                                                        name="visibility_cod"
+                                                        checked={visibilityCod}
+                                                        onCheckedChange={(
+                                                            checked,
+                                                        ) =>
+                                                            setVisibilityCod(
+                                                                checked ===
+                                                                    true,
+                                                            )
+                                                        }
+                                                    />
+                                                    <label
+                                                        htmlFor="visibility_cod"
+                                                        className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                                    >
+                                                        Visibilità codice LAS su
+                                                        ordine
+                                                    </label>
+                                                </div>
+
+                                                <div className="flex items-center space-x-2">
+                                                    <Checkbox
+                                                        id="stock_managed"
+                                                        name="stock_managed"
+                                                        checked={stockManaged}
+                                                        onCheckedChange={(
+                                                            checked,
+                                                        ) =>
+                                                            setStockManaged(
+                                                                checked ===
+                                                                    true,
+                                                            )
+                                                        }
+                                                    />
+                                                    <label
+                                                        htmlFor="stock_managed"
+                                                        className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                                    >
+                                                        Articolo gestito a
+                                                        magazzino
+                                                    </label>
+                                                </div>
+
+                                                {actualUm && (
+                                                    <div className="grid gap-2">
+                                                        <FormLabel htmlFor="um">
+                                                            U.m.
+                                                        </FormLabel>
+                                                        <Input
+                                                            id="um"
+                                                            name="um"
+                                                            value={actualUm}
+                                                            readOnly
+                                                            className="bg-muted"
+                                                        />
+                                                    </div>
+                                                )}
+
+                                                <div className="grid gap-2">
+                                                    <FormLabel
+                                                        htmlFor="lot_attribution"
+                                                        required
+                                                    >
+                                                        Attribuzione lotto
                                                     </FormLabel>
                                                     <Select
-                                                        name="customer_samples_list"
-                                                        value={customerSamples}
+                                                        name="lot_attribution"
+                                                        value={lotAttribution}
                                                         onValueChange={
-                                                            setCustomerSamples
+                                                            setLotAttribution
                                                         }
+                                                        required
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona campione cliente" />
+                                                            <SelectValue placeholder="Seleziona attribuzione lotto" />
                                                         </SelectTrigger>
                                                         <SelectContent>
-                                                            {actualCustomerSamplesList.map(
+                                                            {actualLotAttributionList.map(
                                                                 (option) => (
                                                                     <SelectItem
                                                                         key={
@@ -3033,521 +1481,2293 @@ export default function ArticlesCreate({
                                                             )}
                                                         </SelectContent>
                                                     </Select>
+                                                    <InputError
+                                                        message={
+                                                            allErrors.lot_attribution
+                                                        }
+                                                    />
                                                 </div>
-                                            </CardContent>
-                                        </Card>
 
-                                        {/* Sezione Media Produttività */}
-                                        {actualMediaValues && (
-                                            <Card>
-                                                <CardHeader>
-                                                    <CardTitle className="text-lg">
-                                                        Media Produttività
-                                                    </CardTitle>
-                                                </CardHeader>
-                                                <CardContent className="space-y-4">
-                                                    <div className="grid grid-cols-2 gap-4">
+                                                <div className="grid gap-2">
+                                                    <FormLabel htmlFor="expiration_attribution">
+                                                        Attribuzione scadenza
+                                                    </FormLabel>
+                                                    <Select
+                                                        name="expiration_attribution"
+                                                        value={
+                                                            expirationAttribution
+                                                        }
+                                                        onValueChange={
+                                                            setExpirationAttribution
+                                                        }
+                                                    >
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Seleziona attribuzione scadenza" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {actualExpirationAttributionList.map(
+                                                                (option) => (
+                                                                    <SelectItem
+                                                                        key={
+                                                                            option.key
+                                                                        }
+                                                                        value={option.key.toString()}
+                                                                    >
+                                                                        {
+                                                                            option.value
+                                                                        }
+                                                                    </SelectItem>
+                                                                ),
+                                                            )}
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <InputError
+                                                        message={
+                                                            allErrors.expiration_attribution
+                                                        }
+                                                    />
+                                                </div>
+
+                                                <div className="grid gap-2">
+                                                    <FormLabel htmlFor="ean">
+                                                        EAN
+                                                    </FormLabel>
+                                                    <Input
+                                                        id="ean"
+                                                        name="ean"
+                                                        value={ean}
+                                                        onChange={(e) =>
+                                                            setEan(
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                        placeholder="EAN"
+                                                    />
+                                                    <InputError
+                                                        message={allErrors.ean}
+                                                    />
+                                                </div>
+
+                                                <div className="grid gap-2">
+                                                    <FormLabel htmlFor="db">
+                                                        DB
+                                                    </FormLabel>
+                                                    <Select
+                                                        name="db"
+                                                        value={db}
+                                                        onValueChange={setDb}
+                                                    >
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Seleziona DB" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {actualDbList.map(
+                                                                (option) => (
+                                                                    <SelectItem
+                                                                        key={
+                                                                            option.key
+                                                                        }
+                                                                        value={option.key.toString()}
+                                                                    >
+                                                                        {
+                                                                            option.value
+                                                                        }
+                                                                    </SelectItem>
+                                                                ),
+                                                            )}
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <InputError
+                                                        message={allErrors.db}
+                                                    />
+                                                </div>
+
+                                                <div className="grid gap-2">
+                                                    <FormLabel htmlFor="article_category">
+                                                        Categoria
+                                                    </FormLabel>
+                                                    <Select
+                                                        name="article_category"
+                                                        defaultValue={
+                                                            actualSourceArticle?.article_category ||
+                                                            undefined
+                                                        }
+                                                    >
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Seleziona una categoria" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {categories.map(
+                                                                (category) => (
+                                                                    <SelectItem
+                                                                        key={
+                                                                            category.uuid
+                                                                        }
+                                                                        value={
+                                                                            category.uuid
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            category.name
+                                                                        }
+                                                                    </SelectItem>
+                                                                ),
+                                                            )}
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <InputError
+                                                        message={
+                                                            allErrors.article_category
+                                                        }
+                                                    />
+                                                </div>
+
+                                                <div className="grid gap-2">
+                                                    <FormLabel htmlFor="pallet_uuid">
+                                                        Tipo di Pallet
+                                                    </FormLabel>
+                                                    <Select
+                                                        name="pallet_uuid"
+                                                        defaultValue={
+                                                            actualSourceArticle?.pallet_uuid ||
+                                                            undefined
+                                                        }
+                                                    >
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Seleziona un tipo di pallet" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {palletTypes.map(
+                                                                (pallet) => (
+                                                                    <SelectItem
+                                                                        key={
+                                                                            pallet.uuid
+                                                                        }
+                                                                        value={
+                                                                            pallet.uuid
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            pallet.cod
+                                                                        }{' '}
+                                                                        -{' '}
+                                                                        {pallet.description ||
+                                                                            'Senza descrizione'}
+                                                                    </SelectItem>
+                                                                ),
+                                                            )}
+                                                        </SelectContent>
+                                                    </Select>
+                                                    <InputError
+                                                        message={
+                                                            allErrors.pallet_uuid
+                                                        }
+                                                    />
+                                                </div>
+
+                                                <div className="grid gap-2">
+                                                    <FormLabel htmlFor="plan_packaging">
+                                                        Piano Imballaggio
+                                                    </FormLabel>
+                                                    <Input
+                                                        id="plan_packaging"
+                                                        name="plan_packaging"
+                                                        type="number"
+                                                        min="0"
+                                                        step="0.01"
+                                                        value={planPackaging}
+                                                        onChange={(e) =>
+                                                            setPlanPackaging(
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                        onBlur={
+                                                            planPackagingValidation.onBlur
+                                                        }
+                                                        placeholder="0"
+                                                        aria-invalid={
+                                                            planPackagingValidation.error
+                                                                ? 'true'
+                                                                : 'false'
+                                                        }
+                                                        className={
+                                                            planPackagingValidation.error
+                                                                ? 'border-destructive'
+                                                                : ''
+                                                        }
+                                                    />
+                                                    {planPackagingValidation.error && (
+                                                        <p className="text-xs text-destructive">
+                                                            {
+                                                                planPackagingValidation.error
+                                                            }
+                                                        </p>
+                                                    )}
+                                                    <p className="text-xs text-muted-foreground">
+                                                        Numero di pezzi per
+                                                        confezione.
+                                                    </p>
+                                                    <InputError
+                                                        message={
+                                                            allErrors.plan_packaging
+                                                        }
+                                                    />
+                                                </div>
+
+                                                <div className="grid gap-2">
+                                                    <FormLabel htmlFor="pallet_plans">
+                                                        Piani Pallet
+                                                    </FormLabel>
+                                                    <Input
+                                                        id="pallet_plans"
+                                                        name="pallet_plans"
+                                                        type="number"
+                                                        min="0"
+                                                        step="0.01"
+                                                        value={palletPlans}
+                                                        onChange={(e) =>
+                                                            setPalletPlans(
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                        onBlur={
+                                                            palletPlansValidation.onBlur
+                                                        }
+                                                        placeholder="0"
+                                                        aria-invalid={
+                                                            palletPlansValidation.error
+                                                                ? 'true'
+                                                                : 'false'
+                                                        }
+                                                        className={
+                                                            palletPlansValidation.error
+                                                                ? 'border-destructive'
+                                                                : ''
+                                                        }
+                                                    />
+                                                    {palletPlansValidation.error && (
+                                                        <p className="text-xs text-destructive">
+                                                            {
+                                                                palletPlansValidation.error
+                                                            }
+                                                        </p>
+                                                    )}
+                                                    <p className="text-xs text-muted-foreground">
+                                                        Numero di piani per
+                                                        pallet.
+                                                    </p>
+                                                    <InputError
+                                                        message={
+                                                            allErrors.pallet_plans
+                                                        }
+                                                    />
+                                                </div>
+
+                                                <div className="grid gap-2">
+                                                    <FormLabel htmlFor="line_layout_file">
+                                                        Allegato Layout Linea
+                                                    </FormLabel>
+                                                    <Input
+                                                        id="line_layout_file"
+                                                        name="line_layout_file"
+                                                        type="file"
+                                                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif"
+                                                        onChange={(event) => {
+                                                            const file =
+                                                                event.target
+                                                                    .files?.[0];
+                                                            setLineLayoutFileName(
+                                                                file
+                                                                    ? file.name
+                                                                    : null,
+                                                            );
+                                                        }}
+                                                    />
+                                                    {actualSourceArticle?.line_layout && (
+                                                        <p className="text-xs text-muted-foreground">
+                                                            Allegato attuale:{' '}
+                                                            {
+                                                                actualSourceArticle.line_layout
+                                                            }{' '}
+                                                            (verrà copiato se
+                                                            non selezioni un
+                                                            nuovo allegato)
+                                                        </p>
+                                                    )}
+                                                    {lineLayoutFileName && (
+                                                        <p className="text-xs text-muted-foreground">
+                                                            Nuovo allegato
+                                                            selezionato:{' '}
+                                                            <span className="font-mono">
+                                                                {
+                                                                    lineLayoutFileName
+                                                                }
+                                                            </span>
+                                                        </p>
+                                                    )}
+                                                    <InputError
+                                                        message={
+                                                            allErrors.line_layout_file
+                                                        }
+                                                    />
+                                                </div>
+
+                                                {/* Elenco macchinari e parametri */}
+                                                <Card>
+                                                    <CardHeader>
+                                                        <CardTitle className="text-lg">
+                                                            Elenco macchinari e
+                                                            parametri
+                                                        </CardTitle>
+                                                    </CardHeader>
+                                                    <CardContent className="space-y-4">
+                                                        <div className="space-y-3">
+                                                            {machineryRows.map(
+                                                                (row) => {
+                                                                    const selectedMachinery =
+                                                                        actualMachinery.find(
+                                                                            (
+                                                                                m,
+                                                                            ) =>
+                                                                                m.uuid ===
+                                                                                row.machineryUuid,
+                                                                        );
+                                                                    const valueType =
+                                                                        selectedMachinery?.valuetype ||
+                                                                        row.valueType ||
+                                                                        '';
+                                                                    const isListType =
+                                                                        valueType &&
+                                                                        valueType.includes(
+                                                                            ',',
+                                                                        ) &&
+                                                                        valueType !==
+                                                                            'testo' &&
+                                                                        valueType !==
+                                                                            'numero';
+                                                                    const listOptions =
+                                                                        isListType
+                                                                            ? valueType
+                                                                                  .split(
+                                                                                      ',',
+                                                                                  )
+                                                                                  .map(
+                                                                                      (
+                                                                                          v,
+                                                                                          i,
+                                                                                      ) => ({
+                                                                                          key: i,
+                                                                                          value: v.trim(),
+                                                                                      }),
+                                                                                  )
+                                                                            : [];
+
+                                                                    return (
+                                                                        <div
+                                                                            key={
+                                                                                row.id
+                                                                            }
+                                                                            className="grid grid-cols-12 items-end gap-2"
+                                                                        >
+                                                                            <div className="col-span-7">
+                                                                                <Select
+                                                                                    value={
+                                                                                        row.machineryUuid
+                                                                                    }
+                                                                                    onValueChange={(
+                                                                                        value,
+                                                                                    ) =>
+                                                                                        handleMachineryChange(
+                                                                                            row.id,
+                                                                                            value,
+                                                                                        )
+                                                                                    }
+                                                                                >
+                                                                                    <SelectTrigger>
+                                                                                        <SelectValue placeholder="Seleziona macchinario..." />
+                                                                                    </SelectTrigger>
+                                                                                    <SelectContent>
+                                                                                        {actualMachinery.map(
+                                                                                            (
+                                                                                                machinery,
+                                                                                            ) => (
+                                                                                                <SelectItem
+                                                                                                    key={
+                                                                                                        machinery.uuid
+                                                                                                    }
+                                                                                                    value={
+                                                                                                        machinery.uuid
+                                                                                                    }
+                                                                                                >
+                                                                                                    {
+                                                                                                        machinery.cod
+                                                                                                    }{' '}
+                                                                                                    -{' '}
+                                                                                                    {machinery.description ||
+                                                                                                        ''}{' '}
+                                                                                                    {machinery.parameter
+                                                                                                        ? `- ${machinery.parameter}`
+                                                                                                        : ''}
+                                                                                                </SelectItem>
+                                                                                            ),
+                                                                                        )}
+                                                                                    </SelectContent>
+                                                                                </Select>
+                                                                            </div>
+                                                                            <div className="col-span-4">
+                                                                                {!row.machineryUuid ? (
+                                                                                    <Input
+                                                                                        readOnly
+                                                                                        placeholder="Valore"
+                                                                                        className="bg-muted"
+                                                                                    />
+                                                                                ) : valueType ===
+                                                                                  'testo' ? (
+                                                                                    <Input
+                                                                                        value={
+                                                                                            row.value
+                                                                                        }
+                                                                                        onChange={(
+                                                                                            e,
+                                                                                        ) =>
+                                                                                            updateMachineryRow(
+                                                                                                row.id,
+                                                                                                'value',
+                                                                                                e
+                                                                                                    .target
+                                                                                                    .value,
+                                                                                            )
+                                                                                        }
+                                                                                        placeholder="Valore"
+                                                                                    />
+                                                                                ) : valueType ===
+                                                                                  'numero' ? (
+                                                                                    <Input
+                                                                                        type="number"
+                                                                                        step="0.01"
+                                                                                        value={
+                                                                                            row.value
+                                                                                        }
+                                                                                        onChange={(
+                                                                                            e,
+                                                                                        ) =>
+                                                                                            updateMachineryRow(
+                                                                                                row.id,
+                                                                                                'value',
+                                                                                                e
+                                                                                                    .target
+                                                                                                    .value,
+                                                                                            )
+                                                                                        }
+                                                                                        placeholder="Valore"
+                                                                                    />
+                                                                                ) : isListType ? (
+                                                                                    <Select
+                                                                                        value={
+                                                                                            row.value
+                                                                                        }
+                                                                                        onValueChange={(
+                                                                                            value,
+                                                                                        ) =>
+                                                                                            updateMachineryRow(
+                                                                                                row.id,
+                                                                                                'value',
+                                                                                                value,
+                                                                                            )
+                                                                                        }
+                                                                                    >
+                                                                                        <SelectTrigger>
+                                                                                            <SelectValue placeholder="Seleziona un valore" />
+                                                                                        </SelectTrigger>
+                                                                                        <SelectContent>
+                                                                                            {listOptions.map(
+                                                                                                (
+                                                                                                    option,
+                                                                                                ) => (
+                                                                                                    <SelectItem
+                                                                                                        key={
+                                                                                                            option.key
+                                                                                                        }
+                                                                                                        value={option.key.toString()}
+                                                                                                    >
+                                                                                                        {
+                                                                                                            option.value
+                                                                                                        }
+                                                                                                    </SelectItem>
+                                                                                                ),
+                                                                                            )}
+                                                                                        </SelectContent>
+                                                                                    </Select>
+                                                                                ) : (
+                                                                                    <Input
+                                                                                        readOnly
+                                                                                        placeholder="Valore"
+                                                                                        className="bg-muted"
+                                                                                    />
+                                                                                )}
+                                                                            </div>
+                                                                            <div className="col-span-1">
+                                                                                <Button
+                                                                                    type="button"
+                                                                                    variant="destructive"
+                                                                                    size="sm"
+                                                                                    onClick={() =>
+                                                                                        removeMachineryRow(
+                                                                                            row.id,
+                                                                                        )
+                                                                                    }
+                                                                                >
+                                                                                    <X className="h-4 w-4" />
+                                                                                </Button>
+                                                                            </div>
+                                                                        </div>
+                                                                    );
+                                                                },
+                                                            )}
+                                                        </div>
+                                                        <Button
+                                                            type="button"
+                                                            variant="outline"
+                                                            onClick={
+                                                                addMachineryRow
+                                                            }
+                                                        >
+                                                            <Plus className="mr-2 h-4 w-4" />
+                                                            Aggiungi macchinario
+                                                        </Button>
+                                                    </CardContent>
+                                                </Card>
+
+                                                {/* Istruzioni di confezionamento */}
+                                                <Card>
+                                                    <CardHeader>
+                                                        <CardTitle className="text-lg">
+                                                            Istruzioni di
+                                                            confezionamento
+                                                        </CardTitle>
+                                                    </CardHeader>
+                                                    <CardContent className="space-y-4">
+                                                        <div className="space-y-3">
+                                                            {packagingInstructionRows.map(
+                                                                (row) => (
+                                                                    <div
+                                                                        key={
+                                                                            row.id
+                                                                        }
+                                                                        className="grid grid-cols-12 items-end gap-2"
+                                                                    >
+                                                                        <div className="col-span-11">
+                                                                            <Select
+                                                                                value={
+                                                                                    row.instructionUuid
+                                                                                }
+                                                                                onValueChange={(
+                                                                                    value,
+                                                                                ) =>
+                                                                                    updatePackagingInstructionRow(
+                                                                                        row.id,
+                                                                                        value,
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <SelectTrigger>
+                                                                                    <SelectValue placeholder="Seleziona istruzioni di confezionamento..." />
+                                                                                </SelectTrigger>
+                                                                                <SelectContent>
+                                                                                    {actualPackagingInstructions.map(
+                                                                                        (
+                                                                                            instruction,
+                                                                                        ) => (
+                                                                                            <SelectItem
+                                                                                                key={
+                                                                                                    instruction.uuid
+                                                                                                }
+                                                                                                value={
+                                                                                                    instruction.uuid
+                                                                                                }
+                                                                                            >
+                                                                                                {
+                                                                                                    instruction.code
+                                                                                                }{' '}
+                                                                                                {instruction.number
+                                                                                                    ? `- ${instruction.number}`
+                                                                                                    : ''}
+                                                                                            </SelectItem>
+                                                                                        ),
+                                                                                    )}
+                                                                                </SelectContent>
+                                                                            </Select>
+                                                                        </div>
+                                                                        <div className="col-span-1">
+                                                                            <Button
+                                                                                type="button"
+                                                                                variant="destructive"
+                                                                                size="sm"
+                                                                                onClick={() =>
+                                                                                    removePackagingInstructionRow(
+                                                                                        row.id,
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <X className="h-4 w-4" />
+                                                                            </Button>
+                                                                        </div>
+                                                                    </div>
+                                                                ),
+                                                            )}
+                                                        </div>
+                                                        <Button
+                                                            type="button"
+                                                            variant="outline"
+                                                            onClick={
+                                                                addPackagingInstructionRow
+                                                            }
+                                                        >
+                                                            <Plus className="mr-2 h-4 w-4" />
+                                                            Aggiungi istruzioni
+                                                            di confezionamento
+                                                        </Button>
+                                                    </CardContent>
+                                                </Card>
+
+                                                {/* Istruzioni di pallettizzazione */}
+                                                <Card>
+                                                    <CardHeader>
+                                                        <CardTitle className="text-lg">
+                                                            Istruzioni di
+                                                            pallettizzazione
+                                                        </CardTitle>
+                                                    </CardHeader>
+                                                    <CardContent className="space-y-4">
+                                                        <div className="space-y-3">
+                                                            {palletizingInstructionRows.map(
+                                                                (row) => (
+                                                                    <div
+                                                                        key={
+                                                                            row.id
+                                                                        }
+                                                                        className="grid grid-cols-12 items-end gap-2"
+                                                                    >
+                                                                        <div className="col-span-11">
+                                                                            <Select
+                                                                                value={
+                                                                                    row.instructionUuid
+                                                                                }
+                                                                                onValueChange={(
+                                                                                    value,
+                                                                                ) =>
+                                                                                    updatePalletizingInstructionRow(
+                                                                                        row.id,
+                                                                                        value,
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <SelectTrigger>
+                                                                                    <SelectValue placeholder="Seleziona istruzioni di pallettizzazione..." />
+                                                                                </SelectTrigger>
+                                                                                <SelectContent>
+                                                                                    {actualPalletizingInstructions.map(
+                                                                                        (
+                                                                                            instruction,
+                                                                                        ) => (
+                                                                                            <SelectItem
+                                                                                                key={
+                                                                                                    instruction.uuid
+                                                                                                }
+                                                                                                value={
+                                                                                                    instruction.uuid
+                                                                                                }
+                                                                                            >
+                                                                                                {
+                                                                                                    instruction.code
+                                                                                                }{' '}
+                                                                                                {instruction.number
+                                                                                                    ? `- ${instruction.number}`
+                                                                                                    : ''}
+                                                                                            </SelectItem>
+                                                                                        ),
+                                                                                    )}
+                                                                                </SelectContent>
+                                                                            </Select>
+                                                                        </div>
+                                                                        <div className="col-span-1">
+                                                                            <Button
+                                                                                type="button"
+                                                                                variant="destructive"
+                                                                                size="sm"
+                                                                                onClick={() =>
+                                                                                    removePalletizingInstructionRow(
+                                                                                        row.id,
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <X className="h-4 w-4" />
+                                                                            </Button>
+                                                                        </div>
+                                                                    </div>
+                                                                ),
+                                                            )}
+                                                        </div>
+                                                        <Button
+                                                            type="button"
+                                                            variant="outline"
+                                                            onClick={
+                                                                addPalletizingInstructionRow
+                                                            }
+                                                        >
+                                                            <Plus className="mr-2 h-4 w-4" />
+                                                            Aggiungi istruzioni
+                                                            di pallettizzazione
+                                                        </Button>
+                                                    </CardContent>
+                                                </Card>
+
+                                                {/* Istruzioni operative */}
+                                                <Card>
+                                                    <CardHeader>
+                                                        <CardTitle className="text-lg">
+                                                            Istruzioni operative
+                                                        </CardTitle>
+                                                    </CardHeader>
+                                                    <CardContent className="space-y-4">
+                                                        <div className="space-y-3">
+                                                            {operatingInstructionRows.map(
+                                                                (row) => (
+                                                                    <div
+                                                                        key={
+                                                                            row.id
+                                                                        }
+                                                                        className="grid grid-cols-12 items-end gap-2"
+                                                                    >
+                                                                        <div className="col-span-11">
+                                                                            <Select
+                                                                                value={
+                                                                                    row.instructionUuid
+                                                                                }
+                                                                                onValueChange={(
+                                                                                    value,
+                                                                                ) =>
+                                                                                    updateOperatingInstructionRow(
+                                                                                        row.id,
+                                                                                        value,
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <SelectTrigger>
+                                                                                    <SelectValue placeholder="Seleziona istruzioni operative..." />
+                                                                                </SelectTrigger>
+                                                                                <SelectContent>
+                                                                                    {actualOperatingInstructions.map(
+                                                                                        (
+                                                                                            instruction,
+                                                                                        ) => (
+                                                                                            <SelectItem
+                                                                                                key={
+                                                                                                    instruction.uuid
+                                                                                                }
+                                                                                                value={
+                                                                                                    instruction.uuid
+                                                                                                }
+                                                                                            >
+                                                                                                {
+                                                                                                    instruction.code
+                                                                                                }{' '}
+                                                                                                {instruction.number
+                                                                                                    ? `- ${instruction.number}`
+                                                                                                    : ''}
+                                                                                            </SelectItem>
+                                                                                        ),
+                                                                                    )}
+                                                                                </SelectContent>
+                                                                            </Select>
+                                                                        </div>
+                                                                        <div className="col-span-1">
+                                                                            <Button
+                                                                                type="button"
+                                                                                variant="destructive"
+                                                                                size="sm"
+                                                                                onClick={() =>
+                                                                                    removeOperatingInstructionRow(
+                                                                                        row.id,
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <X className="h-4 w-4" />
+                                                                            </Button>
+                                                                        </div>
+                                                                    </div>
+                                                                ),
+                                                            )}
+                                                        </div>
+                                                        <Button
+                                                            type="button"
+                                                            variant="outline"
+                                                            onClick={
+                                                                addOperatingInstructionRow
+                                                            }
+                                                        >
+                                                            <Plus className="mr-2 h-4 w-4" />
+                                                            Aggiungi istruzioni
+                                                            operative
+                                                        </Button>
+                                                    </CardContent>
+                                                </Card>
+
+                                                {/* Materiali di consumo non a DB */}
+                                                <Card>
+                                                    <CardHeader>
+                                                        <CardTitle className="text-lg">
+                                                            Materiali di consumo
+                                                            non a DB
+                                                        </CardTitle>
+                                                    </CardHeader>
+                                                    <CardContent className="space-y-4">
+                                                        <div className="space-y-3">
+                                                            {materialRows.map(
+                                                                (row) => (
+                                                                    <div
+                                                                        key={
+                                                                            row.id
+                                                                        }
+                                                                        className="grid grid-cols-12 items-end gap-2"
+                                                                    >
+                                                                        <div className="col-span-11">
+                                                                            <Select
+                                                                                value={
+                                                                                    row.materialUuid
+                                                                                }
+                                                                                onValueChange={(
+                                                                                    value,
+                                                                                ) =>
+                                                                                    updateMaterialRow(
+                                                                                        row.id,
+                                                                                        value,
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <SelectTrigger>
+                                                                                    <SelectValue placeholder="Seleziona materiali di consumo non a DB..." />
+                                                                                </SelectTrigger>
+                                                                                <SelectContent>
+                                                                                    {actualMaterials.map(
+                                                                                        (
+                                                                                            material,
+                                                                                        ) => (
+                                                                                            <SelectItem
+                                                                                                key={
+                                                                                                    material.uuid
+                                                                                                }
+                                                                                                value={
+                                                                                                    material.uuid
+                                                                                                }
+                                                                                            >
+                                                                                                {
+                                                                                                    material.cod
+                                                                                                }{' '}
+                                                                                                -{' '}
+                                                                                                {material.description ||
+                                                                                                    'Senza descrizione'}
+                                                                                            </SelectItem>
+                                                                                        ),
+                                                                                    )}
+                                                                                </SelectContent>
+                                                                            </Select>
+                                                                        </div>
+                                                                        <div className="col-span-1">
+                                                                            <Button
+                                                                                type="button"
+                                                                                variant="destructive"
+                                                                                size="sm"
+                                                                                onClick={() =>
+                                                                                    removeMaterialRow(
+                                                                                        row.id,
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <X className="h-4 w-4" />
+                                                                            </Button>
+                                                                        </div>
+                                                                    </div>
+                                                                ),
+                                                            )}
+                                                        </div>
+                                                        <Button
+                                                            type="button"
+                                                            variant="outline"
+                                                            onClick={
+                                                                addMaterialRow
+                                                            }
+                                                        >
+                                                            <Plus className="mr-2 h-4 w-4" />
+                                                            Aggiungi materiali
+                                                        </Button>
+                                                    </CardContent>
+                                                </Card>
+
+                                                {/* Criticità */}
+                                                <Card>
+                                                    <CardHeader>
+                                                        <CardTitle className="text-lg">
+                                                            Criticità
+                                                        </CardTitle>
+                                                    </CardHeader>
+                                                    <CardContent className="space-y-4">
+                                                        <div className="space-y-3">
+                                                            {criticalIssueRows.map(
+                                                                (row) => (
+                                                                    <div
+                                                                        key={
+                                                                            row.id
+                                                                        }
+                                                                        className="grid grid-cols-12 items-end gap-2"
+                                                                    >
+                                                                        <div className="col-span-11">
+                                                                            <Select
+                                                                                value={
+                                                                                    row.criticalIssueUuid
+                                                                                }
+                                                                                onValueChange={(
+                                                                                    value,
+                                                                                ) =>
+                                                                                    updateCriticalIssueRow(
+                                                                                        row.id,
+                                                                                        value,
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <SelectTrigger>
+                                                                                    <SelectValue placeholder="Seleziona criticità..." />
+                                                                                </SelectTrigger>
+                                                                                <SelectContent>
+                                                                                    {actualCriticalIssues.map(
+                                                                                        (
+                                                                                            critical,
+                                                                                        ) => (
+                                                                                            <SelectItem
+                                                                                                key={
+                                                                                                    critical.uuid
+                                                                                                }
+                                                                                                value={
+                                                                                                    critical.uuid
+                                                                                                }
+                                                                                            >
+                                                                                                {
+                                                                                                    critical.name
+                                                                                                }
+                                                                                            </SelectItem>
+                                                                                        ),
+                                                                                    )}
+                                                                                </SelectContent>
+                                                                            </Select>
+                                                                        </div>
+                                                                        <div className="col-span-1">
+                                                                            <Button
+                                                                                type="button"
+                                                                                variant="destructive"
+                                                                                size="sm"
+                                                                                onClick={() =>
+                                                                                    removeCriticalIssueRow(
+                                                                                        row.id,
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <X className="h-4 w-4" />
+                                                                            </Button>
+                                                                        </div>
+                                                                    </div>
+                                                                ),
+                                                            )}
+                                                        </div>
+                                                        <Button
+                                                            type="button"
+                                                            variant="outline"
+                                                            onClick={
+                                                                addCriticalIssueRow
+                                                            }
+                                                        >
+                                                            <Plus className="mr-2 h-4 w-4" />
+                                                            Aggiungi criticità
+                                                        </Button>
+                                                    </CardContent>
+                                                </Card>
+
+                                                {/* Verifica consumi materiali o prodotti */}
+                                                <Card>
+                                                    <CardHeader>
+                                                        <CardTitle className="text-lg">
+                                                            Verifica consumi
+                                                            materiali o prodotti
+                                                        </CardTitle>
+                                                    </CardHeader>
+                                                    <CardContent className="space-y-4">
+                                                        <div className="space-y-3">
+                                                            {checkMaterialRows.map(
+                                                                (row) => (
+                                                                    <div
+                                                                        key={
+                                                                            row.id
+                                                                        }
+                                                                        className="grid grid-cols-12 items-end gap-2"
+                                                                    >
+                                                                        <div className="col-span-5">
+                                                                            <Select
+                                                                                value={
+                                                                                    row.materialUuid
+                                                                                }
+                                                                                onValueChange={(
+                                                                                    value,
+                                                                                ) =>
+                                                                                    updateCheckMaterialRow(
+                                                                                        row.id,
+                                                                                        'materialUuid',
+                                                                                        value,
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <SelectTrigger>
+                                                                                    <SelectValue placeholder="Materiale..." />
+                                                                                </SelectTrigger>
+                                                                                <SelectContent>
+                                                                                    {actualMaterials.map(
+                                                                                        (
+                                                                                            material,
+                                                                                        ) => (
+                                                                                            <SelectItem
+                                                                                                key={
+                                                                                                    material.uuid
+                                                                                                }
+                                                                                                value={
+                                                                                                    material.uuid
+                                                                                                }
+                                                                                            >
+                                                                                                {
+                                                                                                    material.cod
+                                                                                                }{' '}
+                                                                                                -{' '}
+                                                                                                {material.description ||
+                                                                                                    'Senza descrizione'}
+                                                                                            </SelectItem>
+                                                                                        ),
+                                                                                    )}
+                                                                                </SelectContent>
+                                                                            </Select>
+                                                                        </div>
+                                                                        <div className="col-span-2">
+                                                                            <Input
+                                                                                value={
+                                                                                    row.um
+                                                                                }
+                                                                                onChange={(
+                                                                                    e,
+                                                                                ) =>
+                                                                                    updateCheckMaterialRow(
+                                                                                        row.id,
+                                                                                        'um',
+                                                                                        e
+                                                                                            .target
+                                                                                            .value,
+                                                                                    )
+                                                                                }
+                                                                                placeholder="U.M."
+                                                                            />
+                                                                        </div>
+                                                                        <div className="col-span-2">
+                                                                            <Input
+                                                                                type="number"
+                                                                                step="0.01"
+                                                                                value={
+                                                                                    row.quantityExpected
+                                                                                }
+                                                                                onChange={(
+                                                                                    e,
+                                                                                ) =>
+                                                                                    updateCheckMaterialRow(
+                                                                                        row.id,
+                                                                                        'quantityExpected',
+                                                                                        e
+                                                                                            .target
+                                                                                            .value,
+                                                                                    )
+                                                                                }
+                                                                                placeholder="q.tà prev"
+                                                                            />
+                                                                        </div>
+                                                                        <div className="col-span-2">
+                                                                            <Input
+                                                                                type="number"
+                                                                                step="0.01"
+                                                                                value={
+                                                                                    row.quantityEffective
+                                                                                }
+                                                                                onChange={(
+                                                                                    e,
+                                                                                ) =>
+                                                                                    updateCheckMaterialRow(
+                                                                                        row.id,
+                                                                                        'quantityEffective',
+                                                                                        e
+                                                                                            .target
+                                                                                            .value,
+                                                                                    )
+                                                                                }
+                                                                                placeholder="q.tà effett"
+                                                                            />
+                                                                        </div>
+                                                                        <div className="col-span-1">
+                                                                            <Button
+                                                                                type="button"
+                                                                                variant="destructive"
+                                                                                size="sm"
+                                                                                onClick={() =>
+                                                                                    removeCheckMaterialRow(
+                                                                                        row.id,
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                <X className="h-4 w-4" />
+                                                                            </Button>
+                                                                        </div>
+                                                                    </div>
+                                                                ),
+                                                            )}
+                                                        </div>
+                                                        <Button
+                                                            type="button"
+                                                            variant="outline"
+                                                            onClick={
+                                                                addCheckMaterialRow
+                                                            }
+                                                        >
+                                                            <Plus className="mr-2 h-4 w-4" />
+                                                            Aggiungi verifica
+                                                        </Button>
+                                                    </CardContent>
+                                                </Card>
+
+                                                {/* Sezione Etichette */}
+                                                <Card>
+                                                    <CardHeader>
+                                                        <CardTitle className="text-lg">
+                                                            Etichette
+                                                        </CardTitle>
+                                                    </CardHeader>
+                                                    <CardContent className="space-y-4">
                                                         <div className="grid gap-2">
-                                                            <FormLabel htmlFor="media_prevista_cfz_h_pz">
-                                                                Media prevista
-                                                                cfz/h/pz
+                                                            <FormLabel htmlFor="labels_external">
+                                                                Etichette
+                                                                esterne
                                                             </FormLabel>
-                                                            <div className="flex items-center gap-2">
-                                                                <Input
-                                                                    id="media_prevista_cfz_h_pz"
-                                                                    name="media_prevista_cfz_h_pz"
-                                                                    value={actualMediaValues.media_prevista_cfz_h_pz.toFixed(
-                                                                        5,
+                                                            <Select
+                                                                name="labels_external"
+                                                                value={
+                                                                    labelsExternal
+                                                                }
+                                                                onValueChange={
+                                                                    setLabelsExternal
+                                                                }
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Seleziona etichette esterne" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {actualLabelsExternalList.map(
+                                                                        (
+                                                                            option,
+                                                                        ) => (
+                                                                            <SelectItem
+                                                                                key={
+                                                                                    option.key
+                                                                                }
+                                                                                value={option.key.toString()}
+                                                                            >
+                                                                                {
+                                                                                    option.value
+                                                                                }
+                                                                            </SelectItem>
+                                                                        ),
                                                                     )}
-                                                                    readOnly
-                                                                    className="bg-muted text-right"
-                                                                />
-                                                                <span className="text-sm text-muted-foreground">
-                                                                    cfz/h/pz
-                                                                </span>
-                                                            </div>
+                                                                </SelectContent>
+                                                            </Select>
                                                         </div>
 
                                                         <div className="grid gap-2">
-                                                            <FormLabel htmlFor="media_reale_cfz_h_pz">
-                                                                Media reale
-                                                                cfz/h/pz
+                                                            <FormLabel htmlFor="labels_pvp">
+                                                                Etichette pvp
+                                                            </FormLabel>
+                                                            <Select
+                                                                name="labels_pvp"
+                                                                value={
+                                                                    labelsPvp
+                                                                }
+                                                                onValueChange={
+                                                                    setLabelsPvp
+                                                                }
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Seleziona etichetta pvp" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {actualLabelsPvpList.map(
+                                                                        (
+                                                                            option,
+                                                                        ) => (
+                                                                            <SelectItem
+                                                                                key={
+                                                                                    option.key
+                                                                                }
+                                                                                value={option.key.toString()}
+                                                                            >
+                                                                                {
+                                                                                    option.value
+                                                                                }
+                                                                            </SelectItem>
+                                                                        ),
+                                                                    )}
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </div>
+
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="value_pvp">
+                                                                Valore pvp
                                                             </FormLabel>
                                                             <div className="flex items-center gap-2">
                                                                 <Input
-                                                                    id="media_reale_cfz_h_pz"
-                                                                    name="media_reale_cfz_h_pz"
+                                                                    id="value_pvp"
+                                                                    name="value_pvp"
                                                                     type="number"
-                                                                    step="0.00001"
+                                                                    step="0.01"
                                                                     value={
-                                                                        mediaRealeCfzHPz
+                                                                        valuePvp
                                                                     }
                                                                     onChange={(
                                                                         e,
                                                                     ) =>
-                                                                        setMediaRealeCfzHPz(
+                                                                        setValuePvp(
                                                                             e
                                                                                 .target
                                                                                 .value,
                                                                         )
                                                                     }
-                                                                    placeholder="0.00000"
+                                                                    placeholder="0.00"
                                                                     className="text-right"
                                                                 />
                                                                 <span className="text-sm text-muted-foreground">
-                                                                    cfz/h/pz
+                                                                    pvp
                                                                 </span>
                                                             </div>
                                                         </div>
 
                                                         <div className="grid gap-2">
-                                                            <FormLabel htmlFor="media_prevista_pz_h_ps">
-                                                                Media prevista
-                                                                pz/h/ps
+                                                            <FormLabel htmlFor="labels_ingredient">
+                                                                Etichette
+                                                                ingredienti
                                                             </FormLabel>
-                                                            <div className="flex items-center gap-2">
-                                                                <Input
-                                                                    id="media_prevista_pz_h_ps"
-                                                                    name="media_prevista_pz_h_ps"
-                                                                    value={actualMediaValues.media_prevista_pz_h_ps.toFixed(
-                                                                        5,
+                                                            <Select
+                                                                name="labels_ingredient"
+                                                                value={
+                                                                    labelsIngredient
+                                                                }
+                                                                onValueChange={
+                                                                    setLabelsIngredient
+                                                                }
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Seleziona etichetta ingrediente" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {actualLabelsIngredientList.map(
+                                                                        (
+                                                                            option,
+                                                                        ) => (
+                                                                            <SelectItem
+                                                                                key={
+                                                                                    option.key
+                                                                                }
+                                                                                value={option.key.toString()}
+                                                                            >
+                                                                                {
+                                                                                    option.value
+                                                                                }
+                                                                            </SelectItem>
+                                                                        ),
                                                                     )}
-                                                                    readOnly
-                                                                    className="bg-muted text-right"
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </div>
+
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="labels_data_variable">
+                                                                Etichette dati
+                                                                variabili
+                                                            </FormLabel>
+                                                            <Select
+                                                                name="labels_data_variable"
+                                                                value={
+                                                                    labelsDataVariable
+                                                                }
+                                                                onValueChange={
+                                                                    setLabelsDataVariable
+                                                                }
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Seleziona etichetta dati variabili" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {actualLabelsDataVariableList.map(
+                                                                        (
+                                                                            option,
+                                                                        ) => (
+                                                                            <SelectItem
+                                                                                key={
+                                                                                    option.key
+                                                                                }
+                                                                                value={option.key.toString()}
+                                                                            >
+                                                                                {
+                                                                                    option.value
+                                                                                }
+                                                                            </SelectItem>
+                                                                        ),
+                                                                    )}
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </div>
+
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="label_of_jumpers">
+                                                                Etichetta
+                                                                cavallotti
+                                                            </FormLabel>
+                                                            <Select
+                                                                name="label_of_jumpers"
+                                                                value={
+                                                                    labelOfJumpers
+                                                                }
+                                                                onValueChange={
+                                                                    setLabelOfJumpers
+                                                                }
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Seleziona etichetta cavallotto" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {actualLabelOfJumpersList.map(
+                                                                        (
+                                                                            option,
+                                                                        ) => (
+                                                                            <SelectItem
+                                                                                key={
+                                                                                    option.key
+                                                                                }
+                                                                                value={option.key.toString()}
+                                                                            >
+                                                                                {
+                                                                                    option.value
+                                                                                }
+                                                                            </SelectItem>
+                                                                        ),
+                                                                    )}
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </div>
+                                                    </CardContent>
+                                                </Card>
+
+                                                {/* Sezione Peso e Controllo */}
+                                                <Card>
+                                                    <CardHeader>
+                                                        <CardTitle className="text-lg">
+                                                            Peso e Controllo
+                                                        </CardTitle>
+                                                    </CardHeader>
+                                                    <CardContent className="space-y-4">
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="weight_kg">
+                                                                Peso collo
+                                                            </FormLabel>
+                                                            <div className="flex items-center gap-2">
+                                                                <Input
+                                                                    id="weight_kg"
+                                                                    name="weight_kg"
+                                                                    type="number"
+                                                                    step="0.001"
+                                                                    value={
+                                                                        weightKg
+                                                                    }
+                                                                    onChange={(
+                                                                        e,
+                                                                    ) =>
+                                                                        setWeightKg(
+                                                                            e
+                                                                                .target
+                                                                                .value,
+                                                                        )
+                                                                    }
+                                                                    placeholder="0.000"
+                                                                    className="text-right"
                                                                 />
                                                                 <span className="text-sm text-muted-foreground">
-                                                                    pz/h/ps
+                                                                    kg
                                                                 </span>
                                                             </div>
                                                         </div>
 
                                                         <div className="grid gap-2">
-                                                            <FormLabel htmlFor="media_reale_pz_h_ps">
-                                                                Media reale
-                                                                pz/h/ps
+                                                            <FormLabel htmlFor="nominal_weight_control">
+                                                                Controllo peso
                                                             </FormLabel>
-                                                            <div className="flex items-center gap-2">
-                                                                <Input
-                                                                    id="media_reale_pz_h_ps"
-                                                                    name="media_reale_pz_h_ps"
-                                                                    value={
-                                                                        mediaRealeCfzHPz &&
-                                                                        actualPiecesPerPackage
-                                                                            ? (
-                                                                                  parseFloat(
-                                                                                      mediaRealeCfzHPz,
-                                                                                  ) *
-                                                                                  actualPiecesPerPackage
-                                                                              ).toFixed(
-                                                                                  5,
-                                                                              )
-                                                                            : '0.00000'
+                                                            <Select
+                                                                name="nominal_weight_control"
+                                                                value={
+                                                                    nominalWeightControl
+                                                                }
+                                                                onValueChange={
+                                                                    setNominalWeightControl
+                                                                }
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Seleziona controllo peso" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {actualNominalWeightControlList.map(
+                                                                        (
+                                                                            option,
+                                                                        ) => (
+                                                                            <SelectItem
+                                                                                key={
+                                                                                    option.key
+                                                                                }
+                                                                                value={option.key.toString()}
+                                                                            >
+                                                                                {
+                                                                                    option.value
+                                                                                }
+                                                                            </SelectItem>
+                                                                        ),
+                                                                    )}
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </div>
+
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="weight_unit_of_measur">
+                                                                Unità di misura
+                                                            </FormLabel>
+                                                            <Input
+                                                                id="weight_unit_of_measur"
+                                                                name="weight_unit_of_measur"
+                                                                value={
+                                                                    weightUnitOfMeasur
+                                                                }
+                                                                onChange={(e) =>
+                                                                    setWeightUnitOfMeasur(
+                                                                        e.target
+                                                                            .value,
+                                                                    )
+                                                                }
+                                                                placeholder="Unità di misura"
+                                                            />
+                                                        </div>
+
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="weight_value">
+                                                                Valore
+                                                            </FormLabel>
+                                                            <Input
+                                                                id="weight_value"
+                                                                name="weight_value"
+                                                                type="number"
+                                                                step="0.001"
+                                                                value={
+                                                                    weightValue
+                                                                }
+                                                                onChange={(e) =>
+                                                                    setWeightValue(
+                                                                        e.target
+                                                                            .value,
+                                                                    )
+                                                                }
+                                                                placeholder="0.000"
+                                                                className="text-right"
+                                                            />
+                                                        </div>
+
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="object_control_weight">
+                                                                Oggetto del
+                                                                controllo
+                                                            </FormLabel>
+                                                            <Select
+                                                                name="object_control_weight"
+                                                                value={
+                                                                    objectControlWeight
+                                                                }
+                                                                onValueChange={
+                                                                    setObjectControlWeight
+                                                                }
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Seleziona oggetto del controllo" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {actualObjectControlWeightList.map(
+                                                                        (
+                                                                            option,
+                                                                        ) => (
+                                                                            <SelectItem
+                                                                                key={
+                                                                                    option.key
+                                                                                }
+                                                                                value={option.key.toString()}
+                                                                            >
+                                                                                {
+                                                                                    option.value
+                                                                                }
+                                                                            </SelectItem>
+                                                                        ),
+                                                                    )}
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </div>
+                                                    </CardContent>
+                                                </Card>
+
+                                                {/* Sezione Campi Aggiuntivi */}
+                                                <Card>
+                                                    <CardHeader>
+                                                        <CardTitle className="text-lg">
+                                                            Altri Campi
+                                                        </CardTitle>
+                                                    </CardHeader>
+                                                    <CardContent className="space-y-4">
+                                                        <div className="flex items-center space-x-2">
+                                                            <Checkbox
+                                                                id="allergens"
+                                                                name="allergens"
+                                                                checked={
+                                                                    allergens
+                                                                }
+                                                                onCheckedChange={(
+                                                                    checked,
+                                                                ) =>
+                                                                    setAllergens(
+                                                                        checked ===
+                                                                            true,
+                                                                    )
+                                                                }
+                                                            />
+                                                            <label
+                                                                htmlFor="allergens"
+                                                                className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                                            >
+                                                                Allergeni
+                                                            </label>
+                                                        </div>
+
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="pallet_sheet">
+                                                                Foglio pallet
+                                                                richiesto da
+                                                                cliente
+                                                            </FormLabel>
+                                                            <Select
+                                                                name="pallet_sheet"
+                                                                value={
+                                                                    palletSheet
+                                                                }
+                                                                onValueChange={
+                                                                    setPalletSheet
+                                                                }
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Seleziona foglio pallet" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {actualPalletSheets.map(
+                                                                        (
+                                                                            sheet,
+                                                                        ) => (
+                                                                            <SelectItem
+                                                                                key={
+                                                                                    sheet.uuid
+                                                                                }
+                                                                                value={
+                                                                                    sheet.uuid
+                                                                                }
+                                                                            >
+                                                                                {
+                                                                                    sheet.code
+                                                                                }{' '}
+                                                                                -{' '}
+                                                                                {sheet.description ||
+                                                                                    'Senza descrizione'}
+                                                                            </SelectItem>
+                                                                        ),
+                                                                    )}
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </div>
+
+                                                        <div className="grid gap-2">
+                                                            <FormLabel
+                                                                htmlFor="model_uuid"
+                                                                required
+                                                            >
+                                                                Modello CQ
+                                                            </FormLabel>
+                                                            <Select
+                                                                name="model_uuid"
+                                                                value={
+                                                                    modelUuid
+                                                                }
+                                                                onValueChange={
+                                                                    setModelUuid
+                                                                }
+                                                                required
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Seleziona modello CQ" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {actualCqModels.map(
+                                                                        (
+                                                                            model,
+                                                                        ) => (
+                                                                            <SelectItem
+                                                                                key={
+                                                                                    model.uuid
+                                                                                }
+                                                                                value={
+                                                                                    model.uuid
+                                                                                }
+                                                                            >
+                                                                                {
+                                                                                    model.cod_model
+                                                                                }{' '}
+                                                                                -{' '}
+                                                                                {model.description_model ||
+                                                                                    'Senza descrizione'}
+                                                                            </SelectItem>
+                                                                        ),
+                                                                    )}
+                                                                </SelectContent>
+                                                            </Select>
+                                                            <InputError
+                                                                message={
+                                                                    allErrors.model_uuid
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="customer_samples_list">
+                                                                Campioni cliente
+                                                            </FormLabel>
+                                                            <Select
+                                                                name="customer_samples_list"
+                                                                value={
+                                                                    customerSamples
+                                                                }
+                                                                onValueChange={
+                                                                    setCustomerSamples
+                                                                }
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Seleziona campione cliente" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {actualCustomerSamplesList.map(
+                                                                        (
+                                                                            option,
+                                                                        ) => (
+                                                                            <SelectItem
+                                                                                key={
+                                                                                    option.key
+                                                                                }
+                                                                                value={option.key.toString()}
+                                                                            >
+                                                                                {
+                                                                                    option.value
+                                                                                }
+                                                                            </SelectItem>
+                                                                        ),
+                                                                    )}
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </div>
+                                                    </CardContent>
+                                                </Card>
+
+                                                {/* Sezione Media Produttività */}
+                                                {actualMediaValues && (
+                                                    <Card>
+                                                        <CardHeader>
+                                                            <CardTitle className="text-lg">
+                                                                Media
+                                                                Produttività
+                                                            </CardTitle>
+                                                        </CardHeader>
+                                                        <CardContent className="space-y-4">
+                                                            <div className="grid grid-cols-2 gap-4">
+                                                                <div className="grid gap-2">
+                                                                    <FormLabel htmlFor="media_prevista_cfz_h_pz">
+                                                                        Media
+                                                                        prevista
+                                                                        cfz/h/pz
+                                                                    </FormLabel>
+                                                                    <div className="flex items-center gap-2">
+                                                                        <Input
+                                                                            id="media_prevista_cfz_h_pz"
+                                                                            name="media_prevista_cfz_h_pz"
+                                                                            value={actualMediaValues.media_prevista_cfz_h_pz.toFixed(
+                                                                                5,
+                                                                            )}
+                                                                            readOnly
+                                                                            className="bg-muted text-right"
+                                                                        />
+                                                                        <span className="text-sm text-muted-foreground">
+                                                                            cfz/h/pz
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div className="grid gap-2">
+                                                                    <FormLabel htmlFor="media_reale_cfz_h_pz">
+                                                                        Media
+                                                                        reale
+                                                                        cfz/h/pz
+                                                                    </FormLabel>
+                                                                    <div className="flex items-center gap-2">
+                                                                        <Input
+                                                                            id="media_reale_cfz_h_pz"
+                                                                            name="media_reale_cfz_h_pz"
+                                                                            type="number"
+                                                                            step="0.00001"
+                                                                            value={
+                                                                                mediaRealeCfzHPz
+                                                                            }
+                                                                            onChange={(
+                                                                                e,
+                                                                            ) =>
+                                                                                setMediaRealeCfzHPz(
+                                                                                    e
+                                                                                        .target
+                                                                                        .value,
+                                                                                )
+                                                                            }
+                                                                            placeholder="0.00000"
+                                                                            className="text-right"
+                                                                        />
+                                                                        <span className="text-sm text-muted-foreground">
+                                                                            cfz/h/pz
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div className="grid gap-2">
+                                                                    <FormLabel htmlFor="media_prevista_pz_h_ps">
+                                                                        Media
+                                                                        prevista
+                                                                        pz/h/ps
+                                                                    </FormLabel>
+                                                                    <div className="flex items-center gap-2">
+                                                                        <Input
+                                                                            id="media_prevista_pz_h_ps"
+                                                                            name="media_prevista_pz_h_ps"
+                                                                            value={actualMediaValues.media_prevista_pz_h_ps.toFixed(
+                                                                                5,
+                                                                            )}
+                                                                            readOnly
+                                                                            className="bg-muted text-right"
+                                                                        />
+                                                                        <span className="text-sm text-muted-foreground">
+                                                                            pz/h/ps
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div className="grid gap-2">
+                                                                    <FormLabel htmlFor="media_reale_pz_h_ps">
+                                                                        Media
+                                                                        reale
+                                                                        pz/h/ps
+                                                                    </FormLabel>
+                                                                    <div className="flex items-center gap-2">
+                                                                        <Input
+                                                                            id="media_reale_pz_h_ps"
+                                                                            name="media_reale_pz_h_ps"
+                                                                            value={
+                                                                                mediaRealeCfzHPz &&
+                                                                                actualPiecesPerPackage
+                                                                                    ? (
+                                                                                          parseFloat(
+                                                                                              mediaRealeCfzHPz,
+                                                                                          ) *
+                                                                                          actualPiecesPerPackage
+                                                                                      ).toFixed(
+                                                                                          5,
+                                                                                      )
+                                                                                    : '0.00000'
+                                                                            }
+                                                                            readOnly
+                                                                            className="bg-muted text-right"
+                                                                        />
+                                                                        <span className="text-sm text-muted-foreground">
+                                                                            pz/h/ps
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </CardContent>
+                                                    </Card>
+                                                )}
+
+                                                {/* Sezione Approvazioni */}
+                                                <Card>
+                                                    <CardHeader>
+                                                        <CardTitle className="text-lg">
+                                                            Approvazioni
+                                                        </CardTitle>
+                                                    </CardHeader>
+                                                    <CardContent className="space-y-6">
+                                                        {/* Approvazione Produzione */}
+                                                        <div className="space-y-3 border-b pb-4">
+                                                            <FormLabel htmlFor="production_approval_checkbox">
+                                                                Approvazione
+                                                                Produzione
+                                                            </FormLabel>
+                                                            <div className="flex items-center space-x-2">
+                                                                <Checkbox
+                                                                    id="production_approval_checkbox"
+                                                                    name="production_approval_checkbox"
+                                                                    checked={
+                                                                        productionApprovalCheckbox
                                                                     }
-                                                                    readOnly
-                                                                    className="bg-muted text-right"
+                                                                    onCheckedChange={(
+                                                                        checked,
+                                                                    ) =>
+                                                                        setProductionApprovalCheckbox(
+                                                                            checked ===
+                                                                                true,
+                                                                        )
+                                                                    }
                                                                 />
-                                                                <span className="text-sm text-muted-foreground">
-                                                                    pz/h/ps
-                                                                </span>
+                                                                <label
+                                                                    htmlFor="production_approval_checkbox"
+                                                                    className="text-sm font-medium"
+                                                                >
+                                                                    Approvato
+                                                                </label>
+                                                            </div>
+                                                            <div className="grid gap-2">
+                                                                <FormLabel htmlFor="production_approval_employee">
+                                                                    Addetto
+                                                                </FormLabel>
+                                                                <Input
+                                                                    id="production_approval_employee"
+                                                                    name="production_approval_employee"
+                                                                    value={
+                                                                        productionApprovalEmployee
+                                                                    }
+                                                                    onChange={(
+                                                                        e,
+                                                                    ) =>
+                                                                        setProductionApprovalEmployee(
+                                                                            e
+                                                                                .target
+                                                                                .value,
+                                                                        )
+                                                                    }
+                                                                    placeholder="Addetto"
+                                                                />
+                                                            </div>
+                                                            <div className="grid gap-2">
+                                                                <FormLabel htmlFor="production_approval_date">
+                                                                    Data
+                                                                </FormLabel>
+                                                                <Input
+                                                                    id="production_approval_date"
+                                                                    name="production_approval_date"
+                                                                    type="date"
+                                                                    value={
+                                                                        productionApprovalDate
+                                                                    }
+                                                                    onChange={(
+                                                                        e,
+                                                                    ) =>
+                                                                        setProductionApprovalDate(
+                                                                            e
+                                                                                .target
+                                                                                .value,
+                                                                        )
+                                                                    }
+                                                                    min="2005-01-01"
+                                                                    max="2099-12-31"
+                                                                />
+                                                            </div>
+                                                            <div className="grid gap-2">
+                                                                <FormLabel htmlFor="production_approval_notes">
+                                                                    Note
+                                                                </FormLabel>
+                                                                <Textarea
+                                                                    id="production_approval_notes"
+                                                                    name="production_approval_notes"
+                                                                    value={
+                                                                        productionApprovalNotes
+                                                                    }
+                                                                    onChange={(
+                                                                        e,
+                                                                    ) =>
+                                                                        setProductionApprovalNotes(
+                                                                            e
+                                                                                .target
+                                                                                .value,
+                                                                        )
+                                                                    }
+                                                                    rows={2}
+                                                                />
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                </CardContent>
-                                            </Card>
-                                        )}
 
-                                        {/* Sezione Approvazioni */}
-                                        <Card>
-                                            <CardHeader>
-                                                <CardTitle className="text-lg">
-                                                    Approvazioni
-                                                </CardTitle>
-                                            </CardHeader>
-                                            <CardContent className="space-y-6">
-                                                {/* Approvazione Produzione */}
-                                                <div className="space-y-3 border-b pb-4">
-                                                    <FormLabel htmlFor="production_approval_checkbox">
-                                                        Approvazione Produzione
-                                                    </FormLabel>
-                                                    <div className="flex items-center space-x-2">
-                                                        <Checkbox
-                                                            id="production_approval_checkbox"
-                                                            name="production_approval_checkbox"
-                                                            checked={
-                                                                productionApprovalCheckbox
-                                                            }
-                                                            onCheckedChange={(
-                                                                checked,
-                                                            ) =>
-                                                                setProductionApprovalCheckbox(
-                                                                    checked ===
-                                                                        true,
-                                                                )
-                                                            }
-                                                        />
-                                                        <label
-                                                            htmlFor="production_approval_checkbox"
-                                                            className="text-sm font-medium"
-                                                        >
-                                                            Approvato
-                                                        </label>
-                                                    </div>
-                                                    <div className="grid gap-2">
-                                                        <FormLabel htmlFor="production_approval_employee">
-                                                            Addetto
-                                                        </FormLabel>
-                                                        <Input
-                                                            id="production_approval_employee"
-                                                            name="production_approval_employee"
-                                                            value={
-                                                                productionApprovalEmployee
-                                                            }
-                                                            onChange={(e) =>
-                                                                setProductionApprovalEmployee(
-                                                                    e.target
-                                                                        .value,
-                                                                )
-                                                            }
-                                                            placeholder="Addetto"
-                                                        />
-                                                    </div>
-                                                    <div className="grid gap-2">
-                                                        <FormLabel htmlFor="production_approval_date">
-                                                            Data
-                                                        </FormLabel>
-                                                        <Input
-                                                            id="production_approval_date"
-                                                            name="production_approval_date"
-                                                            type="date"
-                                                            value={
-                                                                productionApprovalDate
-                                                            }
-                                                            onChange={(e) =>
-                                                                setProductionApprovalDate(
-                                                                    e.target
-                                                                        .value,
-                                                                )
-                                                            }
-                                                            min="2005-01-01"
-                                                            max="2099-12-31"
-                                                        />
-                                                    </div>
-                                                    <div className="grid gap-2">
-                                                        <FormLabel htmlFor="production_approval_notes">
-                                                            Note
-                                                        </FormLabel>
-                                                        <Textarea
-                                                            id="production_approval_notes"
-                                                            name="production_approval_notes"
-                                                            value={
-                                                                productionApprovalNotes
-                                                            }
-                                                            onChange={(e) =>
-                                                                setProductionApprovalNotes(
-                                                                    e.target
-                                                                        .value,
-                                                                )
-                                                            }
-                                                            rows={2}
-                                                        />
-                                                    </div>
+                                                        {/* Approvazione Qualità */}
+                                                        <div className="space-y-3 border-b pb-4">
+                                                            <FormLabel htmlFor="approv_quality_checkbox">
+                                                                Approvazione
+                                                                Qualità
+                                                            </FormLabel>
+                                                            <div className="flex items-center space-x-2">
+                                                                <Checkbox
+                                                                    id="approv_quality_checkbox"
+                                                                    name="approv_quality_checkbox"
+                                                                    checked={
+                                                                        approvQualityCheckbox
+                                                                    }
+                                                                    onCheckedChange={(
+                                                                        checked,
+                                                                    ) =>
+                                                                        setApprovQualityCheckbox(
+                                                                            checked ===
+                                                                                true,
+                                                                        )
+                                                                    }
+                                                                />
+                                                                <label
+                                                                    htmlFor="approv_quality_checkbox"
+                                                                    className="text-sm font-medium"
+                                                                >
+                                                                    Approvato
+                                                                </label>
+                                                            </div>
+                                                            <div className="grid gap-2">
+                                                                <FormLabel htmlFor="approv_quality_employee">
+                                                                    Addetto
+                                                                </FormLabel>
+                                                                <Input
+                                                                    id="approv_quality_employee"
+                                                                    name="approv_quality_employee"
+                                                                    value={
+                                                                        approvQualityEmployee
+                                                                    }
+                                                                    onChange={(
+                                                                        e,
+                                                                    ) =>
+                                                                        setApprovQualityEmployee(
+                                                                            e
+                                                                                .target
+                                                                                .value,
+                                                                        )
+                                                                    }
+                                                                    placeholder="Addetto"
+                                                                />
+                                                            </div>
+                                                            <div className="grid gap-2">
+                                                                <FormLabel htmlFor="approv_quality_date">
+                                                                    Data
+                                                                </FormLabel>
+                                                                <Input
+                                                                    id="approv_quality_date"
+                                                                    name="approv_quality_date"
+                                                                    type="date"
+                                                                    value={
+                                                                        approvQualityDate
+                                                                    }
+                                                                    onChange={(
+                                                                        e,
+                                                                    ) =>
+                                                                        setApprovQualityDate(
+                                                                            e
+                                                                                .target
+                                                                                .value,
+                                                                        )
+                                                                    }
+                                                                    min="2005-01-01"
+                                                                    max="2099-12-31"
+                                                                />
+                                                            </div>
+                                                            <div className="grid gap-2">
+                                                                <FormLabel htmlFor="approv_quality_notes">
+                                                                    Note
+                                                                </FormLabel>
+                                                                <Textarea
+                                                                    id="approv_quality_notes"
+                                                                    name="approv_quality_notes"
+                                                                    value={
+                                                                        approvQualityNotes
+                                                                    }
+                                                                    onChange={(
+                                                                        e,
+                                                                    ) =>
+                                                                        setApprovQualityNotes(
+                                                                            e
+                                                                                .target
+                                                                                .value,
+                                                                        )
+                                                                    }
+                                                                    rows={2}
+                                                                />
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Approvazione Commerciale */}
+                                                        <div className="space-y-3 border-b pb-4">
+                                                            <FormLabel htmlFor="commercial_approval_checkbox">
+                                                                Approvazione
+                                                                Commerciale
+                                                            </FormLabel>
+                                                            <div className="flex items-center space-x-2">
+                                                                <Checkbox
+                                                                    id="commercial_approval_checkbox"
+                                                                    name="commercial_approval_checkbox"
+                                                                    checked={
+                                                                        commercialApprovalCheckbox
+                                                                    }
+                                                                    onCheckedChange={(
+                                                                        checked,
+                                                                    ) =>
+                                                                        setCommercialApprovalCheckbox(
+                                                                            checked ===
+                                                                                true,
+                                                                        )
+                                                                    }
+                                                                />
+                                                                <label
+                                                                    htmlFor="commercial_approval_checkbox"
+                                                                    className="text-sm font-medium"
+                                                                >
+                                                                    Approvato
+                                                                </label>
+                                                            </div>
+                                                            <div className="grid gap-2">
+                                                                <FormLabel htmlFor="commercial_approval_employee">
+                                                                    Addetto
+                                                                </FormLabel>
+                                                                <Input
+                                                                    id="commercial_approval_employee"
+                                                                    name="commercial_approval_employee"
+                                                                    value={
+                                                                        commercialApprovalEmployee
+                                                                    }
+                                                                    onChange={(
+                                                                        e,
+                                                                    ) =>
+                                                                        setCommercialApprovalEmployee(
+                                                                            e
+                                                                                .target
+                                                                                .value,
+                                                                        )
+                                                                    }
+                                                                    placeholder="Addetto"
+                                                                />
+                                                            </div>
+                                                            <div className="grid gap-2">
+                                                                <FormLabel htmlFor="commercial_approval_date">
+                                                                    Data
+                                                                </FormLabel>
+                                                                <Input
+                                                                    id="commercial_approval_date"
+                                                                    name="commercial_approval_date"
+                                                                    type="date"
+                                                                    value={
+                                                                        commercialApprovalDate
+                                                                    }
+                                                                    onChange={(
+                                                                        e,
+                                                                    ) =>
+                                                                        setCommercialApprovalDate(
+                                                                            e
+                                                                                .target
+                                                                                .value,
+                                                                        )
+                                                                    }
+                                                                    min="2005-01-01"
+                                                                    max="2099-12-31"
+                                                                />
+                                                            </div>
+                                                            <div className="grid gap-2">
+                                                                <FormLabel htmlFor="commercial_approval_notes">
+                                                                    Note
+                                                                </FormLabel>
+                                                                <Textarea
+                                                                    id="commercial_approval_notes"
+                                                                    name="commercial_approval_notes"
+                                                                    value={
+                                                                        commercialApprovalNotes
+                                                                    }
+                                                                    onChange={(
+                                                                        e,
+                                                                    ) =>
+                                                                        setCommercialApprovalNotes(
+                                                                            e
+                                                                                .target
+                                                                                .value,
+                                                                        )
+                                                                    }
+                                                                    rows={2}
+                                                                />
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Approvazione Cliente */}
+                                                        <div className="space-y-3">
+                                                            <FormLabel htmlFor="client_approval_checkbox">
+                                                                Approvazione
+                                                                Cliente
+                                                            </FormLabel>
+                                                            <div className="flex items-center space-x-2">
+                                                                <Checkbox
+                                                                    id="client_approval_checkbox"
+                                                                    name="client_approval_checkbox"
+                                                                    checked={
+                                                                        clientApprovalCheckbox
+                                                                    }
+                                                                    onCheckedChange={(
+                                                                        checked,
+                                                                    ) => {
+                                                                        setClientApprovalCheckbox(
+                                                                            checked ===
+                                                                                true,
+                                                                        );
+                                                                        // Sincronizzare check_approval (anche in backend)
+                                                                    }}
+                                                                />
+                                                                <label
+                                                                    htmlFor="client_approval_checkbox"
+                                                                    className="text-sm font-medium"
+                                                                >
+                                                                    Approvato
+                                                                </label>
+                                                            </div>
+                                                            <div className="grid gap-2">
+                                                                <FormLabel htmlFor="client_approval_employee">
+                                                                    Addetto
+                                                                </FormLabel>
+                                                                <Input
+                                                                    id="client_approval_employee"
+                                                                    name="client_approval_employee"
+                                                                    value={
+                                                                        clientApprovalEmployee
+                                                                    }
+                                                                    onChange={(
+                                                                        e,
+                                                                    ) =>
+                                                                        setClientApprovalEmployee(
+                                                                            e
+                                                                                .target
+                                                                                .value,
+                                                                        )
+                                                                    }
+                                                                    placeholder="Addetto"
+                                                                />
+                                                            </div>
+                                                            <div className="grid gap-2">
+                                                                <FormLabel htmlFor="client_approval_date">
+                                                                    Data
+                                                                </FormLabel>
+                                                                <Input
+                                                                    id="client_approval_date"
+                                                                    name="client_approval_date"
+                                                                    type="date"
+                                                                    value={
+                                                                        clientApprovalDate
+                                                                    }
+                                                                    onChange={(
+                                                                        e,
+                                                                    ) =>
+                                                                        setClientApprovalDate(
+                                                                            e
+                                                                                .target
+                                                                                .value,
+                                                                        )
+                                                                    }
+                                                                    min="2005-01-01"
+                                                                    max="2099-12-31"
+                                                                />
+                                                            </div>
+                                                            <div className="grid gap-2">
+                                                                <FormLabel htmlFor="client_approval_notes">
+                                                                    Note
+                                                                </FormLabel>
+                                                                <Textarea
+                                                                    id="client_approval_notes"
+                                                                    name="client_approval_notes"
+                                                                    value={
+                                                                        clientApprovalNotes
+                                                                    }
+                                                                    onChange={(
+                                                                        e,
+                                                                    ) =>
+                                                                        setClientApprovalNotes(
+                                                                            e
+                                                                                .target
+                                                                                .value,
+                                                                        )
+                                                                    }
+                                                                    rows={2}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </CardContent>
+                                                </Card>
+
+                                                <div className="flex items-center gap-4">
+                                                    <Button
+                                                        type="submit"
+                                                        disabled={processing}
+                                                        aria-label={
+                                                            actualSourceArticle
+                                                                ? 'Salva come nuovo articolo'
+                                                                : 'Crea articolo'
+                                                        }
+                                                    >
+                                                        {processing
+                                                            ? actualSourceArticle
+                                                                ? 'Salvando...'
+                                                                : 'Creando...'
+                                                            : actualSourceArticle
+                                                              ? 'Salva come nuovo articolo'
+                                                              : 'Crea Articolo'}
+                                                    </Button>
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        onClick={() =>
+                                                            setShowCloseConfirm(
+                                                                true,
+                                                            )
+                                                        }
+                                                    >
+                                                        Annulla
+                                                    </Button>
                                                 </div>
-
-                                                {/* Approvazione Qualità */}
-                                                <div className="space-y-3 border-b pb-4">
-                                                    <FormLabel htmlFor="approv_quality_checkbox">
-                                                        Approvazione Qualità
-                                                    </FormLabel>
-                                                    <div className="flex items-center space-x-2">
-                                                        <Checkbox
-                                                            id="approv_quality_checkbox"
-                                                            name="approv_quality_checkbox"
-                                                            checked={
-                                                                approvQualityCheckbox
-                                                            }
-                                                            onCheckedChange={(
-                                                                checked,
-                                                            ) =>
-                                                                setApprovQualityCheckbox(
-                                                                    checked ===
-                                                                        true,
-                                                                )
-                                                            }
-                                                        />
-                                                        <label
-                                                            htmlFor="approv_quality_checkbox"
-                                                            className="text-sm font-medium"
-                                                        >
-                                                            Approvato
-                                                        </label>
-                                                    </div>
-                                                    <div className="grid gap-2">
-                                                        <FormLabel htmlFor="approv_quality_employee">
-                                                            Addetto
-                                                        </FormLabel>
-                                                        <Input
-                                                            id="approv_quality_employee"
-                                                            name="approv_quality_employee"
-                                                            value={
-                                                                approvQualityEmployee
-                                                            }
-                                                            onChange={(e) =>
-                                                                setApprovQualityEmployee(
-                                                                    e.target
-                                                                        .value,
-                                                                )
-                                                            }
-                                                            placeholder="Addetto"
-                                                        />
-                                                    </div>
-                                                    <div className="grid gap-2">
-                                                        <FormLabel htmlFor="approv_quality_date">
-                                                            Data
-                                                        </FormLabel>
-                                                        <Input
-                                                            id="approv_quality_date"
-                                                            name="approv_quality_date"
-                                                            type="date"
-                                                            value={
-                                                                approvQualityDate
-                                                            }
-                                                            onChange={(e) =>
-                                                                setApprovQualityDate(
-                                                                    e.target
-                                                                        .value,
-                                                                )
-                                                            }
-                                                            min="2005-01-01"
-                                                            max="2099-12-31"
-                                                        />
-                                                    </div>
-                                                    <div className="grid gap-2">
-                                                        <FormLabel htmlFor="approv_quality_notes">
-                                                            Note
-                                                        </FormLabel>
-                                                        <Textarea
-                                                            id="approv_quality_notes"
-                                                            name="approv_quality_notes"
-                                                            value={
-                                                                approvQualityNotes
-                                                            }
-                                                            onChange={(e) =>
-                                                                setApprovQualityNotes(
-                                                                    e.target
-                                                                        .value,
-                                                                )
-                                                            }
-                                                            rows={2}
-                                                        />
-                                                    </div>
-                                                </div>
-
-                                                {/* Approvazione Commerciale */}
-                                                <div className="space-y-3 border-b pb-4">
-                                                    <FormLabel htmlFor="commercial_approval_checkbox">
-                                                        Approvazione Commerciale
-                                                    </FormLabel>
-                                                    <div className="flex items-center space-x-2">
-                                                        <Checkbox
-                                                            id="commercial_approval_checkbox"
-                                                            name="commercial_approval_checkbox"
-                                                            checked={
-                                                                commercialApprovalCheckbox
-                                                            }
-                                                            onCheckedChange={(
-                                                                checked,
-                                                            ) =>
-                                                                setCommercialApprovalCheckbox(
-                                                                    checked ===
-                                                                        true,
-                                                                )
-                                                            }
-                                                        />
-                                                        <label
-                                                            htmlFor="commercial_approval_checkbox"
-                                                            className="text-sm font-medium"
-                                                        >
-                                                            Approvato
-                                                        </label>
-                                                    </div>
-                                                    <div className="grid gap-2">
-                                                        <FormLabel htmlFor="commercial_approval_employee">
-                                                            Addetto
-                                                        </FormLabel>
-                                                        <Input
-                                                            id="commercial_approval_employee"
-                                                            name="commercial_approval_employee"
-                                                            value={
-                                                                commercialApprovalEmployee
-                                                            }
-                                                            onChange={(e) =>
-                                                                setCommercialApprovalEmployee(
-                                                                    e.target
-                                                                        .value,
-                                                                )
-                                                            }
-                                                            placeholder="Addetto"
-                                                        />
-                                                    </div>
-                                                    <div className="grid gap-2">
-                                                        <FormLabel htmlFor="commercial_approval_date">
-                                                            Data
-                                                        </FormLabel>
-                                                        <Input
-                                                            id="commercial_approval_date"
-                                                            name="commercial_approval_date"
-                                                            type="date"
-                                                            value={
-                                                                commercialApprovalDate
-                                                            }
-                                                            onChange={(e) =>
-                                                                setCommercialApprovalDate(
-                                                                    e.target
-                                                                        .value,
-                                                                )
-                                                            }
-                                                            min="2005-01-01"
-                                                            max="2099-12-31"
-                                                        />
-                                                    </div>
-                                                    <div className="grid gap-2">
-                                                        <FormLabel htmlFor="commercial_approval_notes">
-                                                            Note
-                                                        </FormLabel>
-                                                        <Textarea
-                                                            id="commercial_approval_notes"
-                                                            name="commercial_approval_notes"
-                                                            value={
-                                                                commercialApprovalNotes
-                                                            }
-                                                            onChange={(e) =>
-                                                                setCommercialApprovalNotes(
-                                                                    e.target
-                                                                        .value,
-                                                                )
-                                                            }
-                                                            rows={2}
-                                                        />
-                                                    </div>
-                                                </div>
-
-                                                {/* Approvazione Cliente */}
-                                                <div className="space-y-3">
-                                                    <FormLabel htmlFor="client_approval_checkbox">
-                                                        Approvazione Cliente
-                                                    </FormLabel>
-                                                    <div className="flex items-center space-x-2">
-                                                        <Checkbox
-                                                            id="client_approval_checkbox"
-                                                            name="client_approval_checkbox"
-                                                            checked={
-                                                                clientApprovalCheckbox
-                                                            }
-                                                            onCheckedChange={(
-                                                                checked,
-                                                            ) => {
-                                                                setClientApprovalCheckbox(
-                                                                    checked ===
-                                                                        true,
-                                                                );
-                                                                // Sincronizzare check_approval (anche in backend)
-                                                            }}
-                                                        />
-                                                        <label
-                                                            htmlFor="client_approval_checkbox"
-                                                            className="text-sm font-medium"
-                                                        >
-                                                            Approvato
-                                                        </label>
-                                                    </div>
-                                                    <div className="grid gap-2">
-                                                        <FormLabel htmlFor="client_approval_employee">
-                                                            Addetto
-                                                        </FormLabel>
-                                                        <Input
-                                                            id="client_approval_employee"
-                                                            name="client_approval_employee"
-                                                            value={
-                                                                clientApprovalEmployee
-                                                            }
-                                                            onChange={(e) =>
-                                                                setClientApprovalEmployee(
-                                                                    e.target
-                                                                        .value,
-                                                                )
-                                                            }
-                                                            placeholder="Addetto"
-                                                        />
-                                                    </div>
-                                                    <div className="grid gap-2">
-                                                        <FormLabel htmlFor="client_approval_date">
-                                                            Data
-                                                        </FormLabel>
-                                                        <Input
-                                                            id="client_approval_date"
-                                                            name="client_approval_date"
-                                                            type="date"
-                                                            value={
-                                                                clientApprovalDate
-                                                            }
-                                                            onChange={(e) =>
-                                                                setClientApprovalDate(
-                                                                    e.target
-                                                                        .value,
-                                                                )
-                                                            }
-                                                            min="2005-01-01"
-                                                            max="2099-12-31"
-                                                        />
-                                                    </div>
-                                                    <div className="grid gap-2">
-                                                        <FormLabel htmlFor="client_approval_notes">
-                                                            Note
-                                                        </FormLabel>
-                                                        <Textarea
-                                                            id="client_approval_notes"
-                                                            name="client_approval_notes"
-                                                            value={
-                                                                clientApprovalNotes
-                                                            }
-                                                            onChange={(e) =>
-                                                                setClientApprovalNotes(
-                                                                    e.target
-                                                                        .value,
-                                                                )
-                                                            }
-                                                            rows={2}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-
-                                        <div className="flex items-center gap-4">
-                                            <Button
-                                                type="submit"
-                                                disabled={processing}
-                                            >
-                                                {processing
-                                                    ? 'Creando...'
-                                                    : 'Crea Articolo'}
-                                            </Button>
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                onClick={() =>
-                                                    setShowCloseConfirm(true)
-                                                }
-                                            >
-                                                Annulla
-                                            </Button>
-                                        </div>
-                                    </>
-                                );
-                            }}
-                        </Form>
-                    </CardContent>
-                </Card>
+                                            </>
+                                        );
+                                    }}
+                                </Form>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
             </div>
             <ConfirmCloseDialog
                 open={showCloseConfirm}

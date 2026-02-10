@@ -1,3 +1,5 @@
+import { ConfirmCloseDialog } from '@/components/confirm-close-dialog';
+import { FormValidationNotification } from '@/components/form-validation-notification';
 import { FormLabel } from '@/components/FormLabel';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -34,6 +36,7 @@ export default function PalletSheetsEdit({
     const [selectedFileName, setSelectedFileName] = useState<string | null>(
         null,
     );
+    const [showCloseConfirm, setShowCloseConfirm] = useState(false);
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Articoli',
@@ -82,9 +85,17 @@ export default function PalletSheetsEdit({
                                             ...errors,
                                             ...serverErrors,
                                         };
+                                        const hasAttemptedSubmit =
+                                            Object.keys(allErrors).length > 0;
 
                                         return (
                                             <>
+                                                <FormValidationNotification
+                                                    errors={allErrors}
+                                                    hasAttemptedSubmit={
+                                                        hasAttemptedSubmit
+                                                    }
+                                                />
                                                 <div className="grid gap-2">
                                                     <FormLabel
                                                         htmlFor="code"
@@ -204,13 +215,8 @@ export default function PalletSheetsEdit({
                                                         type="button"
                                                         variant="outline"
                                                         onClick={() =>
-                                                            router.visit(
-                                                                articles.palletSheets.show(
-                                                                    {
-                                                                        palletSheet:
-                                                                            palletSheet.uuid,
-                                                                    },
-                                                                ).url,
+                                                            setShowCloseConfirm(
+                                                                true,
                                                             )
                                                         }
                                                     >
@@ -226,6 +232,18 @@ export default function PalletSheetsEdit({
                     </div>
                 </div>
             </div>
+            <ConfirmCloseDialog
+                open={showCloseConfirm}
+                onOpenChange={setShowCloseConfirm}
+                onConfirm={() => {
+                    setShowCloseConfirm(false);
+                    router.visit(
+                        articles.palletSheets.show({
+                            palletSheet: palletSheet.uuid,
+                        }).url,
+                    );
+                }}
+            />
         </AppLayout>
     );
 }

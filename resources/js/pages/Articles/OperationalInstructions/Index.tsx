@@ -8,10 +8,11 @@ import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { SortableTableHeader } from '@/components/SortableTableHeader';
+import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import articles from '@/routes/articles/index';
 import { type BreadcrumbItem } from '@/types';
-import { Head, router, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { FileText } from 'lucide-react';
 import { useState } from 'react';
 
@@ -181,9 +182,21 @@ export default function OperationalInstructionsIndex() {
                     <div className="relative h-full w-full overflow-auto">
                         <div className="block space-y-3 p-4 md:hidden">
                             {instructionsPaginated.data.length === 0 ? (
-                                <div className="py-8 text-center text-sm text-muted-foreground">
-                                    Nessuna istruzione trovata per i filtri
-                                    attuali.
+                                <div className="flex flex-col items-center justify-center gap-4 py-12 text-center">
+                                    <p className="text-sm text-muted-foreground">
+                                        Nessuna istruzione operativa. Aggiungi
+                                        la prima.
+                                    </p>
+                                    <Button asChild>
+                                        <Link
+                                            href={
+                                                articles.operationalInstructions.create()
+                                                    .url
+                                            }
+                                        >
+                                            Aggiungi
+                                        </Link>
+                                    </Button>
                                 </div>
                             ) : (
                                 instructionsPaginated.data.map(
@@ -304,8 +317,23 @@ export default function OperationalInstructionsIndex() {
                                             colSpan={6}
                                             className="px-3 py-8 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessuna istruzione trovata per i
-                                            filtri attuali.
+                                            <div className="flex flex-col items-center justify-center gap-3">
+                                                <p>
+                                                    Nessuna istruzione
+                                                    operativa. Aggiungi la
+                                                    prima.
+                                                </p>
+                                                <Button asChild size="sm">
+                                                    <Link
+                                                        href={
+                                                            articles.operationalInstructions.create()
+                                                                .url
+                                                        }
+                                                    >
+                                                        Aggiungi
+                                                    </Link>
+                                                </Button>
+                                            </div>
                                         </td>
                                     </tr>
                                 )}

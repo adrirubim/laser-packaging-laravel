@@ -37,87 +37,98 @@ export default function PalletTypesCreate({
             <Head title="Nuovo Tipo di Pallet" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Nuovo Tipo di Pallet</CardTitle>
-                        <CardDescription>
-                            Compila i campi per creare un nuovo tipo di pallet.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Form
-                            action={palletTypes.store().url}
-                            method="post"
-                            className="space-y-6"
-                        >
-                            {({ processing, errors }) => {
-                                const allErrors = {
-                                    ...errors,
-                                    ...serverErrors,
-                                };
+                <div className="flex w-full justify-center">
+                    <div className="w-full max-w-4xl space-y-5">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Nuovo Tipo di Pallet</CardTitle>
+                                <CardDescription>
+                                    Compila i campi per creare un nuovo tipo di
+                                    pallet.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Form
+                                    action={palletTypes.store().url}
+                                    method="post"
+                                    className="space-y-6"
+                                >
+                                    {({ processing, errors }) => {
+                                        const allErrors = {
+                                            ...errors,
+                                            ...serverErrors,
+                                        };
 
-                                return (
-                                    <>
-                                        <div className="grid gap-2">
-                                            <FormLabel htmlFor="cod" required>
-                                                Codice
-                                            </FormLabel>
-                                            <Input
-                                                id="cod"
-                                                name="cod"
-                                                required
-                                                placeholder="Codice tipo pallet"
-                                            />
-                                            <InputError
-                                                message={allErrors.cod}
-                                            />
-                                        </div>
+                                        return (
+                                            <>
+                                                <div className="grid gap-2">
+                                                    <FormLabel
+                                                        htmlFor="cod"
+                                                        required
+                                                    >
+                                                        Codice
+                                                    </FormLabel>
+                                                    <Input
+                                                        id="cod"
+                                                        name="cod"
+                                                        required
+                                                        placeholder="Codice tipo pallet"
+                                                    />
+                                                    <InputError
+                                                        message={allErrors.cod}
+                                                    />
+                                                </div>
 
-                                        <div className="grid gap-2">
-                                            <FormLabel
-                                                htmlFor="description"
-                                                required
-                                            >
-                                                Descrizione
-                                            </FormLabel>
-                                            <Input
-                                                id="description"
-                                                name="description"
-                                                required
-                                                placeholder="Descrizione tipo pallet"
-                                            />
-                                            <InputError
-                                                message={allErrors.description}
-                                            />
-                                        </div>
+                                                <div className="grid gap-2">
+                                                    <FormLabel
+                                                        htmlFor="description"
+                                                        required
+                                                    >
+                                                        Descrizione
+                                                    </FormLabel>
+                                                    <Input
+                                                        id="description"
+                                                        name="description"
+                                                        required
+                                                        placeholder="Descrizione tipo pallet"
+                                                    />
+                                                    <InputError
+                                                        message={
+                                                            allErrors.description
+                                                        }
+                                                    />
+                                                </div>
 
-                                        <div className="flex items-center gap-4">
-                                            <Button
-                                                type="submit"
-                                                disabled={processing}
-                                            >
-                                                {processing
-                                                    ? 'Creando...'
-                                                    : 'Crea tipo pallet'}
-                                            </Button>
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                onClick={() =>
-                                                    router.visit(
-                                                        palletTypes.index().url,
-                                                    )
-                                                }
-                                            >
-                                                Annulla
-                                            </Button>
-                                        </div>
-                                    </>
-                                );
-                            }}
-                        </Form>
-                    </CardContent>
-                </Card>
+                                                <div className="flex items-center gap-4">
+                                                    <Button
+                                                        type="submit"
+                                                        disabled={processing}
+                                                    >
+                                                        {processing
+                                                            ? 'Creando...'
+                                                            : 'Crea tipo pallet'}
+                                                    </Button>
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        onClick={() =>
+                                                            router.visit(
+                                                                palletTypes.index()
+                                                                    .url,
+                                                            )
+                                                        }
+                                                    >
+                                                        Annulla
+                                                    </Button>
+                                                </div>
+                                            </>
+                                        );
+                                    }}
+                                </Form>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
             </div>
         </AppLayout>
     );

@@ -1,6 +1,6 @@
 # Test & Coverage Report (summary)
 
-**Last updated:** 2026-02-05  
+**Last updated:** 2026-02-06  
 **Stack (exact versions):** [VERSION_STACK.md](VERSION_STACK.md)
 
 > This document is intentionally **short**. The goal is to explain **what** is tested and **how** to run tests in a reproducible way.
@@ -30,7 +30,7 @@ php artisan test --testsuite=Performance
 | **HTTP Controllers** | 39 | 39 (100%) | Each controller has a `*ControllerTest.php` in Feature/Controllers, Feature/Api or Feature/Settings. |
 | **Services** | 6 | 6 (100%) | ArticleCodeService, InstructionCodeService, OfferNumberService, OrderProductionNumberService, PalletCalculationService, ProductionCalculationService — all with Unit tests. |
 | **Repositories** | 7 | 7 (100%) | Unit: ArticleRepository, CustomerRepository, CustomerDivisionRepository, CustomerShippingAddressRepository, DashboardRepository, OfferRepository, OrderRepository (all in `tests/Unit/Repositories/`). |
-| **Actions** | 8 + Fortify | 5 (partial) | `CreateOfferAction`, `UpdateOfferAction`, `CreateOrderAction`, `UpdateOrderAction`, `SyncOrderEmployeesAction` have direct Unit tests; the others are covered indirectly via Feature tests. |
+| **Actions** | 8 + Fortify | 5 (partial) | `CreateOfferAction`, `UpdateOfferAction`, `CreateOrderAction`, `UpdateOrderAction`, `SyncOrderEmployeesAction` have direct Unit tests (incluyendo casos borde recientes como cambio automático a `IN_AVANZAMENTO` y manejo de conflictos de número de producción); las demás Actions se cubren indirectamente vía tests Feature. |
 | **Production Portal API** | 1 controller | 1 (100%) | `Feature/Api/ProductionPortalControllerTest.php`. |
 | **Auth / Settings** | 8 | 8 (100%) | Authentication, Registration, PasswordReset, EmailVerification, etc.; Settings: ProfileUpdate, PasswordUpdate, TwoFactorAuthentication. |
 | **E2E Flows** | 1 | 1 | `Feature/Flows/OfferArticleOrderFlowTest.php` (offer → article → order → portal). |
@@ -39,7 +39,7 @@ php artisan test --testsuite=Performance
 
 **Summary:**  
 - **Controllers, services and repositories:** **100%** covered (each has dedicated tests).  
-- **Actions:** the main Actions for offers/orders and employee sync (`CreateOfferAction`, `UpdateOfferAction`, `CreateOrderAction`, `UpdateOrderAction`, `SyncOrderEmployeesAction`) have dedicated Unit tests in addition to indirect Feature coverage.  
+- **Actions:** the main Actions for offers/orders y sincronización de empleados (`CreateOfferAction`, `UpdateOfferAction`, `CreateOrderAction`, `UpdateOrderAction`, `SyncOrderEmployeesAction`) tienen Unit tests dedicados (validación de unicidad, cambio automático de estado, sincronización de N:N) además de la cobertura indirecta por Feature tests.  
 - **Models:** besides `OfferRelationsTest`, there are Unit tests for `Order` (`OrderModelTest`) and `Machinery` (`MachineryModelTest`) that verify key relations, scopes and accessors; the rest of the models are covered through Feature tests.  
 - The project has tests for **all** controllers, services, repositories, API, flows and performance suites.
 

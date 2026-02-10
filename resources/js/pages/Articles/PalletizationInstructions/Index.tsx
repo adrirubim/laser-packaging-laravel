@@ -8,11 +8,12 @@ import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { SortableTableHeader } from '@/components/SortableTableHeader';
+import { Button } from '@/components/ui/button';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import AppLayout from '@/layouts/app-layout';
 import articles from '@/routes/articles/index';
 import { type BreadcrumbItem } from '@/types';
-import { Head, router, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { Box, Download } from 'lucide-react';
 import { useState } from 'react';
 
@@ -192,9 +193,21 @@ export default function PalletizationInstructionsIndex() {
                     <div className="relative h-full w-full overflow-auto">
                         <div className="block space-y-3 p-4 md:hidden">
                             {instructionsPaginated.data.length === 0 ? (
-                                <div className="py-8 text-center text-sm text-muted-foreground">
-                                    Nessuna istruzione trovata per i filtri
-                                    attuali.
+                                <div className="flex flex-col items-center justify-center gap-4 py-12 text-center">
+                                    <p className="text-sm text-muted-foreground">
+                                        Nessuna istruzione di pallettizzazione.
+                                        Aggiungi la prima.
+                                    </p>
+                                    <Button asChild>
+                                        <Link
+                                            href={
+                                                articles.palletizationInstructions.create()
+                                                    .url
+                                            }
+                                        >
+                                            Aggiungi
+                                        </Link>
+                                    </Button>
                                 </div>
                             ) : (
                                 instructionsPaginated.data.map(
@@ -359,8 +372,23 @@ export default function PalletizationInstructionsIndex() {
                                             colSpan={13}
                                             className="px-3 py-8 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessuna istruzione trovata per i
-                                            filtri attuali.
+                                            <div className="flex flex-col items-center justify-center gap-3">
+                                                <p>
+                                                    Nessuna istruzione di
+                                                    pallettizzazione. Aggiungi
+                                                    la prima.
+                                                </p>
+                                                <Button asChild size="sm">
+                                                    <Link
+                                                        href={
+                                                            articles.palletizationInstructions.create()
+                                                                .url
+                                                        }
+                                                    >
+                                                        Aggiungi
+                                                    </Link>
+                                                </Button>
+                                            </div>
                                         </td>
                                     </tr>
                                 )}

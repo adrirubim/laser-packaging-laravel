@@ -1,3 +1,5 @@
+import { ConfirmCloseDialog } from '@/components/confirm-close-dialog';
+import { FormValidationNotification } from '@/components/form-validation-notification';
 import { FormLabel } from '@/components/FormLabel';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -23,7 +25,20 @@ import * as employeesContractsRoutes from '@/routes/employees/contracts/index';
 import employeesRoutes from '@/routes/employees/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router, usePage } from '@inertiajs/react';
+import { ArrowLeft } from 'lucide-react';
 import { useEffect, useState } from 'react';
+
+const PAY_LEVEL_OPTIONS: { value: string; label: string }[] = [
+    { value: '0', label: 'D1 (ex 2a)' },
+    { value: '1', label: 'D2 (ex 3a)' },
+    { value: '2', label: 'C1 (ex 3a Super)' },
+    { value: '3', label: 'C2 (ex 4a)' },
+    { value: '4', label: 'C3 (ex 5a)' },
+    { value: '5', label: 'B1 (ex 5a Super)' },
+    { value: '6', label: 'B2 (ex 6a)' },
+    { value: '7', label: 'B3 (ex 7a)' },
+    { value: '8', label: 'A1 (ex 8a Quadri)' },
+];
 
 type Employee = {
     uuid: string;
@@ -75,6 +90,23 @@ export default function ContractsEdit({
     const [payLevel, setPayLevel] = useState(
         contract.pay_level?.toString() || '0',
     );
+    const [showCloseConfirm, setShowCloseConfirm] = useState(false);
+
+    const validationErrors = Object.fromEntries(
+        Object.entries(serverErrors || {}).filter(
+            (entry): entry is [string, string] =>
+                typeof entry[1] === 'string' && entry[1].length > 0,
+        ),
+    ) as Record<string, string>;
+
+    const isDirty =
+        employeeUuid !== (contract.employee?.uuid || '') ||
+        supplierUuid !== (contract.supplier?.uuid || '') ||
+        startDate !==
+            (contract.start_date ? contract.start_date.split('T')[0] : '') ||
+        endDate !==
+            (contract.end_date ? contract.end_date.split('T')[0] : '') ||
+        payLevel !== (contract.pay_level?.toString() || '0');
 
     useEffect(() => {
         if (contract) {
@@ -126,6 +158,23 @@ export default function ContractsEdit({
             <Head title="Modifica Contratto" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+                <div className="flex items-center justify-between">
+                    <Button
+                        variant="outline"
+                        onClick={() => setShowCloseConfirm(true)}
+                        aria-label="Torna indietro"
+                    >
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        Indietro
+                    </Button>
+                </div>
+
+                <FormValidationNotification
+                    errors={validationErrors}
+                    message="Correggi gli errori nel modulo prima di salvare."
+                    showOnSubmit={false}
+                />
+
                 <Card>
                     <CardHeader>
                         <CardTitle>Modifica Contratto</CardTitle>
@@ -352,21 +401,18 @@ export default function ContractsEdit({
                                                     <SelectValue />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="0">
-                                                        C3 (ex 5a)
-                                                    </SelectItem>
-                                                    <SelectItem value="1">
-                                                        B1 (ex 5a Super)
-                                                    </SelectItem>
-                                                    <SelectItem value="2">
-                                                        B2 (ex 6a)
-                                                    </SelectItem>
-                                                    <SelectItem value="3">
-                                                        B3 (ex 7a)
-                                                    </SelectItem>
-                                                    <SelectItem value="4">
-                                                        A1 (ex 8a Quadri)
-                                                    </SelectItem>
+                                                    {PAY_LEVEL_OPTIONS.map(
+                                                        (opt) => (
+                                                            <SelectItem
+                                                                key={opt.value}
+                                                                value={
+                                                                    opt.value
+                                                                }
+                                                            >
+                                                                {opt.label}
+                                                            </SelectItem>
+                                                        ),
+                                                    )}
                                                 </SelectContent>
                                             </Select>
                                             <InputError
@@ -403,10 +449,14 @@ export default function ContractsEdit({
                                                 type="button"
                                                 variant="outline"
                                                 onClick={() =>
-                                                    router.visit(
-                                                        employeesContractsRoutes.index()
-                                                            .url,
-                                                    )
+                                                    isDirty
+                                                        ? setShowCloseConfirm(
+                                                              true,
+                                                          )
+                                                        : router.visit(
+                                                              employeesContractsRoutes.index()
+                                                                  .url,
+                                                          )
                                                 }
                                             >
                                                 Annulla
@@ -419,6 +469,17 @@ export default function ContractsEdit({
                     </CardContent>
                 </Card>
             </div>
+
+            <ConfirmCloseDialog
+                open={showCloseConfirm}
+                onOpenChange={setShowCloseConfirm}
+                onConfirm={() => {
+                    setShowCloseConfirm(false);
+                    router.visit(employeesContractsRoutes.index().url);
+                }}
+                title="Conferma chiusura"
+                description="Sei sicuro di voler uscire? I dati non salvati andranno persi."
+            />
         </AppLayout>
     );
 }

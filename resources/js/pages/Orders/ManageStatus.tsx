@@ -1,4 +1,14 @@
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -23,7 +33,7 @@ import {
 import AppLayout from '@/layouts/app-layout';
 import orders from '@/routes/orders/index';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { AlertCircle, CheckCircle2, Loader2, XCircle } from 'lucide-react';
 import { useState } from 'react';
 
@@ -79,6 +89,20 @@ export default function OrdersManageStatus({
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
     const [showLanciatoPrompt, setShowLanciatoPrompt] = useState(false);
+    type ConfirmActionType =
+        | 'back'
+        | 'allestimento'
+        | 'sospendi'
+        | 'evaso'
+        | 'riprendi'
+        | 'forza-avanzamento';
+    const [confirmAction, setConfirmAction] =
+        useState<ConfirmActionType | null>(null);
+
+    const handleBackToDetails = () => {
+        // Replica del comportamento legacy: conferma generica alla chiusura
+        setConfirmAction('back');
+    };
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
@@ -129,51 +153,35 @@ export default function OrdersManageStatus({
             const data = await response.json();
 
             if (data.success) {
-                setSuccess('Semaforo salvato con successo.');
+                setSuccess('Impostazioni del semaforo salvate con successo.');
                 if (data.all_green && data.can_change_to_lanciato) {
                     setShowLanciatoPrompt(true);
                 }
             } else {
                 setError(
-                    data.message || 'Errore nel salvataggio del semaforo.',
+                    data.message ||
+                        'Si è verificato un errore nel salvataggio del semaforo.',
                 );
             }
         } catch {
-            setError('Errore di connessione. Riprova.');
+            setError(
+                'Errore di connessione durante il salvataggio del semaforo. Riprova.',
+            );
         } finally {
             setIsSavingSemaforo(false);
         }
     };
 
-    const handleChangeStatus = async () => {
-        if (newStatus === null) {
-            setError('Seleziona un nuovo stato.');
-            return;
-        }
-
-        // Validate SOSPESO requires motivazione
-        if (newStatus === 4 && !motivazione.trim()) {
-            setError('La motivazione è obbligatoria per sospendere un ordine.');
-            return;
-        }
-
+    const performChangeStatus = async (payload: {
+        status: number;
+        motivazione?: string;
+        force?: boolean;
+    }) => {
         setIsChangingStatus(true);
         setError(null);
         setSuccess(null);
 
         try {
-            const payload: {
-                status: number;
-                motivazione?: string;
-                force?: boolean;
-            } = { status: newStatus };
-            if (newStatus === 4) {
-                payload.motivazione = motivazione;
-            }
-            if (newStatus === 3) {
-                payload.force = true;
-            }
-
             const response = await fetch(
                 `/orders/${order.uuid}/change-status`,
                 {
@@ -192,20 +200,51 @@ export default function OrdersManageStatus({
             const data = await response.json();
 
             if (data.success) {
-                setSuccess('Stato ordine aggiornato con successo.');
+                setSuccess("Stato dell'ordine aggiornato con successo.");
                 setTimeout(() => {
                     router.visit(orders.show({ order: order.uuid }).url);
                 }, 1500);
             } else {
                 setError(
-                    data.message || "Errore nell'aggiornamento dello stato.",
+                    data.message ||
+                        "Si è verificato un errore nell'aggiornamento dello stato dell'ordine.",
                 );
             }
         } catch {
-            setError('Errore di connessione. Riprova.');
+            setError(
+                "Errore di connessione durante l'aggiornamento dello stato. Riprova.",
+            );
         } finally {
             setIsChangingStatus(false);
         }
+    };
+
+    const handleChangeStatus = async () => {
+        if (newStatus === null) {
+            setError('Seleziona un nuovo stato per procedere.');
+            return;
+        }
+
+        // Validate SOSPESO requires motivazione
+        if (newStatus === 4 && !motivazione.trim()) {
+            setError("La motivazione è obbligatoria per sospendere l'ordine.");
+            return;
+        }
+
+        const payload: {
+            status: number;
+            motivazione?: string;
+            force?: boolean;
+        } = { status: newStatus };
+
+        if (newStatus === 4) {
+            payload.motivazione = motivazione;
+        }
+        if (newStatus === 3) {
+            payload.force = true;
+        }
+
+        await performChangeStatus(payload);
     };
 
     const handleChangeToLanciato = () => {
@@ -218,19 +257,146 @@ export default function OrdersManageStatus({
         }, 100);
     };
 
+    const handleChangeToAllestimento = () => {
+        setConfirmAction('allestimento');
+    };
+
+    const handleSuspendFromAvanzamento = () => {
+        if (order.status !== 3) return;
+
+        setConfirmAction('sospendi');
+    };
+
+    const handleChangeToEvasoFromAvanzamento = () => {
+        if (order.status !== 3) return;
+
+        setConfirmAction('evaso');
+    };
+
+    const handleResumeFromSospeso = () => {
+        if (order.status !== 4) return;
+
+        setConfirmAction('riprendi');
+    };
+
+    const getConfirmConfig = (action: ConfirmActionType) => {
+        switch (action) {
+            case 'back':
+                return {
+                    title: 'Tornare ai dettagli?',
+                    description:
+                        "Vuoi tornare alla pagina di dettaglio dell'ordine? Le modifiche di stato già salvate resteranno applicate.",
+                    confirmLabel: 'Torna ai dettagli',
+                };
+            case 'allestimento':
+                return {
+                    title: 'Passa in Allestimento',
+                    description:
+                        "Vuoi cambiare lo stato dell'ordine in Allestimento?",
+                    confirmLabel: 'Sì, passa in Allestimento',
+                };
+            case 'sospendi':
+                return {
+                    title: 'Sospendi ordine',
+                    description:
+                        "L'ordine verrà spostato in stato Sospeso. Specifica una motivazione per ricordare il motivo della pausa.",
+                    confirmLabel: 'Sospendi ordine',
+                };
+            case 'evaso':
+                return {
+                    title: 'Passa in Evaso',
+                    description: "Vuoi cambiare lo stato dell'ordine in Evaso?",
+                    confirmLabel: 'Sì, passa in Evaso',
+                };
+            case 'riprendi':
+                return {
+                    title: 'Riprendi ordine',
+                    description:
+                        "Vuoi riprendere l'ordine e riportarlo in Avanzamento?",
+                    confirmLabel: 'Riprendi ordine',
+                };
+            case 'forza-avanzamento':
+                return {
+                    title: 'Forza passaggio in Avanzamento',
+                    description:
+                        "Sei sicuro di voler forzare lo stato dell'ordine in Avanzamento?",
+                    confirmLabel: 'Forza in Avanzamento',
+                };
+        }
+    };
+
+    const handleConfirmAction = async () => {
+        if (!confirmAction) return;
+
+        switch (confirmAction) {
+            case 'back':
+                setConfirmAction(null);
+                router.visit(orders.show({ order: order.uuid }).url);
+                return;
+            case 'allestimento':
+                setConfirmAction(null);
+                void performChangeStatus({ status: 1 });
+                return;
+            case 'sospendi': {
+                const trimmed = motivazione.trim();
+                if (!trimmed) {
+                    setError(
+                        "La motivazione è obbligatoria per sospendere l'ordine.",
+                    );
+                    return;
+                }
+                setConfirmAction(null);
+                void performChangeStatus({
+                    status: 4,
+                    motivazione: trimmed,
+                });
+                return;
+            }
+            case 'evaso':
+                setConfirmAction(null);
+                void performChangeStatus({ status: 5 });
+                return;
+            case 'riprendi':
+                setConfirmAction(null);
+                void performChangeStatus({ status: 3 });
+                return;
+            case 'forza-avanzamento':
+                setConfirmAction(null);
+                void performChangeStatus({ status: 3, force: true });
+                return;
+        }
+    };
+
     const allGreen =
         statusSemaforo.etichette === 2 &&
         statusSemaforo.packaging === 2 &&
         statusSemaforo.prodotto === 2;
 
+    // En legacy el botón "Passa In Lanciato" se muestra cuando
+    // todos los semáforos son > 0 (amarillo o verde). El prompt
+    // automático sólo aparece cuando los tres están en verde.
+    const allPositive =
+        statusSemaforo.etichette > 0 &&
+        statusSemaforo.packaging > 0 &&
+        statusSemaforo.prodotto > 0;
+
     // Get available status transitions based on current status
     const getAvailableStatuses = (): StatusOption[] => {
         const currentStatus = order.status;
 
-        // Can always change to SOSPESO
-        const availableStatuses = statusOptions.filter(
-            (opt) => opt.value === 4,
-        );
+        // Se l'ordine è già SALDATO (6), non ci sono transizioni possibili
+        if (currentStatus === 6) {
+            return [];
+        }
+
+        const availableStatuses: StatusOption[] = [];
+
+        // Può andare in SOSPESO solo da stato 3 (IN_AVANZAMENTO), come nel dialogo legacy
+        if (currentStatus === 3) {
+            availableStatuses.push(
+                ...statusOptions.filter((opt) => opt.value === 4),
+            );
+        }
 
         // Add other valid transitions
         if (currentStatus === 0) {
@@ -239,8 +405,12 @@ export default function OrdersManageStatus({
                 ...statusOptions.filter((opt) => opt.value === 1),
             );
         } else if (currentStatus === 1) {
-            // IN_ALLESTIMENTO
-            if (allGreen) {
+            // IN_ALLESTIMENTO:
+            // - Il legacy mostra il bottone "Passa In Lanciato" quando tutti
+            //   i semafori sono > 0 (almeno giallo).
+            // - Se tutti e 3 sono verdi, oltre al bottone compare anche il prompt
+            //   automatico di conferma.
+            if (allPositive) {
                 availableStatuses.push(
                     ...statusOptions.filter((opt) => opt.value === 2),
                 );
@@ -256,11 +426,9 @@ export default function OrdersManageStatus({
                 ...statusOptions.filter((opt) => opt.value === 5),
             );
         } else if (currentStatus === 4) {
-            // SOSPESO - can go back to previous status
+            // SOSPESO - può solo riprendere tornando in AVANZAMENTO (3)
             availableStatuses.push(
-                ...statusOptions.filter(
-                    (opt) => opt.value !== 4 && opt.value !== 6,
-                ),
+                ...statusOptions.filter((opt) => opt.value === 3),
             );
         } else if (currentStatus === 5) {
             // EVASO
@@ -291,10 +459,8 @@ export default function OrdersManageStatus({
                             </span>
                         </p>
                     </div>
-                    <Button asChild variant="outline">
-                        <Link href={orders.show({ order: order.uuid }).url}>
-                            Torna ai Dettagli
-                        </Link>
+                    <Button variant="outline" onClick={handleBackToDetails}>
+                        Torna ai Dettagli
                     </Button>
                 </div>
 
@@ -312,6 +478,64 @@ export default function OrdersManageStatus({
                             {success}
                         </AlertDescription>
                     </Alert>
+                )}
+
+                {confirmAction && (
+                    <AlertDialog
+                        open={!!confirmAction}
+                        onOpenChange={(open) => {
+                            if (!open) setConfirmAction(null);
+                        }}
+                    >
+                        <AlertDialogContent>
+                            {(() => {
+                                const { title, description, confirmLabel } =
+                                    getConfirmConfig(confirmAction);
+                                return (
+                                    <>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>
+                                                {title}
+                                            </AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                {description}
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        {confirmAction === 'sospendi' && (
+                                            <div className="mt-4 space-y-2">
+                                                <Label htmlFor="motivazione-modal">
+                                                    Motivazione sospensione
+                                                </Label>
+                                                <Textarea
+                                                    id="motivazione-modal"
+                                                    value={motivazione}
+                                                    onChange={(e) =>
+                                                        setMotivazione(
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    placeholder="Indica brevemente il motivo della sospensione (es. attesa materiali, problema qualità, richiesta cliente...)"
+                                                    rows={3}
+                                                />
+                                            </div>
+                                        )}
+                                        <AlertDialogFooter className="mt-6">
+                                            <AlertDialogCancel>
+                                                Annulla
+                                            </AlertDialogCancel>
+                                            <AlertDialogAction
+                                                onClick={() => {
+                                                    void handleConfirmAction();
+                                                }}
+                                            >
+                                                {confirmLabel}
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </>
+                                );
+                            })()}
+                        </AlertDialogContent>
+                    </AlertDialog>
                 )}
 
                 {showLanciatoPrompt && (
@@ -387,236 +611,456 @@ export default function OrdersManageStatus({
                                     <p>{order.quantity}</p>
                                 </div>
                             )}
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Semaforo</CardTitle>
-                            <CardDescription>
-                                Stato dei controlli di qualità
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div>
-                                <Label htmlFor="etichette">Etichette</Label>
-                                <Select
-                                    value={statusSemaforo.etichette.toString()}
-                                    onValueChange={(value) =>
-                                        handleSemaforoChange(
-                                            'etichette',
-                                            parseInt(value),
-                                        )
-                                    }
-                                >
-                                    <SelectTrigger id="etichette">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {SEMAFORO_OPTIONS.map((opt) => (
-                                            <SelectItem
-                                                key={opt.value}
-                                                value={opt.value.toString()}
-                                            >
-                                                <span
-                                                    className={`inline-flex items-center gap-2`}
-                                                >
-                                                    {opt.value === 0 && (
-                                                        <XCircle className="h-4 w-4 text-red-600" />
-                                                    )}
-                                                    {opt.value === 1 && (
-                                                        <AlertCircle className="h-4 w-4 text-yellow-600" />
-                                                    )}
-                                                    {opt.value === 2 && (
-                                                        <CheckCircle2 className="h-4 w-4 text-green-600" />
-                                                    )}
-                                                    {opt.label}
-                                                </span>
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            <div>
-                                <Label htmlFor="packaging">Packaging</Label>
-                                <Select
-                                    value={statusSemaforo.packaging.toString()}
-                                    onValueChange={(value) =>
-                                        handleSemaforoChange(
-                                            'packaging',
-                                            parseInt(value),
-                                        )
-                                    }
-                                >
-                                    <SelectTrigger id="packaging">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {SEMAFORO_OPTIONS.map((opt) => (
-                                            <SelectItem
-                                                key={opt.value}
-                                                value={opt.value.toString()}
-                                            >
-                                                <span
-                                                    className={`inline-flex items-center gap-2`}
-                                                >
-                                                    {opt.value === 0 && (
-                                                        <XCircle className="h-4 w-4 text-red-600" />
-                                                    )}
-                                                    {opt.value === 1 && (
-                                                        <AlertCircle className="h-4 w-4 text-yellow-600" />
-                                                    )}
-                                                    {opt.value === 2 && (
-                                                        <CheckCircle2 className="h-4 w-4 text-green-600" />
-                                                    )}
-                                                    {opt.label}
-                                                </span>
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            <div>
-                                <Label htmlFor="prodotto">Prodotto</Label>
-                                <Select
-                                    value={statusSemaforo.prodotto.toString()}
-                                    onValueChange={(value) =>
-                                        handleSemaforoChange(
-                                            'prodotto',
-                                            parseInt(value),
-                                        )
-                                    }
-                                >
-                                    <SelectTrigger id="prodotto">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {SEMAFORO_OPTIONS.map((opt) => (
-                                            <SelectItem
-                                                key={opt.value}
-                                                value={opt.value.toString()}
-                                            >
-                                                <span
-                                                    className={`inline-flex items-center gap-2`}
-                                                >
-                                                    {opt.value === 0 && (
-                                                        <XCircle className="h-4 w-4 text-red-600" />
-                                                    )}
-                                                    {opt.value === 1 && (
-                                                        <AlertCircle className="h-4 w-4 text-yellow-600" />
-                                                    )}
-                                                    {opt.value === 2 && (
-                                                        <CheckCircle2 className="h-4 w-4 text-green-600" />
-                                                    )}
-                                                    {opt.label}
-                                                </span>
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            {allGreen && (
-                                <Alert className="border-green-500 bg-green-50">
-                                    <CheckCircle2 className="h-4 w-4 text-green-600" />
-                                    <AlertDescription className="text-green-800">
-                                        Tutti i semafori sono verdi. Puoi
-                                        cambiare lo stato a "Lanciato".
-                                    </AlertDescription>
-                                </Alert>
-                            )}
-
-                            <Button
-                                onClick={handleSaveSemaforo}
-                                disabled={isSavingSemaforo}
-                                className="w-full"
-                            >
-                                {isSavingSemaforo ? (
-                                    <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Salvando...
-                                    </>
-                                ) : (
-                                    'Salva Semaforo'
-                                )}
-                            </Button>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="md:col-span-2">
-                        <CardHeader>
-                            <CardTitle>Cambia Stato Ordine</CardTitle>
-                            <CardDescription>
-                                Seleziona il nuovo stato per questo ordine
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div>
-                                <Label htmlFor="new-status">Nuovo Stato</Label>
-                                <Select
-                                    value={newStatus?.toString() || ''}
-                                    onValueChange={(value) => {
-                                        setNewStatus(parseInt(value));
-                                        setMotivazione('');
-                                    }}
-                                >
-                                    <SelectTrigger id="new-status">
-                                        <SelectValue placeholder="Seleziona un nuovo stato" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {availableStatuses.map((opt) => (
-                                            <SelectItem
-                                                key={opt.value}
-                                                value={opt.value.toString()}
-                                            >
-                                                {opt.label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            {newStatus === 4 && (
+                            {order.worked_quantity != null && (
                                 <div>
-                                    <Label htmlFor="motivazione">
-                                        Motivazione *
+                                    <Label className="text-sm font-medium text-muted-foreground">
+                                        Quantità Lavorata
                                     </Label>
-                                    <Textarea
-                                        id="motivazione"
-                                        value={motivazione}
-                                        onChange={(e) =>
-                                            setMotivazione(e.target.value)
-                                        }
-                                        placeholder="Inserisci la motivazione per la sospensione..."
-                                        rows={3}
-                                    />
-                                    <p className="mt-1 text-sm text-muted-foreground">
-                                        La motivazione è obbligatoria per
-                                        sospendere un ordine.
-                                    </p>
+                                    <p>{order.worked_quantity}</p>
                                 </div>
                             )}
+                            {order.status === 4 && order.motivazione && (
+                                <div>
+                                    <Label className="text-sm font-medium text-muted-foreground">
+                                        Motivazione sospensione
+                                    </Label>
+                                    <p>{order.motivazione}</p>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
 
-                            <Button
-                                onClick={handleChangeStatus}
-                                disabled={
-                                    isChangingStatus ||
-                                    newStatus === null ||
-                                    (newStatus === 4 && !motivazione.trim())
-                                }
-                                className="w-full"
-                            >
-                                {isChangingStatus ? (
-                                    <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Aggiornamento...
-                                    </>
-                                ) : (
-                                    'Cambia Stato'
-                                )}
-                            </Button>
+                    {order.status === 1 && (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>
+                                    Semaforo materiali e controlli
+                                </CardTitle>
+                                <CardDescription>
+                                    Indica se etichette, packaging e prodotto
+                                    sono pronti prima di lanciare l'ordine.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div>
+                                    <Label htmlFor="etichette">Etichette</Label>
+                                    <Select
+                                        value={statusSemaforo.etichette.toString()}
+                                        onValueChange={(value) =>
+                                            handleSemaforoChange(
+                                                'etichette',
+                                                parseInt(value),
+                                            )
+                                        }
+                                    >
+                                        <SelectTrigger id="etichette">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {SEMAFORO_OPTIONS.map((opt) => (
+                                                <SelectItem
+                                                    key={opt.value}
+                                                    value={opt.value.toString()}
+                                                >
+                                                    <span
+                                                        className={`inline-flex items-center gap-2`}
+                                                    >
+                                                        {opt.value === 0 && (
+                                                            <XCircle className="h-4 w-4 text-red-600" />
+                                                        )}
+                                                        {opt.value === 1 && (
+                                                            <AlertCircle className="h-4 w-4 text-yellow-600" />
+                                                        )}
+                                                        {opt.value === 2 && (
+                                                            <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                                        )}
+                                                        {opt.label}
+                                                    </span>
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div>
+                                    <Label htmlFor="packaging">Packaging</Label>
+                                    <Select
+                                        value={statusSemaforo.packaging.toString()}
+                                        onValueChange={(value) =>
+                                            handleSemaforoChange(
+                                                'packaging',
+                                                parseInt(value),
+                                            )
+                                        }
+                                    >
+                                        <SelectTrigger id="packaging">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {SEMAFORO_OPTIONS.map((opt) => (
+                                                <SelectItem
+                                                    key={opt.value}
+                                                    value={opt.value.toString()}
+                                                >
+                                                    <span
+                                                        className={`inline-flex items-center gap-2`}
+                                                    >
+                                                        {opt.value === 0 && (
+                                                            <XCircle className="h-4 w-4 text-red-600" />
+                                                        )}
+                                                        {opt.value === 1 && (
+                                                            <AlertCircle className="h-4 w-4 text-yellow-600" />
+                                                        )}
+                                                        {opt.value === 2 && (
+                                                            <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                                        )}
+                                                        {opt.label}
+                                                    </span>
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div>
+                                    <Label htmlFor="prodotto">Prodotto</Label>
+                                    <Select
+                                        value={statusSemaforo.prodotto.toString()}
+                                        onValueChange={(value) =>
+                                            handleSemaforoChange(
+                                                'prodotto',
+                                                parseInt(value),
+                                            )
+                                        }
+                                    >
+                                        <SelectTrigger id="prodotto">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {SEMAFORO_OPTIONS.map((opt) => (
+                                                <SelectItem
+                                                    key={opt.value}
+                                                    value={opt.value.toString()}
+                                                >
+                                                    <span
+                                                        className={`inline-flex items-center gap-2`}
+                                                    >
+                                                        {opt.value === 0 && (
+                                                            <XCircle className="h-4 w-4 text-red-600" />
+                                                        )}
+                                                        {opt.value === 1 && (
+                                                            <AlertCircle className="h-4 w-4 text-yellow-600" />
+                                                        )}
+                                                        {opt.value === 2 && (
+                                                            <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                                        )}
+                                                        {opt.label}
+                                                    </span>
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="rounded-md border bg-muted/40 p-3 text-xs">
+                                    {allGreen ? (
+                                        <span className="inline-flex items-center gap-2 text-emerald-700 dark:text-emerald-300">
+                                            <CheckCircle2 className="h-4 w-4" />
+                                            Semaforo: tutto pronto, puoi
+                                            lanciare l'ordine.
+                                        </span>
+                                    ) : allPositive ? (
+                                        <span className="inline-flex items-center gap-2 text-amber-700 dark:text-amber-300">
+                                            <AlertCircle className="h-4 w-4" />
+                                            Semaforo: pronto al lancio, ma con
+                                            controlli ancora da completare.
+                                        </span>
+                                    ) : (
+                                        <span className="inline-flex items-center gap-2 text-red-700 dark:text-red-300">
+                                            <XCircle className="h-4 w-4" />
+                                            Semaforo: NON pronto al lancio.
+                                            Imposta almeno giallo tutte le voci.
+                                        </span>
+                                    )}
+                                </div>
+
+                                <Button
+                                    onClick={handleSaveSemaforo}
+                                    disabled={isSavingSemaforo}
+                                    className="w-full"
+                                >
+                                    {isSavingSemaforo ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            Salvando...
+                                        </>
+                                    ) : (
+                                        'Salva Semaforo'
+                                    )}
+                                </Button>
+                                <p className="text-xs text-muted-foreground">
+                                    Salvare il semaforo non cambia lo stato
+                                    dell'ordine: il passaggio in \"Lanciato\"
+                                    avviene dal riquadro \"Cambia Stato
+                                    Ordine\".
+                                </p>
+                            </CardContent>
+                        </Card>
+                    )}
+
+                    <Card
+                        className={
+                            order.status === 6
+                                ? 'border-emerald-200 bg-emerald-50/50 dark:border-emerald-900/50 dark:bg-emerald-950/20'
+                                : order.status === 1
+                                  ? 'md:col-span-2'
+                                  : ''
+                        }
+                    >
+                        {order.status !== 6 && (
+                            <CardHeader>
+                                <CardTitle>Cambia Stato Ordine</CardTitle>
+                                <CardDescription>
+                                    {order.status === 0
+                                        ? "L'ordine è pianificato. Quando sei pronto a preparare materiali ed etichette, passalo in Allestimento."
+                                        : order.status === 1
+                                          ? 'Quando il semaforo è almeno giallo su tutte le voci puoi passare l\'ordine in "Lanciato". Se è tutto verde ti consigliamo di farlo subito.'
+                                          : order.status === 2
+                                            ? "L'ordine è in stato Lanciato. Passerà in Avanzamento automaticamente alla prima quantità registrata dal portale. Se vuoi avviare la produzione subito senza attendere, usa il pulsante qui sotto."
+                                            : order.status === 3
+                                              ? "L'ordine è in Avanzamento (in produzione). Puoi sospenderlo temporaneamente indicando il motivo, oppure segnarlo come Evaso quando la lavorazione è completata."
+                                              : order.status === 4
+                                                ? "L'ordine è sospeso. Quando il problema è risolto puoi riprenderlo tornando in Avanzamento."
+                                                : order.status === 5
+                                                  ? "L'ordine è evaso. Quando la parte amministrativa è completata, passalo in Saldato."
+                                                  : 'Seleziona il nuovo stato per questo ordine.'}
+                                </CardDescription>
+                            </CardHeader>
+                        )}
+                        <CardContent className="space-y-4">
+                            {order.status === 6 ? (
+                                <div className="flex flex-col items-center justify-center py-8 text-center">
+                                    <CheckCircle2 className="mb-4 h-16 w-16 text-emerald-600 dark:text-emerald-500" />
+                                    <h3 className="text-xl font-semibold text-foreground">
+                                        L'ordine è stato Saldato.
+                                    </h3>
+                                    <p className="mt-2 text-sm break-words text-muted-foreground">
+                                        Non sono possibili ulteriori modifiche
+                                        di stato. L'ordine è chiuso
+                                        definitivamente.
+                                    </p>
+                                </div>
+                            ) : order.status === 0 ? (
+                                <div className="space-y-2">
+                                    <Button
+                                        onClick={handleChangeToAllestimento}
+                                        disabled={isChangingStatus}
+                                        className="w-full"
+                                    >
+                                        {isChangingStatus ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                Aggiornamento...
+                                            </>
+                                        ) : (
+                                            'Passa In Allestimento'
+                                        )}
+                                    </Button>
+                                    <p className="text-xs text-muted-foreground">
+                                        Questo passaggio prepara l&apos;ordine
+                                        per la produzione (materiali ed
+                                        etichette). Non è pensato per tornare
+                                        indietro frequentemente.
+                                    </p>
+                                </div>
+                            ) : order.status === 2 ? (
+                                <div className="space-y-2">
+                                    <Button
+                                        onClick={() =>
+                                            setConfirmAction(
+                                                'forza-avanzamento',
+                                            )
+                                        }
+                                        disabled={isChangingStatus}
+                                        className="w-full"
+                                    >
+                                        {isChangingStatus ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                Aggiornamento...
+                                            </>
+                                        ) : (
+                                            'Forza In Avanzamento'
+                                        )}
+                                    </Button>
+                                    <p className="text-xs text-muted-foreground">
+                                        Porta l&apos;ordine in Avanzamento senza
+                                        attendere la prima quantità dal portale.
+                                        Utile se la produzione è già iniziata o
+                                        per correzioni manuali.
+                                    </p>
+                                </div>
+                            ) : order.status === 3 ? (
+                                <div className="space-y-3">
+                                    <div className="flex flex-col gap-3 md:flex-row">
+                                        <Button
+                                            variant="destructive"
+                                            onClick={
+                                                handleSuspendFromAvanzamento
+                                            }
+                                            disabled={isChangingStatus}
+                                            className="w-full md:w-1/2"
+                                        >
+                                            {isChangingStatus ? (
+                                                <>
+                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                    Aggiornamento...
+                                                </>
+                                            ) : (
+                                                'Sospendi'
+                                            )}
+                                        </Button>
+                                        <Button
+                                            onClick={
+                                                handleChangeToEvasoFromAvanzamento
+                                            }
+                                            disabled={isChangingStatus}
+                                            className="w-full md:w-1/2"
+                                        >
+                                            {isChangingStatus ? (
+                                                <>
+                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                    Aggiornamento...
+                                                </>
+                                            ) : (
+                                                'Passa In Evaso'
+                                            )}
+                                        </Button>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground">
+                                        <strong>Sospendi:</strong> mette in
+                                        pausa l&apos;ordine (obbligatorio
+                                        indicare il motivo).{' '}
+                                        <strong>Passa In Evaso:</strong> segna
+                                        la lavorazione come completata; potrai
+                                        poi chiuderlo in Saldato.
+                                    </p>
+                                </div>
+                            ) : order.status === 4 ? (
+                                <div className="space-y-2">
+                                    <Button
+                                        onClick={handleResumeFromSospeso}
+                                        disabled={isChangingStatus}
+                                        className="w-full"
+                                    >
+                                        {isChangingStatus ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                Aggiornamento...
+                                            </>
+                                        ) : (
+                                            'Riprendi (Ritorna In Avanzamento)'
+                                        )}
+                                    </Button>
+                                    <p className="text-xs text-muted-foreground">
+                                        Riporta l&apos;ordine dal ramo Sospeso
+                                        alla produzione attiva (stato
+                                        Avanzamento). Usa questa azione quando
+                                        il motivo della sospensione è stato
+                                        risolto.
+                                    </p>
+                                </div>
+                            ) : (
+                                <>
+                                    {order.status !== 6 && (
+                                        <div className="space-y-1">
+                                            <Label htmlFor="new-status">
+                                                Nuovo Stato
+                                            </Label>
+                                            <Select
+                                                value={
+                                                    newStatus?.toString() || ''
+                                                }
+                                                onValueChange={(value) => {
+                                                    setNewStatus(
+                                                        parseInt(value),
+                                                    );
+                                                    setMotivazione('');
+                                                }}
+                                            >
+                                                <SelectTrigger id="new-status">
+                                                    <SelectValue placeholder="Seleziona un nuovo stato" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {availableStatuses.map(
+                                                        (opt) => (
+                                                            <SelectItem
+                                                                key={opt.value}
+                                                                value={opt.value.toString()}
+                                                            >
+                                                                {opt.label}
+                                                            </SelectItem>
+                                                        ),
+                                                    )}
+                                                </SelectContent>
+                                            </Select>
+                                            {order.status === 5 && (
+                                                <p className="text-xs text-muted-foreground">
+                                                    Da Evaso puoi solo
+                                                    completare l&apos;ordine
+                                                    portandolo in Saldato, dopo
+                                                    aver chiuso la parte
+                                                    amministrativa.
+                                                </p>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {order.status !== 6 && newStatus === 4 && (
+                                        <div>
+                                            <Label htmlFor="motivazione">
+                                                Motivazione *
+                                            </Label>
+                                            <Textarea
+                                                id="motivazione"
+                                                value={motivazione}
+                                                onChange={(e) =>
+                                                    setMotivazione(
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                placeholder="Inserisci la motivazione per la sospensione..."
+                                                rows={3}
+                                            />
+                                            <p className="mt-1 text-sm text-muted-foreground">
+                                                La motivazione è obbligatoria
+                                                per sospendere un ordine.
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    <Button
+                                        onClick={handleChangeStatus}
+                                        disabled={
+                                            order.status === 6 ||
+                                            isChangingStatus ||
+                                            newStatus === null ||
+                                            (newStatus === 4 &&
+                                                !motivazione.trim())
+                                        }
+                                        className="w-full"
+                                    >
+                                        {isChangingStatus ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                Aggiornamento...
+                                            </>
+                                        ) : (
+                                            'Cambia Stato'
+                                        )}
+                                    </Button>
+                                </>
+                            )}
                         </CardContent>
                     </Card>
                 </div>

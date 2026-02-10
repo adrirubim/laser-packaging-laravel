@@ -295,8 +295,9 @@ class EmployeeController extends Controller
 
     /**
      * Show the form for creating a new contract.
+     * Query param ?proroga={contract_uuid} precompila il form (flusso Proroga).
      */
-    public function createContract(): Response
+    public function createContract(Request $request): Response
     {
         $employees = Employee::active()
             ->orderBy('surname')
@@ -307,9 +308,34 @@ class EmployeeController extends Controller
             ->orderBy('company_name')
             ->get(['uuid', 'code', 'company_name']);
 
+        $prorogaContract = null;
+        $prorogaUuid = $request->query('proroga');
+        if ($prorogaUuid) {
+            $contract = EmployeeContract::active()
+                ->with(['employee', 'supplier'])
+                ->where('uuid', $prorogaUuid)
+                ->first();
+            if ($contract) {
+                $startDate = $contract->end_date
+                    ? $contract->end_date->format('Y-m-d')
+                    : now()->format('Y-m-d');
+                $prorogaContract = [
+                    'employee_uuid' => $contract->employee_uuid,
+                    'supplier_uuid' => $contract->supplier_uuid,
+                    'pay_level' => (int) $contract->pay_level,
+                    'start_date' => $startDate,
+                    'employee_name' => $contract->employee
+                        ? trim($contract->employee->surname.' '.$contract->employee->name)
+                        : '',
+                    'supplier_name' => $contract->supplier?->company_name ?? '',
+                ];
+            }
+        }
+
         return Inertia::render('Employees/Contracts/Create', [
             'employees' => $employees,
             'suppliers' => $suppliers,
+            'prorogaContract' => $prorogaContract,
         ]);
     }
 
@@ -323,7 +349,7 @@ class EmployeeController extends Controller
             'supplier_uuid' => 'required|uuid|exists:supplier,uuid',
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after:start_date',
-            'pay_level' => 'nullable|integer|in:0,1,2,3,4',
+            'pay_level' => 'nullable|integer|in:0,1,2,3,4,5,6,7,8',
         ]);
 
         $contract = EmployeeContract::create($validated);
@@ -365,7 +391,7 @@ class EmployeeController extends Controller
             'supplier_uuid' => 'required|uuid|exists:supplier,uuid',
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after:start_date',
-            'pay_level' => 'nullable|integer|in:0,1,2,3,4',
+            'pay_level' => 'nullable|integer|in:0,1,2,3,4,5,6,7,8',
         ]);
 
         $contract->update($validated);
@@ -393,7 +419,8 @@ class EmployeeController extends Controller
         $validated = $request->validate([
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after:start_date',
-            'pay_level' => 'nullable|integer|in:0,1,2,3,4',
+            // Livello retributivo consentito 0–8 (parità con EmployeeContract e UI)
+            'pay_level' => 'nullable|integer|in:0,1,2,3,4,5,6,7,8',
         ]);
 
         $contract = $employee->contracts()->create($validated);
@@ -417,7 +444,8 @@ class EmployeeController extends Controller
         $validated = $request->validate([
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after:start_date',
-            'pay_level' => 'nullable|integer|in:0,1,2,3,4',
+            // Livello retributivo consentito 0–8 (parità con EmployeeContract e UI)
+            'pay_level' => 'nullable|integer|in:0,1,2,3,4,5,6,7,8',
         ]);
 
         $contract->update($validated);

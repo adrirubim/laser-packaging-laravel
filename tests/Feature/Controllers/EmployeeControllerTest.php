@@ -594,10 +594,30 @@ class EmployeeControllerTest extends TestCase
 
         $response = $this->post(route('employees.store-contract', $employee), [
             'start_date' => '2024-01-01',
-            'pay_level' => 5, // Fuera del rango permitido (0-4)
+            'pay_level' => 9, // Fuera del rango permitido (0-8)
         ]);
 
         $response->assertSessionHasErrors(['pay_level']);
+    }
+
+    #[Test]
+    public function it_allows_valid_pay_level_on_store_contract()
+    {
+        $this->actingAs($this->user);
+
+        $employee = Employee::factory()->create();
+
+        $response = $this->post(route('employees.store-contract', $employee), [
+            'start_date' => '2024-01-01',
+            'pay_level' => 8, // Valor máximo permitido
+        ]);
+
+        $response->assertSessionDoesntHaveErrors(['pay_level']);
+
+        $this->assertDatabaseHas('employeecontracts', [
+            'employee_uuid' => $employee->uuid,
+            'pay_level' => 8,
+        ]);
     }
 
     #[Test]

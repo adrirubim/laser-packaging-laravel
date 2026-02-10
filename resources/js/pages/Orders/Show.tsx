@@ -1,4 +1,5 @@
 import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
+import { FlashNotifications } from '@/components/flash-notifications';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -10,11 +11,12 @@ import {
 import { Label } from '@/components/ui/label';
 import { getLotTypeText } from '@/constants/lotTypes';
 import { getLabelText } from '@/constants/orderLabels';
+import { getOrderStatusLabel } from '@/constants/orderStatus';
 import AppLayout from '@/layouts/app-layout';
 import articles from '@/routes/articles/index';
 import orders from '@/routes/orders/index';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { Download, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -89,21 +91,27 @@ type OrdersShowProps = {
     order: Order;
 };
 
-const STATUS_LABELS: Record<number, string> = {
-    0: 'Pianificato',
-    1: 'In Allestimento',
-    2: 'Lanciato',
-    3: 'In Avanzamento',
-    4: 'Sospeso',
-    5: 'Completato',
-};
-
 export default function OrdersShow({ order }: OrdersShowProps) {
     const [downloadingBarcode, setDownloadingBarcode] = useState(false);
     const [downloadingAutocontrollo, setDownloadingAutocontrollo] =
         useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [uiFlash, setUiFlash] = useState<{
+        success?: string;
+        error?: string;
+        warning?: string;
+        info?: string;
+    }>({});
+    const { props: pageProps } = usePage<{
+        flash?: { success?: string; error?: string };
+    }>();
+    const mergedFlash = {
+        ...pageProps.flash,
+        ...(Object.keys(uiFlash).length > 0 ? uiFlash : {}),
+    };
+
+    const clearUiFlash = () => setUiFlash({});
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
@@ -140,6 +148,9 @@ export default function OrdersShow({ order }: OrdersShowProps) {
         }
 
         setDownloadingBarcode(true);
+        setUiFlash({
+            info: 'Download barcode avviato. Se non parte subito, controlla i download del browser.',
+        });
 
         try {
             // Creare iframe temporaneo invisibile per forzare il download
@@ -166,11 +177,12 @@ export default function OrdersShow({ order }: OrdersShowProps) {
         } catch (error) {
             console.error('Errore nello scaricare il barcode:', error);
             setDownloadingBarcode(false);
-            alert(
-                error instanceof Error
-                    ? `Errore nello scaricare il barcode: ${error.message}`
-                    : 'Errore nello scaricare il barcode',
-            );
+            setUiFlash({
+                error:
+                    error instanceof Error
+                        ? `Errore nello scaricare il barcode: ${error.message}`
+                        : 'Errore nello scaricare il barcode',
+            });
         }
     };
 
@@ -185,6 +197,9 @@ export default function OrdersShow({ order }: OrdersShowProps) {
         }
 
         setDownloadingAutocontrollo(true);
+        setUiFlash({
+            info: 'Download autocontrollo avviato. Se non parte subito, controlla i download del browser.',
+        });
 
         try {
             // Creare iframe temporaneo invisibile per forzare il download
@@ -211,11 +226,12 @@ export default function OrdersShow({ order }: OrdersShowProps) {
         } catch (error) {
             console.error('Errore nello scaricare autocontrollo:', error);
             setDownloadingAutocontrollo(false);
-            alert(
-                error instanceof Error
-                    ? `Errore nello scaricare autocontrollo: ${error.message}`
-                    : 'Errore nello scaricare autocontrollo',
-            );
+            setUiFlash({
+                error:
+                    error instanceof Error
+                        ? `Errore nello scaricare autocontrollo: ${error.message}`
+                        : 'Errore nello scaricare autocontrollo',
+            });
         }
     };
 
@@ -232,8 +248,7 @@ export default function OrdersShow({ order }: OrdersShowProps) {
                         <p className="mt-1 text-sm text-muted-foreground">
                             Stato:{' '}
                             <span className="font-medium">
-                                {STATUS_LABELS[order.status] ||
-                                    `Stato ${order.status}`}
+                                {getOrderStatusLabel(order.status)}
                             </span>
                         </p>
                     </div>
@@ -307,6 +322,11 @@ export default function OrdersShow({ order }: OrdersShowProps) {
                         </Button>
                     </div>
                 </div>
+
+                <FlashNotifications
+                    flash={mergedFlash}
+                    onDismiss={clearUiFlash}
+                />
 
                 <div className="grid gap-4 md:grid-cols-2">
                     <Card>
@@ -639,111 +659,126 @@ export default function OrdersShow({ order }: OrdersShowProps) {
                                         </div>
                                     </div>
 
-                                    {order.status_semaforo && (
-                                        <div className="md:col-span-2">
-                                            <Label className="mb-2 block text-sm font-medium text-muted-foreground">
-                                                Status Semáforo
-                                            </Label>
-                                            <div className="flex flex-wrap gap-4">
-                                                {order.status_semaforo
-                                                    .etichette !== undefined &&
-                                                    order.status_semaforo
-                                                        .etichette !== null && (
-                                                        <span
-                                                            className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                                                                order
+                                    {order.status_semaforo &&
+                                        (order.status_semaforo.etichette !=
+                                            null ||
+                                            order.status_semaforo.packaging !=
+                                                null ||
+                                            order.status_semaforo.prodotto !=
+                                                null) && (
+                                            <div className="md:col-span-2">
+                                                <Label className="mb-2 block text-sm font-medium text-muted-foreground">
+                                                    Status Semáforo
+                                                </Label>
+                                                <div className="flex flex-wrap gap-4">
+                                                    {order.status_semaforo
+                                                        .etichette !==
+                                                        undefined &&
+                                                        order.status_semaforo
+                                                            .etichette !==
+                                                            null && (
+                                                            <span
+                                                                className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+                                                                    order
+                                                                        .status_semaforo
+                                                                        .etichette ===
+                                                                    2
+                                                                        ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
+                                                                        : order
+                                                                                .status_semaforo
+                                                                                .etichette ===
+                                                                            1
+                                                                          ? 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-300'
+                                                                          : 'bg-red-500/10 text-red-700 dark:text-red-300'
+                                                                }`}
+                                                            >
+                                                                Etichette:{' '}
+                                                                {order
                                                                     .status_semaforo
                                                                     .etichette ===
-                                                                1
-                                                                    ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
+                                                                2
+                                                                    ? 'Ok'
                                                                     : order
                                                                             .status_semaforo
                                                                             .etichette ===
-                                                                        0
-                                                                      ? 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-300'
-                                                                      : 'bg-red-500/10 text-red-700 dark:text-red-300'
-                                                            }`}
-                                                        >
-                                                            Etichette:{' '}
-                                                            {order
-                                                                .status_semaforo
-                                                                .etichette === 1
-                                                                ? 'Ok'
-                                                                : order
+                                                                        1
+                                                                      ? 'In attesa'
+                                                                      : 'Errore'}
+                                                            </span>
+                                                        )}
+                                                    {order.status_semaforo
+                                                        .packaging !==
+                                                        undefined &&
+                                                        order.status_semaforo
+                                                            .packaging !==
+                                                            null && (
+                                                            <span
+                                                                className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+                                                                    order
                                                                         .status_semaforo
-                                                                        .etichette ===
-                                                                    0
-                                                                  ? 'In attesa'
-                                                                  : 'Errore'}
-                                                        </span>
-                                                    )}
-                                                {order.status_semaforo
-                                                    .packaging !== undefined &&
-                                                    order.status_semaforo
-                                                        .packaging !== null && (
-                                                        <span
-                                                            className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                                                                order
+                                                                        .packaging ===
+                                                                    2
+                                                                        ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
+                                                                        : order
+                                                                                .status_semaforo
+                                                                                .packaging ===
+                                                                            1
+                                                                          ? 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-300'
+                                                                          : 'bg-red-500/10 text-red-700 dark:text-red-300'
+                                                                }`}
+                                                            >
+                                                                Confezionamento:{' '}
+                                                                {order
                                                                     .status_semaforo
                                                                     .packaging ===
-                                                                1
-                                                                    ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
+                                                                2
+                                                                    ? 'Ok'
                                                                     : order
                                                                             .status_semaforo
                                                                             .packaging ===
-                                                                        0
-                                                                      ? 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-300'
-                                                                      : 'bg-red-500/10 text-red-700 dark:text-red-300'
-                                                            }`}
-                                                        >
-                                                            Confezionamento:{' '}
-                                                            {order
-                                                                .status_semaforo
-                                                                .packaging === 1
-                                                                ? 'Ok'
-                                                                : order
+                                                                        1
+                                                                      ? 'In attesa'
+                                                                      : 'Errore'}
+                                                            </span>
+                                                        )}
+                                                    {order.status_semaforo
+                                                        .prodotto !==
+                                                        undefined &&
+                                                        order.status_semaforo
+                                                            .prodotto !==
+                                                            null && (
+                                                            <span
+                                                                className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+                                                                    order
                                                                         .status_semaforo
-                                                                        .packaging ===
-                                                                    0
-                                                                  ? 'In attesa'
-                                                                  : 'Errore'}
-                                                        </span>
-                                                    )}
-                                                {order.status_semaforo
-                                                    .prodotto !== undefined &&
-                                                    order.status_semaforo
-                                                        .prodotto !== null && (
-                                                        <span
-                                                            className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                                                                order
+                                                                        .prodotto ===
+                                                                    2
+                                                                        ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
+                                                                        : order
+                                                                                .status_semaforo
+                                                                                .prodotto ===
+                                                                            1
+                                                                          ? 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-300'
+                                                                          : 'bg-red-500/10 text-red-700 dark:text-red-300'
+                                                                }`}
+                                                            >
+                                                                Prodotto:{' '}
+                                                                {order
                                                                     .status_semaforo
                                                                     .prodotto ===
-                                                                1
-                                                                    ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
+                                                                2
+                                                                    ? 'Ok'
                                                                     : order
                                                                             .status_semaforo
                                                                             .prodotto ===
-                                                                        0
-                                                                      ? 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-300'
-                                                                      : 'bg-red-500/10 text-red-700 dark:text-red-300'
-                                                            }`}
-                                                        >
-                                                            Prodotto:{' '}
-                                                            {order
-                                                                .status_semaforo
-                                                                .prodotto === 1
-                                                                ? 'Ok'
-                                                                : order
-                                                                        .status_semaforo
-                                                                        .prodotto ===
-                                                                    0
-                                                                  ? 'In attesa'
-                                                                  : 'Errore'}
-                                                        </span>
-                                                    )}
+                                                                        1
+                                                                      ? 'In attesa'
+                                                                      : 'Errore'}
+                                                            </span>
+                                                        )}
+                                                </div>
                                             </div>
-                                        </div>
-                                    )}
+                                        )}
 
                                     {order.motivazione && (
                                         <div className="md:col-span-2">

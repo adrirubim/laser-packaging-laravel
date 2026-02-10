@@ -17,6 +17,13 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
 
+        // Excluir rutas específicas de órdenes de la validación CSRF
+        // (se usan solo desde el backoffice autenticado)
+        $middleware->validateCsrfTokens(except: [
+            'orders/*/save-semaforo',
+            'orders/*/change-status',
+        ]);
+
         $middleware->web(append: [
             HandleAppearance::class,
             HandleInertiaRequests::class,
