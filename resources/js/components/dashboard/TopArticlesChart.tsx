@@ -1,4 +1,5 @@
 import { DashboardEmptyState } from '@/components/dashboard/DashboardEmptyState';
+import { Button } from '@/components/ui/button';
 import {
     Card,
     CardContent,
@@ -6,6 +7,13 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import { Maximize2 } from 'lucide-react';
 import { useState } from 'react';
 import {
     Bar,
@@ -103,6 +111,7 @@ function TopArticlesTooltipContent({
 
 export function TopArticlesChart({ data, onBarClick }: TopArticlesChartProps) {
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
+    const [isFocusOpen, setIsFocusOpen] = useState(false);
 
     if (data.length === 0) {
         return (
@@ -185,77 +194,100 @@ export function TopArticlesChart({ data, onBarClick }: TopArticlesChartProps) {
         );
     };
 
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="text-base">Top 5 Articoli</CardTitle>
-                <CardDescription className="text-xs text-foreground/80">
-                    Articoli più prodotti (quantità totale)
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                    <BarChart
-                        data={chartData}
-                        layout="vertical"
-                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                    >
-                        <CartesianGrid
-                            strokeDasharray="3 3"
-                            stroke="hsl(var(--muted-foreground) / 0.2)"
-                        />
-                        <XAxis
-                            type="number"
-                            stroke="hsl(var(--foreground) / 0.8)"
-                            style={{ fontSize: '12px', fontWeight: 500 }}
-                            tick={{ fill: 'hsl(var(--foreground) / 0.8)' }}
-                        />
-                        <YAxis
-                            dataKey="name"
-                            type="category"
-                            width={100}
-                            tick={renderYAxisTick}
-                            stroke="hsl(var(--foreground) / 0.8)"
-                        />
-                        <RechartsTooltip
-                            content={<TopArticlesTooltipContent />}
-                            wrapperStyle={{
-                                zIndex: 1000,
+    const renderChart = (height: number) => (
+        <ResponsiveContainer width="100%" height={height}>
+            <BarChart
+                data={chartData}
+                layout="vertical"
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            >
+                <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="hsl(var(--muted-foreground) / 0.2)"
+                />
+                <XAxis
+                    type="number"
+                    stroke="hsl(var(--foreground) / 0.8)"
+                    style={{ fontSize: '12px', fontWeight: 500 }}
+                    tick={{ fill: 'hsl(var(--foreground) / 0.8)' }}
+                />
+                <YAxis
+                    dataKey="name"
+                    type="category"
+                    width={100}
+                    tick={renderYAxisTick}
+                    stroke="hsl(var(--foreground) / 0.8)"
+                />
+                <RechartsTooltip
+                    content={<TopArticlesTooltipContent />}
+                    wrapperStyle={{
+                        zIndex: 1000,
+                    }}
+                />
+                {/* Viola pastello per armonizzarsi con il resto della dashboard */}
+                <Bar
+                    dataKey="quantita"
+                    fill="#A5B4FC"
+                    radius={[0, 4, 4, 0]}
+                    style={onBarClick ? { cursor: 'pointer' } : undefined}
+                    onMouseLeave={() => setActiveIndex(null)}
+                >
+                    {chartData.map((entry, index) => (
+                        <Cell
+                            key={`top-article-${entry.raw.uuid}`}
+                            fill="#A5B4FC"
+                            opacity={
+                                activeIndex === null || activeIndex === index
+                                    ? 1
+                                    : 0.4
+                            }
+                            onMouseEnter={() => setActiveIndex(index)}
+                            onMouseLeave={() => setActiveIndex(null)}
+                            onClick={() => {
+                                if (onBarClick) {
+                                    onBarClick(entry.raw);
+                                }
                             }}
                         />
-                        {/* Viola pastello per armonizzarsi con il resto della dashboard */}
-                        <Bar
-                            dataKey="quantita"
-                            fill="#A5B4FC"
-                            radius={[0, 4, 4, 0]}
-                            style={
-                                onBarClick ? { cursor: 'pointer' } : undefined
-                            }
-                            onMouseLeave={() => setActiveIndex(null)}
-                        >
-                            {chartData.map((entry, index) => (
-                                <Cell
-                                    key={`top-article-${entry.raw.uuid}`}
-                                    fill="#A5B4FC"
-                                    opacity={
-                                        activeIndex === null ||
-                                        activeIndex === index
-                                            ? 1
-                                            : 0.4
-                                    }
-                                    onMouseEnter={() => setActiveIndex(index)}
-                                    onMouseLeave={() => setActiveIndex(null)}
-                                    onClick={() => {
-                                        if (onBarClick) {
-                                            onBarClick(entry.raw);
-                                        }
-                                    }}
-                                />
-                            ))}
-                        </Bar>
-                    </BarChart>
-                </ResponsiveContainer>
-            </CardContent>
-        </Card>
+                    ))}
+                </Bar>
+            </BarChart>
+        </ResponsiveContainer>
+    );
+
+    return (
+        <>
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between gap-2">
+                    <div>
+                        <CardTitle className="text-base">
+                            Top 5 Articoli
+                        </CardTitle>
+                        <CardDescription className="text-xs text-foreground/80">
+                            Articoli più prodotti (quantità totale)
+                        </CardDescription>
+                    </div>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        aria-label="Apri grafico Top 5 Articoli in vista dettagliata"
+                        onClick={() => setIsFocusOpen(true)}
+                    >
+                        <Maximize2 className="h-4 w-4" />
+                    </Button>
+                </CardHeader>
+                <CardContent>{renderChart(300)}</CardContent>
+            </Card>
+
+            <Dialog open={isFocusOpen} onOpenChange={setIsFocusOpen}>
+                <DialogContent className="max-w-3xl">
+                    <DialogHeader>
+                        <DialogTitle>Top 5 Articoli</DialogTitle>
+                    </DialogHeader>
+                    <div className="mt-2">{renderChart(360)}</div>
+                </DialogContent>
+            </Dialog>
+        </>
     );
 }

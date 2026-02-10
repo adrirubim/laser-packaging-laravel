@@ -1,4 +1,5 @@
 import { DashboardEmptyState } from '@/components/dashboard/DashboardEmptyState';
+import { Button } from '@/components/ui/button';
 import {
     Card,
     CardContent,
@@ -6,6 +7,14 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import { Maximize2 } from 'lucide-react';
+import { useState } from 'react';
 import {
     CartesianGrid,
     Legend,
@@ -40,6 +49,8 @@ export function OrdersTrendChart({
     groupBy = 'day',
     onPointClick,
 }: OrdersTrendChartProps) {
+    const [isFocusOpen, setIsFocusOpen] = useState(false);
+
     // Merge current and previous period data
     const chartData = data.map((point) => {
         const previousPoint = previousPeriodData?.find(
@@ -65,141 +76,162 @@ export function OrdersTrendChart({
         }
     };
 
+    const renderChart = (height: number) => {
+        if (chartData.length === 0) {
+            return (
+                <DashboardEmptyState message="Nessun dato per il periodo selezionato" />
+            );
+        }
+
+        return (
+            <ResponsiveContainer width="100%" height={height}>
+                <LineChart
+                    data={chartData}
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                >
+                    <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke="hsl(var(--muted-foreground) / 0.2)"
+                    />
+                    <XAxis
+                        dataKey="period"
+                        tickFormatter={formatPeriod}
+                        stroke="hsl(var(--foreground) / 0.8)"
+                        style={{ fontSize: '12px', fontWeight: 500 }}
+                        tick={{ fill: 'hsl(var(--foreground) / 0.8)' }}
+                    />
+                    <YAxis
+                        stroke="hsl(var(--foreground) / 0.8)"
+                        style={{ fontSize: '12px', fontWeight: 500 }}
+                        tick={{ fill: 'hsl(var(--foreground) / 0.8)' }}
+                    />
+                    <RechartsTooltip
+                        formatter={(
+                            value: number | string | undefined,
+                            name: string | undefined,
+                        ) => {
+                            const label =
+                                name === 'count'
+                                    ? 'Periodo Corrente'
+                                    : 'Periodo Precedente';
+                            const numericValue =
+                                typeof value === 'number'
+                                    ? value
+                                    : Number(value ?? 0);
+                            return [numericValue, label];
+                        }}
+                        labelFormatter={(label) =>
+                            `Periodo: ${formatPeriod(label)}`
+                        }
+                        contentStyle={{
+                            backgroundColor: 'hsl(var(--popover))',
+                            border: '2px solid hsl(var(--border))',
+                            borderRadius: '8px',
+                            color: 'hsl(var(--foreground))',
+                            fontWeight: 500,
+                            padding: '12px 16px',
+                            boxShadow:
+                                '0 4px 12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05)',
+                            zIndex: 1000,
+                        }}
+                        labelStyle={{
+                            color: 'hsl(var(--foreground))',
+                            fontWeight: 600,
+                            marginBottom: '4px',
+                        }}
+                        wrapperStyle={{
+                            zIndex: 1000,
+                        }}
+                    />
+                    <Legend
+                        formatter={(value) => {
+                            return value === 'count'
+                                ? 'Periodo Corrente'
+                                : 'Periodo Precedente';
+                        }}
+                    />
+                    {/* Linea principale in blu pastello */}
+                    <Line
+                        type="monotone"
+                        dataKey="count"
+                        stroke="#60A5FA"
+                        strokeWidth={2}
+                        // Evidenziare che è interattivo su punti e linea
+                        dot={{
+                            fill: '#60A5FA',
+                            r: 4,
+                            cursor: onPointClick ? 'pointer' : 'default',
+                        }}
+                        activeDot={{
+                            r: 7,
+                            strokeWidth: 2,
+                            stroke: '#2563EB',
+                            cursor: onPointClick ? 'pointer' : 'default',
+                        }}
+                        name="count"
+                        style={onPointClick ? { cursor: 'pointer' } : undefined}
+                        // Click su un punto della serie
+                        onClick={(props) => {
+                            const activeLabel = (
+                                props as { activeLabel?: string }
+                            )?.activeLabel;
+                            if (onPointClick && activeLabel) {
+                                onPointClick(String(activeLabel));
+                            }
+                        }}
+                    />
+                    {previousPeriodData && previousPeriodData.length > 0 && (
+                        <Line
+                            type="monotone"
+                            dataKey="previousCount"
+                            stroke="#C4B5FD"
+                            strokeWidth={2}
+                            strokeDasharray="5 5"
+                            dot={{ fill: '#C4B5FD', r: 3 }}
+                            name="previousCount"
+                        />
+                    )}
+                </LineChart>
+            </ResponsiveContainer>
+        );
+    };
+
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="text-base">Tendenze Ordini</CardTitle>
-                <CardDescription className="text-xs text-foreground/80">
-                    Andamento degli ordini nel tempo{' '}
-                    {previousPeriodData &&
-                        previousPeriodData.length > 0 &&
-                        '(con confronto periodo precedente)'}
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                {chartData.length === 0 ? (
-                    <DashboardEmptyState message="Nessun dato per il periodo selezionato" />
-                ) : (
-                    <ResponsiveContainer width="100%" height={300}>
-                        <LineChart
-                            data={chartData}
-                            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                        >
-                            <CartesianGrid
-                                strokeDasharray="3 3"
-                                stroke="hsl(var(--muted-foreground) / 0.2)"
-                            />
-                            <XAxis
-                                dataKey="period"
-                                tickFormatter={formatPeriod}
-                                stroke="hsl(var(--foreground) / 0.8)"
-                                style={{ fontSize: '12px', fontWeight: 500 }}
-                                tick={{ fill: 'hsl(var(--foreground) / 0.8)' }}
-                            />
-                            <YAxis
-                                stroke="hsl(var(--foreground) / 0.8)"
-                                style={{ fontSize: '12px', fontWeight: 500 }}
-                                tick={{ fill: 'hsl(var(--foreground) / 0.8)' }}
-                            />
-                            <RechartsTooltip
-                                formatter={(
-                                    value: number | string | undefined,
-                                    name: string | undefined,
-                                ) => {
-                                    const label =
-                                        name === 'count'
-                                            ? 'Periodo Corrente'
-                                            : 'Periodo Precedente';
-                                    const numericValue =
-                                        typeof value === 'number'
-                                            ? value
-                                            : Number(value ?? 0);
-                                    return [numericValue, label];
-                                }}
-                                labelFormatter={(label) =>
-                                    `Periodo: ${formatPeriod(label)}`
-                                }
-                                contentStyle={{
-                                    backgroundColor: 'hsl(var(--popover))',
-                                    border: '2px solid hsl(var(--border))',
-                                    borderRadius: '8px',
-                                    color: 'hsl(var(--foreground))',
-                                    fontWeight: 500,
-                                    padding: '12px 16px',
-                                    boxShadow:
-                                        '0 4px 12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05)',
-                                    zIndex: 1000,
-                                }}
-                                labelStyle={{
-                                    color: 'hsl(var(--foreground))',
-                                    fontWeight: 600,
-                                    marginBottom: '4px',
-                                }}
-                                wrapperStyle={{
-                                    zIndex: 1000,
-                                }}
-                            />
-                            <Legend
-                                formatter={(value) => {
-                                    return value === 'count'
-                                        ? 'Periodo Corrente'
-                                        : 'Periodo Precedente';
-                                }}
-                            />
-                            {/* Linea principale in blu pastello */}
-                            <Line
-                                type="monotone"
-                                dataKey="count"
-                                stroke="#60A5FA"
-                                strokeWidth={2}
-                                // Evidenziare che è interattivo su punti e linea
-                                dot={{
-                                    fill: '#60A5FA',
-                                    r: 4,
-                                    cursor: onPointClick
-                                        ? 'pointer'
-                                        : 'default',
-                                }}
-                                activeDot={{
-                                    r: 7,
-                                    strokeWidth: 2,
-                                    stroke: '#2563EB',
-                                    cursor: onPointClick
-                                        ? 'pointer'
-                                        : 'default',
-                                }}
-                                name="count"
-                                style={
-                                    onPointClick
-                                        ? { cursor: 'pointer' }
-                                        : undefined
-                                }
-                                // Click su un punto della serie
-                                onClick={(props) => {
-                                    const activeLabel = (
-                                        props as { activeLabel?: string }
-                                    )?.activeLabel;
-                                    if (onPointClick && activeLabel) {
-                                        onPointClick(String(activeLabel));
-                                    }
-                                }}
-                            />
+        <>
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between gap-2">
+                    <div>
+                        <CardTitle className="text-base">
+                            Tendenze Ordini
+                        </CardTitle>
+                        <CardDescription className="text-xs text-foreground/80">
+                            Andamento degli ordini nel tempo{' '}
                             {previousPeriodData &&
-                                previousPeriodData.length > 0 && (
-                                    <Line
-                                        type="monotone"
-                                        dataKey="previousCount"
-                                        stroke="#C4B5FD"
-                                        strokeWidth={2}
-                                        strokeDasharray="5 5"
-                                        dot={{ fill: '#C4B5FD', r: 3 }}
-                                        name="previousCount"
-                                    />
-                                )}
-                        </LineChart>
-                    </ResponsiveContainer>
-                )}
-            </CardContent>
-        </Card>
+                                previousPeriodData.length > 0 &&
+                                '(con confronto periodo precedente)'}
+                        </CardDescription>
+                    </div>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        aria-label="Apri grafico Tendenze Ordini in vista dettagliata"
+                        onClick={() => setIsFocusOpen(true)}
+                    >
+                        <Maximize2 className="h-4 w-4" />
+                    </Button>
+                </CardHeader>
+                <CardContent>{renderChart(300)}</CardContent>
+            </Card>
+
+            <Dialog open={isFocusOpen} onOpenChange={setIsFocusOpen}>
+                <DialogContent className="max-w-5xl">
+                    <DialogHeader>
+                        <DialogTitle>Tendenze Ordini</DialogTitle>
+                    </DialogHeader>
+                    <div className="mt-2">{renderChart(420)}</div>
+                </DialogContent>
+            </Dialog>
+        </>
     );
 }

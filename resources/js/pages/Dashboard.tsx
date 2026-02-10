@@ -248,26 +248,58 @@ export default function Dashboard({
     const [customStartDate, setCustomStartDate] = useState<string>('');
     const [customEndDate, setCustomEndDate] = useState<string>('');
 
-    // Auto-refresh functionality
+    // Auto-refresh functionality (intelligente: pausa quando la tab è nascosta)
     useEffect(() => {
         if (!autoRefreshEnabled) return;
+        if (typeof document === 'undefined') return;
 
-        const interval = setInterval(() => {
-            router.reload({
-                only: [
-                    'statistics',
-                    'urgentOrders',
-                    'recentOrders',
-                    'topCustomers',
-                    'topArticles',
-                    'performanceMetrics',
-                    'alerts',
-                    'comparisonStats',
-                ],
-            });
-        }, 60000); // Refresh every minute
+        let interval: number | null = null;
 
-        return () => clearInterval(interval);
+        const startInterval = () => {
+            if (interval !== null || document.hidden) return;
+
+            interval = window.setInterval(() => {
+                router.reload({
+                    only: [
+                        'statistics',
+                        'urgentOrders',
+                        'recentOrders',
+                        'topCustomers',
+                        'topArticles',
+                        'performanceMetrics',
+                        'alerts',
+                        'comparisonStats',
+                    ],
+                });
+            }, 60000); // Refresh every minute
+        };
+
+        const stopInterval = () => {
+            if (interval !== null) {
+                window.clearInterval(interval);
+                interval = null;
+            }
+        };
+
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                stopInterval();
+            } else if (autoRefreshEnabled) {
+                startInterval();
+            }
+        };
+
+        // Avvia il polling solo se la tab è visibile
+        startInterval();
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            stopInterval();
+            document.removeEventListener(
+                'visibilitychange',
+                handleVisibilityChange,
+            );
+        };
     }, [autoRefreshEnabled]);
 
     const handleDateFilterChange = (value: string) => {
@@ -475,349 +507,380 @@ export default function Dashboard({
             <Head title="Dashboard" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                {/* Header with Filters - Compact */}
-                <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-                    <div className="flex-1">
-                        <h1 className="text-2xl font-bold tracking-tight">
-                            Dashboard
-                        </h1>
-                        <p className="mt-0.5 text-sm text-foreground/80">
-                            Panoramica del sistema e statistiche di produzione
-                        </p>
+                {/* Header + Filters en dos filas para mayor claridad */}
+                <div className="flex flex-col gap-3">
+                    {/* Fila 1: título + acciones principales */}
+                    <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+                        <div className="flex-1">
+                            <h1 className="text-2xl font-bold tracking-tight">
+                                Dashboard
+                            </h1>
+                            <p className="mt-0.5 text-sm text-foreground/80">
+                                Panoramica del sistema e statistiche di
+                                produzione
+                            </p>
+                        </div>
+
+                        {/* Quick Actions */}
+                        <div className="flex flex-wrap items-center gap-2">
+                            <Link href={orders.create().url}>
+                                <Button
+                                    variant="default"
+                                    size="sm"
+                                    className="h-9"
+                                >
+                                    <Plus className="mr-1.5 h-3.5 w-3.5" />
+                                    Nuovo Ordine
+                                </Button>
+                            </Link>
+                            <Link href={offers.create().url}>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-9"
+                                >
+                                    <Plus className="mr-1.5 h-3.5 w-3.5" />
+                                    Nuova Offerta
+                                </Button>
+                            </Link>
+                        </div>
                     </div>
 
-                    {/* Quick Actions */}
-                    <div className="flex flex-wrap items-center gap-2">
-                        <Link href={orders.create().url}>
-                            <Button variant="default" size="sm" className="h-9">
-                                <Plus className="mr-1.5 h-3.5 w-3.5" />
-                                Nuovo Ordine
-                            </Button>
-                        </Link>
-                        <Link href={offers.create().url}>
-                            <Button variant="outline" size="sm" className="h-9">
-                                <Plus className="mr-1.5 h-3.5 w-3.5" />
-                                Nuova Offerta
-                            </Button>
-                        </Link>
-                    </div>
+                    {/* Fila 2: filtros + azioni secundarias (auto/refresh/export) */}
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                        {/* Grupo de filtros */}
+                        <div className="flex flex-wrap items-center gap-2">
+                            <div className="flex items-center gap-2">
+                                <Select
+                                    value={dateFilter}
+                                    onValueChange={handleDateFilterChange}
+                                >
+                                    <SelectTrigger
+                                        className="h-9 w-[160px]"
+                                        aria-label="Seleziona filtro data"
+                                    >
+                                        <Calendar className="mr-2 h-3.5 w-3.5" />
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">
+                                            Tutto il tempo
+                                        </SelectItem>
+                                        <SelectItem value="today">
+                                            Oggi
+                                        </SelectItem>
+                                        <SelectItem value="week">
+                                            Questa settimana
+                                        </SelectItem>
+                                        <SelectItem value="month">
+                                            Questo mese
+                                        </SelectItem>
+                                        <SelectItem value="custom">
+                                            Personalizzato
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
 
-                    <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
-                        <div className="flex items-center gap-2">
+                                {/* Custom Date Picker Dialog */}
+                                <Dialog
+                                    open={showCustomDatePicker}
+                                    onOpenChange={setShowCustomDatePicker}
+                                >
+                                    <DialogContent>
+                                        <DialogHeader>
+                                            <DialogTitle>
+                                                Seleziona Range di Date
+                                            </DialogTitle>
+                                            <DialogDescription>
+                                                Scegli un periodo personalizzato
+                                                per visualizzare le statistiche
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <div className="grid gap-4 py-4">
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="start_date">
+                                                    Data Inizio
+                                                </Label>
+                                                <Input
+                                                    id="start_date"
+                                                    type="date"
+                                                    value={customStartDate}
+                                                    onChange={(e) =>
+                                                        setCustomStartDate(
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                />
+                                            </div>
+                                            <div className="grid gap-2">
+                                                <Label htmlFor="end_date">
+                                                    Data Fine
+                                                </Label>
+                                                <Input
+                                                    id="end_date"
+                                                    type="date"
+                                                    value={customEndDate}
+                                                    onChange={(e) =>
+                                                        setCustomEndDate(
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                />
+                                            </div>
+                                            <div className="flex gap-2 pt-2">
+                                                <Button
+                                                    variant="outline"
+                                                    onClick={() => {
+                                                        const today =
+                                                            new Date();
+                                                        const last7Days =
+                                                            new Date(today);
+                                                        last7Days.setDate(
+                                                            today.getDate() - 7,
+                                                        );
+                                                        setCustomStartDate(
+                                                            last7Days
+                                                                .toISOString()
+                                                                .split('T')[0],
+                                                        );
+                                                        setCustomEndDate(
+                                                            today
+                                                                .toISOString()
+                                                                .split('T')[0],
+                                                        );
+                                                    }}
+                                                    className="flex-1"
+                                                >
+                                                    Ultimi 7 giorni
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    onClick={() => {
+                                                        const today =
+                                                            new Date();
+                                                        const lastMonth =
+                                                            new Date(today);
+                                                        lastMonth.setMonth(
+                                                            today.getMonth() -
+                                                                1,
+                                                        );
+                                                        setCustomStartDate(
+                                                            lastMonth
+                                                                .toISOString()
+                                                                .split('T')[0],
+                                                        );
+                                                        setCustomEndDate(
+                                                            today
+                                                                .toISOString()
+                                                                .split('T')[0],
+                                                        );
+                                                    }}
+                                                    className="flex-1"
+                                                >
+                                                    Ultimo mese
+                                                </Button>
+                                            </div>
+                                        </div>
+                                        <DialogFooter>
+                                            <Button
+                                                variant="outline"
+                                                onClick={() =>
+                                                    setShowCustomDatePicker(
+                                                        false,
+                                                    )
+                                                }
+                                            >
+                                                Annulla
+                                            </Button>
+                                            <Button
+                                                onClick={handleCustomDateApply}
+                                                disabled={
+                                                    !customStartDate ||
+                                                    !customEndDate
+                                                }
+                                            >
+                                                Applica
+                                            </Button>
+                                        </DialogFooter>
+                                    </DialogContent>
+                                </Dialog>
+                            </div>
+
+                            {/* Filtro cliente */}
                             <Select
-                                value={dateFilter}
-                                onValueChange={handleDateFilterChange}
+                                value={customerFilter || 'all'}
+                                onValueChange={handleCustomerFilterChange}
                             >
                                 <SelectTrigger
-                                    className="h-9 w-[160px]"
-                                    aria-label="Seleziona filtro data"
+                                    className="h-9 w-[180px]"
+                                    aria-label="Filtro cliente"
                                 >
-                                    <Calendar className="mr-2 h-3.5 w-3.5" />
-                                    <SelectValue />
+                                    <Users className="mr-2 h-3.5 w-3.5" />
+                                    <SelectValue placeholder="Tutti i clienti" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">
-                                        Tutto il tempo
+                                        Tutti i clienti
                                     </SelectItem>
-                                    <SelectItem value="today">Oggi</SelectItem>
-                                    <SelectItem value="week">
-                                        Questa settimana
-                                    </SelectItem>
-                                    <SelectItem value="month">
-                                        Questo mese
-                                    </SelectItem>
-                                    <SelectItem value="custom">
-                                        Personalizzato
-                                    </SelectItem>
+                                    {customersForFilter.map((customer) => (
+                                        <SelectItem
+                                            key={customer.uuid}
+                                            value={customer.uuid}
+                                        >
+                                            {customer.label}
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
 
-                            {/* Custom Date Picker Dialog */}
-                            <Dialog
-                                open={showCustomDatePicker}
-                                onOpenChange={setShowCustomDatePicker}
-                            >
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle>
-                                            Seleziona Range di Date
-                                        </DialogTitle>
-                                        <DialogDescription>
-                                            Scegli un periodo personalizzato per
-                                            visualizzare le statistiche
-                                        </DialogDescription>
-                                    </DialogHeader>
-                                    <div className="grid gap-4 py-4">
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="start_date">
-                                                Data Inizio
-                                            </Label>
-                                            <Input
-                                                id="start_date"
-                                                type="date"
-                                                value={customStartDate}
-                                                onChange={(e) =>
-                                                    setCustomStartDate(
-                                                        e.target.value,
-                                                    )
-                                                }
-                                            />
-                                        </div>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="end_date">
-                                                Data Fine
-                                            </Label>
-                                            <Input
-                                                id="end_date"
-                                                type="date"
-                                                value={customEndDate}
-                                                onChange={(e) =>
-                                                    setCustomEndDate(
-                                                        e.target.value,
-                                                    )
-                                                }
-                                            />
-                                        </div>
-                                        <div className="flex gap-2 pt-2">
-                                            <Button
-                                                variant="outline"
-                                                onClick={() => {
-                                                    const today = new Date();
-                                                    const last7Days = new Date(
-                                                        today,
-                                                    );
-                                                    last7Days.setDate(
-                                                        today.getDate() - 7,
-                                                    );
-                                                    setCustomStartDate(
-                                                        last7Days
-                                                            .toISOString()
-                                                            .split('T')[0],
-                                                    );
-                                                    setCustomEndDate(
-                                                        today
-                                                            .toISOString()
-                                                            .split('T')[0],
-                                                    );
-                                                }}
-                                                className="flex-1"
+                            {/* Filtro stato */}
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="h-9"
+                                    >
+                                        <Filter className="mr-1.5 h-3.5 w-3.5" />
+                                        Stato
+                                        {statusFilter.length > 0 && (
+                                            <Badge
+                                                variant="secondary"
+                                                className="ml-1.5 h-5 px-1.5 text-xs"
                                             >
-                                                Ultimi 7 giorni
-                                            </Button>
-                                            <Button
-                                                variant="outline"
-                                                onClick={() => {
-                                                    const today = new Date();
-                                                    const lastMonth = new Date(
-                                                        today,
-                                                    );
-                                                    lastMonth.setMonth(
-                                                        today.getMonth() - 1,
-                                                    );
-                                                    setCustomStartDate(
-                                                        lastMonth
-                                                            .toISOString()
-                                                            .split('T')[0],
-                                                    );
-                                                    setCustomEndDate(
-                                                        today
-                                                            .toISOString()
-                                                            .split('T')[0],
-                                                    );
-                                                }}
-                                                className="flex-1"
-                                            >
-                                                Ultimo mese
-                                            </Button>
-                                        </div>
-                                    </div>
-                                    <DialogFooter>
-                                        <Button
-                                            variant="outline"
-                                            onClick={() =>
-                                                setShowCustomDatePicker(false)
+                                                {statusFilter.length}
+                                            </Badge>
+                                        )}
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent
+                                    align="end"
+                                    className="w-56"
+                                >
+                                    <DropdownMenuLabel>
+                                        Filtra per Stato
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    {orderStatusesForFilter.map((status) => (
+                                        <DropdownMenuCheckboxItem
+                                            key={status.value}
+                                            checked={statusFilter.includes(
+                                                status.value,
+                                            )}
+                                            onCheckedChange={(checked) =>
+                                                handleStatusFilterChange(
+                                                    status.value,
+                                                    checked as boolean,
+                                                )
                                             }
                                         >
-                                            Annulla
-                                        </Button>
-                                        <Button
-                                            onClick={handleCustomDateApply}
-                                            disabled={
-                                                !customStartDate ||
-                                                !customEndDate
-                                            }
-                                        >
-                                            Applica
-                                        </Button>
-                                    </DialogFooter>
-                                </DialogContent>
-                            </Dialog>
+                                            {status.label}
+                                        </DropdownMenuCheckboxItem>
+                                    ))}
+                                    {statusFilter.length > 0 && (
+                                        <>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuCheckboxItem
+                                                onSelect={(e) => {
+                                                    e.preventDefault();
+                                                    setStatusFilter([]);
+                                                    setIsLoading(true);
+                                                    const params: Record<
+                                                        string,
+                                                        string
+                                                    > = {
+                                                        date_filter: dateFilter,
+                                                    };
+                                                    if (customerFilter)
+                                                        params.customer_uuid =
+                                                            customerFilter;
+                                                    router.get(
+                                                        dashboard().url,
+                                                        params,
+                                                        {
+                                                            preserveState: true,
+                                                            preserveScroll: true,
+                                                            onFinish: () =>
+                                                                setIsLoading(
+                                                                    false,
+                                                                ),
+                                                        },
+                                                    );
+                                                }}
+                                                className="text-red-600 dark:text-red-400"
+                                            >
+                                                <X className="mr-2 h-3.5 w-3.5" />
+                                                Rimuovi filtri
+                                            </DropdownMenuCheckboxItem>
+                                        </>
+                                    )}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </div>
 
-                        {/* Filtro cliente */}
-                        <Select
-                            value={customerFilter || 'all'}
-                            onValueChange={handleCustomerFilterChange}
-                        >
-                            <SelectTrigger
-                                className="h-9 w-[180px]"
-                                aria-label="Filtro cliente"
-                            >
-                                <Users className="mr-2 h-3.5 w-3.5" />
-                                <SelectValue placeholder="Tutti i clienti" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="all">
-                                    Tutti i clienti
-                                </SelectItem>
-                                {customersForFilter.map((customer) => (
-                                    <SelectItem
-                                        key={customer.uuid}
-                                        value={customer.uuid}
-                                    >
-                                        {customer.label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                        {/* Grupo de acciones secundarias */}
+                        <div className="flex flex-wrap items-center gap-3">
+                            {/* Switch estilo iOS para auto-refresh */}
+                            <div className="flex items-center gap-2">
+                                <span className="text-xs font-medium text-foreground/75">
+                                    Auto
+                                </span>
+                                <button
+                                    type="button"
+                                    role="switch"
+                                    aria-checked={autoRefreshEnabled}
+                                    onClick={() =>
+                                        setAutoRefreshEnabled((prev) => !prev)
+                                    }
+                                    className={`relative inline-flex h-5 w-9 items-center rounded-full border transition-colors ${
+                                        autoRefreshEnabled
+                                            ? 'border-primary bg-primary/80'
+                                            : 'border-border bg-muted'
+                                    }`}
+                                    aria-label="Attiva o disattiva l'aggiornamento automatico della dashboard"
+                                >
+                                    <span
+                                        className={`inline-block h-4 w-4 transform rounded-full bg-background shadow-sm transition-transform ${
+                                            autoRefreshEnabled
+                                                ? 'translate-x-4'
+                                                : 'translate-x-1'
+                                        }`}
+                                    />
+                                </button>
+                            </div>
 
-                        {/* Filtro stato */}
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="h-9"
-                                >
-                                    <Filter className="mr-1.5 h-3.5 w-3.5" />
-                                    Stato
-                                    {statusFilter.length > 0 && (
-                                        <Badge
-                                            variant="secondary"
-                                            className="ml-1.5 h-5 px-1.5 text-xs"
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
+                                            onClick={handleRefresh}
+                                            disabled={isRefreshing}
+                                            className="h-9 w-9"
+                                            aria-label="Aggiorna dati dashboard"
                                         >
-                                            {statusFilter.length}
-                                        </Badge>
-                                    )}
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-56">
-                                <DropdownMenuLabel>
-                                    Filtra per Stato
-                                </DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                {orderStatusesForFilter.map((status) => (
-                                    <DropdownMenuCheckboxItem
-                                        key={status.value}
-                                        checked={statusFilter.includes(
-                                            status.value,
-                                        )}
-                                        onCheckedChange={(checked) =>
-                                            handleStatusFilterChange(
-                                                status.value,
-                                                checked as boolean,
-                                            )
-                                        }
-                                    >
-                                        {status.label}
-                                    </DropdownMenuCheckboxItem>
-                                ))}
-                                {statusFilter.length > 0 && (
-                                    <>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuCheckboxItem
-                                            onSelect={(e) => {
-                                                e.preventDefault();
-                                                setStatusFilter([]);
-                                                setIsLoading(true);
-                                                const params: Record<
-                                                    string,
-                                                    string
-                                                > = { date_filter: dateFilter };
-                                                if (customerFilter)
-                                                    params.customer_uuid =
-                                                        customerFilter;
-                                                router.get(
-                                                    dashboard().url,
-                                                    params,
-                                                    {
-                                                        preserveState: true,
-                                                        preserveScroll: true,
-                                                        onFinish: () =>
-                                                            setIsLoading(false),
-                                                    },
-                                                );
-                                            }}
-                                            className="text-red-600 dark:text-red-400"
-                                        >
-                                            <X className="mr-2 h-3.5 w-3.5" />
-                                            Rimuovi filtri
-                                        </DropdownMenuCheckboxItem>
-                                    </>
-                                )}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() =>
-                                setAutoRefreshEnabled(!autoRefreshEnabled)
-                            }
-                            className={`h-9 ${autoRefreshEnabled ? 'bg-primary/10' : ''}`}
-                            aria-label={
-                                autoRefreshEnabled
-                                    ? 'Disattiva aggiornamento automatico'
-                                    : 'Attiva aggiornamento automatico'
-                            }
-                            aria-pressed={autoRefreshEnabled}
-                        >
-                            <RefreshCw
-                                className={`mr-1.5 h-3.5 w-3.5 ${autoRefreshEnabled ? 'animate-spin' : ''}`}
-                            />
-                            Auto
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={handleRefresh}
-                            disabled={isRefreshing}
-                            className="h-9"
-                            aria-label="Aggiorna dati dashboard"
-                        >
-                            <RefreshCw
-                                className={`mr-1.5 h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`}
-                            />
-                            Aggiorna
-                        </Button>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="h-9"
-                                    aria-label="Esporta dati dashboard"
-                                >
-                                    <Download className="mr-1.5 h-3.5 w-3.5" />
-                                    Esporta
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>
-                                    Formato di Esportazione
-                                </DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuCheckboxItem
-                                    checked={false}
-                                    onSelect={(e) => {
-                                        e.preventDefault();
-                                        handleExport();
-                                    }}
-                                >
-                                    <Download className="mr-2 h-4 w-4" />
-                                    Esporta CSV
-                                </DropdownMenuCheckboxItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                                            <RefreshCw
+                                                className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`}
+                                            />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <span>Aggiorna</span>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-9"
+                                aria-label="Esporta dati dashboard in CSV"
+                                onClick={handleExport}
+                            >
+                                <Download className="mr-1.5 h-3.5 w-3.5" />
+                                Esporta
+                            </Button>
+                        </div>
                     </div>
                 </div>
 
@@ -1131,26 +1194,43 @@ export default function Dashboard({
                     >
                         <Card className="flex h-full cursor-pointer flex-col border-emerald-200 bg-gradient-to-br from-emerald-50/50 to-transparent transition-all focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:scale-[1.01] hover:border-primary/50 hover:shadow-lg dark:border-emerald-900 dark:from-emerald-950/20">
                             <CardHeader className="pb-2">
-                                <div className="mb-1.5 flex items-center gap-2">
-                                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10 transition-colors group-hover:bg-emerald-500/20">
-                                        <Award className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                                <div className="mb-1.5 flex items-center justify-between gap-2">
+                                    <div className="flex items-center gap-2">
+                                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10 transition-colors group-hover:bg-emerald-500/20">
+                                            <Award className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                                        </div>
+                                        <TooltipProvider>
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <CardDescription className="cursor-help text-xs font-medium">
+                                                        Tasso di Completamento
+                                                    </CardDescription>
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    <p>
+                                                        Percentuale di ordini
+                                                        completati rispetto al
+                                                        totale
+                                                    </p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
                                     </div>
-                                    <TooltipProvider>
-                                        <Tooltip>
-                                            <TooltipTrigger asChild>
-                                                <CardDescription className="cursor-help text-xs font-medium">
-                                                    Tasso di Completamento
-                                                </CardDescription>
-                                            </TooltipTrigger>
-                                            <TooltipContent>
-                                                <p>
-                                                    Percentuale di ordini
-                                                    completati rispetto al
-                                                    totale
-                                                </p>
-                                            </TooltipContent>
-                                        </Tooltip>
-                                    </TooltipProvider>
+                                    {!isLoading && (
+                                        <span
+                                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                                                performanceMetrics.completion_rate >=
+                                                80
+                                                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+                                                    : 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
+                                            }`}
+                                        >
+                                            {performanceMetrics.completion_rate >=
+                                            80
+                                                ? 'On track'
+                                                : 'A rischio'}
+                                        </span>
+                                    )}
                                 </div>
                                 {isLoading ? (
                                     <Skeleton className="h-8 w-20" />
@@ -1177,26 +1257,43 @@ export default function Dashboard({
                     </Link>
                     <Card className="border-blue-200 bg-gradient-to-br from-blue-50/50 to-transparent dark:border-blue-900 dark:from-blue-950/20">
                         <CardHeader className="pb-2">
-                            <div className="mb-1.5 flex items-center gap-2">
-                                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500/10">
-                                    <Clock className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                            <div className="mb-1.5 flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-2">
+                                    <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500/10">
+                                        <Clock className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                                    </div>
+                                    <TooltipProvider>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <CardDescription className="cursor-help text-xs font-medium">
+                                                    Tempo Medio di Produzione
+                                                </CardDescription>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>
+                                                    Tempo medio in giorni dalla
+                                                    creazione al completamento
+                                                    di un ordine
+                                                </p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
                                 </div>
-                                <TooltipProvider>
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <CardDescription className="cursor-help text-xs font-medium">
-                                                Tempo Medio di Produzione
-                                            </CardDescription>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            <p>
-                                                Tempo medio in giorni dalla
-                                                creazione al completamento di un
-                                                ordine
-                                            </p>
-                                        </TooltipContent>
-                                    </Tooltip>
-                                </TooltipProvider>
+                                {!isLoading && (
+                                    <span
+                                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                                            performanceMetrics.avg_production_time_days <=
+                                            14
+                                                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+                                                : 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
+                                        }`}
+                                    >
+                                        {performanceMetrics.avg_production_time_days <=
+                                        14
+                                            ? 'Buono'
+                                            : 'Lento'}
+                                    </span>
+                                )}
                             </div>
                             {isLoading ? (
                                 <Skeleton className="h-8 w-24" />
@@ -1312,16 +1409,36 @@ export default function Dashboard({
                                         </CardDescription>
                                     </div>
                                 </div>
-                                <div className="text-right">
-                                    <div className="text-xl font-bold text-primary">
-                                        {statistics.production.progress_percentage.toFixed(
-                                            1,
+                                <div className="space-y-1 text-right">
+                                    <div className="flex items-center justify-end gap-2">
+                                        {!isLoading && (
+                                            <span
+                                                className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                                                    statistics.production
+                                                        .progress_percentage >=
+                                                    80
+                                                        ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+                                                        : 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
+                                                }`}
+                                            >
+                                                {statistics.production
+                                                    .progress_percentage >= 80
+                                                    ? 'Avanzamento buono'
+                                                    : 'Avanzamento da monitorare'}
+                                            </span>
                                         )}
-                                        %
                                     </div>
-                                    <p className="text-xs text-foreground/75">
-                                        Completamento
-                                    </p>
+                                    <div>
+                                        <div className="text-xl font-bold text-primary">
+                                            {statistics.production.progress_percentage.toFixed(
+                                                1,
+                                            )}
+                                            %
+                                        </div>
+                                        <p className="text-xs text-foreground/75">
+                                            Completamento
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </CardHeader>
@@ -1562,9 +1679,23 @@ export default function Dashboard({
                                                         }
                                                     </span>
                                                     <Badge
-                                                        className={getOrderStatusColor(
+                                                        className={`${getOrderStatusColor(
                                                             order.status,
-                                                        )}
+                                                        )} cursor-pointer`}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            router.get(
+                                                                orders.index()
+                                                                    .url,
+                                                                {
+                                                                    status: order.status.toString(),
+                                                                },
+                                                                {
+                                                                    preserveScroll: true,
+                                                                },
+                                                            );
+                                                        }}
+                                                        aria-label={`Filtra ordini per stato ${order.status_label}`}
                                                     >
                                                         {order.status_label}
                                                     </Badge>
@@ -1684,9 +1815,23 @@ export default function Dashboard({
                                                         }
                                                     </span>
                                                     <Badge
-                                                        className={getOrderStatusColor(
+                                                        className={`${getOrderStatusColor(
                                                             order.status,
-                                                        )}
+                                                        )} cursor-pointer`}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            router.get(
+                                                                orders.index()
+                                                                    .url,
+                                                                {
+                                                                    status: order.status.toString(),
+                                                                },
+                                                                {
+                                                                    preserveScroll: true,
+                                                                },
+                                                            );
+                                                        }}
+                                                        aria-label={`Filtra ordini per stato ${order.status_label}`}
                                                     >
                                                         {order.status_label}
                                                     </Badge>
