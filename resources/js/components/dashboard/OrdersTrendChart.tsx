@@ -43,6 +43,143 @@ type OrdersTrendChartProps = {
     onPointClick?: (period: string) => void;
 };
 
+type OrdersTrendTooltipPayload = {
+    name?: string;
+    value?: number;
+};
+
+type OrdersTrendTooltipProps = {
+    active?: boolean;
+    payload?: OrdersTrendTooltipPayload[];
+    label?: string | number;
+    groupBy: 'day' | 'week' | 'month';
+    formatPeriod: (period: string) => string;
+};
+
+function OrdersTrendTooltipContent(props: OrdersTrendTooltipProps) {
+    const { active, payload, label, formatPeriod } = props;
+    if (!active || !payload || payload.length === 0) {
+        return null;
+    }
+
+    const entries = payload ?? [];
+
+    const current = entries.find((entry) => entry.name === 'count') as
+        | OrdersTrendTooltipPayload
+        | undefined;
+    const previous = entries.find((entry) => entry.name === 'previousCount') as
+        | OrdersTrendTooltipPayload
+        | undefined;
+
+    const currentValue = Number(current?.value ?? 0);
+    const previousValue = Number(previous?.value ?? 0);
+    const hasPreviousPoint = previous !== undefined;
+
+    const delta = currentValue - previousValue;
+    const hasNonZeroPrevious = hasPreviousPoint && previousValue !== 0;
+    const deltaPercent = hasNonZeroPrevious
+        ? ((delta / previousValue) * 100).toFixed(1)
+        : '0.0';
+
+    let deltaLabel = '';
+    let deltaColor = 'hsl(var(--foreground))';
+
+    if (hasPreviousPoint) {
+        if (hasNonZeroPrevious) {
+            if (delta > 0) {
+                deltaLabel = `Δ +${delta.toLocaleString(
+                    'it-IT',
+                )} ordini (+${deltaPercent}%)`;
+                deltaColor = 'rgb(34, 197, 94)'; // verde
+            } else if (delta < 0) {
+                deltaLabel = `Δ ${delta.toLocaleString(
+                    'it-IT',
+                )} ordini (${deltaPercent}%)`;
+                deltaColor = 'rgb(248, 113, 113)'; // rosso
+            } else {
+                deltaLabel = `Δ 0 ordini (0,0%)`;
+            }
+        } else {
+            // Periodo precedente presente ma con valore 0.
+            deltaLabel = `Δ +${currentValue.toLocaleString(
+                'it-IT',
+            )} ordini (nuovo periodo)`;
+            deltaColor = 'rgb(34, 197, 94)';
+        }
+    }
+
+    const formattedLabel =
+        typeof label === 'string' ? formatPeriod(label) : String(label ?? '');
+
+    return (
+        <div
+            style={{
+                borderRadius: '8px',
+                padding: '12px 16px',
+                boxShadow:
+                    '0 4px 12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05)',
+                zIndex: 1000,
+            }}
+        >
+            <p
+                style={{
+                    color: 'hsl(var(--foreground))',
+                    fontWeight: 600,
+                    marginBottom: '8px',
+                    fontSize: '14px',
+                }}
+            >
+                Periodo: {formattedLabel}
+            </p>
+            <p
+                style={{
+                    color: 'hsl(var(--foreground))',
+                    fontWeight: 500,
+                    fontSize: '13px',
+                    marginBottom: '4px',
+                }}
+            >
+                Ordini periodo corrente: {currentValue.toLocaleString('it-IT')}
+            </p>
+            {previous && (
+                <p
+                    style={{
+                        color: 'hsl(var(--foreground))',
+                        fontWeight: 500,
+                        fontSize: '13px',
+                        marginBottom: hasPreviousPoint ? '4px' : '0px',
+                    }}
+                >
+                    Ordini periodo precedente:{' '}
+                    {previousValue.toLocaleString('it-IT')}
+                </p>
+            )}
+            {hasPreviousPoint && (
+                <p
+                    style={{
+                        color: deltaColor,
+                        fontWeight: 600,
+                        fontSize: '13px',
+                    }}
+                >
+                    {deltaLabel}
+                </p>
+            )}
+            {!hasPreviousPoint && (
+                <p
+                    style={{
+                        color: 'hsl(var(--foreground) / 0.85)',
+                        fontWeight: 500,
+                        fontSize: '13px',
+                    }}
+                >
+                    Nessun dato per il periodo precedente
+                </p>
+            )}
+        </div>
+    );
+}
+
 export function OrdersTrendChart({
     data,
     previousPeriodData,
@@ -83,6 +220,22 @@ export function OrdersTrendChart({
             );
         }
 
+        // Detectar tema dark/light para ajustar los tooltips.
+        const isDark =
+            typeof document !== 'undefined'
+                ? document.documentElement.classList.contains('dark') ||
+                  (window.matchMedia &&
+                      window.matchMedia('(prefers-color-scheme: dark)').matches)
+                : false;
+
+        const tooltipBackground = isDark
+            ? 'rgba(15, 23, 42, 0.97)' // muy oscuro en dark
+            : '#ffffff'; // blanco en light
+
+        const tooltipBorder = isDark
+            ? 'rgba(148, 163, 184, 0.75)' // slate-400
+            : 'rgba(148, 163, 184, 0.4)';
+
         return (
             <ResponsiveContainer width="100%" height={height}>
                 <LineChart
@@ -96,49 +249,39 @@ export function OrdersTrendChart({
                     <XAxis
                         dataKey="period"
                         tickFormatter={formatPeriod}
-                        stroke="hsl(var(--foreground) / 0.8)"
+                        stroke="currentColor"
                         style={{ fontSize: '12px', fontWeight: 500 }}
-                        tick={{ fill: 'hsl(var(--foreground) / 0.8)' }}
+                        tick={{ fill: 'currentColor' }}
                     />
                     <YAxis
-                        stroke="hsl(var(--foreground) / 0.8)"
+                        stroke="currentColor"
                         style={{ fontSize: '12px', fontWeight: 500 }}
-                        tick={{ fill: 'hsl(var(--foreground) / 0.8)' }}
+                        tick={{ fill: 'currentColor' }}
                     />
                     <RechartsTooltip
-                        formatter={(
-                            value: number | string | undefined,
-                            name: string | undefined,
-                        ) => {
-                            const label =
-                                name === 'count'
-                                    ? 'Periodo Corrente'
-                                    : 'Periodo Precedente';
-                            const numericValue =
-                                typeof value === 'number'
-                                    ? value
-                                    : Number(value ?? 0);
-                            return [numericValue, label];
-                        }}
-                        labelFormatter={(label) =>
-                            `Periodo: ${formatPeriod(label)}`
-                        }
-                        contentStyle={{
-                            backgroundColor: 'hsl(var(--popover))',
-                            border: '2px solid hsl(var(--border))',
-                            borderRadius: '8px',
-                            color: 'hsl(var(--foreground))',
-                            fontWeight: 500,
-                            padding: '12px 16px',
-                            boxShadow:
-                                '0 4px 12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05)',
-                            zIndex: 1000,
-                        }}
-                        labelStyle={{
-                            color: 'hsl(var(--foreground))',
-                            fontWeight: 600,
-                            marginBottom: '4px',
-                        }}
+                        content={(props) => (
+                            <div
+                                style={{
+                                    backgroundColor: tooltipBackground,
+                                    border: `2px solid ${tooltipBorder}`,
+                                    borderRadius: '8px',
+                                }}
+                            >
+                                <OrdersTrendTooltipContent
+                                    {...({
+                                        // Primero convertimos a unknown para
+                                        // que TypeScript acepte el cast
+                                        ...(props as unknown as {
+                                            active?: boolean;
+                                            payload?: OrdersTrendTooltipPayload[];
+                                            label?: string | number;
+                                        }),
+                                        groupBy,
+                                        formatPeriod,
+                                    } as OrdersTrendTooltipProps)}
+                                />
+                            </div>
+                        )}
                         wrapperStyle={{
                             zIndex: 1000,
                         }}

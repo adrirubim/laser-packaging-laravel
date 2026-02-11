@@ -8,41 +8,46 @@ There is a full seeder (`TestDataSeeder`) that generates realistic demo data to 
 
 ### Data created
 
-The seeder creates:
+The seeder creates (approximate numbers, tuned for realistic coverage):
 
-1. **5 Customers** – with complete data
-2. **Customer Divisions** – 1–3 divisions per customer
-3. **Shipping Addresses** – 1–2 addresses per division
-4. **3 Suppliers** – for employee contracts
-5. **10 Employees** – with complete data
-6. **18–30 Employee Contracts** – 1–3 contracts per employee, all fields filled:
-   - 100% with a supplier assigned
-   - 70% active contracts (end_date in the future)
-   - 30% finished contracts (end_date in the past)
-   - All with pay level (0–4)
-   - All dates valid (end_date after start_date)
-7. **Materials and Machinery** – 5 materials, 5 machines, 3 pallet types
-8. **Article Categories** – 5 categories
-9. **Instructions and models** – 10 IC, 10 IO, 10 IP, 5 ModelSCQ, 5 CriticalIssue, 5 PalletSheet (with placeholder files in storage for downloads)
-10. **Offers** – activities, sectors, seasonality, offer/order types, LAS families, operations; 2–4 offers per customer with operations (OfferOperationList)
-11. **Articles** – 3–6 articles per offer + **1 demo article**
+1. **6 Customers** – with complete data (including one `CLI-DEMO-ALL`)
+2. **Customer Divisions** – 1–3 divisions per customer (≈15 in total)
+3. **Shipping Addresses** – 1–2 addresses per division (≈27 in total)
+4. **4 Suppliers** – for employee contracts (including `FORN-DEMO-ALL`)
+5. **13 Employees** – with complete data (including `EMP-DEMO-ALL` y ejemplos “Rossi/Bianchi”)
+6. **25 Employee Contracts** – 1–3 por empleado, todos los campos rellenados:
+   - 100% con proveedor asignado
+   - ≈70% contratos activos (end_date en el futuro)
+   - ≈30% contratos finalizados (end_date en el pasado)
+   - Todos con nivel salarial (0–4)
+   - Todas las fechas válidas (end_date > start_date)
+7. **Materials and Machinery** – 6 materials, 6 machines, 4 pallet types
+8. **Article Categories** – 6 categories
+9. **Instructions and models** – 11 IC, 11 IO, 11 IP, 6 ModelSCQ, 6 CriticalIssue, 6 PalletSheet (todos con ficheros placeholder en storage para descargas)
+10. **Offers** – actividades, sectores, estacionalidad, tipos de oferta/orden, familias LAS, operaciones; 2–4 ofertas por cliente con operaciones (OfferOperationList) → 22 ofertas en total + 1 oferta DEMO-ALL `2026_999_01_A`
+11. **Articles** – 3–6 artículos por oferta + **1 demo article**
     - **All** articles have at least 1 Istruzione di Confezionamento (IC), 1 di Pallettizzazione (IP) and 1 Operativa (IO), so that in “Visualizza” the three cards with ⋯ (Scarica file) appear.
     - **Demo article** to verify **all inputs**: code **`LAS-DEMO-ALL`** (tutti i campi compilati). It has **all fields** filled (informazioni base, offerta, categoria, pallet, piano imballaggio, piani pallet, line_layout, materiali, macchinari, criticità, istruzioni IC/IP/IO, etichette, peso e controllo, approvazioni, media produttività, Verifica Consumi Materiali). In Articoli → search for **"LAS-DEMO-ALL"** → Visualizza / Modifica / Duplica to verify each input.
     - Relations: materials (1–3), machinery (1–2 with `value` on pivot), criticalIssues (0–2), IC/IO/IP instructions (1–3 per type), pivot offerarticles, Verifica Consumi Materiali (~40% of articles)
     - Placeholder files for line_layout under `storage/app/line_layout/{uuid}/`
-12. **Orders in all 7 statuses:**
-    - **5 orders Pianificato** (status 0)
-    - **5 orders In Allestimento** (status 1)
-    - **8 orders Lanciate** (status 2)
-    - **12 orders In Avanzamento** (status 3)
-    - **5 orders Sospese** (status 4, with `motivazione`)
-    - **15 orders Evaso** (status 5)
-    - **10 orders Saldato** (status 6)
+12. **Orders in all 7 statuses (operational snapshot):**
+    - **~6 orders Pianificato** (status 0)
+    - **~6 orders In Allestimento** (status 1)
+    - **~9 orders Lanciate** (status 2)
+    - **~15 orders In Avanzamento** (status 3)
+    - **~6 orders Sospese** (status 4, with `motivazione`)
+    - **~15 orders Evaso** (status 5)
+    - **~10 orders Saldato** (status 6)
 13. **Order States (OfferOrderState)** – 6 custom states
 14. **Order–Employee assignments (OfferOrderEmployee)** – 1–3 employees per order
 15. **Order Processings (ProductionOrderProcessing)** – 2–5 processings per order in Lanciato / In Avanzamento
 
-**Total: ~60 orders** across the 7 statuses. **Downloads:** placeholder files are created in storage for instructions (packaging/operational/palletization), ModelSCQ, PalletSheet, article line_layout and offer operations (`offer-operations/`).
+16. **Historical + daily completed orders for dashboard trends**:
+    - **~50 historical completed orders** spread over the **last 12 months** (Evaso/Saldato) to feed long‑term trends and previous‑period comparisons.
+    - **365 daily completed orders** (1 per day) for the **last 365 days**, all completadas, para garantizar que los filtros de fecha del dashboard (`Oggi`, `Questa settimana`, `Questo mese`, periodos largos) siempre encuentran datos.
+
+**Total:** decenas de órdenes en los 7 estados operativos + varios cientos de órdenes completadas históricas.  
+**Downloads:** placeholder files are created in storage for instructions (packaging/operational/palletization), ModelSCQ, PalletSheet, article line_layout and offer operations (`offer-operations/`).
 
 ### Registros "Demo All" (tutti i campi compilati)
 
@@ -170,8 +175,14 @@ Order::where('removed', false)->where('status', 6)->count(); // Saldato
 ### Check in the Dashboard
 
 1. Open the dashboard: `http://localhost:8000/dashboard`
-2. Verify that the "Stato degli Ordini" cards show non‑zero numbers
-3. Click each card to verify that filters work correctly
+2. Verify that the "Stato degli Ordini" cards show non‑zero numbers for each state
+3. Use the **date filter** (`Tutto il tempo`, `Oggi`, `Questa settimana`, `Questo mese`, `Personalizzato`) and check that:
+   - KPIs, gráficos y listas cambian coherentemente con el rango de fechas.
+   - Siempre hay datos en `Oggi` / `Questa settimana` gracias a las órdenes demo específicas.
+   - Las tendencias muestran un histórico continuo de los últimos 12 meses.
+4. Use the **customer filter** (`Tutti i clienti` / cliente específico) y verifica que:
+   - Todas las cards y gráficos se recalculan sólo con los datos de ese cliente.
+5. Usa el **filtro de estado** para comprobar que la distribución por estados y las listas responden correctamente.
 
 ## 🔄 Re-running the Seeder
 
@@ -237,4 +248,4 @@ The seeder now covers **100% of the main system features**, including:
 
 ---
 
-**Last updated:** 2026-01-28
+**Last updated:** 2026-02-11

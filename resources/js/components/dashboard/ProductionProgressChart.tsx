@@ -48,7 +48,13 @@ type ProductionProgressChartProps = {
 type TooltipPayloadEntry = {
     dataKey?: string;
     value?: number;
-    payload?: { fullName?: string; total?: number };
+    payload?: {
+        fullName?: string;
+        total?: number;
+        progress?: number;
+        isUrgent?: boolean;
+        daysUntilDelivery?: number;
+    };
 };
 
 function ProductionProgressTooltip({
@@ -59,14 +65,85 @@ function ProductionProgressTooltip({
         return null;
     }
 
-    const data = payload[0]?.payload;
-    if (!data) return null;
+    const rawPayload = payload[0]?.payload as
+        | {
+              fullName?: string;
+              total?: number;
+              progress?: number;
+              isUrgent?: boolean;
+              daysUntilDelivery?: number;
+          }
+        | undefined;
+    if (!rawPayload) return null;
+
+    // Detectar tema dark de forma robusta:
+    // - Primero miramos si el <html> tiene la clase "dark" (Tailwind).
+    // - Si no, caemos a prefers-color-scheme.
+    const isDark =
+        typeof document !== 'undefined'
+            ? document.documentElement.classList.contains('dark') ||
+              (window.matchMedia &&
+                  window.matchMedia('(prefers-color-scheme: dark)').matches)
+            : false;
+
+    const backgroundColor = isDark
+        ? 'rgba(15, 23, 42, 0.97)' // slate-900 casi opaco en dark
+        : '#ffffff'; // blanco puro en light
+
+    const borderColor = isDark
+        ? 'rgba(148, 163, 184, 0.75)' // slate-400 en dark
+        : 'rgba(148, 163, 184, 0.4)'; // borde suave en light
+
+    const total = Number(rawPayload.total) || 0;
+    const workedEntry = payload.find((entry) => entry.dataKey === 'worked') as
+        | TooltipPayloadEntry
+        | undefined;
+    const remainingEntry = payload.find(
+        (entry) => entry.dataKey === 'remaining',
+    ) as TooltipPayloadEntry | undefined;
+
+    const worked = Number(workedEntry?.value ?? 0);
+    const remaining = Number(
+        remainingEntry?.value ?? Math.max(total - worked, 0),
+    );
+    const progress = Number(rawPayload.progress ?? 0);
+    const progressPercent =
+        total > 0 ? ((progress / total) * 100).toFixed(1) : '0.0';
+
+    let stato = 'In lavorazione';
+    if (progress >= 100) {
+        stato = 'Completato';
+    } else if (
+        rawPayload.isUrgent &&
+        rawPayload.daysUntilDelivery !== undefined
+    ) {
+        if (rawPayload.daysUntilDelivery < 0) {
+            stato = 'In ritardo (urgente)';
+        } else if (rawPayload.daysUntilDelivery <= 3) {
+            stato = 'Urgente';
+        }
+    }
+
+    // Colori per la pill di stato, allineati alla palette delle barre.
+    let statoBg = 'rgba(59, 130, 246, 0.12)'; // blu morbido
+    let statoBorder = 'rgba(59, 130, 246, 0.6)';
+
+    if (stato === 'Completato') {
+        statoBg = 'rgba(34, 197, 94, 0.12)'; // verde
+        statoBorder = 'rgba(34, 197, 94, 0.65)';
+    } else if (stato === 'In ritardo (urgente)') {
+        statoBg = 'rgba(248, 113, 113, 0.12)'; // rosso
+        statoBorder = 'rgba(248, 113, 113, 0.7)';
+    } else if (stato === 'Urgente') {
+        statoBg = 'rgba(245, 158, 11, 0.12)'; // giallo/ambra
+        statoBorder = 'rgba(245, 158, 11, 0.7)';
+    }
 
     return (
         <div
             style={{
-                backgroundColor: 'hsl(var(--popover))',
-                border: '2px solid hsl(var(--border))',
+                backgroundColor,
+                border: `2px solid ${borderColor}`,
                 borderRadius: '8px',
                 padding: '12px 16px',
                 boxShadow:
@@ -82,52 +159,74 @@ function ProductionProgressTooltip({
                     fontSize: '14px',
                 }}
             >
-                Ordine: {data.fullName}
+                Ordine: {rawPayload.fullName}
             </p>
             <p
                 style={{
                     color: 'hsl(var(--foreground))',
                     fontWeight: 500,
-                    marginBottom: '4px',
+                    marginBottom: '6px',
                     fontSize: '13px',
                 }}
             >
-                Totale: {Number(data.total).toLocaleString()}
+                <span
+                    style={{
+                        marginRight: 8,
+                    }}
+                >
+                    Stato:
+                </span>
+                <span
+                    style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        padding: '2px 8px',
+                        borderRadius: '999px',
+                        border: `1px solid ${statoBorder}`,
+                        backgroundColor: statoBg,
+                        color: 'hsl(var(--foreground))',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        letterSpacing: 0.2,
+                        textTransform: 'uppercase',
+                    }}
+                >
+                    {stato}
+                </span>
             </p>
-            {payload.map((entry: TooltipPayloadEntry, index: number) => {
-                if (entry.dataKey === 'worked') {
-                    return (
-                        <p
-                            key={index}
-                            style={{
-                                color: 'hsl(var(--foreground))',
-                                fontWeight: 500,
-                                fontSize: '13px',
-                                marginBottom: '4px',
-                            }}
-                        >
-                            Processato / Totale:{' '}
-                            {Number(entry.value).toLocaleString()} /{' '}
-                            {Number(data.total).toLocaleString()}
-                        </p>
-                    );
-                }
-                if (entry.dataKey === 'remaining') {
-                    return (
-                        <p
-                            key={index}
-                            style={{
-                                color: 'hsl(var(--foreground))',
-                                fontWeight: 500,
-                                fontSize: '13px',
-                            }}
-                        >
-                            Rimanente: {Number(entry.value).toLocaleString()}
-                        </p>
-                    );
-                }
-                return null;
-            })}
+            <p
+                style={{
+                    color: 'hsl(var(--foreground))',
+                    fontWeight: 500,
+                    marginBottom: remaining > 0 ? '4px' : '0px',
+                    fontSize: '13px',
+                }}
+            >
+                Avanzamento:{' '}
+                {worked.toLocaleString(undefined, {
+                    maximumFractionDigits: 0,
+                })}{' '}
+                /{' '}
+                {total.toLocaleString(undefined, {
+                    maximumFractionDigits: 0,
+                })}{' '}
+                pezzi ({progressPercent}%)
+            </p>
+            {remaining > 0 && (
+                <p
+                    style={{
+                        color: 'hsl(var(--foreground))',
+                        fontWeight: 500,
+                        fontSize: '13px',
+                    }}
+                >
+                    Rimanenti:{' '}
+                    {remaining.toLocaleString(undefined, {
+                        maximumFractionDigits: 0,
+                    })}{' '}
+                    pezzi
+                </p>
+            )}
         </div>
     );
 }
@@ -192,7 +291,9 @@ export function ProductionProgressChart({
                 <BarChart
                     data={chartData}
                     layout="vertical"
-                    margin={{ top: 5, right: 30, left: 100, bottom: 5 }}
+                    // Dejamos poco margen izquierdo para que en móvil
+                    // las barras no “nazcan” demasiado hacia el centro.
+                    margin={{ top: 5, right: 30, left: 8, bottom: 5 }}
                 >
                     <CartesianGrid
                         strokeDasharray="3 3"
@@ -201,17 +302,20 @@ export function ProductionProgressChart({
                     <XAxis
                         type="number"
                         domain={[0, 'dataMax']}
-                        stroke="hsl(var(--foreground) / 0.8)"
+                        stroke="currentColor"
                         style={{ fontSize: '12px', fontWeight: 500 }}
-                        tick={{ fill: 'hsl(var(--foreground) / 0.8)' }}
+                        tick={{ fill: 'currentColor' }}
                     />
                     <YAxis
                         type="category"
                         dataKey="name"
-                        stroke="hsl(var(--foreground) / 0.8)"
+                        stroke="currentColor"
                         style={{ fontSize: '12px', fontWeight: 500 }}
-                        width={90}
-                        tick={{ fill: 'hsl(var(--foreground) / 0.8)' }}
+                        // Reducimos el ancho reservado para las labels
+                        // para que el área de barras aproveche mejor
+                        // el ancho disponible en móvil.
+                        width={72}
+                        tick={{ fill: 'currentColor' }}
                     />
                     <RechartsTooltip
                         content={<ProductionProgressTooltip />}

@@ -75,19 +75,33 @@ class DashboardRepository
             ? round(($workedQuantity / $totalQuantity) * 100, 2)
             : 0;
 
+        // Offerte: filtrate per data + (opzionale) cliente
         $offersQuery = Offer::where('removed', false);
         if ($dateRange['start']) {
             $offersQuery->whereBetween('created_at', [$dateRange['start'], $dateRange['end']]);
         }
+        if ($customerUuid) {
+            $offersQuery->where('customer_uuid', $customerUuid);
+        }
 
+        // Articoli: filtrati per data + (opzionale) cliente via relazione con Offerte
         $articlesQuery = Article::where('removed', false);
         if ($dateRange['start']) {
             $articlesQuery->whereBetween('created_at', [$dateRange['start'], $dateRange['end']]);
         }
+        if ($customerUuid) {
+            $articlesQuery->whereHas('offer', function ($query) use ($customerUuid) {
+                $query->where('customer_uuid', $customerUuid);
+            });
+        }
 
+        // Clienti: filtrati solo per data; se hay customerUuid contamos solo ese
         $customersQuery = Customer::where('removed', false);
         if ($dateRange['start']) {
             $customersQuery->whereBetween('created_at', [$dateRange['start'], $dateRange['end']]);
+        }
+        if ($customerUuid) {
+            $customersQuery->where('uuid', $customerUuid);
         }
 
         return [
@@ -117,16 +131,26 @@ class DashboardRepository
     }
 
     /**
-     * Get production progress data for chart
+     * Get production progress data for chart.
+     *
+     * Il filtro data agisce così:
+     * - Se $dateRange['start'] è valorizzato, limitiamo per data di consegna richiesta nel range.
+     * - Se è "all", ricadiamo sul comportamento originale "prossimi 7 giorni".
      */
-    public function getProductionProgressData(int $limit = 10, ?string $customerUuid = null, ?array $statuses = null): array
+    public function getProductionProgressData(array $dateRange, int $limit = 10, ?string $customerUuid = null, ?array $statuses = null): array
     {
-        $urgentDate = now()->addDays(7);
-
         $query = Order::where('removed', false)
             ->whereNotNull('delivery_requested_date')
-            ->where('delivery_requested_date', '<=', $urgentDate)
             ->whereNotIn('status', [Order::STATUS_EVASO, Order::STATUS_SALDATO]);
+
+        // Applicare filtro data: se il range è specificato usiamo quello, altrimenti
+        // manteniamo il comportamento "prossimi 7 giorni".
+        if ($dateRange['start']) {
+            $query->whereBetween('delivery_requested_date', [$dateRange['start'], $dateRange['end']]);
+        } else {
+            $urgentDate = now()->addDays(7);
+            $query->whereBetween('delivery_requested_date', [now(), $urgentDate]);
+        }
 
         // Filter by customer if provided
         if ($customerUuid) {
@@ -163,18 +187,38 @@ class DashboardRepository
     }
 
     /**
-     * Get urgent orders (delivery date within 7 days)
+     * Get urgent orders.
+     *
+     * Il filtro data agisce sulla data di consegna richiesta:
+     * - Se $dateRange['start'] è valorizzato, limitiamo al range selezionato.
+     * - Se è "all", usiamo ancora l'intervallo [oggi, oggi+7 giorni].
      */
-    public function getUrgentOrders(int $limit = 10): array
+    public function getUrgentOrders(array $dateRange, ?string $customerUuid = null, ?array $statuses = null, int $limit = 10): array
     {
-        $urgentDate = now()->addDays(7);
-
-        return Order::where('removed', false)
+        $query = Order::where('removed', false)
             ->whereNotNull('delivery_requested_date')
-            ->where('delivery_requested_date', '<=', $urgentDate)
-            ->where('delivery_requested_date', '>=', now())
-            ->whereNotIn('status', [Order::STATUS_EVASO, Order::STATUS_SALDATO])
-            ->with(['article', 'article.offer.customer'])
+            ->whereNotIn('status', [Order::STATUS_EVASO, Order::STATUS_SALDATO]);
+
+        if ($dateRange['start']) {
+            $query->whereBetween('delivery_requested_date', [$dateRange['start'], $dateRange['end']]);
+        } else {
+            $urgentDate = now()->addDays(7);
+            $query->whereBetween('delivery_requested_date', [now(), $urgentDate]);
+        }
+
+        // Filtro per cliente
+        if ($customerUuid) {
+            $query->whereHas('article.offer', function ($q) use ($customerUuid) {
+                $q->where('customer_uuid', $customerUuid);
+            });
+        }
+
+        // Filtro per stati
+        if ($statuses && count($statuses) > 0) {
+            $query->whereIn('status', $statuses);
+        }
+
+        return $query->with(['article', 'article.offer.customer'])
             ->orderBy('delivery_requested_date', 'asc')
             ->limit($limit)
             ->get()
@@ -205,12 +249,29 @@ class DashboardRepository
     }
 
     /**
-     * Get recent orders
+     * Get recent orders.
+     *
+     * Il filtro data agisce su created_at.
      */
-    public function getRecentOrders(int $limit = 10): array
+    public function getRecentOrders(array $dateRange, ?string $customerUuid = null, ?array $statuses = null, int $limit = 10): array
     {
-        return Order::where('removed', false)
-            ->with(['article', 'article.offer.customer'])
+        $query = Order::where('removed', false);
+
+        if ($dateRange['start']) {
+            $query->whereBetween('created_at', [$dateRange['start'], $dateRange['end']]);
+        }
+
+        if ($customerUuid) {
+            $query->whereHas('article.offer', function ($q) use ($customerUuid) {
+                $q->where('customer_uuid', $customerUuid);
+            });
+        }
+
+        if ($statuses && count($statuses) > 0) {
+            $query->whereIn('status', $statuses);
+        }
+
+        return $query->with(['article', 'article.offer.customer'])
             ->orderBy('created_at', 'desc')
             ->limit($limit)
             ->get()
@@ -423,15 +484,23 @@ class DashboardRepository
     }
 
     /**
-     * Get alerts (suspended orders, overdue orders)
+     * Get alerts (suspended orders, overdue orders).
+     *
+     * Il filtro data agisce così:
+     * - Sospesi / senza autocontrollo: filtro su created_at.
+     * - In ritardo: filtro su delivery_requested_date.
      */
-    public function getAlerts(?string $customerUuid = null, ?array $statuses = null): array
+    public function getAlerts(array $dateRange, ?string $customerUuid = null, ?array $statuses = null): array
     {
         $alerts = [];
 
         // Suspended orders
         $suspendedQuery = Order::where('removed', false)
             ->where('status', Order::STATUS_SOSPESO);
+
+        if ($dateRange['start']) {
+            $suspendedQuery->whereBetween('created_at', [$dateRange['start'], $dateRange['end']]);
+        }
 
         if ($customerUuid) {
             $suspendedQuery->whereHas('article.offer', function ($query) use ($customerUuid) {
@@ -460,6 +529,10 @@ class DashboardRepository
             ->whereNotNull('delivery_requested_date')
             ->where('delivery_requested_date', '<', now())
             ->whereNotIn('status', [Order::STATUS_EVASO, Order::STATUS_SALDATO]);
+
+        if ($dateRange['start']) {
+            $overdueQuery->whereBetween('delivery_requested_date', [$dateRange['start'], $dateRange['end']]);
+        }
 
         if ($customerUuid) {
             $overdueQuery->whereHas('article.offer', function ($query) use ($customerUuid) {
@@ -491,6 +564,10 @@ class DashboardRepository
         $noAutocontrolloQuery = Order::where('removed', false)
             ->where('autocontrollo', false)
             ->whereIn('status', [Order::STATUS_LANCIATO, Order::STATUS_IN_AVANZAMENTO]);
+
+        if ($dateRange['start']) {
+            $noAutocontrolloQuery->whereBetween('created_at', [$dateRange['start'], $dateRange['end']]);
+        }
 
         if ($customerUuid) {
             $noAutocontrolloQuery->whereHas('article.offer', function ($query) use ($customerUuid) {

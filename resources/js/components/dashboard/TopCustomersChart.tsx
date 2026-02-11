@@ -63,11 +63,23 @@ function TopCustomersTooltipContent({
     }
     const data = payload[0]?.payload;
     if (!data) return null;
+
+    const isDark =
+        typeof document !== 'undefined'
+            ? document.documentElement.classList.contains('dark') ||
+              (window.matchMedia &&
+                  window.matchMedia('(prefers-color-scheme: dark)').matches)
+            : false;
+
+    const backgroundColor = isDark ? 'rgba(15, 23, 42, 0.97)' : '#ffffff';
+    const borderColor = isDark
+        ? 'rgba(148, 163, 184, 0.75)'
+        : 'rgba(148, 163, 184, 0.4)';
     return (
         <div
             style={{
-                backgroundColor: 'hsl(var(--popover))',
-                border: '2px solid hsl(var(--border))',
+                backgroundColor,
+                border: `2px solid ${borderColor}`,
                 borderRadius: '8px',
                 padding: '12px 16px',
                 boxShadow:
@@ -83,7 +95,7 @@ function TopCustomersTooltipContent({
                     fontSize: '14px',
                 }}
             >
-                {data.fullName}
+                Cliente: {data.fullName}
             </p>
             <p
                 style={{
@@ -92,7 +104,10 @@ function TopCustomersTooltipContent({
                     fontSize: '13px',
                 }}
             >
-                Ordini: {payload[0].value}
+                Ordini totali:{' '}
+                {Number(payload[0].value ?? 0).toLocaleString(undefined, {
+                    maximumFractionDigits: 0,
+                })}
             </p>
         </div>
     );
@@ -149,7 +164,7 @@ export function TopCustomersChart({
                     style={{
                         fontSize: 12,
                         fontWeight: 500,
-                        fill: 'hsl(var(--foreground) / 0.8)',
+                        fill: 'currentColor',
                     }}
                 />
             );
@@ -170,7 +185,7 @@ export function TopCustomersChart({
                     cursor: onBarClick ? 'pointer' : 'default',
                     fontSize: 12,
                     fontWeight: isActive ? 600 : 500,
-                    fill: 'hsl(var(--foreground) / 0.8)',
+                    fill: 'currentColor',
                 }}
                 onMouseEnter={() => {
                     if (index >= 0) {
@@ -190,11 +205,16 @@ export function TopCustomersChart({
     };
 
     const renderChart = (height: number) => (
-        <ResponsiveContainer width="100%" height={height}>
+        <ResponsiveContainer
+            width="100%"
+            height={Math.max(height, chartData.length * 40)}
+        >
             <BarChart
                 data={chartData}
                 layout="vertical"
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                // Margen fino y consistente con el resto de la dashboard,
+                // especialmente en móvil.
+                margin={{ top: 5, right: 30, left: 8, bottom: 5 }}
             >
                 <CartesianGrid
                     strokeDasharray="3 3"
@@ -202,16 +222,18 @@ export function TopCustomersChart({
                 />
                 <XAxis
                     type="number"
-                    stroke="hsl(var(--foreground) / 0.8)"
+                    stroke="currentColor"
                     style={{ fontSize: '12px', fontWeight: 500 }}
-                    tick={{ fill: 'hsl(var(--foreground) / 0.8)' }}
+                    tick={{ fill: 'currentColor' }}
                 />
                 <YAxis
                     dataKey="name"
                     type="category"
-                    width={120}
+                    // Anchura suficiente para el nombre truncado,
+                    // sin robar demasiado espacio a las barras.
+                    width={104}
                     tick={renderYAxisTick}
-                    stroke="hsl(var(--foreground) / 0.8)"
+                    stroke="currentColor"
                 />
                 <RechartsTooltip
                     content={<TopCustomersTooltipContent />}

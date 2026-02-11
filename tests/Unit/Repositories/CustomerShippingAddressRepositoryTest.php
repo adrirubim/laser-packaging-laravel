@@ -59,8 +59,24 @@ class CustomerShippingAddressRepositoryTest extends TestCase
     {
         $customer = Customer::factory()->create(['removed' => false]);
         $division = CustomerDivision::factory()->create(['customer_uuid' => $customer->uuid, 'removed' => false]);
-        CustomerShippingAddress::factory()->create(['customerdivision_uuid' => $division->uuid, 'street' => 'Via Roma 1', 'removed' => false]);
-        CustomerShippingAddress::factory()->create(['customerdivision_uuid' => $division->uuid, 'street' => 'Via Milano 2', 'removed' => false]);
+        CustomerShippingAddress::factory()->create([
+            'customerdivision_uuid' => $division->uuid,
+            'street' => 'Via Roma 1',
+            'city' => 'Roma',
+            'postal_code' => '00100',
+            'co' => 'c/o Roma Company',
+            'contacts' => 'Tel: 111111',
+            'removed' => false,
+        ]);
+        CustomerShippingAddress::factory()->create([
+            'customerdivision_uuid' => $division->uuid,
+            'street' => 'Via Milano 2',
+            'city' => 'Milano',
+            'postal_code' => '20100',
+            'co' => 'c/o Milano Company',
+            'contacts' => 'Tel: 222222',
+            'removed' => false,
+        ]);
 
         $request = Request::create('/customer-shipping-addresses', 'GET', ['search' => 'Roma']);
         $result = $this->repository->getForIndex($request);

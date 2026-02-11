@@ -4,7 +4,7 @@
 [![Laravel 12.48](https://img.shields.io/badge/Laravel-12.48-FF2D20?logo=laravel&logoColor=white)](https://laravel.com/)
 [![React 19.2](https://img.shields.io/badge/React-19.2-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript 5.9](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Tests 967 passing](https://img.shields.io/badge/Tests-967%20passing-10B981)](docs/TEST_COVERAGE_REPORT.md)
+[![Tests 990 passing](https://img.shields.io/badge/Tests-990%20passing-10B981)](docs/TEST_COVERAGE_REPORT.md)
 [![License MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 > A modern, enterprise-grade application for managing offers, articles, orders and a production portal (web + API). Built with Laravel 12.48.x, React 19.2.x (Inertia.js 2.3.x), TypeScript 5.9.x, Vite 7.3.x, Tailwind CSS 4.1.x, and PostgreSQL. Featuring a professional UI/UX, comprehensive security, and optimized performance. **Exact versions:** [docs/VERSION_STACK.md](docs/VERSION_STACK.md).
@@ -101,7 +101,7 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 - ✅ **TypeScript** — Full type safety across frontend
 - ✅ **ESLint** — Lint and fix on frontend and scripts
 - ✅ **English Documentation** — Code comments and docblocks in English
-- ✅ **Comprehensive Testing** — 967 tests, Unit/Feature/Performance
+- ✅ **Comprehensive Testing** — 990 tests, Unit/Feature/Performance
 
 ---
 
@@ -192,11 +192,11 @@ DB_PASSWORD=
 ### 5. Run migrations and seeders
 
 ```bash
-# Run migrations
+# Run migrations on the development database (laser_packaging)
 php artisan migrate
 
-# (Optional) Seed test/demo data
-# php artisan db:seed
+# (Optional) Seed full demo data for dashboard + flows (development DB only)
+php artisan db:seed --class=TestDataSeeder
 ```
 
 ### 6. Create storage link
@@ -282,8 +282,8 @@ php artisan test --testsuite=Performance
 
 ### Test coverage
 
-- ✅ **967 tests passing**
-- ✅ **6600+ assertions** across all test suites
+- ✅ **990 tests passing**
+- ✅ **6659+ assertions** across all test suites
 - ✅ **Feature tests** for all controllers
 - ✅ **Unit tests** for services and repositories
 - ✅ **Performance tests** (Concurrency, Load, API response time)
@@ -451,12 +451,20 @@ php artisan storage:link
 Ensure dependencies are installed (`composer install` and `npm ci`). Then run locally to avoid CI failures:
 
 ```bash
-npm run build
+# Linting / formatting
+vendor/bin/pint
+npm run format
 npm run lint
+
+# Ensure test database is migrated
+php artisan migrate:fresh --env=testing
+
+# Build + tests (same as CI)
+npm run build
 ./vendor/bin/phpunit
 ```
 
-Optional: `npm run format && npm run types`.
+Optional: `npm run types`.
 
 ---
 

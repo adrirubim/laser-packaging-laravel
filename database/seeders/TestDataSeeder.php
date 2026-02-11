@@ -131,7 +131,28 @@ class TestDataSeeder extends Seeder
 
         // 1. Crear Clientes
         $this->command->info('📦 Creando clientes...');
-        $customers = Customer::factory()->count(5)->create();
+        $customers = collect();
+
+        // Distribución temporal de clientes para que el filtro de fecha del dashboard
+        // muestre diferencias claras entre "Tutto il tempo" / "Oggi" / "Questa settimana" / "Questo mese".
+        // - 2 clientes antiguos (hace 2–3 años) → sólo visibles con "Tutto il tempo".
+        // - 2 clientes de meses pasados dentro del último año.
+        // - 1 cliente creado este mes (pero no hoy).
+        // El cliente demo CLI-DEMO-ALL se crea justo después (lo consideramos "actual").
+        $oldCustomers = Customer::factory()->count(2)->create([
+            'created_at' => now()->subYears(3)->subMonths(2),
+        ]);
+        $customers = $customers->merge($oldCustomers);
+
+        $lastYearCustomers = Customer::factory()->count(2)->create([
+            'created_at' => now()->subMonths(rand(4, 10)),
+        ]);
+        $customers = $customers->merge($lastYearCustomers);
+
+        $thisMonthCustomer = Customer::factory()->create([
+            'created_at' => now()->startOfMonth()->addDays(2),
+        ]);
+        $customers->push($thisMonthCustomer);
         // Cliente DEMO-ALL: tutti i campi per verificare gli input (Clienti → cercare CLI-DEMO-ALL)
         $demoCustomer = Customer::factory()->create([
             'code' => 'CLI-DEMO-ALL',
@@ -633,6 +654,19 @@ class TestDataSeeder extends Seeder
                 $offerNumber = date('Y').'_'.str_pad($nextOfferSequence, 3, '0', STR_PAD_LEFT).'_01_A';
                 $nextOfferSequence++;
 
+                // Distribuir temporalmente las ofertas:
+                // - Si el cliente es "antiguo": ofertas hace 1–2 años.
+                // - Si el cliente es "del último año": ofertas hace algunos meses.
+                // - Si el cliente es "de este mes" o demo: ofertas en este mes y algunos días de hoy.
+                $createdAt = now();
+                if ($customer->created_at < now()->subYears(2)) {
+                    $createdAt = now()->subYears(2)->subMonths(rand(0, 6));
+                } elseif ($customer->created_at < now()->subMonths(2)) {
+                    $createdAt = now()->subMonths(rand(3, 8));
+                } else {
+                    $createdAt = now()->startOfMonth()->addDays(rand(0, 10));
+                }
+
                 $offer = Offer::factory()->create([
                     'customer_uuid' => $customer->uuid,
                     'customerdivision_uuid' => $customerDivisions->random()->uuid,
@@ -672,6 +706,7 @@ class TestDataSeeder extends Seeder
                     'ls_other_costs' => $faker->randomFloat(2, 0, 5000),
                     'approval_status' => $faker->randomElement([0, 1, 2]),
                     'removed' => false,
+                    'created_at' => $createdAt,
                 ]);
 
                 // Crear operaciones para esta oferta (OfferOperationList)
@@ -998,6 +1033,34 @@ class TestDataSeeder extends Seeder
                 $articles->push($article);
             }
         }
+        // Distribuir temporalmente los artículos para que el filtro de fecha del dashboard
+        // afecte claramente a la card de "Articoli":
+        // - 1/3 artículos con created_at hace 1–2 años.
+        // - 1/3 artículos en los últimos 6 meses.
+        // - 1/3 artículos este mes (y algunos hoy).
+        foreach ($articles as $index => $article) {
+            // Saltar el artículo demo; lo forzamos explícitamente a "oggi" más abajo
+            if ($article->cod_article_las === 'LAS-DEMO-ALL') {
+                continue;
+            }
+
+            $bucket = $index % 3;
+            if ($bucket === 0) {
+                $article->created_at = now()->subYears(2)->subMonths(rand(0, 6));
+            } elseif ($bucket === 1) {
+                $article->created_at = now()->subMonths(rand(2, 6));
+            } else {
+                $article->created_at = now()->startOfMonth()->addDays(rand(0, 10));
+            }
+            $article->save();
+        }
+
+        // Garantizar al menos 1 articolo "oggi" para el filtro Oggi (LAS-DEMO-ALL)
+        if (isset($demoArticle)) {
+            $demoArticle->created_at = now()->startOfDay()->addHours(10);
+            $demoArticle->save();
+        }
+
         $this->command->info("   ✅ {$articles->count()} artículos creados");
         $this->command->info('   📌 Articolo demo con tutti i campi: cercare "LAS-DEMO-ALL" → Visualizza / Modifica / Duplica');
 
@@ -1787,6 +1850,300 @@ class TestDataSeeder extends Seeder
             $ordersSaldato->push($order);
         }
         $this->command->info("   ✅ {$ordersSaldato->count()} órdenes Saldato (status 6) creadas");
+
+        // 10.b Ordini demo specifici per il Dashboard (trend + completamento)
+        $this->command->info('   ▶️ Creando ordini demo per filtri Dashboard (oggi / settimana / confronto)...');
+
+        $demoArticleForDashboard = $validArticles->first();
+        if ($demoArticleForDashboard) {
+            $offer = $demoArticleForDashboard->offer;
+            $division = $offer->customerDivision;
+            $availableAddresses = $shippingAddresses->where('customerdivision_uuid', $division->uuid);
+
+            if ($availableAddresses->isNotEmpty()) {
+                $addressUuid = $availableAddresses->first()->uuid;
+
+                $today = now()->startOfDay();
+                $startOfWeek = now()->startOfWeek();
+                $startOfPrevWeek = now()->copy()->subWeek()->startOfWeek();
+
+                // a) Ordini COMPLETI oggi (Evaso + Saldato) per testare "Oggi" e tasso di completamento > 0
+                foreach ([Order::STATUS_EVASO, Order::STATUS_SALDATO] as $status) {
+                    $createdAt = $today->copy()->addHours(9);
+                    $completedAt = $today->copy()->addHours(15);
+                    $quantity = 100 + rand(0, 200);
+
+                    $order = Order::factory()->create([
+                        'article_uuid' => $demoArticleForDashboard->uuid,
+                        'order_production_number' => $orderProductionNumberService->generateNext(),
+                        'status' => $status,
+                        'quantity' => $quantity,
+                        'worked_quantity' => $quantity,
+                        'delivery_requested_date' => $today->copy()->addDays(5),
+                        'expected_production_start_date' => $today->copy()->subDays(2),
+                        'customershippingaddress_uuid' => $addressUuid,
+                        'number_customer_reference_order' => 'REF-DASH-TODAY-'.$status,
+                        'line' => 1,
+                        'type_lot' => 1,
+                        'lot' => 'LOT-DASH-TODAY-'.$status,
+                        'expiration_date' => $today->copy()->addDays(180),
+                        'external_labels' => 1,
+                        'pvp_labels' => 1,
+                        'ingredients_labels' => 1,
+                        'variable_data_labels' => 1,
+                        'label_of_jumpers' => 1,
+                        'status_semaforo' => json_encode([
+                            'etichette' => 2,
+                            'packaging' => 2,
+                            'prodotto' => 2,
+                        ]),
+                        'motivazione' => null,
+                        'autocontrollo' => true,
+                        'created_at' => $createdAt,
+                    ]);
+
+                    $order->updated_at = $completedAt;
+                    $order->save();
+                }
+
+                // b) Ordini nella SETTIMANA CORRENTE (diversi giorni) per popolare Tendenze Ordini
+                for ($i = 0; $i < 3; $i++) {
+                    $createdAt = $startOfWeek->copy()->addDays($i)->addHours(10);
+                    $quantity = rand(50, 200);
+
+                    Order::factory()->create([
+                        'article_uuid' => $demoArticleForDashboard->uuid,
+                        'order_production_number' => $orderProductionNumberService->generateNext(),
+                        'status' => Order::STATUS_LANCIATO,
+                        'quantity' => $quantity,
+                        'worked_quantity' => 0,
+                        'delivery_requested_date' => $createdAt->copy()->addDays(10),
+                        'expected_production_start_date' => $createdAt->copy()->addDays(1),
+                        'customershippingaddress_uuid' => $addressUuid,
+                        'number_customer_reference_order' => 'REF-DASH-WEEK-CUR-'.$i,
+                        'line' => 1,
+                        'type_lot' => 0,
+                        'lot' => null,
+                        'expiration_date' => $createdAt->copy()->addDays(365),
+                        'external_labels' => 0,
+                        'pvp_labels' => 0,
+                        'ingredients_labels' => 0,
+                        'variable_data_labels' => 0,
+                        'label_of_jumpers' => 0,
+                        'status_semaforo' => json_encode([
+                            'etichette' => 1,
+                            'packaging' => 1,
+                            'prodotto' => 0,
+                        ]),
+                        'motivazione' => null,
+                        'autocontrollo' => false,
+                        'created_at' => $createdAt,
+                    ]);
+                }
+
+                // c) Ordini nella SETTIMANA PRECEDENTE per consentire il confronto nel tooltip
+                for ($i = 0; $i < 3; $i++) {
+                    $createdAt = $startOfPrevWeek->copy()->addDays($i)->addHours(11);
+                    $quantity = rand(50, 200);
+
+                    $status = $i === 0 ? Order::STATUS_EVASO : Order::STATUS_LANCIATO;
+                    $workedQuantity = $status === Order::STATUS_EVASO ? $quantity : 0;
+
+                    $order = Order::factory()->create([
+                        'article_uuid' => $demoArticleForDashboard->uuid,
+                        'order_production_number' => $orderProductionNumberService->generateNext(),
+                        'status' => $status,
+                        'quantity' => $quantity,
+                        'worked_quantity' => $workedQuantity,
+                        'delivery_requested_date' => $createdAt->copy()->addDays(7),
+                        'expected_production_start_date' => $createdAt->copy()->addDays(1),
+                        'customershippingaddress_uuid' => $addressUuid,
+                        'number_customer_reference_order' => 'REF-DASH-WEEK-PREV-'.$i,
+                        'line' => 1,
+                        'type_lot' => 0,
+                        'lot' => null,
+                        'expiration_date' => $createdAt->copy()->addDays(365),
+                        'external_labels' => 0,
+                        'pvp_labels' => 0,
+                        'ingredients_labels' => 0,
+                        'variable_data_labels' => 0,
+                        'label_of_jumpers' => 0,
+                        'status_semaforo' => json_encode([
+                            'etichette' => $status === Order::STATUS_EVASO ? 2 : 1,
+                            'packaging' => $status === Order::STATUS_EVASO ? 2 : 1,
+                            'prodotto' => $status === Order::STATUS_EVASO ? 2 : 0,
+                        ]),
+                        'motivazione' => null,
+                        'autocontrollo' => $status === Order::STATUS_EVASO,
+                        'created_at' => $createdAt,
+                    ]);
+
+                    if ($status === Order::STATUS_EVASO) {
+                        $order->updated_at = $createdAt->copy()->addDays(3);
+                        $order->save();
+                    }
+                }
+            }
+        }
+        $this->command->info('   ✅ Ordini demo per filtri Dashboard creati');
+
+        // 10.c Storico ordini completati per l'ultimo anno (trend lungo periodo)
+        // Creiamo ordini completati (Evaso/Saldato) distribuiti sui 12 mesi precedenti
+        // così che i grafici di tendenza e le metriche annuali abbiano sempre dati realistici.
+        $this->command->info('   ▶️ Creando storico ordini per gli ultimi 12 mesi...');
+
+        $historicalArticles = $validArticles->take(3);
+        $historicalOrders = collect();
+
+        if ($historicalArticles->isNotEmpty()) {
+            for ($monthsAgo = 1; $monthsAgo <= 12; $monthsAgo++) {
+                $monthStart = now()->copy()->subMonths($monthsAgo)->startOfMonth();
+                $monthEnd = $monthStart->copy()->endOfMonth();
+
+                // 3–6 ordini completati per mese per simulare volume costante
+                $ordersPerMonth = rand(3, 6);
+
+                for ($i = 0; $i < $ordersPerMonth; $i++) {
+                    $article = $historicalArticles->random();
+                    $offer = $article->offer;
+                    $division = $offer->customerDivision;
+                    $availableAddresses = $shippingAddresses->where('customerdivision_uuid', $division->uuid);
+
+                    if ($availableAddresses->isEmpty()) {
+                        continue;
+                    }
+
+                    $quantity = rand(80, 600);
+
+                    // Data di consegna richiesta compresa nel mese storico
+                    $deliveryDateTime = $faker->dateTimeBetween($monthStart, $monthEnd);
+                    $deliveryDate = \Carbon\Carbon::instance($deliveryDateTime);
+
+                    // created_at nel mese, prima della consegna
+                    $createdAt = $monthStart->copy()->addDays(rand(0, 10))->setTime(rand(8, 11), rand(0, 59));
+                    if ($createdAt->greaterThanOrEqualTo($deliveryDate)) {
+                        $createdAt = $deliveryDate->copy()->subDays(1)->setTime(9, 0);
+                    }
+
+                    // updated_at come data di completamento (non oltre fine mese)
+                    $completedAt = $deliveryDate->copy()->addDays(rand(0, 3));
+                    if ($completedAt->greaterThan($monthEnd)) {
+                        $completedAt = $monthEnd->copy()->setTime(17, 0);
+                    }
+
+                    $status = rand(0, 1) === 0 ? Order::STATUS_EVASO : Order::STATUS_SALDATO;
+
+                    $order = Order::factory()->create([
+                        'article_uuid' => $article->uuid,
+                        'order_production_number' => $orderProductionNumberService->generateNext(),
+                        'status' => $status,
+                        'quantity' => $quantity,
+                        'worked_quantity' => $quantity,
+                        'delivery_requested_date' => $deliveryDate,
+                        'expected_production_start_date' => $createdAt->copy()->subDays(rand(3, 10)),
+                        'customershippingaddress_uuid' => $availableAddresses->random()->uuid,
+                        'number_customer_reference_order' => 'REF-HIST-'.str_pad(rand(1000, 9999), 6, '0', STR_PAD_LEFT),
+                        'line' => rand(1, 5),
+                        'type_lot' => rand(0, 2),
+                        'lot' => rand(0, 2) > 0 ? 'LOT-HIST-'.str_pad(rand(1, 9999), 5, '0', STR_PAD_LEFT) : null,
+                        'expiration_date' => $deliveryDate->copy()->addDays(rand(120, 365)),
+                        'external_labels' => rand(0, 2),
+                        'pvp_labels' => rand(0, 2),
+                        'ingredients_labels' => rand(0, 2),
+                        'variable_data_labels' => rand(0, 2),
+                        'label_of_jumpers' => rand(0, 2),
+                        'indications_for_shop' => rand(0, 1) ? 'Ordine storico: indicazioni per shop.' : null,
+                        'indications_for_production' => rand(0, 1) ? 'Ordine storico: indicazioni per produzione.' : null,
+                        'indications_for_delivery' => rand(0, 1) ? 'Ordine storico: indicazioni per consegna.' : null,
+                        'status_semaforo' => json_encode([
+                            'etichette' => 2,
+                            'packaging' => 2,
+                            'prodotto' => 2,
+                        ]),
+                        'motivazione' => null,
+                        'autocontrollo' => true,
+                        'created_at' => $createdAt,
+                    ]);
+
+                    $order->updated_at = $completedAt;
+                    $order->save();
+
+                    $historicalOrders->push($order);
+                }
+            }
+        }
+
+        $this->command->info("   ✅ {$historicalOrders->count()} ordini storici completati creati per l'ultimo anno");
+
+        // 10.d Copertura giornaliera: almeno 1 ordine completato per ciascun giorno negli ultimi 365 giorni.
+        // Questo serve per testare viste e filtri giornalieri del dashboard senza "buchi" temporali.
+        $this->command->info('   ▶️ Garantendo almeno 1 ordine completato per ogni giorno negli ultimi 365 giorni...');
+
+        $dailyCoverageArticle = $demoArticleForDashboard ?? $validArticles->first();
+        $dailyOrders = collect();
+
+        if ($dailyCoverageArticle) {
+            $offer = $dailyCoverageArticle->offer;
+            $division = $offer->customerDivision ?? null;
+            $availableAddresses = $division
+                ? $shippingAddresses->where('customerdivision_uuid', $division->uuid)
+                : collect();
+
+            if ($availableAddresses->isNotEmpty()) {
+                $addressUuid = $availableAddresses->first()->uuid;
+
+                // Iteriamo da 1 a 365 giorni fa: per ogni giorno creiamo un piccolo ordine completato.
+                for ($daysAgo = 1; $daysAgo <= 365; $daysAgo++) {
+                    $day = now()->copy()->subDays($daysAgo)->startOfDay();
+
+                    $quantity = rand(40, 200);
+                    $deliveryDate = $day->copy()->addHours(15);
+                    $createdAt = $day->copy()->addHours(8);
+                    $completedAt = $day->copy()->addHours(18);
+
+                    $status = rand(0, 1) === 0 ? Order::STATUS_EVASO : Order::STATUS_SALDATO;
+
+                    $order = Order::factory()->create([
+                        'article_uuid' => $dailyCoverageArticle->uuid,
+                        'order_production_number' => $orderProductionNumberService->generateNext(),
+                        'status' => $status,
+                        'quantity' => $quantity,
+                        'worked_quantity' => $quantity,
+                        'delivery_requested_date' => $deliveryDate,
+                        'expected_production_start_date' => $createdAt->copy()->subDays(rand(2, 5)),
+                        'customershippingaddress_uuid' => $addressUuid,
+                        'number_customer_reference_order' => 'REF-DAY-'.str_pad($daysAgo, 3, '0', STR_PAD_LEFT),
+                        'line' => 1,
+                        'type_lot' => 1,
+                        'lot' => 'LOT-DAY-'.str_pad($daysAgo, 4, '0', STR_PAD_LEFT),
+                        'expiration_date' => $deliveryDate->copy()->addDays(rand(150, 365)),
+                        'external_labels' => 1,
+                        'pvp_labels' => 1,
+                        'ingredients_labels' => 1,
+                        'variable_data_labels' => 1,
+                        'label_of_jumpers' => 0,
+                        'indications_for_shop' => 'Ordine giornaliero demo – shop.',
+                        'indications_for_production' => 'Ordine giornaliero demo – produzione.',
+                        'indications_for_delivery' => 'Ordine giornaliero demo – consegna.',
+                        'status_semaforo' => json_encode([
+                            'etichette' => 2,
+                            'packaging' => 2,
+                            'prodotto' => 2,
+                        ]),
+                        'motivazione' => null,
+                        'autocontrollo' => true,
+                        'created_at' => $createdAt,
+                    ]);
+
+                    $order->updated_at = $completedAt;
+                    $order->save();
+
+                    $dailyOrders->push($order);
+                }
+            }
+        }
+
+        $this->command->info("   ✅ {$dailyOrders->count()} ordini giornalieri completati creati per coprire gli ultimi 365 giorni");
 
         // 11. Crear Procesamientos de Órdenes (ProductionOrderProcessing)
         $this->command->info('⚙️  Creando procesamientos de órdenes...');

@@ -15,14 +15,8 @@ import {
 } from '@/components/ui/dialog';
 import { Maximize2 } from 'lucide-react';
 import { useState } from 'react';
-import {
-    Cell,
-    Legend,
-    Pie,
-    PieChart,
-    Tooltip as RechartsTooltip,
-    ResponsiveContainer,
-} from 'recharts';
+import type { LegendPayload } from 'recharts';
+import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from 'recharts';
 
 type OrderStatusKey = 'lanciato' | 'in_avanzamento' | 'sospeso' | 'completato';
 
@@ -59,6 +53,8 @@ const COLORS: Record<OrderStatusKey, string> = {
     completato: '#4ADE80', // verde deciso ma ancora "soft"
 };
 
+const RADIAN = Math.PI / 180;
+
 export function OrderStatusChart({
     data,
     onStatusClick,
@@ -94,30 +90,108 @@ export function OrderStatusChart({
 
     const total = chartData.reduce((sum, item) => sum + item.value, 0);
 
-    // Usiamo props flessibili per adattarci al tipo Recharts.
-    // Mostrare solo l'etichetta della porzione in hover (activeIndex).
-    const renderLabel = (props: {
+    // Recharts tipa `content` de forma muy genérica y no expone bien `payload`.
+    // Usamos `any` SOLO aquí como frontera con la librería, manteniendo el resto
+    // del componente estrictamente tipado.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const renderLegend = (props: any) => {
+        const payload = (props?.payload ?? []) as LegendPayload[];
+
+        if (!payload || !payload.length) {
+            return null;
+        }
+
+        return (
+            <div className="mt-2 w-full px-2 sm:px-0">
+                <ul className="flex flex-col items-start gap-1 text-xs sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-4 sm:gap-y-1">
+                    {payload.map((entry) => {
+                        const labelValue = entry.value ?? '';
+                        const count =
+                            (entry.payload as { value?: number } | undefined)
+                                ?.value ?? 0;
+                        const percentage =
+                            total > 0 && count != null
+                                ? ((count / total) * 100).toFixed(1)
+                                : '0';
+                        const label = `${labelValue} — ${count} ordini (${percentage}%)`;
+
+                        return (
+                            <li
+                                key={String(labelValue)}
+                                className="flex items-center gap-1"
+                            >
+                                <span
+                                    className="inline-block h-2 w-2 rounded-sm"
+                                    style={{
+                                        backgroundColor:
+                                            entry.color ?? 'currentColor',
+                                    }}
+                                />
+                                <span className="whitespace-nowrap sm:whitespace-normal">
+                                    {label}
+                                </span>
+                            </li>
+                        );
+                    })}
+                </ul>
+            </div>
+        );
+    };
+
+    const renderActiveLabel = (props: {
+        cx?: number;
+        cy?: number;
+        midAngle?: number;
+        outerRadius?: number;
+        index?: number;
         name?: string;
         value?: number;
-        index?: number;
+        payload?: { color?: string };
     }) => {
-        const { name, value, index } = props;
+        const { cx, cy, midAngle, outerRadius, index, name, value, payload } =
+            props;
 
-        // Senza hover: non mostrare etichette
-        if (activeIndex === null) {
-            return '';
+        // Solo mostramos la etiqueta para el sector activo
+        if (
+            activeIndex === null ||
+            typeof index !== 'number' ||
+            index !== activeIndex
+        ) {
+            return null;
         }
 
-        // Con hover: solo l'etichetta della porzione attiva
-        if (typeof index === 'number' && index !== activeIndex) {
-            return '';
+        if (
+            cx == null ||
+            cy == null ||
+            midAngle == null ||
+            outerRadius == null
+        ) {
+            return null;
         }
+
+        const radius = outerRadius + 16;
+        const x = cx + radius * Math.cos(-midAngle * RADIAN);
+        const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
         const numericValue =
             typeof value === 'number' ? value : Number(value ?? 0);
         const percentage =
             total > 0 ? ((numericValue / total) * 100).toFixed(1) : '0';
-        return `${name ?? ''}: ${percentage}%`;
+        const label = `${name ?? ''} — ${numericValue} ordini (${percentage}%)`;
+        const color = payload?.color ?? 'currentColor';
+
+        return (
+            <text
+                x={x}
+                y={y}
+                fill={color}
+                textAnchor={x > cx ? 'start' : 'end'}
+                dominantBaseline="central"
+                fontSize={11}
+            >
+                {label}
+            </text>
+        );
     };
 
     const renderChart = (height: number) => {
@@ -133,7 +207,7 @@ export function OrderStatusChart({
                         cx="50%"
                         cy="50%"
                         labelLine={false}
-                        label={renderLabel}
+                        label={renderActiveLabel}
                         outerRadius={100}
                         fill="#8884d8"
                         dataKey="value"
@@ -166,51 +240,10 @@ export function OrderStatusChart({
                             />
                         ))}
                     </Pie>
-                    <RechartsTooltip
-                        formatter={(value?: number | string) => {
-                            const numericValue =
-                                typeof value === 'number'
-                                    ? value
-                                    : Number(value ?? 0);
-                            return [numericValue, 'Ordini'] as [number, string];
-                        }}
-                        contentStyle={{
-                            backgroundColor: 'hsl(var(--popover))',
-                            border: '2px solid hsl(var(--border))',
-                            borderRadius: '8px',
-                            color: 'hsl(var(--foreground))',
-                            fontWeight: 500,
-                            padding: '12px 16px',
-                            boxShadow:
-                                '0 4px 12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05)',
-                            zIndex: 1000,
-                        }}
-                        labelStyle={{
-                            color: 'hsl(var(--foreground))',
-                            fontWeight: 600,
-                            marginBottom: '4px',
-                        }}
-                        wrapperStyle={{
-                            zIndex: 1000,
-                        }}
-                    />
                     <Legend
-                        formatter={(
-                            value,
-                            entry: { payload?: { value?: number } },
-                        ) => {
-                            const percentage =
-                                total > 0 && entry.payload?.value != null
-                                    ? (
-                                          (entry.payload.value / total) *
-                                          100
-                                      ).toFixed(1)
-                                    : '0';
-                            return `${value} (${percentage}%)`;
-                        }}
-                        wrapperStyle={{
-                            color: 'hsl(var(--foreground) / 0.9)',
-                        }}
+                        verticalAlign="bottom"
+                        align="center"
+                        content={renderLegend}
                     />
                 </PieChart>
             </ResponsiveContainer>

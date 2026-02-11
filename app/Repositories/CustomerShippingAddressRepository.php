@@ -25,8 +25,9 @@ class CustomerShippingAddressRepository
         // Filtro per divisione
         $this->applyFilter($query, $request, 'customerdivision_uuid');
 
-        // Ricerca (Via, città, CAP, C/O, contatti e Divisione Cliente) in un solo AND
-        // affinché il filtro customerdivision_uuid sia sempre rispettato
+        // Ricerca (Via, città, CAP, C/O, contatti e Divisione Cliente).
+        // Manteniamo il filtro customerdivision_uuid sempre applicato PRIMA,
+        // così la ricerca non "scappa" fuori dalla divisione selezionata.
         if ($request->filled('search')) {
             $search = $request->get('search');
             $query->where(function ($q) use ($search) {

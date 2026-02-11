@@ -35,16 +35,16 @@ class DashboardController extends Controller
             return $this->dashboardRepository->getStatistics($dateRange, $customerUuid, $statuses);
         });
 
-        // Get urgent orders (cached for 30 seconds)
-        $urgentCacheKey = 'dashboard_urgent_orders';
-        $urgentOrders = Cache::remember($urgentCacheKey, 30, function () {
-            return $this->dashboardRepository->getUrgentOrders();
+        // Get urgent orders (cached for 30 seconds) – rispettano filtro data/cliente/stati
+        $urgentCacheKey = "dashboard_urgent_orders_{$dateFilter}_".($customerUuid ?? 'all').'_'.($statuses ? implode(',', $statuses) : 'all');
+        $urgentOrders = Cache::remember($urgentCacheKey, 30, function () use ($dateRange, $customerUuid, $statuses) {
+            return $this->dashboardRepository->getUrgentOrders($dateRange, $customerUuid, $statuses);
         });
 
-        // Get recent orders (cached for 30 seconds)
-        $recentCacheKey = 'dashboard_recent_orders';
-        $recentOrders = Cache::remember($recentCacheKey, 30, function () {
-            return $this->dashboardRepository->getRecentOrders();
+        // Get recent orders (cached for 30 seconds) – rispettano filtro data/cliente/stati
+        $recentCacheKey = "dashboard_recent_orders_{$dateFilter}_".($customerUuid ?? 'all').'_'.($statuses ? implode(',', $statuses) : 'all');
+        $recentOrders = Cache::remember($recentCacheKey, 30, function () use ($dateRange, $customerUuid, $statuses) {
+            return $this->dashboardRepository->getRecentOrders($dateRange, $customerUuid, $statuses);
         });
 
         // Get top customers and articles (cached for 5 minutes)
@@ -64,8 +64,8 @@ class DashboardController extends Controller
             return $this->dashboardRepository->getPerformanceMetrics($dateRange, $customerUuid, $statuses);
         });
 
-        // Get alerts (not cached, always fresh)
-        $alerts = $this->dashboardRepository->getAlerts($customerUuid, $statuses);
+        // Get alerts (not cached, always fresh) – rispettano filtro data/cliente/stati
+        $alerts = $this->dashboardRepository->getAlerts($dateRange, $customerUuid, $statuses);
 
         // Get comparison statistics (previous period)
         $comparisonStats = $this->dashboardRepository->getComparisonStats($dateFilter, $dateRange, $customerUuid, $statuses);
@@ -91,8 +91,8 @@ class DashboardController extends Controller
             }
         }
 
-        // Get production progress data
-        $productionProgressData = $this->dashboardRepository->getProductionProgressData(10, $customerUuid, $statuses);
+        // Get production progress data – rispettano filtro data/cliente/stati
+        $productionProgressData = $this->dashboardRepository->getProductionProgressData($dateRange, 10, $customerUuid, $statuses);
 
         // Get filter options
         $customersForFilter = $this->dashboardRepository->getCustomersForFilter();

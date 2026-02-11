@@ -45,25 +45,26 @@ If your environment uses a different user/password, create **`.env.testing`** in
 
 ## Migrations
 
-Before running the tests for the first time, you can apply migrations on the test environment:
+Before running the tests for the first time, you should apply migrations on the test environment:
 
 ```bash
-php artisan migrate --env=testing
+php artisan migrate:fresh --env=testing
 ```
 
-Tests that use the **`RefreshDatabase`** trait will run migrations automatically; running them manually is optional if all tests use that trait.
+This creates all tables (including `users`) in `laser_packaging_test`.  
+Tests that use the **`RefreshDatabase`** trait will re‑run migrations automatically; re‑running the command manually is only needed when you change migrations or recreate the test database.
 
 ## Running the tests
 
 ```bash
-php artisan test
+./vendor/bin/phpunit
 ```
 
-For tests that render Inertia (Vite) views, generate the build first:
+For tests that render Inertia (Vite) views, generate the build first (this is what GitHub Actions does):
 
 ```bash
 npm run build
-php artisan test
+./vendor/bin/phpunit
 ```
 
 ## Notes

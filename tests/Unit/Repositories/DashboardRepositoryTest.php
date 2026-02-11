@@ -153,7 +153,7 @@ class DashboardRepositoryTest extends TestCase
             'removed' => false,
         ]);
 
-        $urgentOrders = $this->repository->getUrgentOrders();
+        $urgentOrders = $this->repository->getUrgentOrders(['start' => null, 'end' => null]);
 
         $this->assertIsArray($urgentOrders);
         $this->assertCount(1, $urgentOrders);
@@ -170,7 +170,7 @@ class DashboardRepositoryTest extends TestCase
             'removed' => false,
         ]);
 
-        $recentOrders = $this->repository->getRecentOrders();
+        $recentOrders = $this->repository->getRecentOrders(['start' => null, 'end' => null]);
 
         $this->assertIsArray($recentOrders);
         $this->assertCount(1, $recentOrders);
@@ -262,7 +262,7 @@ class DashboardRepositoryTest extends TestCase
             'removed' => false,
         ]);
 
-        $alerts = $this->repository->getAlerts();
+        $alerts = $this->repository->getAlerts(['start' => null, 'end' => null]);
 
         $this->assertIsArray($alerts);
         $this->assertGreaterThan(0, count($alerts));
@@ -305,7 +305,7 @@ class DashboardRepositoryTest extends TestCase
             'removed' => false,
         ]);
 
-        $progressData = $this->repository->getProductionProgressData();
+        $progressData = $this->repository->getProductionProgressData(['start' => null, 'end' => null]);
 
         $this->assertIsArray($progressData);
         $this->assertCount(1, $progressData);
