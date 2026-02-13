@@ -475,16 +475,14 @@ Optional: `npm run types`.
 <a id="contributing"></a>
 ## 🤝 Contributing
 
-This is an open-source project (MIT). For contributions or inquiries, please contact the author. See code standards below.
+See **[CONTRIBUTING.md](CONTRIBUTING.md)** for local checks, branch/commit conventions, and how to open PRs and issues. This is an open-source project (MIT); for inquiries, contact the author.
 
-### Code Standards
+### Code standards
 
-- Follow PSR-12 coding standards for PHP
-- Use TypeScript for all frontend code
-- Write tests for new features
-- Document public methods
-- Keep code comments in English
-- Follow SOLID principles
+- PSR-12 for PHP; TypeScript and project conventions for frontend
+- Write tests for new features; document public methods
+- Code comments in English; follow SOLID principles
+- PRs must pass the [pull request template](.github/PULL_REQUEST_TEMPLATE.md) checklist and CI
 
 ---
 
