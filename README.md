@@ -1,13 +1,15 @@
 # Laser Packaging Laravel
 
-[![PHP 8.4](https://img.shields.io/badge/PHP-8.4+-777BB4?logo=php&logoColor=white)](https://www.php.net/)
-[![Laravel 12.48](https://img.shields.io/badge/Laravel-12.48-FF2D20?logo=laravel&logoColor=white)](https://laravel.com/)
-[![React 19.2](https://img.shields.io/badge/React-19.2-61DAFB?logo=react&logoColor=black)](https://react.dev/)
-[![TypeScript 5.9](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Tests 994 passing](https://img.shields.io/badge/Tests-994%20passing-10B981)](docs/TEST_COVERAGE.md)
-[![License MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+> A modern, enterprise-grade application for managing offers, articles, orders and a production portal (web + API). Built with Laravel 12, React 19 (Inertia.js), and PostgreSQL. Featuring a professional UI/UX, comprehensive security, and optimized performance.
 
-> A modern, enterprise-grade application for managing offers, articles, orders and a production portal (web + API). Built with Laravel 12.48.x, React 19.2.x (Inertia.js 2.3.x), TypeScript 5.9.x, Vite 7.3.x, Tailwind CSS 4.1.x, and PostgreSQL. Featuring a professional UI/UX, comprehensive security, and optimized performance. **Exact versions:** [docs/VERSION_STACK.md](docs/VERSION_STACK.md).
+[![PHP](https://img.shields.io/badge/PHP-8.4+-777BB4?style=flat&logo=php&logoColor=white)](https://www.php.net/)
+[![Laravel](https://img.shields.io/badge/Laravel-12.48-FF2D20?style=flat&logo=laravel&logoColor=white)](https://laravel.com/)
+[![React](https://img.shields.io/badge/React-19.2-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-316192?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4.1-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![Tests](https://img.shields.io/badge/Tests-994%20passing-brightgreen?style=flat)](docs/TEST_COVERAGE.md)
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=flat)](LICENSE)
 
 ## 📋 Table of Contents
 
@@ -36,22 +38,73 @@
 
 Laser Packaging Laravel is a **production-ready** content management system designed for offers, articles, orders, and production tracking. It combines Laravel's robust backend with React's reactive frontend (Inertia.js), delivering a seamless, performant, and secure experience.
 
-### Highlights
+### Key Highlights
 
-Modern stack (Laravel 12, React 19, Inertia, TypeScript, Vite, Tailwind). Professional UI (skeletons, charts, search, mobile, WCAG AA). Security (Form Requests, `.env`, test DB). Performance (caching, indexes, Performance suite). **994 tests**, 6682+ assertions. Docs: [docs/](docs/README.md).
+- **Modern Stack:** Laravel 12.48.x, React 19.2.x, Inertia.js 2.3.x, TypeScript 5.9.x, Vite 7.3.x, Tailwind CSS 4.1.x, Radix UI
+- **Professional UI/UX:** Skeleton loaders, dashboard charts, real-time search, mobile-responsive, accessibility (WCAG AA)
+- **Enterprise Security:** Form Requests, validation, `.env` handling, test DB isolation
+- **Optimized Performance:** Caching, indexes, Performance test suite (Concurrency, Load, API)
+- **Comprehensive Testing:** 994 tests with 6682+ assertions covering all critical paths
+- **Full Documentation:** [docs/](docs/README.md) index, [test coverage](docs/TEST_COVERAGE.md), DB and seeding guides. **Exact versions:** [docs/VERSION_STACK.md](docs/VERSION_STACK.md)
 
 ---
 
 <a id="features"></a>
 ## ✨ Features
 
-### Features
+### 🔐 Security & Stability
 
-**Security:** Form Requests, authorization, `.env` only as template, test DB (PostgreSQL, `RefreshDatabase`), soft deletes (`removed`), CSRF, API token auth.  
-**Performance:** Indexes, caching with invalidation, eager loading, repositories, React memoization, pagination, Performance test suite.  
-**UX:** Skeletons, dashboard charts (Recharts), debounced search, confirm dialogs, flash notifications, mobile-responsive, WCAG AA, file upload.  
-**Functionality:** Full CRUD (Offers, Articles, Orders, Clients, master data; 40 controllers), Production Portal (web + 9 API endpoints), UUID models, Services, 7 Repositories, 7 Actions, 32 Form Requests, Enums, `lang/it/messages.php`.  
-**Quality:** Layered architecture (Controller → Service/Action → Repository → Model), TypeScript, ESLint, 994 tests.
+- ✅ **Form Request Validation** — Comprehensive input validation and sanitization
+- ✅ **Authorization** — Middleware and policy enforcement on controllers
+- ✅ **`.env` Handling** — Never commit secrets; `.env.example` as template only
+- ✅ **Test DB Isolation** — PostgreSQL test database, `RefreshDatabase` trait
+- ✅ **Soft Deletes** — `removed` flag for data retention
+- ✅ **CSRF Protection** — Built-in Laravel CSRF token validation
+- ✅ **API Authentication** — Token-based auth for Production Portal API
+
+### ⚡ Performance
+
+- ✅ **Database Indexing** — Optimized indexes on frequently queried columns
+- ✅ **Strategic Caching** — Smart caching with automatic invalidation in controllers
+- ✅ **Query Optimization** — Eager loading, repositories, focused queries
+- ✅ **React Performance** — Memoized components, optimized re-renders
+- ✅ **Configurable Pagination** — Flexible per-page options across modules
+- ✅ **Performance Tests** — Concurrency, Load, API response time suites
+
+### 🎨 User Experience & Interface
+
+- ✅ **Skeleton Loaders** — Professional loading states for all async operations
+- ✅ **Dashboard Charts** — Interactive charts (Recharts, 5 chart types)
+- ✅ **Advanced Filtering** — Search, sortable columns, filters across modules
+- ✅ **Delete Confirmation Dialogs** — Professional confirmation modals
+- ✅ **Real-Time Search** — Debounced search (500ms) with loading indicators
+- ✅ **Flash Notifications** — Auto-dismiss with manual close
+- ✅ **Mobile Responsive** — Card views and layouts optimized for mobile
+- ✅ **Accessibility (A11y)** — WCAG AA compliance, ARIA labels, keyboard navigation
+- ✅ **File Upload** — OfferOperations with validation and storage
+- ✅ **Consistent Icons** — Standardized action icons (Eye, Edit, Trash2)
+
+### ⚙️ Functionality
+
+- ✅ **Full CRUD** — Offers, Articles, Orders, Clients, Master data (40 controllers)
+- ✅ **Production Portal** — Web frontend (Login, Dashboard, Order Detail) + REST API (9 endpoints)
+- ✅ **Production Planning** — Ordini → Pianificazione Produzione (API + UI for planning data, replan, calculations)
+- ✅ **UUID-Based Models** — All models use UUIDs as primary identifiers
+- ✅ **Service Layer** — Business logic in Services (codes, calculations, numbers)
+- ✅ **Repository Pattern** — 7 repositories for data access abstraction
+- ✅ **Action Classes** — 7 actions for complex flows (Create/Update Article, Order, Offer)
+- ✅ **Form Requests** — 32 classes for validation
+- ✅ **Enums** — Type-safe (OrderStatus, OrderLabelStatus)
+- ✅ **Centralized Messages** — `lang/it/messages.php` for error and success messages
+
+### 🏗️ Code Quality
+
+- ✅ **Layered Architecture** — Controller → Service/Action → Repository → Model
+- ✅ **SOLID Principles** — Clean, maintainable, and extensible code
+- ✅ **TypeScript** — Full type safety across frontend
+- ✅ **ESLint** — Lint and fix on frontend and scripts
+- ✅ **English Documentation** — Code comments and docblocks in English
+- ✅ **Comprehensive Testing** — 994 tests, Unit/Feature/Performance
 
 ---
 
@@ -99,14 +152,14 @@ Modern stack (Laravel 12, React 19, Inertia, TypeScript, Vite, Tailwind). Profes
 <a id="installation"></a>
 ## 🚀 Installation
 
-### 1. Clone the repository
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/adrirubim/laser-packaging-laravel.git
 cd laser-packaging-laravel
 ```
 
-### 2. Install dependencies
+### 2. Install Dependencies
 
 ```bash
 # Install PHP dependencies
@@ -116,7 +169,7 @@ composer install
 npm install
 ```
 
-### 3. Environment configuration
+### 3. Environment Configuration
 
 ```bash
 # Copy environment file
@@ -126,7 +179,7 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-### 4. Database setup
+### 4. Database Setup
 
 Configure your database in `.env` (use your own credentials; never commit `.env`). Example for PostgreSQL:
 
@@ -139,7 +192,7 @@ DB_USERNAME=postgres
 DB_PASSWORD=
 ```
 
-### 5. Run migrations and seeders
+### 5. Run Migrations and Seeders
 
 ```bash
 # Run migrations on the development database (laser_packaging)
@@ -149,14 +202,14 @@ php artisan migrate
 php artisan db:seed --class=TestDataSeeder
 ```
 
-### 6. Create storage link
+### 6. Create Storage Link
 
 ```bash
 # Create symbolic link for public storage
 php artisan storage:link
 ```
 
-### 7. Build frontend and start development servers
+### 7. Build and Start Development Servers
 
 ```bash
 # Build assets (required for tests and production)
@@ -187,19 +240,19 @@ Then open **http://localhost:8000**. For full dev (Laravel + Vite): `npm run dev
 <a id="documentation"></a>
 ## 📚 Documentation
 
-Everything is linked from **[docs/](docs/README.md)**:
+All documentation in **[docs/](docs/README.md)**:
 
 | Doc | Description |
 |-----|-------------|
-| [docs/README.md](docs/README.md) | Full documentation index |
-| [README_TEST_DATABASE.md](README_TEST_DATABASE.md) | Test database configuration (PostgreSQL) |
-| [README_SEED_TEST_DATA.md](README_SEED_TEST_DATA.md) | Demo/test data seeder for dashboard and flows |
-| [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md) | Project status and module overview |
+| [docs/README.md](docs/README.md) | Documentation index |
+| [README_TEST_DATABASE.md](README_TEST_DATABASE.md) | Test database (PostgreSQL) |
+| [README_SEED_TEST_DATA.md](README_SEED_TEST_DATA.md) | Demo/test data seeder |
+| [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md) | Project status and modules |
 | [docs/TEST_COVERAGE.md](docs/TEST_COVERAGE.md) | Test suites and coverage |
-| [docs/BACKEND_GUIDE.md](docs/BACKEND_GUIDE.md) | Backend architecture & conventions (controllers, services, actions, repositories, models) |
-| [docs/FRONTEND_GUIDE.md](docs/FRONTEND_GUIDE.md) | Frontend architecture & conventions (Inertia + React) and consistency guide |
-| [docs/planning/api.md](docs/planning/api.md) | Planning API (endpoints) |
-| [SECURITY.md](SECURITY.md) | How to report security vulnerabilities |
+| [docs/BACKEND_GUIDE.md](docs/BACKEND_GUIDE.md) | Backend (controllers, services, actions, repos, models) |
+| [docs/FRONTEND_GUIDE.md](docs/FRONTEND_GUIDE.md) | Frontend (Inertia + React 19) |
+
+[SECURITY](SECURITY.md) · [LICENSE](LICENSE) · [VERSION_STACK](docs/VERSION_STACK.md)
 
 ---
 
@@ -460,4 +513,4 @@ This is an open-source project (MIT). For contributions or inquiries, please con
 
 **Last Updated:** 13 February 2026  
 **Status:** Production Ready ✅  
-**Stack versions:** [docs/VERSION_STACK.md](docs/VERSION_STACK.md)
+**Stack:** [docs/VERSION_STACK.md](docs/VERSION_STACK.md)

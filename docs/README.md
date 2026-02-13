@@ -13,3 +13,4 @@
 | [../README_TEST_DATABASE.md](../README_TEST_DATABASE.md) | Test DB (PostgreSQL) |
 | [../README_SEED_TEST_DATA.md](../README_SEED_TEST_DATA.md) | Demo data (TestDataSeeder, DEMO-ALL, Planning) |
 | [../SECURITY.md](../SECURITY.md) | Security policy |
+| [../LICENSE](../LICENSE) | License (MIT) |
