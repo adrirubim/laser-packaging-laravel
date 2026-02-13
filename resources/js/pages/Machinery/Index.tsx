@@ -1,4 +1,5 @@
 import { ActionsDropdown } from '@/components/ActionsDropdown';
+import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
 import { FlashNotifications } from '@/components/flash-notifications';
 import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
@@ -46,6 +47,33 @@ export default function MachineryIndex() {
     const { machinery: machineryPaginated, filters, flash } = props;
 
     const [isLoading, setIsLoading] = useState(false);
+    const [deleteDialog, setDeleteDialog] = useState<{
+        open: boolean;
+        machinery: Machinery | null;
+    }>({ open: false, machinery: null });
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const handleDeleteClick = (mach: Machinery) => {
+        setDeleteDialog({ open: true, machinery: mach });
+    };
+
+    const handleDeleteConfirm = () => {
+        if (!deleteDialog.machinery) return;
+        setIsDeleting(true);
+        router.delete(
+            machineryRoutes.destroy({
+                machinery: deleteDialog.machinery.uuid,
+            }).url,
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setDeleteDialog({ open: false, machinery: null });
+                    setIsDeleting(false);
+                },
+                onError: () => setIsDeleting(false),
+            },
+        );
+    };
 
     const handleSearchChange = (value: string) => {
         setIsLoading(true);
@@ -195,6 +223,9 @@ export default function MachineryIndex() {
                                                                 mach.uuid,
                                                         }).url
                                                     }
+                                                    onDelete={() =>
+                                                        handleDeleteClick(mach)
+                                                    }
                                                 />
                                             </div>
                                         </div>
@@ -321,6 +352,11 @@ export default function MachineryIndex() {
                                                                 },
                                                             ).url
                                                         }
+                                                        onDelete={() =>
+                                                            handleDeleteClick(
+                                                                mach,
+                                                            )
+                                                        }
                                                     />
                                                 </td>
                                             </tr>
@@ -337,6 +373,17 @@ export default function MachineryIndex() {
                     lastPage={machineryPaginated.last_page}
                 />
             </div>
+
+            <ConfirmDeleteDialog
+                open={deleteDialog.open}
+                onOpenChange={(open) =>
+                    !open && setDeleteDialog({ open: false, machinery: null })
+                }
+                onConfirm={handleDeleteConfirm}
+                isDeleting={isDeleting}
+                title="Elimina Macchinario"
+                description="Sei sicuro di voler eliminare questo macchinario? L'operazione non può essere annullata."
+            />
         </AppLayout>
     );
 }

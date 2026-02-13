@@ -6,6 +6,7 @@ use App\Actions\CreateOrderAction;
 use App\Actions\UpdateOrderAction;
 use App\Enums\OrderLabelStatus;
 use App\Enums\OrderStatus;
+use App\Services\Planning\PlanningReplanService;
 use App\Http\Controllers\Concerns\HandlesActionErrors;
 use App\Http\Requests\ChangeOrderStatusRequest;
 use App\Http\Requests\SaveSemaforoRequest;
@@ -34,16 +35,20 @@ class OrderController extends Controller
 
     protected UpdateOrderAction $updateOrderAction;
 
+    protected PlanningReplanService $planningReplanService;
+
     public function __construct(
         OrderProductionNumberService $orderProductionNumberService,
         OrderRepository $orderRepository,
         CreateOrderAction $createOrderAction,
-        UpdateOrderAction $updateOrderAction
+        UpdateOrderAction $updateOrderAction,
+        PlanningReplanService $planningReplanService
     ) {
         $this->orderProductionNumberService = $orderProductionNumberService;
         $this->orderRepository = $orderRepository;
         $this->createOrderAction = $createOrderAction;
         $this->updateOrderAction = $updateOrderAction;
+        $this->planningReplanService = $planningReplanService;
     }
 
     /**
@@ -170,10 +175,16 @@ class OrderController extends Controller
      */
     public function update(UpdateOrderRequest $request, Order $order)
     {
-        $result = $this->updateOrderAction->execute($order, $request->validated());
+        $validated = $request->validated();
+        $result = $this->updateOrderAction->execute($order, $validated);
 
         if ($errorResponse = $this->handleActionError($result)) {
             return $errorResponse;
+        }
+
+        // Mirror Pianificazione Produzione: reajustar planning si cambia worked_quantity
+        if (array_key_exists('worked_quantity', $validated)) {
+            $this->planningReplanService->adjustForWorkedQuantity($order->uuid);
         }
 
         return redirect()->route('orders.index')

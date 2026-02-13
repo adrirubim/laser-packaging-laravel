@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::index
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:16
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:17
 * @route '/production-order-processing'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::index
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:16
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:17
 * @route '/production-order-processing'
 */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::index
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:16
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:17
 * @route '/production-order-processing'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::index
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:16
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:17
 * @route '/production-order-processing'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::index
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:16
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:17
 * @route '/production-order-processing'
 */
 const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::index
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:16
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:17
 * @route '/production-order-processing'
 */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::index
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:16
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:17
 * @route '/production-order-processing'
 */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -82,7 +82,7 @@ index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::create
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:145
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:146
 * @route '/production-order-processing/create'
 */
 export const create = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -97,7 +97,7 @@ create.definition = {
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::create
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:145
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:146
 * @route '/production-order-processing/create'
 */
 create.url = (options?: RouteQueryOptions) => {
@@ -106,7 +106,7 @@ create.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::create
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:145
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:146
 * @route '/production-order-processing/create'
 */
 create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -116,7 +116,7 @@ create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::create
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:145
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:146
 * @route '/production-order-processing/create'
 */
 create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -126,7 +126,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::create
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:145
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:146
 * @route '/production-order-processing/create'
 */
 const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -136,7 +136,7 @@ const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => 
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::create
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:145
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:146
 * @route '/production-order-processing/create'
 */
 createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -146,7 +146,7 @@ createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::create
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:145
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:146
 * @route '/production-order-processing/create'
 */
 createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -163,7 +163,7 @@ create.form = createForm
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::store
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:175
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:176
 * @route '/production-order-processing'
 */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -178,7 +178,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::store
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:175
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:176
 * @route '/production-order-processing'
 */
 store.url = (options?: RouteQueryOptions) => {
@@ -187,7 +187,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::store
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:175
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:176
 * @route '/production-order-processing'
 */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -197,7 +197,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::store
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:175
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:176
 * @route '/production-order-processing'
 */
 const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -207,7 +207,7 @@ const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => 
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::store
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:175
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:176
 * @route '/production-order-processing'
 */
 storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -219,7 +219,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::show
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:222
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:223
 * @route '/production-order-processing/{productionOrderProcessing}'
 */
 export const show = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -234,7 +234,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::show
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:222
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:223
 * @route '/production-order-processing/{productionOrderProcessing}'
 */
 show.url = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -261,7 +261,7 @@ show.url = (args: { productionOrderProcessing: string | number } | [productionOr
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::show
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:222
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:223
 * @route '/production-order-processing/{productionOrderProcessing}'
 */
 show.get = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -271,7 +271,7 @@ show.get = (args: { productionOrderProcessing: string | number } | [productionOr
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::show
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:222
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:223
 * @route '/production-order-processing/{productionOrderProcessing}'
 */
 show.head = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -281,7 +281,7 @@ show.head = (args: { productionOrderProcessing: string | number } | [productionO
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::show
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:222
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:223
 * @route '/production-order-processing/{productionOrderProcessing}'
 */
 const showForm = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -291,7 +291,7 @@ const showForm = (args: { productionOrderProcessing: string | number } | [produc
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::show
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:222
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:223
 * @route '/production-order-processing/{productionOrderProcessing}'
 */
 showForm.get = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -301,7 +301,7 @@ showForm.get = (args: { productionOrderProcessing: string | number } | [producti
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::show
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:222
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:223
 * @route '/production-order-processing/{productionOrderProcessing}'
 */
 showForm.head = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -318,7 +318,7 @@ show.form = showForm
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::edit
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:230
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:231
 * @route '/production-order-processing/{productionOrderProcessing}/edit'
 */
 export const edit = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -333,7 +333,7 @@ edit.definition = {
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::edit
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:230
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:231
 * @route '/production-order-processing/{productionOrderProcessing}/edit'
 */
 edit.url = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -360,7 +360,7 @@ edit.url = (args: { productionOrderProcessing: string | number } | [productionOr
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::edit
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:230
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:231
 * @route '/production-order-processing/{productionOrderProcessing}/edit'
 */
 edit.get = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -370,7 +370,7 @@ edit.get = (args: { productionOrderProcessing: string | number } | [productionOr
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::edit
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:230
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:231
 * @route '/production-order-processing/{productionOrderProcessing}/edit'
 */
 edit.head = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -380,7 +380,7 @@ edit.head = (args: { productionOrderProcessing: string | number } | [productionO
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::edit
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:230
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:231
 * @route '/production-order-processing/{productionOrderProcessing}/edit'
 */
 const editForm = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -390,7 +390,7 @@ const editForm = (args: { productionOrderProcessing: string | number } | [produc
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::edit
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:230
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:231
 * @route '/production-order-processing/{productionOrderProcessing}/edit'
 */
 editForm.get = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -400,7 +400,7 @@ editForm.get = (args: { productionOrderProcessing: string | number } | [producti
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::edit
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:230
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:231
 * @route '/production-order-processing/{productionOrderProcessing}/edit'
 */
 editForm.head = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -417,7 +417,7 @@ edit.form = editForm
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::update
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:238
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:239
 * @route '/production-order-processing/{productionOrderProcessing}'
 */
 export const update = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -432,7 +432,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::update
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:238
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:239
 * @route '/production-order-processing/{productionOrderProcessing}'
 */
 update.url = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -459,7 +459,7 @@ update.url = (args: { productionOrderProcessing: string | number } | [production
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::update
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:238
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:239
 * @route '/production-order-processing/{productionOrderProcessing}'
 */
 update.put = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -469,7 +469,7 @@ update.put = (args: { productionOrderProcessing: string | number } | [production
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::update
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:238
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:239
 * @route '/production-order-processing/{productionOrderProcessing}'
 */
 update.patch = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -479,7 +479,7 @@ update.patch = (args: { productionOrderProcessing: string | number } | [producti
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::update
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:238
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:239
 * @route '/production-order-processing/{productionOrderProcessing}'
 */
 const updateForm = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -494,7 +494,7 @@ const updateForm = (args: { productionOrderProcessing: string | number } | [prod
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::update
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:238
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:239
 * @route '/production-order-processing/{productionOrderProcessing}'
 */
 updateForm.put = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -509,7 +509,7 @@ updateForm.put = (args: { productionOrderProcessing: string | number } | [produc
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::update
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:238
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:239
 * @route '/production-order-processing/{productionOrderProcessing}'
 */
 updateForm.patch = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -526,7 +526,7 @@ update.form = updateForm
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::destroy
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:246
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:248
 * @route '/production-order-processing/{productionOrderProcessing}'
 */
 export const destroy = (args: { productionOrderProcessing: string | { uuid: string } } | [productionOrderProcessing: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -541,7 +541,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::destroy
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:246
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:248
 * @route '/production-order-processing/{productionOrderProcessing}'
 */
 destroy.url = (args: { productionOrderProcessing: string | { uuid: string } } | [productionOrderProcessing: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions) => {
@@ -574,7 +574,7 @@ destroy.url = (args: { productionOrderProcessing: string | { uuid: string } } | 
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::destroy
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:246
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:248
 * @route '/production-order-processing/{productionOrderProcessing}'
 */
 destroy.delete = (args: { productionOrderProcessing: string | { uuid: string } } | [productionOrderProcessing: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -584,7 +584,7 @@ destroy.delete = (args: { productionOrderProcessing: string | { uuid: string } }
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::destroy
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:246
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:248
 * @route '/production-order-processing/{productionOrderProcessing}'
 */
 const destroyForm = (args: { productionOrderProcessing: string | { uuid: string } } | [productionOrderProcessing: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -599,7 +599,7 @@ const destroyForm = (args: { productionOrderProcessing: string | { uuid: string 
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::destroy
-* @see app/Http/Controllers/ProductionOrderProcessingController.php:246
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:248
 * @route '/production-order-processing/{productionOrderProcessing}'
 */
 destroyForm.delete = (args: { productionOrderProcessing: string | { uuid: string } } | [productionOrderProcessing: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

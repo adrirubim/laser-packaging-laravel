@@ -109,9 +109,16 @@
         "skipLibCheck": true /* Skip type checking all .d.ts files. */,
         "baseUrl": ".",
         "paths": {
-            "@/*": ["./resources/js/*"]
+            "@/*": ["./resources/js/*"],
+            "@/components/*": ["./resources/js/components/*"],
+            "@/constants/*": ["./resources/js/constants/*"],
+            "@/layouts/*": ["./resources/js/layouts/*"],
+            "@/lib/*": ["./resources/js/lib/*"],
+            "@/routes/*": ["./resources/js/routes/*"]
         },
-        "jsx": "react-jsx"
+        "jsx": "react-jsx",
+        "resolveJsonModule": true
     },
-    "include": ["resources/js/**/*.ts", "resources/js/**/*.d.ts", "resources/js/**/*.tsx"]
+    "include": ["resources/js/**/*.ts", "resources/js/**/*.d.ts", "resources/js/**/*.tsx"],
+    "exclude": ["node_modules"]
 }

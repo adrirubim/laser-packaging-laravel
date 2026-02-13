@@ -6,7 +6,9 @@ use App\Actions\Concerns\LogsActionErrors;
 use App\Enums\OrderStatus;
 use App\Models\Order;
 use App\Services\OrderProductionNumberService;
+use App\Services\Planning\PlanningReplanService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CreateOrderAction
 {
@@ -14,9 +16,14 @@ class CreateOrderAction
 
     protected OrderProductionNumberService $orderProductionNumberService;
 
-    public function __construct(OrderProductionNumberService $orderProductionNumberService)
-    {
+    protected PlanningReplanService $planningReplanService;
+
+    public function __construct(
+        OrderProductionNumberService $orderProductionNumberService,
+        PlanningReplanService $planningReplanService
+    ) {
         $this->orderProductionNumberService = $orderProductionNumberService;
+        $this->planningReplanService = $planningReplanService;
     }
 
     /**
@@ -80,7 +87,22 @@ class CreateOrderAction
             // Las fechas se manejan como datetime en Laravel (el modelo tiene casts)
             // No necesitamos convertir a timestamp, Laravel lo hace automáticamente
 
-            return Order::create($validated);
+            $order = Order::create($validated);
+
+            // Mirror legacy: auto-schedule planning for new orders with LAS line
+            $order->load(['article.offer']);
+            if ($order->article?->offer?->lasworkline_uuid) {
+                try {
+                    $this->planningReplanService->autoScheduleOrder($order->uuid, true);
+                } catch (\Throwable $e) {
+                    Log::warning('CreateOrderAction: autoScheduleOrder failed', [
+                        'order_uuid' => $order->uuid,
+                        'message' => $e->getMessage(),
+                    ]);
+                }
+            }
+
+            return $order;
         });
     }
 }

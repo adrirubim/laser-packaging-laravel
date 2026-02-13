@@ -1,4 +1,5 @@
 import { ActionsDropdown } from '@/components/ActionsDropdown';
+import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
 import {
     FlashNotifications,
     useFlashNotifications,
@@ -10,6 +11,7 @@ import AppLayout from '@/layouts/app-layout';
 import palletTypes from '@/routes/pallet-types/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
+import { useState } from 'react';
 
 type PalletType = {
     id: number;
@@ -38,6 +40,34 @@ export default function PalletTypesIndex() {
     const { props } = usePage<PalletTypesIndexProps>();
     const { palletTypes: palletTypesPaginated, filters } = props;
     const { flash } = useFlashNotifications();
+
+    const [deleteDialog, setDeleteDialog] = useState<{
+        open: boolean;
+        palletType: PalletType | null;
+    }>({ open: false, palletType: null });
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const handleDeleteClick = (palletType: PalletType) => {
+        setDeleteDialog({ open: true, palletType });
+    };
+
+    const handleDeleteConfirm = () => {
+        if (!deleteDialog.palletType) return;
+        setIsDeleting(true);
+        router.delete(
+            palletTypes.destroy({
+                palletType: deleteDialog.palletType.uuid,
+            }).url,
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setDeleteDialog({ open: false, palletType: null });
+                    setIsDeleting(false);
+                },
+                onError: () => setIsDeleting(false),
+            },
+        );
+    };
 
     const handleSearchChange = (value: string) => {
         router.get(
@@ -163,6 +193,11 @@ export default function PalletTypesIndex() {
                                                             palletType.uuid,
                                                     }).url
                                                 }
+                                                onDelete={() =>
+                                                    handleDeleteClick(
+                                                        palletType,
+                                                    )
+                                                }
                                             />
                                         </td>
                                     </tr>
@@ -178,6 +213,17 @@ export default function PalletTypesIndex() {
                     lastPage={palletTypesPaginated.last_page}
                 />
             </div>
+
+            <ConfirmDeleteDialog
+                open={deleteDialog.open}
+                onOpenChange={(open) =>
+                    !open && setDeleteDialog({ open: false, palletType: null })
+                }
+                onConfirm={handleDeleteConfirm}
+                isDeleting={isDeleting}
+                title="Elimina tipo pallet"
+                description="Sei sicuro di voler eliminare questo tipo pallet? L'operazione non può essere annullata."
+            />
         </AppLayout>
     );
 }

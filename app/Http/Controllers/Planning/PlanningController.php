@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Planning;
 
 use App\Http\Controllers\Controller;
+use App\Models\Order;
+use App\Models\ProductionPlanning;
 use App\Services\Planning\PlanningCalculationService;
 use App\Services\Planning\PlanningDataService;
 use App\Services\Planning\PlanningReplanService;
@@ -171,7 +173,7 @@ class PlanningController extends Controller
             ], 422);
         }
 
-        $order = \App\Models\Order::query()
+        $order = Order::query()
             ->with(['article.offer'])
             ->where('uuid', $request->input('order_uuid'))
             ->first();
@@ -191,15 +193,20 @@ class PlanningController extends Controller
     /**
      * POST /api/planning/check-today
      *
-     * Endpoint tipo cron: verifica todos los orders con planning hoy y reajusta si es necesario.
+     * Endpoint tipo cron: verifica ordini con planning oggi e riaggiusta (mirror legacy checkAndReplanToday).
      */
     public function checkToday(Request $request)
     {
         $today = now()->toDateString();
 
-        $orders = \App\Models\Order::query()
+        $orderUuids = ProductionPlanning::query()
+            ->whereDate('date', '=', $today)
+            ->distinct()
+            ->pluck('order_uuid');
+
+        $orders = Order::query()
             ->active()
-            ->whereDate('delivery_requested_date', '=', $today)
+            ->whereIn('uuid', $orderUuids)
             ->get();
 
         $details = [];
@@ -225,6 +232,53 @@ class PlanningController extends Controller
             'orders_checked' => $orders->count(),
             'orders_modified' => $modified,
             'details' => $details,
+        ]);
+    }
+
+    /**
+     * POST /api/planning/force-reschedule
+     *
+     * Force re-schedule of an order (mirror legacy forceReschedule).
+     */
+    public function forceReschedule(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'order_uuid' => ['required', 'string', 'uuid'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error_code' => -1,
+                'message' => 'Parametri mancanti o non validi',
+                'errors' => $validator->errors()->toArray(),
+            ], 422);
+        }
+
+        $orderUuid = $request->input('order_uuid');
+        $order = Order::query()->where('uuid', $orderUuid)->first();
+
+        if (! $order) {
+            return response()->json([
+                'error_code' => -1,
+                'message' => 'Ordine non trovato',
+            ], 404);
+        }
+
+        $result = $this->replanService->autoScheduleOrder($orderUuid, true);
+
+        if (! empty($result['error'])) {
+            return response()->json([
+                'error_code' => -1,
+                'message' => $result['message'] ?? 'Errore durante il ripianificazione',
+                'order_uuid' => $orderUuid,
+            ], 422);
+        }
+
+        return response()->json([
+            'error_code' => 0,
+            'message' => 'Ripianificazione completata',
+            'order_uuid' => $orderUuid,
+            'result' => $result,
         ]);
     }
 }

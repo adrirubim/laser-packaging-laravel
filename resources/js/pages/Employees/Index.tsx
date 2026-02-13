@@ -1,9 +1,11 @@
 import { ActionsDropdown } from '@/components/ActionsDropdown';
+import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
 import { FlashNotifications } from '@/components/flash-notifications';
 import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { SortableTableHeader } from '@/components/SortableTableHeader';
+import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import {
     Select,
     SelectContent,
@@ -15,6 +17,8 @@ import AppLayout from '@/layouts/app-layout';
 import employees from '@/routes/employees/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Printer } from 'lucide-react';
+import { useState } from 'react';
 
 type Employee = {
     id: number;
@@ -52,6 +56,34 @@ type EmployeesIndexProps = {
 export default function EmployeesIndex() {
     const { props } = usePage<EmployeesIndexProps>();
     const { employees: employeesPaginated, filters, flash } = props;
+
+    const [deleteDialog, setDeleteDialog] = useState<{
+        open: boolean;
+        employee: Employee | null;
+    }>({ open: false, employee: null });
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const handleDeleteClick = (employee: Employee) => {
+        setDeleteDialog({ open: true, employee });
+    };
+
+    const handleDeleteConfirm = () => {
+        if (!deleteDialog.employee) return;
+        setIsDeleting(true);
+        router.delete(
+            employees.destroy({ employee: deleteDialog.employee.uuid }).url,
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setDeleteDialog({ open: false, employee: null });
+                    setIsDeleting(false);
+                },
+                onError: () => {
+                    setIsDeleting(false);
+                },
+            },
+        );
+    };
 
     const handleSearchChange = (value: string) => {
         router.get(
@@ -335,6 +367,32 @@ export default function EmployeesIndex() {
                                                         employee: employee.uuid,
                                                     }).url
                                                 }
+                                                onDelete={() =>
+                                                    handleDeleteClick(employee)
+                                                }
+                                                extraItems={
+                                                    <>
+                                                        <DropdownMenuItem
+                                                            asChild
+                                                        >
+                                                            <a
+                                                                href={
+                                                                    employees.downloadBarcode(
+                                                                        {
+                                                                            employee:
+                                                                                employee.uuid,
+                                                                        },
+                                                                    ).url
+                                                                }
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                            >
+                                                                <Printer className="mr-2 h-4 w-4" />
+                                                                Stampa Barcode
+                                                            </a>
+                                                        </DropdownMenuItem>
+                                                    </>
+                                                }
                                             />
                                         </td>
                                     </tr>
@@ -380,6 +438,30 @@ export default function EmployeesIndex() {
                                                 employee: employee.uuid,
                                             }).url
                                         }
+                                        onDelete={() =>
+                                            handleDeleteClick(employee)
+                                        }
+                                        extraItems={
+                                            <>
+                                                <DropdownMenuItem asChild>
+                                                    <a
+                                                        href={
+                                                            employees.downloadBarcode(
+                                                                {
+                                                                    employee:
+                                                                        employee.uuid,
+                                                                },
+                                                            ).url
+                                                        }
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        <Printer className="mr-2 h-4 w-4" />
+                                                        Stampa Barcode
+                                                    </a>
+                                                </DropdownMenuItem>
+                                            </>
+                                        }
                                     />
                                 </div>
                                 <div className="flex items-center justify-between border-t pt-2">
@@ -406,6 +488,22 @@ export default function EmployeesIndex() {
                     currentPage={employeesPaginated.current_page}
                     lastPage={employeesPaginated.last_page}
                     totalItems={employeesPaginated.total}
+                />
+
+                <ConfirmDeleteDialog
+                    open={deleteDialog.open}
+                    onOpenChange={(open) =>
+                        setDeleteDialog({ open, employee: null })
+                    }
+                    onConfirm={handleDeleteConfirm}
+                    title="Elimina dipendente"
+                    description="Il dipendente verrà rimosso. Questa azione non può essere annullata."
+                    itemName={
+                        deleteDialog.employee
+                            ? `${deleteDialog.employee.surname} ${deleteDialog.employee.name} (${deleteDialog.employee.matriculation_number})`
+                            : undefined
+                    }
+                    isDeleting={isDeleting}
                 />
             </div>
         </AppLayout>

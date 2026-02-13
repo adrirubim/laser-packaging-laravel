@@ -1,6 +1,6 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
-* @see routes/api.php:60
+* @see routes/api.php:61
 * @route '/api/production/foglio-pallet/{uuid}/print'
 */
 export const print = (args: { uuid: string | number } | [uuid: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -14,7 +14,7 @@ print.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
-* @see routes/api.php:60
+* @see routes/api.php:61
 * @route '/api/production/foglio-pallet/{uuid}/print'
 */
 print.url = (args: { uuid: string | number } | [uuid: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -40,7 +40,7 @@ print.url = (args: { uuid: string | number } | [uuid: string | number ] | string
 }
 
 /**
-* @see routes/api.php:60
+* @see routes/api.php:61
 * @route '/api/production/foglio-pallet/{uuid}/print'
 */
 print.get = (args: { uuid: string | number } | [uuid: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -49,7 +49,7 @@ print.get = (args: { uuid: string | number } | [uuid: string | number ] | string
 })
 
 /**
-* @see routes/api.php:60
+* @see routes/api.php:61
 * @route '/api/production/foglio-pallet/{uuid}/print'
 */
 print.head = (args: { uuid: string | number } | [uuid: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -58,7 +58,7 @@ print.head = (args: { uuid: string | number } | [uuid: string | number ] | strin
 })
 
 /**
-* @see routes/api.php:60
+* @see routes/api.php:61
 * @route '/api/production/foglio-pallet/{uuid}/print'
 */
 const printForm = (args: { uuid: string | number } | [uuid: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -67,7 +67,7 @@ const printForm = (args: { uuid: string | number } | [uuid: string | number ] | 
 })
 
 /**
-* @see routes/api.php:60
+* @see routes/api.php:61
 * @route '/api/production/foglio-pallet/{uuid}/print'
 */
 printForm.get = (args: { uuid: string | number } | [uuid: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -76,7 +76,7 @@ printForm.get = (args: { uuid: string | number } | [uuid: string | number ] | st
 })
 
 /**
-* @see routes/api.php:60
+* @see routes/api.php:61
 * @route '/api/production/foglio-pallet/{uuid}/print'
 */
 printForm.head = (args: { uuid: string | number } | [uuid: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

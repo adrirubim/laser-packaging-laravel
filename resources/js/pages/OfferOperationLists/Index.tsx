@@ -1,4 +1,5 @@
 import { ActionsDropdown } from '@/components/ActionsDropdown';
+import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
 import {
     FlashNotifications,
     useFlashNotifications,
@@ -10,6 +11,7 @@ import AppLayout from '@/layouts/app-layout';
 import offerOperationLists from '@/routes/offer-operation-lists/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
+import { useState } from 'react';
 
 type Offer = {
     uuid: string;
@@ -52,6 +54,34 @@ export default function OfferOperationListsIndex() {
     const { props } = usePage<OfferOperationListsIndexProps>();
     const { operationLists: operationListsPaginated, filters } = props;
     const { flash } = useFlashNotifications();
+
+    const [deleteDialog, setDeleteDialog] = useState<{
+        open: boolean;
+        list: OperationList | null;
+    }>({ open: false, list: null });
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const handleDeleteClick = (list: OperationList) => {
+        setDeleteDialog({ open: true, list });
+    };
+
+    const handleDeleteConfirm = () => {
+        if (!deleteDialog.list) return;
+        setIsDeleting(true);
+        router.delete(
+            offerOperationLists.destroy({
+                offerOperationList: deleteDialog.list.uuid,
+            }).url,
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setDeleteDialog({ open: false, list: null });
+                    setIsDeleting(false);
+                },
+                onError: () => setIsDeleting(false),
+            },
+        );
+    };
 
     const handleSearchChange = (value: string) => {
         router.get(
@@ -187,6 +217,9 @@ export default function OfferOperationListsIndex() {
                                                             list.uuid,
                                                     }).url
                                                 }
+                                                onDelete={() =>
+                                                    handleDeleteClick(list)
+                                                }
                                             />
                                         </td>
                                     </tr>
@@ -202,6 +235,17 @@ export default function OfferOperationListsIndex() {
                     lastPage={operationListsPaginated.last_page}
                 />
             </div>
+
+            <ConfirmDeleteDialog
+                open={deleteDialog.open}
+                onOpenChange={(open) =>
+                    !open && setDeleteDialog({ open: false, list: null })
+                }
+                onConfirm={handleDeleteConfirm}
+                isDeleting={isDeleting}
+                title="Elimina assegnazione"
+                description="Sei sicuro di voler eliminare questa assegnazione operazione-offerta? L'operazione non può essere annullata."
+            />
         </AppLayout>
     );
 }

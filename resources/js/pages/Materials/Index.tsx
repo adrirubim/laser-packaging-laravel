@@ -1,4 +1,5 @@
 import { ActionsDropdown } from '@/components/ActionsDropdown';
+import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
 import { FlashNotifications } from '@/components/flash-notifications';
 import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
@@ -38,6 +39,31 @@ export default function MaterialsIndex() {
     const { materials: materialsPaginated, filters, flash } = props;
 
     const [isLoading, setIsLoading] = useState(false);
+    const [deleteDialog, setDeleteDialog] = useState<{
+        open: boolean;
+        material: Material | null;
+    }>({ open: false, material: null });
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const handleDeleteClick = (material: Material) => {
+        setDeleteDialog({ open: true, material });
+    };
+
+    const handleDeleteConfirm = () => {
+        if (!deleteDialog.material) return;
+        setIsDeleting(true);
+        router.delete(
+            materials.destroy({ material: deleteDialog.material.uuid }).url,
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setDeleteDialog({ open: false, material: null });
+                    setIsDeleting(false);
+                },
+                onError: () => setIsDeleting(false),
+            },
+        );
+    };
 
     const handleSearchChange = (value: string) => {
         setIsLoading(true);
@@ -165,6 +191,11 @@ export default function MaterialsIndex() {
                                                                 material.uuid,
                                                         }).url
                                                     }
+                                                    onDelete={() =>
+                                                        handleDeleteClick(
+                                                            material,
+                                                        )
+                                                    }
                                                 />
                                             </div>
                                         </div>
@@ -266,6 +297,11 @@ export default function MaterialsIndex() {
                                                                         material.uuid,
                                                                 }).url
                                                             }
+                                                            onDelete={() =>
+                                                                handleDeleteClick(
+                                                                    material,
+                                                                )
+                                                            }
                                                         />
                                                     </td>
                                                 </tr>
@@ -283,6 +319,17 @@ export default function MaterialsIndex() {
                     lastPage={materialsPaginated.last_page}
                 />
             </div>
+
+            <ConfirmDeleteDialog
+                open={deleteDialog.open}
+                onOpenChange={(open) =>
+                    !open && setDeleteDialog({ open: false, material: null })
+                }
+                onConfirm={handleDeleteConfirm}
+                isDeleting={isDeleting}
+                title="Elimina Materiale"
+                description="Sei sicuro di voler eliminare questo materiale? L'operazione non può essere annullata."
+            />
         </AppLayout>
     );
 }

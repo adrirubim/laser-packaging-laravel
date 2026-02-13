@@ -525,6 +525,25 @@ export default function ArticlesIndex() {
                                                         <Eye className="mr-2 h-4 w-4" />
                                                         Visualizza
                                                     </DropdownMenuItem>
+                                                    {article.offer && (
+                                                        <DropdownMenuItem
+                                                            onSelect={(e) => {
+                                                                e.preventDefault();
+                                                                router.visit(
+                                                                    offers.show(
+                                                                        {
+                                                                            offer: article
+                                                                                .offer!
+                                                                                .uuid,
+                                                                        },
+                                                                    ).url,
+                                                                );
+                                                            }}
+                                                        >
+                                                            <FileText className="mr-2 h-4 w-4" />
+                                                            Visualizza Offerta
+                                                        </DropdownMenuItem>
+                                                    )}
                                                     <DropdownMenuItem
                                                         onSelect={(e) => {
                                                             e.preventDefault();
@@ -814,6 +833,25 @@ export default function ArticlesIndex() {
                                                         <Eye className="mr-2 h-4 w-4" />
                                                         Visualizza
                                                     </DropdownMenuItem>
+                                                    {article.offer && (
+                                                        <DropdownMenuItem
+                                                            onSelect={(e) => {
+                                                                e.preventDefault();
+                                                                router.visit(
+                                                                    offers.show(
+                                                                        {
+                                                                            offer: article
+                                                                                .offer!
+                                                                                .uuid,
+                                                                        },
+                                                                    ).url,
+                                                                );
+                                                            }}
+                                                        >
+                                                            <FileText className="mr-2 h-4 w-4" />
+                                                            Visualizza Offerta
+                                                        </DropdownMenuItem>
+                                                    )}
                                                     <DropdownMenuItem
                                                         onSelect={(e) => {
                                                             e.preventDefault();

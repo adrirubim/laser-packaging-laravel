@@ -9,11 +9,12 @@ import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { SortableTableHeader } from '@/components/SortableTableHeader';
 import { Button } from '@/components/ui/button';
+import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import AppLayout from '@/layouts/app-layout';
 import articles from '@/routes/articles/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Package } from 'lucide-react';
+import { Download, Package } from 'lucide-react';
 import { useState } from 'react';
 
 type PackagingInstruction = {
@@ -383,6 +384,23 @@ export default function PackagingInstructionsIndex() {
                                                                     instruction.uuid,
                                                             },
                                                         ).url
+                                                    }
+                                                    extraItems={
+                                                        <DropdownMenuItem
+                                                            onSelect={(e) => {
+                                                                e.preventDefault();
+                                                                window.location.href =
+                                                                    articles.packagingInstructions.download(
+                                                                        {
+                                                                            packagingInstruction:
+                                                                                instruction.uuid,
+                                                                        },
+                                                                    ).url;
+                                                            }}
+                                                        >
+                                                            <Download className="mr-2 h-4 w-4" />
+                                                            Scarica
+                                                        </DropdownMenuItem>
                                                     }
                                                     onDelete={() =>
                                                         handleDeleteClick(

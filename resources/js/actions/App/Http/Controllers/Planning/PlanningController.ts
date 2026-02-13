@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::data
-* @see app/Http/Controllers/Planning/PlanningController.php:47
+* @see app/Http/Controllers/Planning/PlanningController.php:49
 * @route '/api/planning/data'
 */
 export const data = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ data.definition = {
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::data
-* @see app/Http/Controllers/Planning/PlanningController.php:47
+* @see app/Http/Controllers/Planning/PlanningController.php:49
 * @route '/api/planning/data'
 */
 data.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ data.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::data
-* @see app/Http/Controllers/Planning/PlanningController.php:47
+* @see app/Http/Controllers/Planning/PlanningController.php:49
 * @route '/api/planning/data'
 */
 data.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -35,7 +35,7 @@ data.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::data
-* @see app/Http/Controllers/Planning/PlanningController.php:47
+* @see app/Http/Controllers/Planning/PlanningController.php:49
 * @route '/api/planning/data'
 */
 const dataForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -45,7 +45,7 @@ const dataForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => (
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::data
-* @see app/Http/Controllers/Planning/PlanningController.php:47
+* @see app/Http/Controllers/Planning/PlanningController.php:49
 * @route '/api/planning/data'
 */
 dataForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -57,7 +57,7 @@ data.form = dataForm
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::save
-* @see app/Http/Controllers/Planning/PlanningController.php:68
+* @see app/Http/Controllers/Planning/PlanningController.php:70
 * @route '/api/planning/save'
 */
 export const save = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -72,7 +72,7 @@ save.definition = {
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::save
-* @see app/Http/Controllers/Planning/PlanningController.php:68
+* @see app/Http/Controllers/Planning/PlanningController.php:70
 * @route '/api/planning/save'
 */
 save.url = (options?: RouteQueryOptions) => {
@@ -81,7 +81,7 @@ save.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::save
-* @see app/Http/Controllers/Planning/PlanningController.php:68
+* @see app/Http/Controllers/Planning/PlanningController.php:70
 * @route '/api/planning/save'
 */
 save.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -91,7 +91,7 @@ save.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::save
-* @see app/Http/Controllers/Planning/PlanningController.php:68
+* @see app/Http/Controllers/Planning/PlanningController.php:70
 * @route '/api/planning/save'
 */
 const saveForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -101,7 +101,7 @@ const saveForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => (
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::save
-* @see app/Http/Controllers/Planning/PlanningController.php:68
+* @see app/Http/Controllers/Planning/PlanningController.php:70
 * @route '/api/planning/save'
 */
 saveForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -113,7 +113,7 @@ save.form = saveForm
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::saveSummary
-* @see app/Http/Controllers/Planning/PlanningController.php:116
+* @see app/Http/Controllers/Planning/PlanningController.php:118
 * @route '/api/planning/summary/save'
 */
 export const saveSummary = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -128,7 +128,7 @@ saveSummary.definition = {
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::saveSummary
-* @see app/Http/Controllers/Planning/PlanningController.php:116
+* @see app/Http/Controllers/Planning/PlanningController.php:118
 * @route '/api/planning/summary/save'
 */
 saveSummary.url = (options?: RouteQueryOptions) => {
@@ -137,7 +137,7 @@ saveSummary.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::saveSummary
-* @see app/Http/Controllers/Planning/PlanningController.php:116
+* @see app/Http/Controllers/Planning/PlanningController.php:118
 * @route '/api/planning/summary/save'
 */
 saveSummary.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -147,7 +147,7 @@ saveSummary.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::saveSummary
-* @see app/Http/Controllers/Planning/PlanningController.php:116
+* @see app/Http/Controllers/Planning/PlanningController.php:118
 * @route '/api/planning/summary/save'
 */
 const saveSummaryForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -157,7 +157,7 @@ const saveSummaryForm = (options?: RouteQueryOptions): RouteFormDefinition<'post
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::saveSummary
-* @see app/Http/Controllers/Planning/PlanningController.php:116
+* @see app/Http/Controllers/Planning/PlanningController.php:118
 * @route '/api/planning/summary/save'
 */
 saveSummaryForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -169,7 +169,7 @@ saveSummary.form = saveSummaryForm
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::calculateHours
-* @see app/Http/Controllers/Planning/PlanningController.php:160
+* @see app/Http/Controllers/Planning/PlanningController.php:162
 * @route '/api/planning/calculate-hours'
 */
 export const calculateHours = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -184,7 +184,7 @@ calculateHours.definition = {
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::calculateHours
-* @see app/Http/Controllers/Planning/PlanningController.php:160
+* @see app/Http/Controllers/Planning/PlanningController.php:162
 * @route '/api/planning/calculate-hours'
 */
 calculateHours.url = (options?: RouteQueryOptions) => {
@@ -193,7 +193,7 @@ calculateHours.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::calculateHours
-* @see app/Http/Controllers/Planning/PlanningController.php:160
+* @see app/Http/Controllers/Planning/PlanningController.php:162
 * @route '/api/planning/calculate-hours'
 */
 calculateHours.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -203,7 +203,7 @@ calculateHours.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => 
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::calculateHours
-* @see app/Http/Controllers/Planning/PlanningController.php:160
+* @see app/Http/Controllers/Planning/PlanningController.php:162
 * @route '/api/planning/calculate-hours'
 */
 const calculateHoursForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -213,7 +213,7 @@ const calculateHoursForm = (options?: RouteQueryOptions): RouteFormDefinition<'p
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::calculateHours
-* @see app/Http/Controllers/Planning/PlanningController.php:160
+* @see app/Http/Controllers/Planning/PlanningController.php:162
 * @route '/api/planning/calculate-hours'
 */
 calculateHoursForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -225,7 +225,7 @@ calculateHours.form = calculateHoursForm
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::checkToday
-* @see app/Http/Controllers/Planning/PlanningController.php:196
+* @see app/Http/Controllers/Planning/PlanningController.php:198
 * @route '/api/planning/check-today'
 */
 export const checkToday = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -240,7 +240,7 @@ checkToday.definition = {
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::checkToday
-* @see app/Http/Controllers/Planning/PlanningController.php:196
+* @see app/Http/Controllers/Planning/PlanningController.php:198
 * @route '/api/planning/check-today'
 */
 checkToday.url = (options?: RouteQueryOptions) => {
@@ -249,7 +249,7 @@ checkToday.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::checkToday
-* @see app/Http/Controllers/Planning/PlanningController.php:196
+* @see app/Http/Controllers/Planning/PlanningController.php:198
 * @route '/api/planning/check-today'
 */
 checkToday.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -259,7 +259,7 @@ checkToday.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::checkToday
-* @see app/Http/Controllers/Planning/PlanningController.php:196
+* @see app/Http/Controllers/Planning/PlanningController.php:198
 * @route '/api/planning/check-today'
 */
 const checkTodayForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -269,7 +269,7 @@ const checkTodayForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::checkToday
-* @see app/Http/Controllers/Planning/PlanningController.php:196
+* @see app/Http/Controllers/Planning/PlanningController.php:198
 * @route '/api/planning/check-today'
 */
 checkTodayForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -280,8 +280,64 @@ checkTodayForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'>
 checkToday.form = checkTodayForm
 
 /**
+* @see \App\Http\Controllers\Planning\PlanningController::forceReschedule
+* @see app/Http/Controllers/Planning/PlanningController.php:243
+* @route '/api/planning/force-reschedule'
+*/
+export const forceReschedule = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: forceReschedule.url(options),
+    method: 'post',
+})
+
+forceReschedule.definition = {
+    methods: ["post"],
+    url: '/api/planning/force-reschedule',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\Planning\PlanningController::forceReschedule
+* @see app/Http/Controllers/Planning/PlanningController.php:243
+* @route '/api/planning/force-reschedule'
+*/
+forceReschedule.url = (options?: RouteQueryOptions) => {
+    return forceReschedule.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Planning\PlanningController::forceReschedule
+* @see app/Http/Controllers/Planning/PlanningController.php:243
+* @route '/api/planning/force-reschedule'
+*/
+forceReschedule.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: forceReschedule.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\Planning\PlanningController::forceReschedule
+* @see app/Http/Controllers/Planning/PlanningController.php:243
+* @route '/api/planning/force-reschedule'
+*/
+const forceRescheduleForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: forceReschedule.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\Planning\PlanningController::forceReschedule
+* @see app/Http/Controllers/Planning/PlanningController.php:243
+* @route '/api/planning/force-reschedule'
+*/
+forceRescheduleForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: forceReschedule.url(options),
+    method: 'post',
+})
+
+forceReschedule.form = forceRescheduleForm
+
+/**
 * @see \App\Http\Controllers\Planning\PlanningController::index
-* @see app/Http/Controllers/Planning/PlanningController.php:35
+* @see app/Http/Controllers/Planning/PlanningController.php:37
 * @route '/planning'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -296,7 +352,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::index
-* @see app/Http/Controllers/Planning/PlanningController.php:35
+* @see app/Http/Controllers/Planning/PlanningController.php:37
 * @route '/planning'
 */
 index.url = (options?: RouteQueryOptions) => {
@@ -305,7 +361,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::index
-* @see app/Http/Controllers/Planning/PlanningController.php:35
+* @see app/Http/Controllers/Planning/PlanningController.php:37
 * @route '/planning'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -315,7 +371,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::index
-* @see app/Http/Controllers/Planning/PlanningController.php:35
+* @see app/Http/Controllers/Planning/PlanningController.php:37
 * @route '/planning'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -325,7 +381,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::index
-* @see app/Http/Controllers/Planning/PlanningController.php:35
+* @see app/Http/Controllers/Planning/PlanningController.php:37
 * @route '/planning'
 */
 const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -335,7 +391,7 @@ const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::index
-* @see app/Http/Controllers/Planning/PlanningController.php:35
+* @see app/Http/Controllers/Planning/PlanningController.php:37
 * @route '/planning'
 */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -345,7 +401,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::index
-* @see app/Http/Controllers/Planning/PlanningController.php:35
+* @see app/Http/Controllers/Planning/PlanningController.php:37
 * @route '/planning'
 */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -360,6 +416,6 @@ indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 index.form = indexForm
 
-const PlanningController = { data, save, saveSummary, calculateHours, checkToday, index }
+const PlanningController = { data, save, saveSummary, calculateHours, checkToday, forceReschedule, index }
 
 export default PlanningController

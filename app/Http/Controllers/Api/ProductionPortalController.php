@@ -9,6 +9,7 @@ use App\Models\FoglioPallet;
 use App\Models\Order;
 use App\Models\ProductionOrderProcessing;
 use App\Services\PalletCalculationService;
+use App\Services\Planning\PlanningReplanService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -69,6 +70,9 @@ class ProductionPortalController extends Controller
             }
 
             $order->save();
+
+            // Mirror Pianificazione Produzione: reajustar planning al cambiar worked_quantity desde el portal
+            app(PlanningReplanService::class)->adjustForWorkedQuantity($order->uuid);
         }
     }
 
@@ -272,11 +276,10 @@ class ProductionPortalController extends Controller
             $newProcessedQuantity = $processedQuantity + $quantityToAdd;
             $printUrl = null;
 
-            if ($newProcessedQuantity % $palletQuantity === 0) {
-                // Completato un pallet, generare URL di stampa
-                // Nota: nel sistema legacy si cerca il foglio pallet associato all'articolo
-                // Per ora restituiamo null, si può implementare la logica di ricerca
-                $printUrl = $this->generatePrintUrl(null); // TODO: implementare ricerca foglio pallet
+            if ($newProcessedQuantity % $palletQuantity === 0 && ! empty($article->pallet_sheet)) {
+                $printUrl = $this->generatePrintUrl($article->pallet_sheet);
+            } else {
+                $printUrl = null;
             }
 
             return response()->json([
@@ -325,10 +328,10 @@ class ProductionPortalController extends Controller
             // Aggiornare worked_quantity e stato
             $this->updateOrderWorkedQuantity($order->uuid);
 
-            // Se quantity >= quantity_to_finish_pallet, generare URL di stampa
+            // Se quantity >= quantity_to_finish_pallet e l'articolo ha foglio pallet, generare URL di stampa
             $printUrl = null;
-            if ($quantity >= $quantityToFinishPallet) {
-                $printUrl = $this->generatePrintUrl(null); // TODO: implementare ricerca foglio pallet
+            if ($quantity >= $quantityToFinishPallet && $order->article && ! empty($order->article->pallet_sheet)) {
+                $printUrl = $this->generatePrintUrl($order->article->pallet_sheet);
             }
 
             return response()->json([

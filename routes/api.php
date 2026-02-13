@@ -54,6 +54,7 @@ Route::prefix('planning')->group(function () {
     Route::post('/summary/save', [PlanningController::class, 'saveSummary'])->name('api.planning.summary.save');
     Route::post('/calculate-hours', [PlanningController::class, 'calculateHours'])->name('api.planning.calculate-hours');
     Route::post('/check-today', [PlanningController::class, 'checkToday'])->name('api.planning.check-today');
+    Route::post('/force-reschedule', [PlanningController::class, 'forceReschedule'])->name('api.planning.force-reschedule');
 });
 
 // Ruta para imprimir foglio pallet (si se implementa)

@@ -1,3 +1,4 @@
+import { ActionsDropdown } from '@/components/ActionsDropdown';
 import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
 import {
     FlashNotifications,
@@ -26,7 +27,6 @@ import {
     Loader2,
     Plus,
     Search,
-    Trash2,
     X,
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
@@ -1032,18 +1032,22 @@ export default function ProductionOrderProcessingIndex() {
                                                         )}
                                                     </td>
                                                     <td className="px-3 py-2 text-right">
-                                                        <div className="flex items-center justify-end gap-2">
-                                                            <button
-                                                                onClick={() =>
+                                                        <div className="flex justify-end">
+                                                            <ActionsDropdown
+                                                                editHref={
+                                                                    productionOrderProcessing.edit(
+                                                                        {
+                                                                            productionOrderProcessing:
+                                                                                processing.uuid,
+                                                                        },
+                                                                    ).url
+                                                                }
+                                                                onDelete={() =>
                                                                     handleDeleteClick(
                                                                         processing,
                                                                     )
                                                                 }
-                                                                className="inline-flex items-center justify-center rounded-md p-2 text-xs text-destructive transition-colors hover:bg-destructive/10"
-                                                                title="Elimina"
-                                                            >
-                                                                <Trash2 className="h-4 w-4" />
-                                                            </button>
+                                                            />
                                                         </div>
                                                     </td>
                                                 </tr>

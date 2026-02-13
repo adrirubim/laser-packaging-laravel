@@ -42,3 +42,6 @@ patch-package-error.json.gz
 # Copilot / instructions (optional)
 .github/copilot/
 .github/copilot-instructions.md
+
+# Internal documentation (not for GitHub)
+docs/planning/

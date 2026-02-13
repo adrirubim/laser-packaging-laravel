@@ -1,7 +1,113 @@
 import AppLayout from '@/layouts/app-layout';
+import orders from '@/routes/orders/index';
 import type { PageProps } from '@/types';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
+import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+
+function addDays(dateStr: string, days: number): string {
+    const d = new Date(dateStr + 'T12:00:00');
+    d.setDate(d.getDate() + days);
+    return d.toISOString().slice(0, 10);
+}
+
+function isToday(dateStr: string, today: string): boolean {
+    return dateStr === today;
+}
+
+function SummaryCellInput({
+    value,
+    summaryType,
+    hour,
+    date,
+    onSaved,
+}: {
+    value: number;
+    summaryType: string;
+    hour: number;
+    date: string;
+    onSaved: () => void;
+}) {
+    const [localValue, setLocalValue] = useState(String(value));
+    const [isEditing, setIsEditing] = useState(false);
+
+    const save = useCallback(async () => {
+        const num = Math.min(
+            99,
+            Math.max(0, Number.parseInt(localValue, 10) || 0),
+        );
+        setLocalValue(String(num));
+        setIsEditing(false);
+        try {
+            const response = await fetch('/api/planning/summary/save', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                },
+                body: JSON.stringify({
+                    summary_type: summaryType,
+                    date,
+                    hour,
+                    minute: 0,
+                    value: num,
+                    reset: 0,
+                    zoom_level: 'hour',
+                }),
+            });
+            const json = await response.json();
+            if (json.error_code === 0) onSaved();
+        } catch (err) {
+            console.error('Errore salvataggio summary', err);
+        }
+    }, [localValue, summaryType, hour, date, onSaved]);
+
+    const startEditing = useCallback(() => {
+        setLocalValue(String(value));
+        setIsEditing(true);
+    }, [value]);
+
+    if (isEditing) {
+        return (
+            <input
+                type="text"
+                inputMode="numeric"
+                maxLength={2}
+                value={localValue}
+                onChange={(e) =>
+                    setLocalValue(e.target.value.replace(/\D/g, '').slice(0, 2))
+                }
+                onBlur={() => void save()}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        void save();
+                    }
+                    if (e.key === 'Escape') {
+                        setLocalValue(String(value));
+                        setIsEditing(false);
+                    }
+                }}
+                className="h-6 w-8 rounded border bg-background px-0.5 text-center text-[11px]"
+                autoFocus
+            />
+        );
+    }
+
+    return (
+        <button
+            type="button"
+            onClick={startEditing}
+            className={`flex h-6 w-8 items-center justify-center rounded text-[11px] ${
+                value > 0
+                    ? 'bg-emerald-500/80 text-emerald-50'
+                    : 'bg-muted text-muted-foreground hover:bg-muted/80'
+            }`}
+        >
+            {value > 0 ? value : ''}
+        </button>
+    );
+}
 
 type PlanningOrder = {
     uuid: string;
@@ -44,7 +150,11 @@ type PlanningIndexProps = PageProps<{
     today: string;
 }>;
 
+type ZoomLevel = 'hour' | 'quarter';
+
 export default function PlanningIndex({ today }: PlanningIndexProps) {
+    const [currentDate, setCurrentDate] = useState(today);
+    const [zoomLevel, setZoomLevel] = useState<ZoomLevel>('hour');
     const [lines, setLines] = useState<PlanningLine[]>([]);
     const [planning, setPlanning] = useState<PlanningRow[]>([]);
     const [summaries, setSummaries] = useState<PlanningSummaryRow[]>([]);
@@ -63,8 +173,8 @@ export default function PlanningIndex({ today }: PlanningIndexProps) {
                     Accept: 'application/json',
                 },
                 body: JSON.stringify({
-                    start_date: `${today} 00:00:00`,
-                    end_date: `${today} 23:59:59`,
+                    start_date: `${currentDate} 00:00:00`,
+                    end_date: `${currentDate} 23:59:59`,
                 }),
             });
 
@@ -88,7 +198,7 @@ export default function PlanningIndex({ today }: PlanningIndexProps) {
         } finally {
             setLoading(false);
         }
-    }, [today]);
+    }, [currentDate]);
 
     useEffect(() => {
         void loadData();
@@ -101,7 +211,7 @@ export default function PlanningIndex({ today }: PlanningIndexProps) {
 
         for (const row of planning) {
             if (!row.date || !row.hours) continue;
-            if (!row.date.startsWith(today)) continue;
+            if (!row.date.startsWith(currentDate)) continue;
 
             let hoursObject: Record<string, number>;
 
@@ -159,7 +269,7 @@ export default function PlanningIndex({ today }: PlanningIndexProps) {
         }
 
         return result;
-    }, [planning, today]);
+    }, [planning, currentDate]);
 
     // Mappa: tipo di summary -> ora del giorno -> valore
     const summaryByTypeAndHour = useMemo(() => {
@@ -167,7 +277,7 @@ export default function PlanningIndex({ today }: PlanningIndexProps) {
 
         for (const row of summaries) {
             if (!row.date || !row.hours) continue;
-            if (row.date !== today) continue;
+            if (row.date !== currentDate) continue;
 
             let hoursObject: Record<string, number>;
 
@@ -195,19 +305,31 @@ export default function PlanningIndex({ today }: PlanningIndexProps) {
         }
 
         return map;
-    }, [summaries, today]);
+    }, [summaries, currentDate]);
 
     const workingHours = useMemo(
         () => Array.from({ length: 12 }, (_, index) => index + 7), // 07:00–18:00
         [],
     );
 
+    // Slot da 15 min per vista quarti: 8:00–17:45
+    const workingQuarterSlots = useMemo(() => {
+        const slots: { hour: number; minute: number }[] = [];
+        for (let h = 8; h <= 17; h++) {
+            for (const m of [0, 15, 30, 45]) {
+                if (h === 17 && m > 0) break;
+                slots.push({ hour: h, minute: m });
+            }
+        }
+        return slots;
+    }, []);
+
     // Helpers per la griglia editabile per ordine/ora
     const isOrderHourActive = useCallback(
         (orderUuid: string, lineUuid: string, hour: number): boolean => {
             for (const row of planning) {
                 if (!row.date || !row.hours) continue;
-                if (!row.date.startsWith(today)) continue;
+                if (!row.date.startsWith(currentDate)) continue;
                 if (
                     row.order_uuid !== orderUuid ||
                     row.lasworkline_uuid !== lineUuid
@@ -240,7 +362,74 @@ export default function PlanningIndex({ today }: PlanningIndexProps) {
 
             return false;
         },
-        [planning, today],
+        [planning, currentDate],
+    );
+
+    const isOrderSlotActive = useCallback(
+        (
+            orderUuid: string,
+            lineUuid: string,
+            hour: number,
+            minute: number,
+        ): boolean => {
+            const timeKey = String(hour * 100 + minute);
+            for (const row of planning) {
+                if (!row.date || !row.hours) continue;
+                if (!row.date.startsWith(currentDate)) continue;
+                if (
+                    row.order_uuid !== orderUuid ||
+                    row.lasworkline_uuid !== lineUuid
+                )
+                    continue;
+                try {
+                    const hoursObject = JSON.parse(row.hours) as Record<
+                        string,
+                        number
+                    >;
+                    const v = hoursObject[timeKey];
+                    return Number.isFinite(v) && v > 0;
+                } catch {
+                    continue;
+                }
+            }
+            return false;
+        },
+        [planning, currentDate],
+    );
+
+    const toggleOrderSlot = useCallback(
+        async (
+            orderUuid: string,
+            lineUuid: string,
+            hour: number,
+            minute: number,
+        ): Promise<void> => {
+            const active = isOrderSlotActive(orderUuid, lineUuid, hour, minute);
+            try {
+                const response = await fetch('/api/planning/save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                    },
+                    body: JSON.stringify({
+                        order_uuid: orderUuid,
+                        lasworkline_uuid: lineUuid,
+                        date: currentDate,
+                        hour,
+                        minute,
+                        workers: active ? 0 : 1,
+                        zoom_level: 'quarter',
+                    }),
+                });
+                if (!response.ok) return;
+                const json = await response.json();
+                if (json.error_code === 0) void loadData();
+            } catch (e) {
+                console.error('Errore salvataggio planning quarti', e);
+            }
+        },
+        [isOrderSlotActive, loadData, currentDate],
     );
 
     const toggleOrderHour = useCallback(
@@ -261,7 +450,7 @@ export default function PlanningIndex({ today }: PlanningIndexProps) {
                     body: JSON.stringify({
                         order_uuid: orderUuid,
                         lasworkline_uuid: lineUuid,
-                        date: today,
+                        date: currentDate,
                         hour,
                         minute: 0,
                         workers: active ? 0 : 1,
@@ -286,7 +475,7 @@ export default function PlanningIndex({ today }: PlanningIndexProps) {
                 console.error('Errore imprevisto nel salvataggio planning', e);
             }
         },
-        [isOrderHourActive, loadData, today],
+        [isOrderHourActive, loadData, currentDate],
     );
 
     return (
@@ -294,13 +483,76 @@ export default function PlanningIndex({ today }: PlanningIndexProps) {
             <Head title="Pianificazione Produzione" />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+                {/* Pannello controlli: Indietro, Avanti, Oggi, rango date, Zoom */}
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-card p-3">
+                    <div className="flex items-center gap-2">
+                        <button
+                            type="button"
+                            onClick={() =>
+                                setCurrentDate((d: string) => addDays(d, -1))
+                            }
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground"
+                            title="Indietro"
+                        >
+                            <ChevronLeft className="h-4 w-4" />
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() =>
+                                setCurrentDate((d: string) => addDays(d, 1))
+                            }
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground"
+                            title="Avanti"
+                        >
+                            <ChevronRight className="h-4 w-4" />
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setCurrentDate(today)}
+                            className="rounded-md border border-input bg-background px-3 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+                            title="Oggi"
+                        >
+                            Oggi
+                        </button>
+                    </div>
+                    <span className="text-sm text-muted-foreground">
+                        Dal: <strong>{currentDate}</strong> al:{' '}
+                        <strong>{currentDate}</strong>
+                        {!isToday(currentDate, today) && (
+                            <span className="ml-2 text-amber-600">
+                                (non oggi)
+                            </span>
+                        )}
+                    </span>
+                    <div>
+                        {zoomLevel === 'hour' ? (
+                            <button
+                                type="button"
+                                onClick={() => setZoomLevel('quarter')}
+                                className="inline-flex items-center gap-1.5 rounded-md border border-input bg-background px-2.5 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+                                title="Zoom quarti"
+                            >
+                                <ZoomIn className="h-4 w-4" />
+                                Zoom quarti
+                            </button>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={() => setZoomLevel('hour')}
+                                className="inline-flex items-center gap-1.5 rounded-md border border-input bg-background px-2.5 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+                                title="Torna a vista ore"
+                            >
+                                <ZoomOut className="h-4 w-4" />
+                                Vista ore
+                            </button>
+                        )}
+                    </div>
+                </div>
+
                 <div className="flex items-center justify-between">
                     <h1 className="text-lg font-semibold">
                         Pianificazione Produzione
                     </h1>
-                    <span className="text-sm text-muted-foreground">
-                        Data: {today}
-                    </span>
                 </div>
 
                 {error && (
@@ -412,7 +664,9 @@ export default function PlanningIndex({ today }: PlanningIndexProps) {
                                                         Stato
                                                     </th>
                                                     <th className="px-2 py-1 text-right">
-                                                        Oggi (ore)
+                                                        {zoomLevel === 'hour'
+                                                            ? 'Ore'
+                                                            : 'Quarti (15 min)'}
                                                     </th>
                                                 </tr>
                                             </thead>
@@ -423,7 +677,18 @@ export default function PlanningIndex({ today }: PlanningIndexProps) {
                                                         className="border-b align-top last:border-0"
                                                     >
                                                         <td className="px-2 py-1">
-                                                            {order.code}
+                                                            <Link
+                                                                href={
+                                                                    orders.show(
+                                                                        {
+                                                                            order: order.uuid,
+                                                                        },
+                                                                    ).url
+                                                                }
+                                                                className="font-medium text-primary underline-offset-4 hover:underline"
+                                                            >
+                                                                {order.code}
+                                                            </Link>
                                                         </td>
                                                         <td className="px-2 py-1">
                                                             {order.article_code}
@@ -444,48 +709,98 @@ export default function PlanningIndex({ today }: PlanningIndexProps) {
                                                         </td>
                                                         <td className="px-2 py-1">
                                                             <div className="flex flex-wrap justify-end gap-0.5">
-                                                                {workingHours.map(
-                                                                    (hour) => {
-                                                                        const active =
-                                                                            isOrderHourActive(
-                                                                                order.uuid,
-                                                                                line.uuid,
-                                                                                hour,
-                                                                            );
-
-                                                                        return (
-                                                                            <button
-                                                                                key={
-                                                                                    hour
-                                                                                }
-                                                                                type="button"
-                                                                                onClick={() => {
-                                                                                    void toggleOrderHour(
-                                                                                        order.uuid,
-                                                                                        line.uuid,
-                                                                                        hour,
-                                                                                    );
-                                                                                }}
-                                                                                className={[
-                                                                                    'flex h-4 w-4 items-center justify-center rounded border text-[9px]',
-                                                                                    active
-                                                                                        ? 'border-emerald-500/70 bg-emerald-500/70 text-emerald-50'
-                                                                                        : 'border-border bg-muted text-muted-foreground hover:bg-muted/80',
-                                                                                ].join(
-                                                                                    ' ',
-                                                                                )}
-                                                                                title={`${hour.toString().padStart(2, '0')}:00`}
-                                                                            >
-                                                                                {hour
-                                                                                    .toString()
-                                                                                    .padStart(
-                                                                                        2,
-                                                                                        '0',
-                                                                                    )}
-                                                                            </button>
-                                                                        );
-                                                                    },
-                                                                )}
+                                                                {zoomLevel ===
+                                                                'hour'
+                                                                    ? workingHours.map(
+                                                                          (
+                                                                              hour,
+                                                                          ) => {
+                                                                              const active =
+                                                                                  isOrderHourActive(
+                                                                                      order.uuid,
+                                                                                      line.uuid,
+                                                                                      hour,
+                                                                                  );
+                                                                              return (
+                                                                                  <button
+                                                                                      key={
+                                                                                          hour
+                                                                                      }
+                                                                                      type="button"
+                                                                                      onClick={() => {
+                                                                                          void toggleOrderHour(
+                                                                                              order.uuid,
+                                                                                              line.uuid,
+                                                                                              hour,
+                                                                                          );
+                                                                                      }}
+                                                                                      className={[
+                                                                                          'flex h-4 w-4 items-center justify-center rounded border text-[9px]',
+                                                                                          active
+                                                                                              ? 'border-emerald-500/70 bg-emerald-500/70 text-emerald-50'
+                                                                                              : 'border-border bg-muted text-muted-foreground hover:bg-muted/80',
+                                                                                      ].join(
+                                                                                          ' ',
+                                                                                      )}
+                                                                                      title={`${hour.toString().padStart(2, '0')}:00`}
+                                                                                  >
+                                                                                      {hour
+                                                                                          .toString()
+                                                                                          .padStart(
+                                                                                              2,
+                                                                                              '0',
+                                                                                          )}
+                                                                                  </button>
+                                                                              );
+                                                                          },
+                                                                      )
+                                                                    : workingQuarterSlots.map(
+                                                                          (
+                                                                              slot,
+                                                                              idx,
+                                                                          ) => {
+                                                                              const active =
+                                                                                  isOrderSlotActive(
+                                                                                      order.uuid,
+                                                                                      line.uuid,
+                                                                                      slot.hour,
+                                                                                      slot.minute,
+                                                                                  );
+                                                                              const label = `${slot.hour.toString().padStart(2, '0')}:${slot.minute.toString().padStart(2, '0')}`;
+                                                                              return (
+                                                                                  <button
+                                                                                      key={
+                                                                                          idx
+                                                                                      }
+                                                                                      type="button"
+                                                                                      onClick={() => {
+                                                                                          void toggleOrderSlot(
+                                                                                              order.uuid,
+                                                                                              line.uuid,
+                                                                                              slot.hour,
+                                                                                              slot.minute,
+                                                                                          );
+                                                                                      }}
+                                                                                      className={[
+                                                                                          'flex h-3 w-3 items-center justify-center rounded border text-[7px] sm:h-4 sm:w-4',
+                                                                                          active
+                                                                                              ? 'border-emerald-500/70 bg-emerald-500/70 text-emerald-50'
+                                                                                              : 'border-border bg-muted text-muted-foreground hover:bg-muted/80',
+                                                                                      ].join(
+                                                                                          ' ',
+                                                                                      )}
+                                                                                      title={
+                                                                                          label
+                                                                                      }
+                                                                                  >
+                                                                                      {slot.minute ===
+                                                                                      0
+                                                                                          ? slot.hour
+                                                                                          : ''}
+                                                                                  </button>
+                                                                              );
+                                                                          },
+                                                                      )}
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -516,15 +831,15 @@ export default function PlanningIndex({ today }: PlanningIndexProps) {
                             </div>
                         )}
 
-                        {/* Riepilogo giornaliero personale */}
+                        {/* Riepilogo giornaliero personale: valori numerici 0-99 (come legacy) */}
                         <div className="mt-6 rounded-md border bg-card p-3 shadow-sm">
                             <div className="mb-2 flex items-center justify-between">
                                 <h2 className="text-sm font-semibold">
-                                    Riepilogo personale (oggi)
+                                    Riepilogo personale ({currentDate})
                                 </h2>
                                 <span className="text-xs text-muted-foreground">
-                                    Clicca su una cella per impostare o
-                                    resettare il valore
+                                    Inserisci valore 0-99; salva con Invio o
+                                    uscendo dalla cella
                                 </span>
                             </div>
 
@@ -586,108 +901,28 @@ export default function PlanningIndex({ today }: PlanningIndexProps) {
                                                                 values[hour] ??
                                                                 0;
 
-                                                            const handleClick =
-                                                                async (): Promise<void> => {
-                                                                    try {
-                                                                        const body =
-                                                                            value >
-                                                                            0
-                                                                                ? {
-                                                                                      summary_type:
-                                                                                          row.key,
-                                                                                      date: today,
-                                                                                      hour,
-                                                                                      minute: 0,
-                                                                                      value: 0,
-                                                                                      reset: 1,
-                                                                                      zoom_level:
-                                                                                          'hour',
-                                                                                  }
-                                                                                : {
-                                                                                      summary_type:
-                                                                                          row.key,
-                                                                                      date: today,
-                                                                                      hour,
-                                                                                      minute: 0,
-                                                                                      value: 1,
-                                                                                      reset: 0,
-                                                                                      zoom_level:
-                                                                                          'hour',
-                                                                                  };
-
-                                                                        const response =
-                                                                            await fetch(
-                                                                                '/api/planning/summary',
-                                                                                {
-                                                                                    method: 'POST',
-                                                                                    headers:
-                                                                                        {
-                                                                                            'Content-Type':
-                                                                                                'application/json',
-                                                                                            Accept: 'application/json',
-                                                                                        },
-                                                                                    body: JSON.stringify(
-                                                                                        body,
-                                                                                    ),
-                                                                                },
-                                                                            );
-
-                                                                        if (
-                                                                            !response.ok
-                                                                        ) {
-                                                                            console.error(
-                                                                                'Errore nel salvataggio del summary',
-                                                                            );
-                                                                            return;
-                                                                        }
-
-                                                                        const json =
-                                                                            await response.json();
-                                                                        if (
-                                                                            json.error_code !==
-                                                                            0
-                                                                        ) {
-                                                                            console.error(
-                                                                                'Errore summary:',
-                                                                                json.message,
-                                                                            );
-                                                                        } else {
-                                                                            void loadData();
-                                                                        }
-                                                                    } catch (err) {
-                                                                        console.error(
-                                                                            'Errore imprevisto nel salvataggio summary',
-                                                                            err,
-                                                                        );
-                                                                    }
-                                                                };
-
-                                                            const isActive =
-                                                                value > 0;
-
                                                             return (
                                                                 <td
                                                                     key={hour}
-                                                                    className="px-1 py-1 text-center"
+                                                                    className="px-1 py-0.5 text-center"
                                                                 >
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={
-                                                                            handleClick
+                                                                    <SummaryCellInput
+                                                                        value={
+                                                                            value
                                                                         }
-                                                                        className={[
-                                                                            'flex h-6 w-8 items-center justify-center rounded text-[11px]',
-                                                                            isActive
-                                                                                ? 'bg-emerald-500/80 text-emerald-50'
-                                                                                : 'bg-muted text-muted-foreground hover:bg-muted/80',
-                                                                        ].join(
-                                                                            ' ',
-                                                                        )}
-                                                                    >
-                                                                        {isActive
-                                                                            ? value
-                                                                            : ''}
-                                                                    </button>
+                                                                        summaryType={
+                                                                            row.key
+                                                                        }
+                                                                        hour={
+                                                                            hour
+                                                                        }
+                                                                        date={
+                                                                            currentDate
+                                                                        }
+                                                                        onSaved={
+                                                                            loadData
+                                                                        }
+                                                                    />
                                                                 </td>
                                                             );
                                                         },

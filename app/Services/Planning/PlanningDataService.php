@@ -25,9 +25,10 @@ class PlanningDataService
             ->orderBy('code')
             ->get();
 
-        // Eager load órdenes y artículos para minimizar N+1
+        // Eager load órdenes y artículos para minimizar N+1 (mirror legacy: status NOT IN 4,5,6)
         $ordersByLine = Order::query()
             ->active()
+            ->whereNotIn('status', [4, 5, 6])
             ->with(['article.offer.lasWorkLine'])
             ->whereHas('article.offer.lasWorkLine', function ($q) use ($lines) {
                 $q->whereIn('offerlasworkline.uuid', $lines->pluck('uuid'));

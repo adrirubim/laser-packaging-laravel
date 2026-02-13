@@ -6,5 +6,5 @@
 *.blade.php diff=html
 *.css diff=css
 *.html diff=html
-*.md diff=markdown
+*.md text eol=lf diff=markdown
 *.php diff=php

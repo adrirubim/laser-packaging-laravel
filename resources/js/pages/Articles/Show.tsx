@@ -18,6 +18,7 @@ import {
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import articles from '@/routes/articles/index';
+import offers from '@/routes/offers/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import {
@@ -282,6 +283,21 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                         )}
                     </div>
                     <div className="flex items-center gap-2">
+                        {article.offer && (
+                            <Button asChild variant="outline" size="sm">
+                                <Link
+                                    href={
+                                        offers.show({
+                                            offer: article.offer.uuid,
+                                        }).url
+                                    }
+                                    aria-label="Visualizza offerta"
+                                >
+                                    <Eye className="mr-2 h-4 w-4" />
+                                    Visualizza Offerta
+                                </Link>
+                            </Button>
+                        )}
                         <Button asChild variant="outline" size="sm">
                             <Link
                                 href={

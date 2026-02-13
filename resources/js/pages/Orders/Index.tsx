@@ -24,6 +24,9 @@ import {
     formatDecimal,
     parseDecimal,
 } from '@/lib/utils/number';
+import api from '@/routes/api';
+import articlesRoutes from '@/routes/articles/index';
+import offers from '@/routes/offers/index';
 import orders from '@/routes/orders/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
@@ -31,14 +34,17 @@ import {
     AlertTriangle,
     Bookmark,
     Calendar,
+    CalendarCheck,
     CheckCircle2,
     CheckSquare,
     Download,
+    FileText,
     Filter,
     FilterX,
     Info,
     LayoutGrid,
     Loader2,
+    Package,
     Plus,
     Save,
     Search,
@@ -55,6 +61,7 @@ type Article = {
     uuid: string;
     cod_article_las: string;
     article_descr?: string | null;
+    offer_uuid?: string | null;
 };
 
 type Customer = {
@@ -161,6 +168,9 @@ export default function OrdersIndex() {
     const [downloadingAutocontrollo, setDownloadingAutocontrollo] = useState<
         string | null
     >(null);
+    const [reschedulingOrder, setReschedulingOrder] = useState<string | null>(
+        null,
+    );
     const [viewMode, setViewMode] = useState<'table' | 'cards'>(() => {
         const saved = localStorage.getItem('orders_view_mode');
         return saved === 'cards' || saved === 'table' ? saved : 'table';
@@ -576,6 +586,47 @@ export default function OrdersIndex() {
                     ? `Errore nello scaricare autocontrollo: ${error.message}`
                     : 'Errore nello scaricare autocontrollo',
             );
+        }
+    };
+
+    /**
+     * Forza ripianificazione (mirror legacy "Forza Ripianificazione" in Altre Azioni).
+     * Chiama POST /api/planning/force-reschedule e ricarica la pagina in caso di successo.
+     */
+    const handleForceReschedule = async (order: Order) => {
+        if (reschedulingOrder === order.uuid) return;
+        setReschedulingOrder(order.uuid);
+        try {
+            const url = api.planning.forceReschedule.url();
+            const csrfToken =
+                document
+                    .querySelector('meta[name="csrf-token"]')
+                    ?.getAttribute('content') ?? '';
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {}),
+                },
+                body: JSON.stringify({ order_uuid: order.uuid }),
+                credentials: 'same-origin',
+            });
+            const data = (await res.json()) as {
+                error_code?: number;
+                message?: string;
+            };
+            if (res.ok && data.error_code === 0) {
+                router.reload();
+            } else {
+                alert(data.message || 'Errore durante la ripianificazione.');
+            }
+        } catch (e) {
+            console.error('Force reschedule error:', e);
+            alert('Errore durante la ripianificazione.');
+        } finally {
+            setReschedulingOrder(null);
         }
     };
 
@@ -2224,6 +2275,47 @@ export default function OrdersIndex() {
                                                                         }
                                                                         extraItems={
                                                                             <>
+                                                                                {order.article && (
+                                                                                    <Link
+                                                                                        href={
+                                                                                            articlesRoutes.show(
+                                                                                                {
+                                                                                                    article:
+                                                                                                        order
+                                                                                                            .article
+                                                                                                            .uuid,
+                                                                                                },
+                                                                                            )
+                                                                                                .url
+                                                                                        }
+                                                                                        className="flex items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
+                                                                                    >
+                                                                                        <Package className="mr-2 h-4 w-4" />
+                                                                                        Visualizza
+                                                                                        Articolo
+                                                                                    </Link>
+                                                                                )}
+                                                                                {order
+                                                                                    .article
+                                                                                    ?.offer_uuid && (
+                                                                                    <Link
+                                                                                        href={
+                                                                                            offers.show(
+                                                                                                {
+                                                                                                    offer: order
+                                                                                                        .article!
+                                                                                                        .offer_uuid!,
+                                                                                                },
+                                                                                            )
+                                                                                                .url
+                                                                                        }
+                                                                                        className="flex items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
+                                                                                    >
+                                                                                        <FileText className="mr-2 h-4 w-4" />
+                                                                                        Visualizza
+                                                                                        Offerta
+                                                                                    </Link>
+                                                                                )}
                                                                                 <div
                                                                                     onClick={(
                                                                                         e,
@@ -2293,6 +2385,31 @@ export default function OrdersIndex() {
                                                                                             <Download className="mr-2 h-4 w-4" />
                                                                                             Stampa
                                                                                             Autocontrollo
+                                                                                        </>
+                                                                                    )}
+                                                                                </div>
+                                                                                <div
+                                                                                    onClick={(
+                                                                                        e,
+                                                                                    ) => {
+                                                                                        e.preventDefault();
+                                                                                        handleForceReschedule(
+                                                                                            order,
+                                                                                        );
+                                                                                    }}
+                                                                                    className="flex cursor-pointer items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                                                                                >
+                                                                                    {reschedulingOrder ===
+                                                                                    order.uuid ? (
+                                                                                        <>
+                                                                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                                                            Ripianificazione...
+                                                                                        </>
+                                                                                    ) : (
+                                                                                        <>
+                                                                                            <CalendarCheck className="mr-2 h-4 w-4" />
+                                                                                            Forza
+                                                                                            Ripianificazione
                                                                                         </>
                                                                                     )}
                                                                                 </div>
@@ -2617,6 +2734,44 @@ export default function OrdersIndex() {
                                                 }
                                                 extraItems={
                                                     <>
+                                                        {order.article && (
+                                                            <Link
+                                                                href={
+                                                                    articlesRoutes.show(
+                                                                        {
+                                                                            article:
+                                                                                order
+                                                                                    .article
+                                                                                    .uuid,
+                                                                        },
+                                                                    ).url
+                                                                }
+                                                                className="flex items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
+                                                            >
+                                                                <Package className="mr-2 h-4 w-4" />
+                                                                Visualizza
+                                                                Articolo
+                                                            </Link>
+                                                        )}
+                                                        {order.article
+                                                            ?.offer_uuid && (
+                                                            <Link
+                                                                href={
+                                                                    offers.show(
+                                                                        {
+                                                                            offer: order
+                                                                                .article!
+                                                                                .offer_uuid!,
+                                                                        },
+                                                                    ).url
+                                                                }
+                                                                className="flex items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
+                                                            >
+                                                                <FileText className="mr-2 h-4 w-4" />
+                                                                Visualizza
+                                                                Offerta
+                                                            </Link>
+                                                        )}
                                                         <div
                                                             onClick={(e) => {
                                                                 e.preventDefault();
@@ -2678,6 +2833,29 @@ export default function OrdersIndex() {
                                                                     <Download className="mr-2 h-4 w-4" />
                                                                     Stampa
                                                                     Autocontrollo
+                                                                </>
+                                                            )}
+                                                        </div>
+                                                        <div
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                handleForceReschedule(
+                                                                    order,
+                                                                );
+                                                            }}
+                                                            className="flex cursor-pointer items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                                                        >
+                                                            {reschedulingOrder ===
+                                                            order.uuid ? (
+                                                                <>
+                                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                                    Ripianificazione...
+                                                                </>
+                                                            ) : (
+                                                                <>
+                                                                    <CalendarCheck className="mr-2 h-4 w-4" />
+                                                                    Forza
+                                                                    Ripianificazione
                                                                 </>
                                                             )}
                                                         </div>

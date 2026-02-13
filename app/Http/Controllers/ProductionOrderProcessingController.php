@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
 use App\Models\ProductionOrderProcessing;
 use App\Services\Planning\PlanningReplanService;
 use Illuminate\Http\Request;
@@ -242,10 +243,20 @@ class ProductionOrderProcessingController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     * Mirror legacy doDelete: dopo la rimozione ricalcola worked_quantity sull'ordine e reajusta il planning.
      */
     public function destroy(ProductionOrderProcessing $productionOrderProcessing)
     {
+        $orderUuid = $productionOrderProcessing->order_uuid;
+
         $productionOrderProcessing->update(['removed' => true]);
+
+        $order = Order::where('uuid', $orderUuid)->where('removed', false)->first();
+        if ($order) {
+            $totalProcessed = ProductionOrderProcessing::loadProcessedQuantity($orderUuid);
+            $order->update(['worked_quantity' => $totalProcessed]);
+            app(PlanningReplanService::class)->adjustForWorkedQuantity($order->uuid);
+        }
 
         return redirect()->route('production-order-processing.index')
             ->with('success', 'Lavorazione ordine eliminata con successo.');
