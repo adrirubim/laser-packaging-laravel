@@ -384,11 +384,31 @@ class ProductionOrderProcessingControllerTest extends TestCase
     }
 
     #[Test]
-    public function it_skips_store_method_not_implemented()
+    public function it_stores_processing_updates_order_worked_quantity_and_triggers_replan(): void
     {
         $this->actingAs($this->user);
 
-        $this->markTestSkipped('store() method is not implemented in ProductionOrderProcessingController');
+        $this->order->update(['worked_quantity' => 0]);
+        $processedAt = now()->format('Y-m-d H:i:s');
+
+        $response = $this->post(route('production-order-processing.store'), [
+            'employee_uuid' => $this->employee->uuid,
+            'order_uuid' => $this->order->uuid,
+            'quantity' => 25.5,
+            'processed_datetime' => $processedAt,
+        ]);
+
+        $response->assertRedirect(route('production-order-processing.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('productionorderprocessing', [
+            'order_uuid' => $this->order->uuid,
+            'employee_uuid' => $this->employee->uuid,
+            'quantity' => 25.5,
+        ]);
+
+        $this->order->refresh();
+        $this->assertSame(25.5, (float) $this->order->worked_quantity);
     }
 
     #[Test]

@@ -111,6 +111,7 @@ class Article extends Model
         'client_approval_notes',
         'check_approval',
         'media_reale_cfz_h_pz',
+        'real_workers',
     ];
 
     protected $casts = [
@@ -131,7 +132,9 @@ class Article extends Model
         'commercial_approval_date' => 'datetime',
         'client_approval_checkbox' => 'boolean',
         'client_approval_date' => 'datetime',
+        'check_approval' => 'boolean',
         'media_reale_cfz_h_pz' => 'decimal:4',
+        'real_workers' => 'integer',
         'removed' => 'boolean',
     ];
 

@@ -4,7 +4,7 @@
 [![Laravel 12.48](https://img.shields.io/badge/Laravel-12.48-FF2D20?logo=laravel&logoColor=white)](https://laravel.com/)
 [![React 19.2](https://img.shields.io/badge/React-19.2-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript 5.9](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Tests 990 passing](https://img.shields.io/badge/Tests-990%20passing-10B981)](docs/TEST_COVERAGE_REPORT.md)
+[![Tests 994 passing](https://img.shields.io/badge/Tests-994%20passing-10B981)](docs/TEST_COVERAGE.md)
 [![License MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 > A modern, enterprise-grade application for managing offers, articles, orders and a production portal (web + API). Built with Laravel 12.48.x, React 19.2.x (Inertia.js 2.3.x), TypeScript 5.9.x, Vite 7.3.x, Tailwind CSS 4.1.x, and PostgreSQL. Featuring a professional UI/UX, comprehensive security, and optimized performance. **Exact versions:** [docs/VERSION_STACK.md](docs/VERSION_STACK.md).
@@ -36,72 +36,22 @@
 
 Laser Packaging Laravel is a **production-ready** content management system designed for offers, articles, orders, and production tracking. It combines Laravel's robust backend with React's reactive frontend (Inertia.js), delivering a seamless, performant, and secure experience.
 
-### Key Highlights
+### Highlights
 
-- **Modern Stack:** Laravel 12.48.x, React 19.2.x, Inertia.js 2.3.x, TypeScript 5.9.x, Vite 7.3.x, Tailwind CSS 4.1.x, Radix UI
-- **Professional UI/UX:** Skeleton loaders, dashboard charts, real-time search, mobile-responsive, accessibility (WCAG AA)
-- **Enterprise Security:** Form Requests, validation, `.env` handling, test DB isolation
-- **Optimized Performance:** Caching, indexes, Performance test suite (Concurrency, Load, API)
-- **Comprehensive Testing:** 967 tests with 6600+ assertions covering all critical paths
-- **Full Documentation:** `docs/` index, test coverage report, DB and seeding guides
+Modern stack (Laravel 12, React 19, Inertia, TypeScript, Vite, Tailwind). Professional UI (skeletons, charts, search, mobile, WCAG AA). Security (Form Requests, `.env`, test DB). Performance (caching, indexes, Performance suite). **994 tests**, 6682+ assertions. Docs: [docs/](docs/README.md).
 
 ---
 
 <a id="features"></a>
 ## ✨ Features
 
-### 🔐 Security & Stability
+### Features
 
-- ✅ **Form Request Validation** — Comprehensive input validation and sanitization
-- ✅ **Authorization** — Middleware and policy enforcement on controllers
-- ✅ **`.env` Handling** — Never commit secrets; `.env.example` as template only
-- ✅ **Test DB Isolation** — PostgreSQL test database, `RefreshDatabase` trait
-- ✅ **Soft Deletes** — `removed` flag for data retention
-- ✅ **CSRF Protection** — Built-in Laravel CSRF token validation
-- ✅ **API Authentication** — Token-based auth for Production Portal API
-
-### ⚡ Performance
-
-- ✅ **Database Indexing** — Optimized indexes on frequently queried columns
-- ✅ **Strategic Caching** — Smart caching with automatic invalidation in controllers
-- ✅ **Query Optimization** — Eager loading, repositories, focused queries
-- ✅ **React Performance** — Memoized components, optimized re-renders
-- ✅ **Configurable Pagination** — Flexible per-page options across modules
-- ✅ **Performance Tests** — Concurrency, Load, API response time suites
-
-### 🎨 User Experience & Interface
-
-- ✅ **Skeleton Loaders** — Professional loading states for all async operations
-- ✅ **Dashboard Charts** — Interactive charts (Recharts, 5 chart types)
-- ✅ **Advanced Filtering** — Search, sortable columns, filters across modules
-- ✅ **Delete Confirmation Dialogs** — Professional confirmation modals
-- ✅ **Real-Time Search** — Debounced search (500ms) with loading indicators
-- ✅ **Flash Notifications** — Auto-dismiss with manual close
-- ✅ **Mobile Responsive** — Card views and layouts optimized for mobile
-- ✅ **Accessibility (A11y)** — WCAG AA compliance, ARIA labels, keyboard navigation
-- ✅ **File Upload** — OfferOperations with validation and storage
-- ✅ **Consistent Icons** — Standardized action icons (Eye, Edit, Trash2)
-
-### ⚙️ Functionality
-
-- ✅ **Full CRUD** — Offers, Articles, Orders, Clients, Master data (39 controllers)
-- ✅ **Production Portal** — Web frontend (Login, Dashboard, Order Detail) + REST API (9 endpoints)
-- ✅ **UUID-Based Models** — All models use UUIDs as primary identifiers
-- ✅ **Service Layer** — Business logic in Services (codes, calculations, numbers)
-- ✅ **Repository Pattern** — 7 repositories for data access abstraction
-- ✅ **Action Classes** — 7 actions for complex flows (Create/Update Article, Order, Offer)
-- ✅ **Form Requests** — 32 classes for validation
-- ✅ **Enums** — Type-safe (OrderStatus, OrderLabelStatus)
-- ✅ **Centralized Messages** — `lang/it/messages.php` for error and success messages
-
-### 🏗️ Code Quality
-
-- ✅ **Layered Architecture** — Controller → Service/Action → Repository → Model
-- ✅ **SOLID Principles** — Clean, maintainable, and extensible code
-- ✅ **TypeScript** — Full type safety across frontend
-- ✅ **ESLint** — Lint and fix on frontend and scripts
-- ✅ **English Documentation** — Code comments and docblocks in English
-- ✅ **Comprehensive Testing** — 990 tests, Unit/Feature/Performance
+**Security:** Form Requests, authorization, `.env` only as template, test DB (PostgreSQL, `RefreshDatabase`), soft deletes (`removed`), CSRF, API token auth.  
+**Performance:** Indexes, caching with invalidation, eager loading, repositories, React memoization, pagination, Performance test suite.  
+**UX:** Skeletons, dashboard charts (Recharts), debounced search, confirm dialogs, flash notifications, mobile-responsive, WCAG AA, file upload.  
+**Functionality:** Full CRUD (Offers, Articles, Orders, Clients, master data; 40 controllers), Production Portal (web + 9 API endpoints), UUID models, Services, 7 Repositories, 7 Actions, 32 Form Requests, Enums, `lang/it/messages.php`.  
+**Quality:** Layered architecture (Controller → Service/Action → Repository → Model), TypeScript, ESLint, 994 tests.
 
 ---
 
@@ -245,9 +195,10 @@ Everything is linked from **[docs/](docs/README.md)**:
 | [README_TEST_DATABASE.md](README_TEST_DATABASE.md) | Test database configuration (PostgreSQL) |
 | [README_SEED_TEST_DATA.md](README_SEED_TEST_DATA.md) | Demo/test data seeder for dashboard and flows |
 | [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md) | Project status and module overview |
-| [docs/TEST_COVERAGE_REPORT.md](docs/TEST_COVERAGE_REPORT.md) | Test suites and coverage summary |
+| [docs/TEST_COVERAGE.md](docs/TEST_COVERAGE.md) | Test suites and coverage |
 | [docs/BACKEND_GUIDE.md](docs/BACKEND_GUIDE.md) | Backend architecture & conventions (controllers, services, actions, repositories, models) |
 | [docs/FRONTEND_GUIDE.md](docs/FRONTEND_GUIDE.md) | Frontend architecture & conventions (Inertia + React) and consistency guide |
+| [docs/planning/api.md](docs/planning/api.md) | Planning API (endpoints) |
 | [SECURITY.md](SECURITY.md) | How to report security vulnerabilities |
 
 ---
@@ -282,13 +233,13 @@ php artisan test --testsuite=Performance
 
 ### Test coverage
 
-- ✅ **990 tests passing**
-- ✅ **6659+ assertions** across all test suites
+- ✅ **994 tests passing**
+- ✅ **6682+ assertions** across all test suites
 - ✅ **Feature tests** for all controllers
 - ✅ **Unit tests** for services and repositories
 - ✅ **Performance tests** (Concurrency, Load, API response time)
 
-See [docs/TEST_COVERAGE_REPORT.md](docs/TEST_COVERAGE_REPORT.md) for details.
+See [docs/TEST_COVERAGE.md](docs/TEST_COVERAGE.md) for details.
 
 ### Test database
 
@@ -345,7 +296,7 @@ Backend tree: `app/Http/Controllers/`, `app/Services/`, `app/Actions/`, `app/Rep
 | Performance | ✅ Optimized | 9/10 | Caching, indexes, Performance suite (Concurrency, Load, API) |
 | Code Quality | ✅ Excellent | 10/10 | Service/Repository/Action layers, ESLint, TypeScript, SOLID |
 | UX/UI | ✅ Excellent | 9/10 | Skeleton loaders, charts, mobile-responsive, WCAG AA |
-| Testing | ✅ Excellent | 10/10 | 967 tests, 6600+ assertions, Unit/Feature/Performance |
+| Testing | ✅ Excellent | 10/10 | 994 tests, 6682+ assertions, Unit/Feature/Performance |
 | Documentation | ✅ Complete | 10/10 | `docs/`, test report, DB and seed guides |
 
 ### Core modules (100% complete)
@@ -355,12 +306,12 @@ Backend tree: `app/Http/Controllers/`, `app/Services/`, `app/Actions/`, `app/Rep
 - ✅ **Offers, Articles, Orders** — Full CRUD with React/Inertia
 - ✅ **Production Portal** — Web (Login, Dashboard, Order Detail) + REST API (9 endpoints)
 - ✅ **Anagrafica** — Customers, Divisions, Shipping, Suppliers, Employees, Materials, Machinery, Critical Issues
-- ✅ **Ordini** — Orders, Order States, Order Employee Assignments
+- ✅ **Ordini** — Orders, Order States, Order Employee Assignments; **Production Planning** (API + UI: planning data, replan, calculations)
 - ✅ **Configuration** — OfferType, OfferSeasonality, OfferSector, ArticleCategory, PalletType, ValueTypes, etc.
 
-### Recent improvements (2026-01)
+### Recent improvements (February 2026)
 
-- Unified documentation under `docs/`; forms with initial data from query params; consistent UI patterns; DEMO-ALL seeder and verification test; production ready.
+- Production Planning module (Ordini): API and UI for planning data, replan, and calculations; full test coverage. Unified documentation under `docs/`; DEMO-ALL seeder and verification test; production ready.
 
 <a id="default-users-development"></a>
 ## 👥 Default Users (development)
@@ -507,6 +458,6 @@ This is an open-source project (MIT). For contributions or inquiries, please con
 
 ---
 
-**Last Updated:** February 2026  
+**Last Updated:** 13 February 2026  
 **Status:** Production Ready ✅  
 **Stack versions:** [docs/VERSION_STACK.md](docs/VERSION_STACK.md)

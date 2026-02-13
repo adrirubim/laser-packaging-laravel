@@ -23,9 +23,9 @@ The seeder creates (approximate numbers, tuned for realistic coverage):
    - Todas las fechas válidas (end_date > start_date)
 7. **Materials and Machinery** – 6 materials, 6 machines, 4 pallet types
 8. **Article Categories** – 6 categories
-9. **Instructions and models** – 11 IC, 11 IO, 11 IP, 6 ModelSCQ, 6 CriticalIssue, 6 PalletSheet (todos con ficheros placeholder en storage para descargas)
-10. **Offers** – actividades, sectores, estacionalidad, tipos de oferta/orden, familias LAS, operaciones; 2–4 ofertas por cliente con operaciones (OfferOperationList) → 22 ofertas en total + 1 oferta DEMO-ALL `2026_999_01_A`
-11. **Articles** – 3–6 artículos por oferta + **1 demo article**
+9. **Instructions and models** – 11 IC, 11 IO, 11 IP, 6 ModelSCQ, 6 CriticalIssue, 6 PalletSheet (all with placeholder files in storage for downloads)
+10. **Offers** – activities, sectors, seasonality, offer/order types, LAS families, operations; 2–4 offers per customer with operations (OfferOperationList) → 22 offers total + 1 DEMO-ALL offer `2026_999_01_A`
+11. **Articles** – 3–6 articles per offer + **1 demo article**
     - **All** articles have at least 1 Istruzione di Confezionamento (IC), 1 di Pallettizzazione (IP) and 1 Operativa (IO), so that in “Visualizza” the three cards with ⋯ (Scarica file) appear.
     - **Demo article** to verify **all inputs**: code **`LAS-DEMO-ALL`** (tutti i campi compilati). It has **all fields** filled (informazioni base, offerta, categoria, pallet, piano imballaggio, piani pallet, line_layout, materiali, macchinari, criticità, istruzioni IC/IP/IO, etichette, peso e controllo, approvazioni, media produttività, Verifica Consumi Materiali). In Articoli → search for **"LAS-DEMO-ALL"** → Visualizza / Modifica / Duplica to verify each input.
     - Relations: materials (1–3), machinery (1–2 with `value` on pivot), criticalIssues (0–2), IC/IO/IP instructions (1–3 per type), pivot offerarticles, Verifica Consumi Materiali (~40% of articles)
@@ -42,21 +42,22 @@ The seeder creates (approximate numbers, tuned for realistic coverage):
 14. **Order–Employee assignments (OfferOrderEmployee)** – 1–3 employees per order
 15. **Order Processings (ProductionOrderProcessing)** – 2–5 processings per order in Lanciato / In Avanzamento
 
-16. **Historical + daily completed orders for dashboard trends**:
+16. **Production Planning** – `productionplanning` and `productionplanning_summary` rows for orders in planning status; one empty work line **LWL-VUOTA** for UI testing.
+17. **Historical + daily completed orders for dashboard trends**:
     - **~50 historical completed orders** spread over the **last 12 months** (Evaso/Saldato) to feed long‑term trends and previous‑period comparisons.
-    - **365 daily completed orders** (1 per day) for the **last 365 days**, all completadas, para garantizar que los filtros de fecha del dashboard (`Oggi`, `Questa settimana`, `Questo mese`, periodos largos) siempre encuentran datos.
+    - **365 daily completed orders** (1 per day) for the **last 365 days**, all completed, so that dashboard date filters (`Oggi`, `Questa settimana`, `Questo mese`, long periods) always find data.
 
-**Total:** decenas de órdenes en los 7 estados operativos + varios cientos de órdenes completadas históricas.  
+**Total:** dozens of orders in the 7 operational statuses + several hundred historical completed orders.  
 **Downloads:** placeholder files are created in storage for instructions (packaging/operational/palletization), ModelSCQ, PalletSheet, article line_layout and offer operations (`offer-operations/`).
 
-### Registros "Demo All" (tutti i campi compilati)
+### "Demo All" records (all fields filled)
 
-En cada sección principal hay **un registro DEMO-ALL** con **todos los campos y relaciones rellenados** (nada opcional en blanco), para:
+Each main section has **one DEMO-ALL record** with **all fields and relations filled** (no optional left blank), for:
 
-1. **Show/Edit:** Verificar que cada input se muestra y guarda correctamente. Si un campo aparece vacío en el registro demo, ese es el que falla o no se está pasando.
-2. **Create/Duplicate:** Donde aplique (p. ej. Duplica articolo, Nuova offerta da cliente), el registro demo sirve de fuente con todos los campos; al duplicar o crear desde contexto, los campos que no lleguen al formulario son los que hay que revisar.
+1. **Show/Edit:** Verify each input displays and saves correctly. If a field is empty on the demo record, that is the one failing or not being passed.
+2. **Create/Duplicate:** Where applicable (e.g. Duplica articolo, Nuova offerta da cliente), the demo record is the source with all fields; when duplicating or creating from context, any field that does not reach the form should be reviewed.
 
-| Sección | Código / Criterio | Dónde buscar |
+| Section | Code / criterion | Where to find |
 |--------|--------------------|--------------|
 | **Clienti** | `CLI-DEMO-ALL` | Clienti → buscar "CLI-DEMO-ALL" o "Demo All" |
 | **Divisioni** | 2 divisioni del cliente DEMO-ALL | Dentro del cliente CLI-DEMO-ALL |
@@ -88,9 +89,9 @@ En cada sección principal hay **un registro DEMO-ALL** con **todos los campos y
 | **Fogli pallet** (Articoli > Fogli pallet) | `PAL-SHEET-DEMO` / "Demo All - Foglio pallet" | Articoli > Fogli pallet → **Cerca** "Demo" |
 | **Ordini** | 1 ordine Pianificato con articolo LAS-DEMO-ALL | Ordini → **Cerca** "Demo" o "REF-DEMO-ALL" o "LAS-DEMO" (no filtro Stato) |
 
-**Resumen:** Ogni sezione e sotto-sezione ha almeno un registro **Demo All** trovabile con **Cerca** "Demo" / "Demo All" e con **tutti i campi rellenados** (nessun opzionale vuoto), così in Show/Edit/Create/Duplicate: **se un campo è vuoto, è quello che fallisce**. Cliente DEMO-ALL → Offerta DEMO-ALL → Artículo LAS-DEMO-ALL (con single-FK e relazioni: IC, IO, IP, Modelli CQ, Fogli pallet, Materiali, Macchinari, Criticità, approvazioni con dipendente demo) → Ordine demo (lot, motivazione, etichette, indicazioni compilati). Indirizzi demo: co, via, città, CAP, contatti sempre compilati.
+**Summary:** Each section and sub-section has at least one **Demo All** record findable with **Cerca** "Demo" / "Demo All" and **all fields filled** (no optional empty); in Show/Edit/Create/Duplicate, **if a field is empty, that is the one failing**. Cliente DEMO-ALL → Offerta DEMO-ALL → Artículo LAS-DEMO-ALL (con single-FK e relazioni: IC, IO, IP, Modelli CQ, Fogli pallet, Materiali, Macchinari, Criticità, approvazioni con dipendente demo) → Ordine demo (lot, motivazione, etichette, indicazioni compilati). Indirizzi demo: co, via, città, CAP, contatti sempre compilati.
 
-### Secciones sin registro "Demo All"
+### Sections without a "Demo All" record
 
 
 | Sección | Nota |
@@ -128,41 +129,41 @@ El test crea datos mínimos con los mismos códigos DEMO-ALL (CLI-DEMO-ALL, FORN
 
 ## 🚀 Cómo Ejecutar el Seeder
 
-### Opción 1: Ejecutar directamente el seeder
+### Option 1: Run the seeder directly
 
 ```bash
 cd laser-packaging-laravel
 php artisan db:seed --class=TestDataSeeder
 ```
 
-### Opción 2: Ejecutar todos los seeders (incluye usuario de prueba)
+### Option 2: Run all seeders (includes test user)
 
 ```bash
 cd laser-packaging-laravel
 php artisan db:seed
 ```
 
-**Nota:** El `DatabaseSeeder` principal solo crea el usuario de prueba. Para crear los datos de prueba completos, ejecuta el `TestDataSeeder` directamente.
+**Note:** The main `DatabaseSeeder` only creates the test user. To create full demo data, run `TestDataSeeder` directly.
 
-## ✅ Verificación
+## Verification
 
-Después de ejecutar el seeder, puedes verificar los datos:
+After running the seeder, you can verify the data:
 
-### Verificar órdenes por status
+### Verify orders by status
 
 ```bash
 php artisan tinker
 ```
 
-Luego ejecuta:
+Then run:
 
 ```php
 use App\Models\Order;
 
-// Total de órdenes
+// Total orders
 Order::where('removed', false)->count();
 
-// Por status (7 estados)
+// By status (7 states)
 Order::where('removed', false)->where('status', 0)->count(); // Pianificato
 Order::where('removed', false)->where('status', 1)->count(); // In Allestimento
 Order::where('removed', false)->where('status', 2)->count(); // Lanciate
@@ -172,17 +173,17 @@ Order::where('removed', false)->where('status', 5)->count(); // Evaso
 Order::where('removed', false)->where('status', 6)->count(); // Saldato
 ```
 
-### Check in the Dashboard
+### Check in the dashboard
 
 1. Open the dashboard: `http://localhost:8000/dashboard`
 2. Verify that the "Stato degli Ordini" cards show non‑zero numbers for each state
 3. Use the **date filter** (`Tutto il tempo`, `Oggi`, `Questa settimana`, `Questo mese`, `Personalizzato`) and check that:
-   - KPIs, gráficos y listas cambian coherentemente con el rango de fechas.
-   - Siempre hay datos en `Oggi` / `Questa settimana` gracias a las órdenes demo específicas.
-   - Las tendencias muestran un histórico continuo de los últimos 12 meses.
-4. Use the **customer filter** (`Tutti i clienti` / cliente específico) y verifica que:
-   - Todas las cards y gráficos se recalculan sólo con los datos de ese cliente.
-5. Usa el **filtro de estado** para comprobar que la distribución por estados y las listas responden correctamente.
+   - KPIs, charts and lists change consistently with the date range
+   - There is always data in `Oggi` / `Questa settimana` thanks to the specific demo orders
+   - Trends show a continuous history for the last 12 months
+4. Use the **customer filter** (`Tutti i clienti` / specific customer) and verify that:
+   - All cards and charts are recalculated only with that customer's data
+5. Use the **status filter** to check that status distribution and lists respond correctly
 
 ## 🔄 Re-running the Seeder
 
@@ -248,4 +249,4 @@ The seeder now covers **100% of the main system features**, including:
 
 ---
 
-**Last updated:** 2026-02-11
+**Last updated:** 13 February 2026

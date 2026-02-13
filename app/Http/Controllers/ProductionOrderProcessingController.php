@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProductionOrderProcessing;
+use App\Services\Planning\PlanningReplanService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -204,6 +205,11 @@ class ProductionOrderProcessingController extends Controller
         if ($order) {
             $totalProcessed = ProductionOrderProcessing::loadProcessedQuantity($validated['order_uuid']);
             $order->update(['worked_quantity' => $totalProcessed]);
+
+            // Adegua automaticamente il planning futuro in base alla quantità lavorata
+            /** @var PlanningReplanService $replanService */
+            $replanService = app(PlanningReplanService::class);
+            $replanService->adjustForWorkedQuantity($order->uuid);
         }
 
         return redirect()->route('production-order-processing.index')

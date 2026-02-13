@@ -39,6 +39,7 @@ class EmployeeContract extends Model
         'employee_uuid',
         'supplier_uuid',
         'pay_level',
+        'qualifica',
         'start_date',
         'end_date',
         'removed',
@@ -48,6 +49,7 @@ class EmployeeContract extends Model
         'start_date' => 'date',
         'end_date' => 'date',
         'pay_level' => 'integer',
+        'qualifica' => 'integer',
         'removed' => 'boolean',
     ];
 
@@ -55,21 +57,13 @@ class EmployeeContract extends Model
      * Pay level constants (parità con legacy 0–8).
      */
     const PAY_LEVEL_0 = 0;  // D1 (ex 2a)
-
     const PAY_LEVEL_1 = 1;  // D2 (ex 3a)
-
     const PAY_LEVEL_2 = 2;  // C1 (ex 3a Super)
-
     const PAY_LEVEL_3 = 3;  // C2 (ex 4a)
-
     const PAY_LEVEL_4 = 4;  // C3 (ex 5a)
-
     const PAY_LEVEL_5 = 5;  // B1 (ex 5a Super)
-
     const PAY_LEVEL_6 = 6;  // B2 (ex 6a)
-
     const PAY_LEVEL_7 = 7;  // B3 (ex 7a)
-
     const PAY_LEVEL_8 = 8;  // A1 (ex 8a Quadri)
 
     /**

@@ -1,6 +1,6 @@
 # Test Database Configuration
 
-**Last updated:** 2026-01-28
+**Last updated:** 13 February 2026
 
 Tests run against **PostgreSQL** to match the production environment. The connection is configured in `phpunit.xml`.
 

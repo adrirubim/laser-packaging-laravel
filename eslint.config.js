@@ -30,7 +30,14 @@ export default [
         },
     },
     {
-        ignores: ['vendor', 'node_modules', 'public', 'bootstrap/ssr', 'tailwind.config.js'],
+        ignores: [
+            'vendor',
+            'node_modules',
+            'public',
+            'storage',
+            'bootstrap/ssr',
+            'tailwind.config.js',
+        ],
     },
     // Scripts Node (.cjs): globals node y permitir require
     {

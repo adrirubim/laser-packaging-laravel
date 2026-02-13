@@ -1,13 +1,8 @@
-### Backend architecture & conventions
+# Backend guide
 
-**Stack (exact versions):** see `docs/VERSION_STACK.md`.  
-Core pieces: Laravel 12.48.x, PHP 8.4.x, PostgreSQL, Inertia.js 2.3.x, PHPUnit 12.
+**Stack:** [VERSION_STACK.md](VERSION_STACK.md). Laravel 12.48.x, PHP 8.4.x, PostgreSQL, Inertia.js 2.3.x, PHPUnit 12.
 
-This guide describes how backend code is structured and how to extend it consistently.
-
----
-
-## 1. High-level architecture
+## 1. Architecture
 
 The backend follows a layered approach:
 
@@ -50,8 +45,6 @@ Request → Controller → Service / Action → Repository → Model
   - Inertia pages for backoffice (`Inertia::render()` with React pages under `resources/js/pages`).  
   - JSON for API endpoints (especially Production Portal).
 
----
-
 ## 3. Services & Actions
 
 ### Services
@@ -73,8 +66,6 @@ Request → Controller → Service / Action → Repository → Model
   - Emit events / clear caches when needed.
 - Actions have **Unit tests** (see `tests/Unit/Actions/*`) and are also exercised by Feature tests.
 
----
-
 ## 4. Repositories
 
 - Each repository encapsulates queries for a given aggregate:
@@ -88,8 +79,6 @@ Request → Controller → Service / Action → Repository → Model
 When adding new complex queries:
 - Prefer **adding a method in an existing repository** over inline queries in controllers.  
 - Make sure to cover it with a repository Unit test.
-
----
 
 ## 5. Models & validation
 
@@ -112,17 +101,13 @@ There are dedicated Unit tests for key models (e.g. `OrderModelTest`, `Machinery
   - `InputError` (per‑field).  
   - `FormValidationNotification` (summary at top of long forms).
 
----
-
-## 6. Caching, events & dashboard
+## 6. Caching & dashboard
 
 - Use **caching** for heavy dashboard queries and frequently accessed aggregates (see `DashboardRepository` and related services).
 - Ensure caches are **invalidated** when:
   - Orders, offers or articles are created/updated/deleted.  
   - Critical reference data changes.
 - There are Unit tests verifying cache behaviour and dashboard data.
-
----
 
 ## 7. Production Portal API
 
@@ -137,9 +122,7 @@ When adding new API endpoints:
 - Keep auth/token handling consistent.  
 - Add Feature tests and, if performance‑sensitive, extend `tests/Performance/ApiResponseTimeTest.php`.
 
----
-
-## 8. Adding a new backend feature (checklist)
+## 8. Adding a feature (checklist)
 
 When you add a new backend module or extend an existing one:
 
@@ -160,7 +143,7 @@ When you add a new backend module or extend an existing one:
 6. **Tests**  
    - Add Unit tests for services/actions/repositories.  
    - Add Feature tests for controllers/API endpoints.  
-   - Update `docs/TEST_COVERAGE_REPORT.md` if you introduce new critical components.
+   - Update `docs/TEST_COVERAGE.md` if you introduce new critical components.
 
-This keeps the backend aligned with the existing architecture, predictable for new contributors, and fully covered by tests.
+Update [TEST_COVERAGE.md](TEST_COVERAGE.md) when adding critical components.
 

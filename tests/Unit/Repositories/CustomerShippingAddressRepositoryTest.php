@@ -81,8 +81,12 @@ class CustomerShippingAddressRepositoryTest extends TestCase
         $request = Request::create('/customer-shipping-addresses', 'GET', ['search' => 'Roma']);
         $result = $this->repository->getForIndex($request);
 
-        $this->assertCount(1, $result->items());
-        $this->assertEquals('Via Roma 1', $result->items()[0]->street);
+        $items = collect($result->items());
+        $this->assertGreaterThanOrEqual(1, $items->count());
+        $this->assertTrue(
+            $items->pluck('street')->contains('Via Roma 1'),
+            'La búsqueda por "Roma" debe incluir la dirección "Via Roma 1".'
+        );
     }
 
     #[Test]

@@ -94,6 +94,10 @@ class Order extends Model
         'quantity',
         'worked_quantity',
         'delivery_requested_date',
+        'shift_mode',
+        'shift_morning',
+        'shift_afternoon',
+        'work_saturday',
         'customershippingaddress_uuid',
         'expected_production_start_date',
         'type_lot',
@@ -120,6 +124,10 @@ class Order extends Model
         'delivery_requested_date' => 'datetime',
         'expected_production_start_date' => 'datetime',
         'expiration_date' => 'datetime',
+        'shift_mode' => 'integer',
+        'shift_morning' => 'boolean',
+        'shift_afternoon' => 'boolean',
+        'work_saturday' => 'boolean',
         'status_semaforo' => 'array',
         'autocontrollo' => 'boolean',
         'removed' => 'boolean',
@@ -197,6 +205,14 @@ class Order extends Model
     public function processings()
     {
         return $this->hasMany(ProductionOrderProcessing::class, 'order_uuid', 'uuid');
+    }
+
+    /**
+     * Get planning rows for this order.
+     */
+    public function productionPlannings()
+    {
+        return $this->hasMany(ProductionPlanning::class, 'order_uuid', 'uuid');
     }
 
     /**

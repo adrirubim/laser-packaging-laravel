@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Planning\PlanningController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -300,6 +301,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'update' => 'value-types.update',
         'destroy' => 'value-types.destroy',
     ]);
+
+    // Pianificazione produzione (UI Inertia)
+    Route::get('planning', [PlanningController::class, 'index'])->name('planning.index');
 });
 
 // Production Portal Web Frontend (public routes, uses session tokens)

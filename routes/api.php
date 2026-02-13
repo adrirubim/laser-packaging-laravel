@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\ProductionPortalController;
+use App\Http\Controllers\Planning\PlanningController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -44,6 +45,15 @@ Route::prefix('production')->group(function () {
 
     Route::post('/get-info', [ProductionPortalController::class, 'getInfo'])
         ->name('api.production.get-info');
+});
+
+// Pianificazione produzione (API compatibile con legacy)
+Route::prefix('planning')->group(function () {
+    Route::post('/data', [PlanningController::class, 'data'])->name('api.planning.data');
+    Route::post('/save', [PlanningController::class, 'save'])->name('api.planning.save');
+    Route::post('/summary/save', [PlanningController::class, 'saveSummary'])->name('api.planning.summary.save');
+    Route::post('/calculate-hours', [PlanningController::class, 'calculateHours'])->name('api.planning.calculate-hours');
+    Route::post('/check-today', [PlanningController::class, 'checkToday'])->name('api.planning.check-today');
 });
 
 // Ruta para imprimir foglio pallet (si se implementa)

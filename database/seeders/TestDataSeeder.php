@@ -35,12 +35,15 @@ use App\Models\Order;
 use App\Models\PalletSheet;
 use App\Models\PalletType;
 use App\Models\ProductionOrderProcessing;
+use App\Models\ProductionPlanning;
+use App\Models\ProductionPlanningSummary;
 use App\Models\Supplier;
 use App\Models\ValueTypes;
 use App\Services\OrderProductionNumberService;
 use Faker\Factory as Faker;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Seeder de datos de prueba para probar todas las funciones de la aplicación.
@@ -82,6 +85,12 @@ class TestDataSeeder extends Seeder
         // Eliminar en orden de dependencias: tablas hijas/pivot antes que padres
         // Usamos DB::table() con truncate para limpiar completamente y evitar los scopes de SoftDeletes
         DB::table('productionorderprocessing')->truncate();
+        if (Schema::hasTable('productionplanning')) {
+            DB::table('productionplanning')->truncate();
+        }
+        if (Schema::hasTable('productionplanning_summary')) {
+            DB::table('productionplanning_summary')->truncate();
+        }
         DB::table('offerorderemployee')->truncate();
         DB::table('orderorder')->truncate();
         DB::table('articlecheckmaterial')->truncate();
@@ -2250,6 +2259,103 @@ class TestDataSeeder extends Seeder
         }
         $this->command->info("   ✅ {$orderEmployeeAssignments->count()} asignaciones de empleados a órdenes creadas");
 
+        // 14. Crear Planning de Producción (productionplanning y productionplanning_summary)
+        if (Schema::hasTable('productionplanning') && Schema::hasTable('productionplanning_summary')) {
+            $this->command->info('📅 Creando planning de producción y riepilogo personale...');
+
+            // Una linea attiva senza ordini per testare UI "Nessun ordine pianificabile per questa linea"
+            OfferLasWorkLine::factory()->create([
+                'code' => 'LWL-VUOTA',
+                'name' => 'Linea vuota (test planning)',
+                'removed' => false,
+            ]);
+
+            // Órdenes candidatas al planning: estados 0–4 (no completadas)
+            $allOrdersForPlanning = $ordersPianificato
+                ->merge($ordersInAllestimento)
+                ->merge($ordersLanciate)
+                ->merge($ordersInAvanzamento)
+                ->merge($ordersSospese);
+
+            // Recargar desde Eloquent con las relaciones necesarias para evitar N+1
+            $planningOrders = Order::query()
+                ->with(['article.offer.lasWorkLine'])
+                ->whereIn('uuid', $allOrdersForPlanning->pluck('uuid'))
+                ->get()
+                ->filter(
+                    fn ($order) => $order->article
+                        && $order->article->offer
+                        && $order->article->offer->lasWorkLine
+                );
+
+            $planningCount = 0;
+            $today = now()->toDateString();
+            $yesterday = now()->subDay()->toDateString();
+            $tomorrow = now()->addDay()->toDateString();
+            $planningDates = [$yesterday, $today, $tomorrow];
+
+            // Horas laborables 07–12 y 13–18; cada hora 4 quarti (00, 15, 30, 45)
+            $buildHoursForRange = function (int $startHour, int $endHourExcl, int $workers = 1): array {
+                $hours = [];
+                for ($h = $startHour; $h < $endHourExcl; $h++) {
+                    foreach ([0, 15, 30, 45] as $m) {
+                        $key = sprintf('%d%02d', $h, $m);
+                        $hours[$key] = $workers;
+                    }
+                }
+                return $hours;
+            };
+
+            $firstOrderDone = false;
+            foreach ($planningOrders as $order) {
+                $lineUuid = $order->article->offer->lasWorkLine->uuid;
+                foreach ($planningDates as $idx => $dateStr) {
+                    $hours = $buildHoursForRange(8, 12, rand(1, 2));
+                    $afternoon = $buildHoursForRange(13, 17, rand(1, 2));
+                    foreach ($afternoon as $k => $v) {
+                        $hours[$k] = $v;
+                    }
+                    // Per la prima ordin e solo oggi: ora 9 con valori misti (1 e 2) per testare UI "mixed" (*)
+                    if (! $firstOrderDone && $dateStr === $today) {
+                        $hours['900'] = 2;
+                        $hours['915'] = 1;
+                        $hours['930'] = 1;
+                        $hours['945'] = 2;
+                        $firstOrderDone = true;
+                    }
+                    ProductionPlanning::create([
+                        'order_uuid' => $order->uuid,
+                        'lasworkline_uuid' => $lineUuid,
+                        'date' => $dateStr,
+                        'hours' => $hours,
+                    ]);
+                    $planningCount++;
+                }
+            }
+
+            // Tutti e 5 i tipi usati dalla UI "Riepilogo personale (oggi)"
+            $summaryTypes = ['assenze', 'caporeparto', 'magazzinieri', 'da_impiegare', 'disponibili'];
+            $summaryCount = 0;
+            foreach ($planningDates as $dateStr) {
+                foreach ($summaryTypes as $summaryType) {
+                    $baseVal = $summaryType === 'disponibili' ? rand(2, 5) : rand(0, 2);
+                    if ($dateStr === $today && $baseVal === 0 && $summaryType !== 'disponibili') {
+                        $baseVal = 1;
+                    }
+                    $hours = $buildHoursForRange(7, 18, $baseVal);
+                    ProductionPlanningSummary::create([
+                        'date' => $dateStr,
+                        'summary_type' => $summaryType,
+                        'hours' => $hours,
+                        'removed' => false,
+                    ]);
+                    $summaryCount++;
+                }
+            }
+
+            $this->command->info("   ✅ {$planningCount} registri planning (ordini × date) e {$summaryCount} registri summary creati");
+        }
+
         // Resumen final
         $totalOrders = $ordersPianificato->count() + $ordersInAllestimento->count() +
                       $ordersLanciate->count() + $ordersInAvanzamento->count() +
@@ -2299,6 +2405,9 @@ class TestDataSeeder extends Seeder
         $this->command->info("   - Procesamientos de órdenes: {$processings->count()}");
         $this->command->info("   - Estados de órdenes: {$orderStates->count()}");
         $this->command->info("   - Asignaciones empleados-órdenes: {$orderEmployeeAssignments->count()}");
+        if (Schema::hasTable('productionplanning')) {
+            $this->command->info('   - Planning produzione (productionplanning + productionplanning_summary): dati iniettati per /planning');
+        }
         $this->command->info('');
         $this->command->info('🎯 Ahora puedes verificar el dashboard con datos reales!');
     }

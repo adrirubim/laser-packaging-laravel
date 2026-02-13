@@ -218,6 +218,11 @@ const mainNavGroups: NavGroup[] = [
                 href: '/production-order-processing',
                 icon: TrendingUp,
             },
+            {
+                title: 'Pianificazione Produzione',
+                href: '/planning',
+                icon: Calendar,
+            },
         ],
     },
     {

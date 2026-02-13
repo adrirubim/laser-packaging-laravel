@@ -337,12 +337,14 @@ class CustomerShippingAddressControllerTest extends TestCase
         $address1 = CustomerShippingAddress::factory()->create([
             'customerdivision_uuid' => $this->division->uuid,
             'street' => 'Via Roma 1',
+            'city' => 'Roma',
             'removed' => false,
         ]);
 
         $address2 = CustomerShippingAddress::factory()->create([
             'customerdivision_uuid' => $this->division->uuid,
             'street' => 'Via Milano 2',
+            'city' => 'Milano',
             'removed' => false,
         ]);
 

@@ -1,3 +1,4 @@
+import type { PageProps as InertiaPageProps } from '@inertiajs/core';
 import { InertiaLinkProps } from '@inertiajs/react';
 import { LucideIcon } from 'lucide-react';
 
@@ -41,3 +42,7 @@ export interface User {
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
 }
+
+export type PageProps<
+    T extends Record<string, unknown> = Record<string, unknown>,
+> = InertiaPageProps<SharedData & T>;
