@@ -5,7 +5,6 @@
 /public/build
 /public/hot
 /public/storage
-/resources/js/actions
 /storage/*.key
 /storage/pail
 /vendor
