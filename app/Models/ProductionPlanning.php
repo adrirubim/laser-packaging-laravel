@@ -38,4 +38,3 @@ class ProductionPlanning extends Model
         return $this->belongsTo(OfferLasWorkLine::class, 'lasworkline_uuid', 'uuid');
     }
 }
-

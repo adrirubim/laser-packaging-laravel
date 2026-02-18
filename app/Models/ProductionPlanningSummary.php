@@ -29,4 +29,3 @@ class ProductionPlanningSummary extends Model
         'removed' => 'boolean',
     ];
 }
-

@@ -40,6 +40,7 @@ use App\Models\ProductionPlanningSummary;
 use App\Models\Supplier;
 use App\Models\ValueTypes;
 use App\Services\OrderProductionNumberService;
+use App\Services\Planning\OrderShiftHours;
 use Faker\Factory as Faker;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -2288,13 +2289,39 @@ class TestDataSeeder extends Seeder
                         && $order->article->offer->lasWorkLine
                 );
 
+            // Asignar turnos variados (réplica legacy): ~55% Giornata (8-16), ~15% solo mattina (6-14), ~20% solo pomeriggio (14-22), ~10% entrambi (6-22)
+            $planningOrdersArray = $planningOrders->values()->all();
+            $n = count($planningOrdersArray);
+            foreach ($planningOrdersArray as $idx => $order) {
+                $ratio = $n > 0 ? $idx / $n : 0;
+                if ($ratio < 0.55) {
+                    $shift = ['shift_mode' => 0, 'shift_morning' => false, 'shift_afternoon' => false];
+                } elseif ($ratio < 0.70) {
+                    $shift = ['shift_mode' => 1, 'shift_morning' => true, 'shift_afternoon' => false];
+                } elseif ($ratio < 0.90) {
+                    $shift = ['shift_mode' => 1, 'shift_morning' => false, 'shift_afternoon' => true];
+                } else {
+                    $shift = ['shift_mode' => 1, 'shift_morning' => true, 'shift_afternoon' => true];
+                }
+                $order->update($shift);
+            }
+            $planningOrders = Order::query()
+                ->with(['article.offer.lasWorkLine'])
+                ->whereIn('uuid', $planningOrders->pluck('uuid'))
+                ->get()
+                ->filter(
+                    fn ($order) => $order->article
+                        && $order->article->offer
+                        && $order->article->offer->lasWorkLine
+                );
+
             $planningCount = 0;
             $today = now()->toDateString();
             $yesterday = now()->subDay()->toDateString();
             $tomorrow = now()->addDay()->toDateString();
             $planningDates = [$yesterday, $today, $tomorrow];
 
-            // Horas laborables 07–12 y 13–18; cada hora 4 quarti (00, 15, 30, 45)
+            // Costruisce ore per fascia (quarti 00, 15, 30, 45) – solo nel range abilitato per l'ordine (OrderShiftHours)
             $buildHoursForRange = function (int $startHour, int $endHourExcl, int $workers = 1): array {
                 $hours = [];
                 for ($h = $startHour; $h < $endHourExcl; $h++) {
@@ -2303,20 +2330,25 @@ class TestDataSeeder extends Seeder
                         $hours[$key] = $workers;
                     }
                 }
+
                 return $hours;
             };
 
             $firstOrderDone = false;
             foreach ($planningOrders as $order) {
                 $lineUuid = $order->article->offer->lasWorkLine->uuid;
+                $orderData = [
+                    'shift_mode' => (int) $order->shift_mode,
+                    'shift_morning' => (bool) $order->shift_morning,
+                    'shift_afternoon' => (bool) $order->shift_afternoon,
+                ];
+                $range = OrderShiftHours::forOrder($orderData);
+                $startH = $range['startHour'];
+                $endH = $range['endHour'];
+
                 foreach ($planningDates as $idx => $dateStr) {
-                    $hours = $buildHoursForRange(8, 12, rand(1, 2));
-                    $afternoon = $buildHoursForRange(13, 17, rand(1, 2));
-                    foreach ($afternoon as $k => $v) {
-                        $hours[$k] = $v;
-                    }
-                    // Per la prima ordin e solo oggi: ora 9 con valori misti (1 e 2) per testare UI "mixed" (*)
-                    if (! $firstOrderDone && $dateStr === $today) {
+                    $hours = $buildHoursForRange($startH, $endH, rand(1, 3));
+                    if (! $firstOrderDone && $dateStr === $today && $startH <= 9 && $endH > 10) {
                         $hours['900'] = 2;
                         $hours['915'] = 1;
                         $hours['930'] = 1;
@@ -2342,7 +2374,8 @@ class TestDataSeeder extends Seeder
                     if ($dateStr === $today && $baseVal === 0 && $summaryType !== 'disponibili') {
                         $baseVal = 1;
                     }
-                    $hours = $buildHoursForRange(7, 18, $baseVal);
+                    // Riepilogo su tutto il range orario 06–22 per allinearsi alla griglia frontend
+                    $hours = $buildHoursForRange(6, 22, $baseVal);
                     ProductionPlanningSummary::create([
                         'date' => $dateStr,
                         'summary_type' => $summaryType,

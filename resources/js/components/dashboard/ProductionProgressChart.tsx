@@ -293,7 +293,7 @@ export function ProductionProgressChart({
                     layout="vertical"
                     // Dejamos poco margen izquierdo para que en móvil
                     // las barras no “nazcan” demasiado hacia el centro.
-                    margin={{ top: 5, right: 30, left: 8, bottom: 5 }}
+                    margin={{ top: 5, right: 30, left: 2, bottom: 5 }}
                 >
                     <CartesianGrid
                         strokeDasharray="3 3"
@@ -311,10 +311,7 @@ export function ProductionProgressChart({
                         dataKey="name"
                         stroke="currentColor"
                         style={{ fontSize: '12px', fontWeight: 500 }}
-                        // Reducimos el ancho reservado para las labels
-                        // para que el área de barras aproveche mejor
-                        // el ancho disponible en móvil.
-                        width={72}
+                        width={88}
                         tick={{ fill: 'currentColor' }}
                     />
                     <RechartsTooltip

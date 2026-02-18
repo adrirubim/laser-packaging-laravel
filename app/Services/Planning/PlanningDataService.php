@@ -12,6 +12,25 @@ use Carbon\Carbon;
 class PlanningDataService
 {
     /**
+     * Codifica 'hours' a JSON de forma segura (array o string ya codificado).
+     */
+    private function encodeHours(mixed $hours): string
+    {
+        if (is_array($hours)) {
+            try {
+                return json_encode($hours, JSON_THROW_ON_ERROR);
+            } catch (\JsonException) {
+                return '[]';
+            }
+        }
+        if (is_string($hours) && $hours !== '') {
+            return $hours;
+        }
+
+        return '[]';
+    }
+
+    /**
      * Carga líneas LAS, órdenes, planning, contratos y summary
      * en el rango indicado y devuelve un array listo para serializar a JSON.
      */
@@ -25,14 +44,15 @@ class PlanningDataService
             ->orderBy('code')
             ->get();
 
-        // Eager load órdenes y artículos para minimizar N+1 (mirror legacy: status NOT IN 4,5,6)
+        // Eager load órdenes y artículos para minimizar N+1 (mirror legacy: status NOT IN 4,5,6, ORDER BY delivery_requested_date)
         $ordersByLine = Order::query()
             ->active()
             ->whereNotIn('status', [4, 5, 6])
             ->with(['article.offer.lasWorkLine'])
             ->whereHas('article.offer.lasWorkLine', function ($q) use ($lines) {
-                $q->whereIn('offerlasworkline.uuid', $lines->pluck('uuid'));
+                $q->whereIn('uuid', $lines->pluck('uuid')->all());
             })
+            ->orderBy('delivery_requested_date')
             ->get()
             ->groupBy(fn (Order $order) => optional($order->article?->offer?->lasWorkLine)->uuid);
 
@@ -69,13 +89,21 @@ class PlanningDataService
             ->whereIn('lasworkline_uuid', $lines->pluck('uuid'))
             ->get()
             ->map(function (ProductionPlanning $row) {
+                $hours = $row->getRawOriginal('hours') ?? $row->hours;
+                if (is_string($hours)) {
+                    $decoded = json_decode($hours, true);
+                    $hours = is_array($decoded) ? $decoded : [];
+                }
+                if (! is_array($hours)) {
+                    $hours = [];
+                }
+
                 return [
                     'id' => $row->id,
                     'order_uuid' => $row->order_uuid,
                     'lasworkline_uuid' => $row->lasworkline_uuid,
                     'date' => $row->date?->format('Y-m-d H:i:s'),
-                    // El legacy serializa como JSON string; mantenemos compatibilidad
-                    'hours' => json_encode($row->hours ?? [], JSON_THROW_ON_ERROR),
+                    'hours' => $this->encodeHours($hours),
                 ];
             })
             ->values()
@@ -108,11 +136,20 @@ class PlanningDataService
             ->whereBetween('date', [$start->toDateString(), $end->toDateString()])
             ->get()
             ->map(function (ProductionPlanningSummary $row) {
+                $hours = $row->getRawOriginal('hours') ?? $row->hours;
+                if (is_string($hours)) {
+                    $decoded = json_decode($hours, true);
+                    $hours = is_array($decoded) ? $decoded : [];
+                }
+                if (! is_array($hours)) {
+                    $hours = [];
+                }
+
                 return [
                     'id' => $row->id,
                     'date' => $row->date?->format('Y-m-d'),
                     'summary_type' => $row->summary_type,
-                    'hours' => json_encode($row->hours ?? [], JSON_THROW_ON_ERROR),
+                    'hours' => $this->encodeHours($hours),
                 ];
             })
             ->values()
@@ -126,4 +163,3 @@ class PlanningDataService
         ];
     }
 }
-

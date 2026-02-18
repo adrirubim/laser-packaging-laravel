@@ -15,6 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // statefulApi() requires laravel/sanctum; omit if not using Sanctum for API auth
+        // $middleware->statefulApi();
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
 
         // Excluir rutas específicas de órdenes de la validación CSRF

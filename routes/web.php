@@ -13,6 +13,7 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+    Route::post('dashboard/alerts/acknowledge', [\App\Http\Controllers\DashboardController::class, 'acknowledgeAlert'])->name('dashboard.alerts.acknowledge');
 
     // Resource routes for main modules
     // Specific routes must be defined BEFORE resource routes to avoid conflicts
@@ -302,7 +303,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'destroy' => 'value-types.destroy',
     ]);
 
-    // Pianificazione produzione (UI Inertia)
+    // Pianificazione produzione (UI Inertia): index = vista principal
     Route::get('planning', [PlanningController::class, 'index'])->name('planning.index');
 });
 

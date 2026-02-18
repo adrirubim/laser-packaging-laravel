@@ -240,7 +240,7 @@ export function OrdersTrendChart({
             <ResponsiveContainer width="100%" height={height}>
                 <LineChart
                     data={chartData}
-                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                    margin={{ top: 5, right: 30, left: 20, bottom: 28 }}
                 >
                     <CartesianGrid
                         strokeDasharray="3 3"
@@ -250,8 +250,13 @@ export function OrdersTrendChart({
                         dataKey="period"
                         tickFormatter={formatPeriod}
                         stroke="currentColor"
-                        style={{ fontSize: '12px', fontWeight: 500 }}
+                        style={{ fontSize: '11px', fontWeight: 500 }}
                         tick={{ fill: 'currentColor' }}
+                        interval={
+                            chartData.length > 18
+                                ? Math.max(0, Math.floor(chartData.length / 12))
+                                : 0
+                        }
                     />
                     <YAxis
                         stroke="currentColor"

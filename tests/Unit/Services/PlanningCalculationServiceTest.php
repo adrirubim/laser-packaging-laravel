@@ -80,4 +80,3 @@ class PlanningCalculationServiceTest extends TestCase
         $this->assertArrayHasKey('message', $result);
     }
 }
-

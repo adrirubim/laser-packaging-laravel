@@ -28,11 +28,17 @@ class OrderRepository
         $this->applyFilter($query, $request, 'article_uuid');
 
         // Filtro per stato
-        if ($request->has('status')) {
+        if ($request->has('status') && $request->filled('status')) {
             $status = $request->get('status');
             // Se status è 'completed', includere sia EVASO (5) che SALDATO (6)
             if ($status === 'completed' || $status === '5,6') {
                 $query->whereIn('status', [Order::STATUS_EVASO, Order::STATUS_SALDATO]);
+            } elseif (str_contains($status, ',')) {
+                // Più stati (es. 0,1,2,3,4 = solo attivi, esclusi Evaso/Saldato)
+                $ids = array_map('intval', array_filter(explode(',', $status), 'is_numeric'));
+                if (count($ids) > 0) {
+                    $query->whereIn('status', $ids);
+                }
             } else {
                 $statusValue = is_numeric($status) ? (int) $status : null;
                 if ($statusValue !== null) {
@@ -49,18 +55,14 @@ class OrderRepository
             });
         }
 
-        // Filtro per intervallo date (delivery_requested_date)
-        if ($request->has('date_from')) {
-            $dateFrom = $request->get('date_from');
-            if ($dateFrom) {
-                $query->whereDate('delivery_requested_date', '>=', $dateFrom);
-            }
+        // Filtro per intervallo date (delivery_requested_date) — leggere dalla query string (GET)
+        $dateFrom = $request->query('date_from');
+        if ($dateFrom !== null && $dateFrom !== '') {
+            $query->whereDate('delivery_requested_date', '>=', $dateFrom);
         }
-        if ($request->has('date_to')) {
-            $dateTo = $request->get('date_to');
-            if ($dateTo) {
-                $query->whereDate('delivery_requested_date', '<=', $dateTo);
-            }
+        $dateTo = $request->query('date_to');
+        if ($dateTo !== null && $dateTo !== '') {
+            $query->whereDate('delivery_requested_date', '<=', $dateTo);
         }
 
         // Filtro per quantità minima
@@ -121,10 +123,9 @@ class OrderRepository
             $query->orderBy('order_production_number', 'desc');
         }
 
-        return $this->applyPagination(
-            $query,
-            $request
-        );
+        $paginator = $this->applyPagination($query, $request);
+
+        return $paginator->withQueryString();
     }
 
     /**

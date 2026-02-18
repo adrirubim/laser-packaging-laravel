@@ -121,6 +121,8 @@ type OrdersIndexProps = {
 
 const STATUS_OPTIONS = [
     { value: '', label: 'Tutti gli stati' },
+    { value: '0,1,2,3,4', label: 'Attivi (esclusi Evaso/Saldato)' },
+    { value: '2,3', label: 'Lanciato + In Avanzamento' },
     { value: '0', label: 'Pianificato' },
     { value: '1', label: 'In Allestimento' },
     { value: '2', label: 'Lanciato' },
@@ -2290,7 +2292,7 @@ export default function OrdersIndex() {
                                                                                         }
                                                                                         className="flex items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
                                                                                     >
-                                                                                        <Package className="mr-2 h-4 w-4" />
+                                                                                        <Package className="mr-2 h-4 w-4 text-foreground" />
                                                                                         Visualizza
                                                                                         Articolo
                                                                                     </Link>
@@ -2311,7 +2313,7 @@ export default function OrdersIndex() {
                                                                                         }
                                                                                         className="flex items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
                                                                                     >
-                                                                                        <FileText className="mr-2 h-4 w-4" />
+                                                                                        <FileText className="mr-2 h-4 w-4 text-foreground" />
                                                                                         Visualizza
                                                                                         Offerta
                                                                                     </Link>
@@ -2332,7 +2334,7 @@ export default function OrdersIndex() {
                                                                                     }}
                                                                                     className="flex cursor-pointer items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
                                                                                 >
-                                                                                    <Settings className="mr-2 h-4 w-4" />
+                                                                                    <Settings className="mr-2 h-4 w-4 text-foreground" />
                                                                                     Gestisci
                                                                                     Stato
                                                                                 </div>
@@ -2350,13 +2352,13 @@ export default function OrdersIndex() {
                                                                                     {downloadingBarcode ===
                                                                                     order.uuid ? (
                                                                                         <>
-                                                                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                                                            <Loader2 className="mr-2 h-4 w-4 animate-spin text-foreground" />
                                                                                             Generando
                                                                                             Barcode...
                                                                                         </>
                                                                                     ) : (
                                                                                         <>
-                                                                                            <Download className="mr-2 h-4 w-4" />
+                                                                                            <Download className="mr-2 h-4 w-4 text-foreground" />
                                                                                             Stampa
                                                                                             Barcode
                                                                                         </>
@@ -2376,13 +2378,13 @@ export default function OrdersIndex() {
                                                                                     {downloadingAutocontrollo ===
                                                                                     order.uuid ? (
                                                                                         <>
-                                                                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                                                            <Loader2 className="mr-2 h-4 w-4 animate-spin text-foreground" />
                                                                                             Generando
                                                                                             Autocontrollo...
                                                                                         </>
                                                                                     ) : (
                                                                                         <>
-                                                                                            <Download className="mr-2 h-4 w-4" />
+                                                                                            <Download className="mr-2 h-4 w-4 text-foreground" />
                                                                                             Stampa
                                                                                             Autocontrollo
                                                                                         </>
@@ -2402,12 +2404,12 @@ export default function OrdersIndex() {
                                                                                     {reschedulingOrder ===
                                                                                     order.uuid ? (
                                                                                         <>
-                                                                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                                                            <Loader2 className="mr-2 h-4 w-4 animate-spin text-foreground" />
                                                                                             Ripianificazione...
                                                                                         </>
                                                                                     ) : (
                                                                                         <>
-                                                                                            <CalendarCheck className="mr-2 h-4 w-4" />
+                                                                                            <CalendarCheck className="mr-2 h-4 w-4 text-foreground" />
                                                                                             Forza
                                                                                             Ripianificazione
                                                                                         </>
@@ -2748,7 +2750,7 @@ export default function OrdersIndex() {
                                                                 }
                                                                 className="flex items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
                                                             >
-                                                                <Package className="mr-2 h-4 w-4" />
+                                                                <Package className="mr-2 h-4 w-4 text-foreground" />
                                                                 Visualizza
                                                                 Articolo
                                                             </Link>
@@ -2767,7 +2769,7 @@ export default function OrdersIndex() {
                                                                 }
                                                                 className="flex items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
                                                             >
-                                                                <FileText className="mr-2 h-4 w-4" />
+                                                                <FileText className="mr-2 h-4 w-4 text-foreground" />
                                                                 Visualizza
                                                                 Offerta
                                                             </Link>
@@ -2785,7 +2787,7 @@ export default function OrdersIndex() {
                                                             }}
                                                             className="flex cursor-pointer items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
                                                         >
-                                                            <Settings className="mr-2 h-4 w-4" />
+                                                            <Settings className="mr-2 h-4 w-4 text-foreground" />
                                                             Gestisci Stato
                                                         </div>
                                                         <div
@@ -2800,13 +2802,13 @@ export default function OrdersIndex() {
                                                             {downloadingBarcode ===
                                                             order.uuid ? (
                                                                 <>
-                                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin text-foreground" />
                                                                     Generando
                                                                     Barcode...
                                                                 </>
                                                             ) : (
                                                                 <>
-                                                                    <Download className="mr-2 h-4 w-4" />
+                                                                    <Download className="mr-2 h-4 w-4 text-foreground" />
                                                                     Stampa
                                                                     Barcode
                                                                 </>
@@ -2824,13 +2826,13 @@ export default function OrdersIndex() {
                                                             {downloadingAutocontrollo ===
                                                             order.uuid ? (
                                                                 <>
-                                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin text-foreground" />
                                                                     Generando
                                                                     Autocontrollo...
                                                                 </>
                                                             ) : (
                                                                 <>
-                                                                    <Download className="mr-2 h-4 w-4" />
+                                                                    <Download className="mr-2 h-4 w-4 text-foreground" />
                                                                     Stampa
                                                                     Autocontrollo
                                                                 </>
@@ -2848,12 +2850,12 @@ export default function OrdersIndex() {
                                                             {reschedulingOrder ===
                                                             order.uuid ? (
                                                                 <>
-                                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin text-foreground" />
                                                                     Ripianificazione...
                                                                 </>
                                                             ) : (
                                                                 <>
-                                                                    <CalendarCheck className="mr-2 h-4 w-4" />
+                                                                    <CalendarCheck className="mr-2 h-4 w-4 text-foreground" />
                                                                     Forza
                                                                     Ripianificazione
                                                                 </>

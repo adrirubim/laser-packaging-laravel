@@ -47,7 +47,10 @@ Route::prefix('production')->group(function () {
         ->name('api.production.get-info');
 });
 
-// Pianificazione produzione (API compatibile con legacy)
+// Pianificazione produzione (API usata dalla pagina /planning, stesso dominio).
+// La pagina GET /planning è già protetta da auth web; le chiamate API da Inertia sono same-origin.
+// Per richiedere auth anche sull'API: configurare SANCTUM_STATEFUL_DOMAINS (es. localhost:8000) in .env
+// e sostituire il gruppo con: ->middleware('auth:sanctum')->group(function () {
 Route::prefix('planning')->group(function () {
     Route::post('/data', [PlanningController::class, 'data'])->name('api.planning.data');
     Route::post('/save', [PlanningController::class, 'save'])->name('api.planning.save');

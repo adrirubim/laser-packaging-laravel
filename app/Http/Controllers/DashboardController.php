@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AlertAcknowledgement;
 use App\Repositories\DashboardRepository;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -64,8 +67,8 @@ class DashboardController extends Controller
             return $this->dashboardRepository->getPerformanceMetrics($dateRange, $customerUuid, $statuses);
         });
 
-        // Get alerts (not cached, always fresh) – rispettano filtro data/cliente/stati
-        $alerts = $this->dashboardRepository->getAlerts($dateRange, $customerUuid, $statuses);
+        // Get alerts (not cached, always fresh) – rispettano filtro data/cliente/stati; esclusi quelli già acks dall'utente
+        $alerts = $this->dashboardRepository->getAlerts($dateRange, $customerUuid, $statuses, $request->user()?->id);
 
         // Get comparison statistics (previous period)
         $comparisonStats = $this->dashboardRepository->getComparisonStats($dateFilter, $dateRange, $customerUuid, $statuses);
@@ -98,6 +101,9 @@ class DashboardController extends Controller
         $customersForFilter = $this->dashboardRepository->getCustomersForFilter();
         $orderStatusesForFilter = $this->dashboardRepository->getOrderStatusesForFilter();
 
+        // Avanzamenti oggi (registrazioni ProductionOrderProcessing con data di oggi, rispettano filtro cliente/stato)
+        $advancementsCountToday = $this->dashboardRepository->getProductionAdvancementsCountToday($customerUuid, $statuses);
+
         return Inertia::render('Dashboard', [
             'statistics' => $statistics,
             'urgentOrders' => $urgentOrders,
@@ -115,7 +121,40 @@ class DashboardController extends Controller
             'statusFilter' => $statuses,
             'customersForFilter' => $customersForFilter,
             'orderStatusesForFilter' => $orderStatusesForFilter,
+            'advancementsCountToday' => $advancementsCountToday,
         ]);
+    }
+
+    /**
+     * Register that the current user has acknowledged a dashboard alert.
+     * The alert will be hidden until its signature changes (e.g. new orders, different count).
+     */
+    public function acknowledgeAlert(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'alert_key' => ['required', 'string', Rule::in(['overdue', 'suspended', 'autocontrollo'])],
+            'signature' => ['required', 'string', 'max:255'],
+            'scope_hash' => ['required', 'string', 'max:64'],
+        ]);
+
+        $user = $request->user();
+        if (! $user) {
+            return back();
+        }
+
+        AlertAcknowledgement::updateOrCreate(
+            [
+                'user_id' => $user->id,
+                'alert_key' => $validated['alert_key'],
+                'scope_hash' => $validated['scope_hash'],
+            ],
+            [
+                'signature' => $validated['signature'],
+                'acknowledged_at' => now(),
+            ]
+        );
+
+        return back();
     }
 
     /**

@@ -138,8 +138,8 @@ export function TopCustomersChart({
 
     const chartData: TopCustomerChartRow[] = data.map((customer) => ({
         name:
-            customer.company_name.length > 20
-                ? customer.company_name.substring(0, 20) + '...'
+            customer.company_name.length > 28
+                ? customer.company_name.substring(0, 28) + '…'
                 : customer.company_name,
         fullName: customer.company_name,
         ordini: customer.order_count,
@@ -214,7 +214,7 @@ export function TopCustomersChart({
                 layout="vertical"
                 // Margen fino y consistente con el resto de la dashboard,
                 // especialmente en móvil.
-                margin={{ top: 5, right: 30, left: 8, bottom: 5 }}
+                margin={{ top: 5, right: 30, left: 4, bottom: 5 }}
             >
                 <CartesianGrid
                     strokeDasharray="3 3"
@@ -229,9 +229,7 @@ export function TopCustomersChart({
                 <YAxis
                     dataKey="name"
                     type="category"
-                    // Anchura suficiente para el nombre truncado,
-                    // sin robar demasiado espacio a las barras.
-                    width={104}
+                    width={130}
                     tick={renderYAxisTick}
                     stroke="currentColor"
                 />

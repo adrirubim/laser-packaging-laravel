@@ -75,13 +75,25 @@ class PlanningControllerTest extends TestCase
         if (! Schema::hasTable('productionplanning')) {
             $this->markTestSkipped('Tabella productionplanning non presente.');
         }
-        $orderUuid = Order::factory()->create(['removed' => false])->uuid;
-        $lineUuid = OfferLasWorkLine::factory()->create(['removed' => false])->uuid;
+        $line = OfferLasWorkLine::factory()->create(['removed' => false]);
+        $offer = Offer::factory()->create([
+            'lasworkline_uuid' => $line->uuid,
+            'piece' => 1,
+            'expected_workers' => 1,
+        ]);
+        $article = Article::factory()->create([
+            'offer_uuid' => $offer->uuid,
+            'media_reale_cfz_h_pz' => 10,
+        ]);
+        $order = Order::factory()->create([
+            'article_uuid' => $article->uuid,
+            'removed' => false,
+        ]);
         $today = now()->toDateString();
 
         $response = $this->postJson('/api/planning/save', [
-            'order_uuid' => $orderUuid,
-            'lasworkline_uuid' => $lineUuid,
+            'order_uuid' => $order->uuid,
+            'lasworkline_uuid' => $line->uuid,
             'date' => $today,
             'hour' => 8,
             'minute' => 0,
@@ -90,7 +102,7 @@ class PlanningControllerTest extends TestCase
         ]);
         $response->assertStatus(200);
         $response->assertJsonPath('error_code', 0);
-        $response->assertJsonStructure(['planning_id', 'replan_result']);
+        $response->assertJsonStructure(['planning_id']);
     }
 
     #[Test]

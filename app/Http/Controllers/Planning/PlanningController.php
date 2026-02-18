@@ -10,11 +10,13 @@ use App\Services\Planning\PlanningDataService;
 use App\Services\Planning\PlanningReplanService;
 use App\Services\Planning\PlanningWriteService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
+use Throwable;
 
 /**
- * Controlador de planificación de producción (equivalente a legacy `production\planning`).
+ * Controlador de planificación de producción.
  *
  * De momento solo define la firma de los endpoints; la lógica se implementará
  * siguiendo los documentos de `docs/planning/`.
@@ -26,13 +28,12 @@ class PlanningController extends Controller
         protected PlanningWriteService $writeService,
         protected PlanningCalculationService $calculationService,
         protected PlanningReplanService $replanService
-    ) {
-    }
+    ) {}
 
     /**
      * GET /planning (Inertia)
      *
-     * Renderiza la página principal de planificación.
+     * Página principal de planificación (vista moderna con grilla por slot).
      */
     public function index()
     {
@@ -48,24 +49,40 @@ class PlanningController extends Controller
      */
     public function data(Request $request)
     {
-        $startDate = $request->input('start_date', now()->startOfWeek()->format('Y-m-d 00:00:00'));
-        $endDate = $request->input('end_date', now()->endOfWeek()->format('Y-m-d 23:59:59'));
+        try {
+            $startDate = $request->input('start_date', now()->startOfWeek()->format('Y-m-d 00:00:00'));
+            $endDate = $request->input('end_date', now()->endOfWeek()->format('Y-m-d 23:59:59'));
 
-        $payload = $this->dataService->getData($startDate, $endDate);
+            $payload = $this->dataService->getData($startDate, $endDate);
 
-        return response()->json([
-            'error_code' => 0,
-            'lines' => $payload['lines'],
-            'planning' => $payload['planning'],
-            'contracts' => $payload['contracts'],
-            'summary' => $payload['summary'],
-        ]);
+            return response()->json([
+                'error_code' => 0,
+                'lines' => $payload['lines'],
+                'planning' => $payload['planning'],
+                'contracts' => $payload['contracts'],
+                'summary' => $payload['summary'],
+            ]);
+        } catch (Throwable $e) {
+            Log::error('Planning data error: '.$e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'error_code' => -1,
+                'message' => config('app.debug')
+                    ? $e->getMessage().' ('.$e->getFile().':'.$e->getLine().')'
+                    : 'Errore nel caricamento dei dati di pianificazione',
+            ], 500);
+        }
     }
 
     /**
      * POST /api/planning/save
      *
-     * Guarda o actualiza planning para una celda concreta (hora/quarto) y dispara replanificación futura.
+     * Guarda o actualiza planning para una celda concreta (hora/quarto).
+     * Verifica que el orden pertenezca a la línea; ejecuta replan tras el guardado.
      */
     public function save(Request $request)
     {
@@ -89,6 +106,28 @@ class PlanningController extends Controller
 
         $data = $validator->validated();
 
+        // Verifica che l'ordine esista e appartenga alla linea indicata
+        $order = Order::query()
+            ->with(['article.offer'])
+            ->where('uuid', $data['order_uuid'])
+            ->first();
+
+        if (! $order) {
+            return response()->json([
+                'error_code' => -1,
+                'message' => 'Ordine non trovato',
+            ], 404);
+        }
+
+        $orderLineUuid = $order->article?->offer?->lasworkline_uuid ?? null;
+        if ($orderLineUuid !== $data['lasworkline_uuid']) {
+            return response()->json([
+                'error_code' => -1,
+                'message' => 'L\'ordine non appartiene a questa linea',
+                'errors' => ['lasworkline_uuid' => ['Ordine e linea non corrispondono']],
+            ], 422);
+        }
+
         $result = $this->writeService->savePlanningCell(
             $data['order_uuid'],
             $data['lasworkline_uuid'],
@@ -99,8 +138,9 @@ class PlanningController extends Controller
             $data['zoom_level'] ?? 'hour'
         );
 
-        // Stub de replanificación futura: por ahora solo estructura
-        $replanResult = $this->replanService->replanFutureAfterManualEdit($data['order_uuid'], $data['date']);
+        // Dopo savePlanning, ripianifica il futuro in base a remainingQty/ore necessarie.
+        // Questo può aggiungere o rimuovere slot ulteriori rispetto alla cella appena salvata.
+        $replanResult = $this->replanService->replanFutureAfterManualEdit($data['order_uuid']);
 
         return response()->json([
             'error_code' => 0,
@@ -193,7 +233,7 @@ class PlanningController extends Controller
     /**
      * POST /api/planning/check-today
      *
-     * Endpoint tipo cron: verifica ordini con planning oggi e riaggiusta (mirror legacy checkAndReplanToday).
+     * Endpoint tipo cron: verifica ordini con planning oggi e riaggiusta.
      */
     public function checkToday(Request $request)
     {
@@ -213,9 +253,10 @@ class PlanningController extends Controller
         $modified = 0;
 
         foreach ($orders as $order) {
-            $result = $this->replanService->adjustForWorkedQuantity($order->uuid);
+            $result = $this->replanService->replanFutureAfterManualEdit($order->uuid);
 
-            if (($result['quarters_removed'] ?? 0) > 0) {
+            $hasReplanChanges = ($result['quarters_added'] ?? 0) > 0 || ($result['quarters_removed'] ?? 0) > 0;
+            if ($hasReplanChanges) {
                 $modified++;
             }
 
@@ -238,7 +279,7 @@ class PlanningController extends Controller
     /**
      * POST /api/planning/force-reschedule
      *
-     * Force re-schedule of an order (mirror legacy forceReschedule).
+     * Force re-schedule of an order.
      */
     public function forceReschedule(Request $request)
     {
@@ -282,4 +323,3 @@ class PlanningController extends Controller
         ]);
     }
 }
-

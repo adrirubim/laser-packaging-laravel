@@ -5,7 +5,6 @@ namespace App\Services\Planning;
 use App\Models\Order;
 use App\Models\ProductionPlanning;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Replan and auto-schedule logic mirroring legacy production\planning.
@@ -48,22 +47,7 @@ class PlanningReplanService
 
     protected function getWorkingHoursForOrder(array $orderData): array
     {
-        $shiftMode = (int) ($orderData['shift_mode'] ?? 0);
-        if ($shiftMode === 0) {
-            return ['startHour' => 8, 'endHour' => 16, 'hoursPerDay' => 8];
-        }
-        $shiftMorning = (int) ($orderData['shift_morning'] ?? 0);
-        $shiftAfternoon = (int) ($orderData['shift_afternoon'] ?? 0);
-        if ($shiftMorning && $shiftAfternoon) {
-            return ['startHour' => 6, 'endHour' => 22, 'hoursPerDay' => 16];
-        }
-        if ($shiftMorning) {
-            return ['startHour' => 6, 'endHour' => 14, 'hoursPerDay' => 8];
-        }
-        if ($shiftAfternoon) {
-            return ['startHour' => 14, 'endHour' => 22, 'hoursPerDay' => 8];
-        }
-        return ['startHour' => 8, 'endHour' => 16, 'hoursPerDay' => 8];
+        return OrderShiftHours::forOrder($orderData);
     }
 
     protected function isWorkingDay(Carbon $date, array $orderData): bool
@@ -75,6 +59,7 @@ class PlanningReplanService
         if ($dayOfWeek === 6) {
             return (int) ($orderData['work_saturday'] ?? 0) === 1;
         }
+
         return true;
     }
 
@@ -82,6 +67,7 @@ class PlanningReplanService
     {
         $hour = (int) $dt->format('H');
         $minute = (int) floor((int) $dt->format('i') / 15) * 15;
+
         return $hour * 100 + $minute;
     }
 
@@ -93,6 +79,7 @@ class PlanningReplanService
         if ($slotDate === $currentDate && (int) $slotKey >= $currentSlotKey) {
             return true;
         }
+
         return false;
     }
 
@@ -120,6 +107,7 @@ class PlanningReplanService
                 }
             }
         }
+
         return $futureSlots;
     }
 
@@ -146,6 +134,7 @@ class PlanningReplanService
             return null;
         }
         usort($slots, fn ($a, $b) => strcmp($a['date'], $b['date']) ?: $a['slotKey'] <=> $b['slotKey']);
+
         return end($slots);
     }
 
@@ -315,6 +304,7 @@ class PlanningReplanService
                 $record->save();
             }
         }
+
         return [
             'error' => false,
             'message' => "Rimossi {$quartersRemoved} quarti",
@@ -352,6 +342,7 @@ class PlanningReplanService
         $remainingQty = $quantity - $workedQuantity;
         if ($remainingQty <= 0) {
             $this->removeFuturePlanning($orderUuid);
+
             return ['error' => false, 'message' => 'Ordine completato, planning futuro rimosso', 'saldo' => 0, 'quarters_added' => 0, 'quarters_removed' => 0];
         }
 
@@ -374,6 +365,7 @@ class PlanningReplanService
         if ($diff > 0) {
             return $this->addQuartersCount($orderUuid, $diff, $orderData);
         }
+
         return $this->removeQuartersCount($orderUuid, (int) abs($diff), $orderData);
     }
 
@@ -402,6 +394,7 @@ class PlanningReplanService
 
         if ($totalQuartersNeeded <= 0) {
             ProductionPlanning::query()->where('order_uuid', $orderUuid)->delete();
+
             return ['error' => false, 'message' => 'Ordine completato, planning rimosso', 'quarters_removed' => 0];
         }
 
@@ -452,6 +445,7 @@ class PlanningReplanService
                     $record->save();
                 }
             }
+
             return ['error' => false, 'message' => "Planning aggiustato: diff={$diff} quarti", 'quarters_removed' => $toRemove];
         }
 
@@ -521,6 +515,7 @@ class PlanningReplanService
             $slotHour = $workStartHour;
             $slotMinute = 0;
         }
+
         return ['error' => false, 'message' => "Planning aggiustato: diff={$diff} quarti", 'quarters_removed' => 0];
     }
 

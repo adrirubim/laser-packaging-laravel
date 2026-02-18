@@ -109,4 +109,3 @@ class PlanningWriteServiceTest extends TestCase
         $this->assertSame(0, ProductionPlanningSummary::count());
     }
 }
-

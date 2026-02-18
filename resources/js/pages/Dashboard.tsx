@@ -1,3 +1,4 @@
+import { acknowledgeAlert } from '@/actions/App/Http/Controllers/DashboardController';
 import { OrderStatusChart } from '@/components/dashboard/OrderStatusChart';
 import { OrdersTrendChart } from '@/components/dashboard/OrdersTrendChart';
 import { ProductionProgressChart } from '@/components/dashboard/ProductionProgressChart';
@@ -44,13 +45,18 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { getOrderStatusColor } from '@/constants/orderStatus';
+import {
+    getOrderStatusColor,
+    ORDER_STATUS_LABELS,
+} from '@/constants/orderStatus';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import articles from '@/routes/articles/index';
 import customers from '@/routes/customers/index';
 import offers from '@/routes/offers/index';
 import orders from '@/routes/orders/index';
+import planning from '@/routes/planning/index';
+import productionPortal from '@/routes/production-portal/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/react';
 import {
@@ -60,6 +66,7 @@ import {
     BarChart3,
     Calendar,
     CheckCircle,
+    ChevronDown,
     Clock,
     Download,
     Eye,
@@ -118,6 +125,10 @@ type Alert = {
     message: string;
     count: number;
     first_order_uuid?: string; // UUID prima ordine in ritardo (alert tipo 'overdue')
+    /** Firma della situazione (es. count|first_uuid); usata per ack persistente in backend. */
+    signature?: string;
+    /** Hash dello scope (filtri); usato per ack persistente in backend. */
+    scope_hash?: string;
 };
 
 type PerformanceMetrics = {
@@ -157,6 +168,8 @@ type DashboardProps = {
     statistics: {
         orders: {
             total: number;
+            pianificato: number;
+            in_allestimento: number;
             lanciato: number;
             in_avanzamento: number;
             sospeso: number;
@@ -200,6 +213,7 @@ type DashboardProps = {
     statusFilter?: string[] | null;
     customersForFilter: CustomerForFilter[];
     orderStatusesForFilter: OrderStatusForFilter[];
+    advancementsCountToday: number;
 };
 
 const ALERT_SEVERITY_COLORS = {
@@ -209,12 +223,46 @@ const ALERT_SEVERITY_COLORS = {
     critical: 'border-red-500/40 bg-red-500/5 text-red-700 dark:text-red-300',
 };
 
+/** Ordine di gravità per mostrare gli avvisi (prima i più gravi). */
+const ALERT_SEVERITY_ORDER: Record<string, number> = {
+    critical: 0,
+    high: 1,
+    medium: 2,
+    low: 3,
+};
+
+/** Animazioni avvisi stile iOS: ingresso scalettato (uno dopo l'altro). */
+const ALERT_ENTER_DURATION_MS = 320;
+const ALERT_EXIT_DURATION_MS = 260;
+/** Ritardo tra un avviso e il successo (effetto scalettato tipo iOS). */
+const ALERT_STAGGER_DELAY_MS = 120;
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Dashboard',
         href: dashboard().url,
     },
 ];
+
+/** Intervalo de auto-refresh (ms). */
+const DASHBOARD_AUTO_REFRESH_INTERVAL_MS = 60_000;
+
+/**
+ * Construye los query params del dashboard a partir de los filtros.
+ * Fuente única de verdad para todas las peticiones (filtros, refresh manual y auto).
+ */
+function buildDashboardParams(
+    dateFilter: string,
+    customerFilter: string | null,
+    statusFilter: string[],
+    extra?: Record<string, string>,
+): Record<string, string> {
+    const params: Record<string, string> = { date_filter: dateFilter };
+    if (customerFilter) params.customer_uuid = customerFilter;
+    if (statusFilter.length > 0) params.statuses = statusFilter.join(',');
+    if (extra) Object.assign(params, extra);
+    return params;
+}
 
 export default function Dashboard({
     statistics,
@@ -233,6 +281,7 @@ export default function Dashboard({
     statusFilter: initialStatusFilter,
     customersForFilter,
     orderStatusesForFilter,
+    advancementsCountToday = 0,
 }: DashboardProps) {
     const [dateFilter, setDateFilter] = useState(initialDateFilter);
     const [customerFilter, setCustomerFilter] = useState<string | null>(
@@ -247,19 +296,76 @@ export default function Dashboard({
     const [showCustomDatePicker, setShowCustomDatePicker] = useState(false);
     const [customStartDate, setCustomStartDate] = useState<string>('');
     const [customEndDate, setCustomEndDate] = useState<string>('');
+    const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null);
+    /** Avisos chiusi dall'utente in questa sessione (non persisten dopo ricarica). */
+    const [dismissedAlertIds, setDismissedAlertIds] = useState<Set<string>>(
+        () => new Set(),
+    );
+    /** Per animazione di ingresso della sezione avvisi. */
+    const [alertsSectionVisible, setAlertsSectionVisible] = useState(false);
+    /** Avisi in uscita (animazione di chiusura prima di rimuoverli dal DOM). */
+    const [exitingAlertIds, setExitingAlertIds] = useState<Set<string>>(
+        () => new Set(),
+    );
+    /** Avviso espanso (stile iOS: tap per aprire, poi Accetta / Chiudi). */
+    const [expandedAlertId, setExpandedAlertId] = useState<string | null>(null);
 
-    // Auto-refresh functionality (intelligente: pausa quando la tab è nascosta)
+    // Sincronizar estado local con los props cuando cambian (p. ej. URL con filtros).
+    // Diferido para evitar setState síncrono en el effect (react-hooks/set-state-in-effect).
+    useEffect(() => {
+        const id = setTimeout(() => {
+            setDateFilter(initialDateFilter);
+            setCustomerFilter(initialCustomerFilter || null);
+            setStatusFilter(initialStatusFilter ?? []);
+        }, 0);
+        return () => clearTimeout(id);
+    }, [initialDateFilter, initialCustomerFilter, initialStatusFilter]);
+
+    // Animazione di ingresso avvisi (un solo run al mount).
+    useEffect(() => {
+        const t = setTimeout(() => setAlertsSectionVisible(true), 80);
+        return () => clearTimeout(t);
+    }, []);
+
+    /**
+     * Petición al backend con los params dados. Usado por filtros, refresh manual y auto-refresh.
+     * Opciones: only (partial reload), onStart/onFinish para loading/refreshing.
+     */
+    const fetchDashboard = useCallback(
+        (
+            params: Record<string, string>,
+            options?: {
+                only?: string[];
+                onStart?: () => void;
+                onFinish?: () => void;
+            },
+        ) => {
+            options?.onStart?.();
+            router.get(dashboard().url, params, {
+                preserveState: true,
+                preserveScroll: true,
+                ...(options?.only && { only: options.only }),
+                onFinish: () => {
+                    setLastUpdatedAt(new Date());
+                    options?.onFinish?.();
+                },
+            });
+        },
+        [],
+    );
+
+    // Auto-refresh: solo cuando está activado y la pestaña está visible; usa siempre los filtros actuales
     useEffect(() => {
         if (!autoRefreshEnabled) return;
         if (typeof document === 'undefined') return;
 
         let interval: number | null = null;
 
-        const startInterval = () => {
-            if (interval !== null || document.hidden) return;
-
-            interval = window.setInterval(() => {
-                router.reload({
+        const runRefresh = () => {
+            if (document.hidden) return;
+            fetchDashboard(
+                buildDashboardParams(dateFilter, customerFilter, statusFilter),
+                {
                     only: [
                         'statistics',
                         'urgentOrders',
@@ -269,9 +375,18 @@ export default function Dashboard({
                         'performanceMetrics',
                         'alerts',
                         'comparisonStats',
+                        'advancementsCountToday',
                     ],
-                });
-            }, 60000); // Refresh every minute
+                },
+            );
+        };
+
+        const startInterval = () => {
+            if (interval !== null || document.hidden) return;
+            interval = window.setInterval(
+                runRefresh,
+                DASHBOARD_AUTO_REFRESH_INTERVAL_MS,
+            );
         };
 
         const stopInterval = () => {
@@ -289,7 +404,6 @@ export default function Dashboard({
             }
         };
 
-        // Avvia il polling solo se la tab è visibile
         startInterval();
         document.addEventListener('visibilitychange', handleVisibilityChange);
 
@@ -300,7 +414,13 @@ export default function Dashboard({
                 handleVisibilityChange,
             );
         };
-    }, [autoRefreshEnabled]);
+    }, [
+        autoRefreshEnabled,
+        dateFilter,
+        customerFilter,
+        statusFilter,
+        fetchDashboard,
+    ]);
 
     const handleDateFilterChange = (value: string) => {
         setDateFilter(value);
@@ -309,53 +429,44 @@ export default function Dashboard({
             return;
         }
         setShowCustomDatePicker(false);
-        setIsLoading(true);
-        const params: Record<string, string> = { date_filter: value };
-        if (customerFilter) params.customer_uuid = customerFilter;
-        if (statusFilter.length > 0) params.statuses = statusFilter.join(',');
-
-        router.get(dashboard().url, params, {
-            preserveState: true,
-            preserveScroll: true,
-            onFinish: () => setIsLoading(false),
-        });
+        fetchDashboard(
+            buildDashboardParams(value, customerFilter, statusFilter),
+            {
+                onStart: () => setIsLoading(true),
+                onFinish: () => setIsLoading(false),
+            },
+        );
     };
 
     const handleCustomDateApply = () => {
         if (customStartDate && customEndDate) {
-            setIsLoading(true);
-            const params: Record<string, string> = {
-                date_filter: 'custom',
-                start_date: customStartDate,
-                end_date: customEndDate,
-            };
-            if (customerFilter) params.customer_uuid = customerFilter;
-            if (statusFilter.length > 0)
-                params.statuses = statusFilter.join(',');
-
-            router.get(dashboard().url, params, {
-                preserveState: true,
-                preserveScroll: true,
-                onFinish: () => {
-                    setIsLoading(false);
-                    setShowCustomDatePicker(false);
+            fetchDashboard(
+                buildDashboardParams(dateFilter, customerFilter, statusFilter, {
+                    date_filter: 'custom',
+                    start_date: customStartDate,
+                    end_date: customEndDate,
+                }),
+                {
+                    onStart: () => setIsLoading(true),
+                    onFinish: () => {
+                        setIsLoading(false);
+                        setShowCustomDatePicker(false);
+                    },
                 },
-            });
+            );
         }
     };
 
     const handleCustomerFilterChange = (value: string) => {
-        setCustomerFilter(value === 'all' ? null : value);
-        setIsLoading(true);
-        const params: Record<string, string> = { date_filter: dateFilter };
-        if (value !== 'all') params.customer_uuid = value;
-        if (statusFilter.length > 0) params.statuses = statusFilter.join(',');
-
-        router.get(dashboard().url, params, {
-            preserveState: true,
-            preserveScroll: true,
-            onFinish: () => setIsLoading(false),
-        });
+        const newCustomer = value === 'all' ? null : value;
+        setCustomerFilter(newCustomer);
+        fetchDashboard(
+            buildDashboardParams(dateFilter, newCustomer, statusFilter),
+            {
+                onStart: () => setIsLoading(true),
+                onFinish: () => setIsLoading(false),
+            },
+        );
     };
 
     const handleStatusFilterChange = (value: string, checked: boolean) => {
@@ -363,28 +474,29 @@ export default function Dashboard({
             ? [...statusFilter, value]
             : statusFilter.filter((s) => s !== value);
         setStatusFilter(newStatusFilter);
-        setIsLoading(true);
-        const params: Record<string, string> = { date_filter: dateFilter };
-        if (customerFilter) params.customer_uuid = customerFilter;
-        if (newStatusFilter.length > 0)
-            params.statuses = newStatusFilter.join(',');
-
-        router.get(dashboard().url, params, {
-            preserveState: true,
-            preserveScroll: true,
-            onFinish: () => setIsLoading(false),
-        });
+        fetchDashboard(
+            buildDashboardParams(dateFilter, customerFilter, newStatusFilter),
+            {
+                onStart: () => setIsLoading(true),
+                onFinish: () => setIsLoading(false),
+            },
+        );
     };
 
     const handleRefresh = () => {
-        setIsRefreshing(true);
-        setIsLoading(true);
-        router.reload({
-            onFinish: () => {
-                setIsRefreshing(false);
-                setIsLoading(false);
+        fetchDashboard(
+            buildDashboardParams(dateFilter, customerFilter, statusFilter),
+            {
+                onStart: () => {
+                    setIsRefreshing(true);
+                    setIsLoading(true);
+                },
+                onFinish: () => {
+                    setIsRefreshing(false);
+                    setIsLoading(false);
+                },
             },
-        });
+        );
     };
 
     // Memoize breadcrumbs to avoid recalculation
@@ -502,9 +614,20 @@ export default function Dashboard({
         previousTrend,
     ]);
 
+    const visibleAlertOrders = alerts.reduce(
+        (total, alert) =>
+            dismissedAlertIds.has(alert.type) ? total : total + alert.count,
+        0,
+    );
+    const pageTitle =
+        visibleAlertOrders > 0
+            ? `(${visibleAlertOrders}) Dashboard`
+            : 'Dashboard';
+
     return (
         <AppLayout breadcrumbs={breadcrumbsMemo}>
-            <Head title="Dashboard" />
+            {/* Head: titolo dinamico con conteggio avvisi visibili (tab del browser + accessibilità) */}
+            <Head title={pageTitle} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 {/* Header + Filters en dos filas para mayor claridad */}
@@ -543,6 +666,16 @@ export default function Dashboard({
                                     Nuova Offerta
                                 </Button>
                             </Link>
+                            <Link href={planning.index().url}>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-9"
+                                >
+                                    <Calendar className="mr-1.5 h-3.5 w-3.5" />
+                                    Pianificazione
+                                </Button>
+                            </Link>
                         </div>
                     </div>
 
@@ -556,15 +689,21 @@ export default function Dashboard({
                                     onValueChange={handleDateFilterChange}
                                 >
                                     <SelectTrigger
-                                        className="h-9 w-[160px]"
+                                        className="h-9 w-[180px]"
                                         aria-label="Seleziona filtro data"
                                     >
-                                        <Calendar className="mr-2 h-3.5 w-3.5" />
-                                        <SelectValue />
+                                        <Calendar className="mr-2 h-3.5 w-3.5 shrink-0" />
+                                        {dateFilter === 'all' ? (
+                                            <span className="truncate">
+                                                Tutto il tempo
+                                            </span>
+                                        ) : (
+                                            <SelectValue />
+                                        )}
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="all">
-                                            Tutto il tempo
+                                            Tutto il tempo (Dati complessivi)
                                         </SelectItem>
                                         <SelectItem value="today">
                                             Oggi
@@ -580,6 +719,11 @@ export default function Dashboard({
                                         </SelectItem>
                                     </SelectContent>
                                 </Select>
+                                {dateFilter === 'all' && (
+                                    <span className="rounded bg-muted px-2 py-1 text-xs text-muted-foreground">
+                                        Dati complessivi
+                                    </span>
+                                )}
 
                                 {/* Custom Date Picker Dialog */}
                                 <Dialog
@@ -784,22 +928,17 @@ export default function Dashboard({
                                                 onSelect={(e) => {
                                                     e.preventDefault();
                                                     setStatusFilter([]);
-                                                    setIsLoading(true);
-                                                    const params: Record<
-                                                        string,
-                                                        string
-                                                    > = {
-                                                        date_filter: dateFilter,
-                                                    };
-                                                    if (customerFilter)
-                                                        params.customer_uuid =
-                                                            customerFilter;
-                                                    router.get(
-                                                        dashboard().url,
-                                                        params,
+                                                    fetchDashboard(
+                                                        buildDashboardParams(
+                                                            dateFilter,
+                                                            customerFilter,
+                                                            [],
+                                                        ),
                                                         {
-                                                            preserveState: true,
-                                                            preserveScroll: true,
+                                                            onStart: () =>
+                                                                setIsLoading(
+                                                                    true,
+                                                                ),
                                                             onFinish: () =>
                                                                 setIsLoading(
                                                                     false,
@@ -870,6 +1009,24 @@ export default function Dashboard({
                                     </TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
+                            {lastUpdatedAt && (
+                                <span
+                                    className="text-xs text-muted-foreground tabular-nums"
+                                    title={lastUpdatedAt.toLocaleString(
+                                        'it-IT',
+                                        {
+                                            dateStyle: 'medium',
+                                            timeStyle: 'short',
+                                        },
+                                    )}
+                                >
+                                    Aggiornato alle{' '}
+                                    {lastUpdatedAt.toLocaleTimeString('it-IT', {
+                                        hour: '2-digit',
+                                        minute: '2-digit',
+                                    })}
+                                </span>
+                            )}
                             <Button
                                 variant="outline"
                                 size="sm"
@@ -880,95 +1037,271 @@ export default function Dashboard({
                                 <Download className="mr-1.5 h-3.5 w-3.5" />
                                 Esporta
                             </Button>
+                            <Link
+                                href={productionPortal.login.url()}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="Apri Portale Produzione"
+                            >
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-9"
+                                >
+                                    <Eye className="mr-1.5 h-3.5 w-3.5" />
+                                    Portale Produzione
+                                </Button>
+                            </Link>
                         </div>
                     </div>
                 </div>
 
-                {/* Alerts - Compact */}
-                {alerts.length > 0 && (
-                    <div className="space-y-1.5">
-                        {alerts.map((alert, index) => {
-                            // Determinare l'URL di destinazione in base al tipo di avviso
-                            const getAlertUrl = () => {
-                                if (
-                                    alert.type === 'overdue' &&
-                                    alert.first_order_uuid
-                                ) {
-                                    // Se c'è un ordine in ritardo, vai direttamente usando UUID
-                                    return `/orders/${alert.first_order_uuid}`;
-                                }
-                                if (alert.type === 'suspended') {
-                                    // Per ordini sospesi, vai alla lista filtrata
-                                    return `${orders.index().url}?status=4`;
-                                }
-                                if (alert.type === 'autocontrollo') {
-                                    // Per ordini con autocontrollo pendente, vai alla lista filtrata
-                                    return `${orders.index().url}?autocontrollo=false`;
-                                }
-                                // Di default, vai alla lista ordini
-                                return orders.index().url;
-                            };
+                {/* Avvisi stile iOS: riga compatta (icona + numero + titolo) → tap espande → Accetta (Vai) o Chiudi */}
+                {(() => {
+                    const displayedAlerts = alerts
+                        .filter(
+                            (a) =>
+                                !dismissedAlertIds.has(a.type) ||
+                                exitingAlertIds.has(a.type),
+                        )
+                        .sort(
+                            (a, b) =>
+                                (ALERT_SEVERITY_ORDER[a.severity] ?? 4) -
+                                (ALERT_SEVERITY_ORDER[b.severity] ?? 4),
+                        );
+                    if (displayedAlerts.length === 0) return null;
 
-                            const alertUrl = getAlertUrl();
-                            const isClickable =
-                                alert.type === 'overdue' ||
-                                alert.type === 'suspended' ||
-                                alert.type === 'autocontrollo';
+                    const handleDismiss = (alert: (typeof alerts)[0]) => {
+                        const alertType = alert.type;
+                        setExpandedAlertId(null);
+                        setExitingAlertIds((prev) =>
+                            new Set(prev).add(alertType),
+                        );
+                        if (
+                            alert.signature != null &&
+                            alert.scope_hash != null
+                        ) {
+                            router.post(acknowledgeAlert.url(), {
+                                alert_key: alert.type,
+                                signature: alert.signature,
+                                scope_hash: alert.scope_hash,
+                            });
+                            window.setTimeout(() => {
+                                setExitingAlertIds((prev) => {
+                                    const next = new Set(prev);
+                                    next.delete(alertType);
+                                    return next;
+                                });
+                            }, ALERT_EXIT_DURATION_MS);
+                        } else {
+                            window.setTimeout(() => {
+                                setDismissedAlertIds((prev) =>
+                                    new Set(prev).add(alertType),
+                                );
+                                setExitingAlertIds((prev) => {
+                                    const next = new Set(prev);
+                                    next.delete(alertType);
+                                    return next;
+                                });
+                            }, ALERT_EXIT_DURATION_MS);
+                        }
+                    };
 
-                            if (isClickable) {
+                    const getAlertUrl = (alert: (typeof alerts)[0]) => {
+                        if (alert.type === 'overdue') {
+                            return `${orders.index().url}?date_to=${new Date().toISOString().slice(0, 10)}&status=0,1,2,3,4`;
+                        }
+                        if (alert.type === 'suspended') {
+                            return `${orders.index().url}?status=4`;
+                        }
+                        if (alert.type === 'autocontrollo') {
+                            return `${orders.index().url}?autocontrollo=false&status=2,3`;
+                        }
+                        return orders.index().url;
+                    };
+
+                    const getCtaLabel = (alert: (typeof alerts)[0]) => {
+                        if (alert.type === 'overdue')
+                            return 'Vai agli ordini in ritardo';
+                        if (alert.type === 'suspended')
+                            return 'Vai agli ordini sospesi';
+                        if (alert.type === 'autocontrollo')
+                            return 'Vai agli ordini con autocontrollo pendente';
+                        return null;
+                    };
+
+                    const isActionable = (a: (typeof alerts)[0]) =>
+                        a.type === 'overdue' ||
+                        a.type === 'suspended' ||
+                        a.type === 'autocontrollo';
+
+                    return (
+                        <div className="space-y-2">
+                            {displayedAlerts.map((alert, index) => {
+                                const alertUrl = getAlertUrl(alert);
+                                const ctaLabel = getCtaLabel(alert);
+                                const actionable = isActionable(alert);
+                                const isExiting = exitingAlertIds.has(
+                                    alert.type,
+                                );
+                                const isExpanded =
+                                    expandedAlertId === alert.type;
+                                const delayMs = index * ALERT_STAGGER_DELAY_MS;
+                                const springCurve =
+                                    'cubic-bezier(0.34, 1.2, 0.64, 1)';
+
+                                const cardStyle = isExiting
+                                    ? {
+                                          opacity: 0,
+                                          transform:
+                                              'translateY(-12px) scale(0.98)',
+                                          transition: `opacity ${ALERT_EXIT_DURATION_MS}ms ease-out, transform ${ALERT_EXIT_DURATION_MS}ms ease-out`,
+                                      }
+                                    : alertsSectionVisible
+                                      ? {
+                                            opacity: 1,
+                                            transform: 'translateY(0) scale(1)',
+                                            transition: `opacity ${ALERT_ENTER_DURATION_MS}ms ${springCurve} ${delayMs}ms, transform ${ALERT_ENTER_DURATION_MS}ms ${springCurve} ${delayMs}ms`,
+                                        }
+                                      : {
+                                            opacity: 0,
+                                            transform:
+                                                'translateY(-20px) scale(0.96)',
+                                            transition: `opacity ${ALERT_ENTER_DURATION_MS}ms ${springCurve} ${delayMs}ms, transform ${ALERT_ENTER_DURATION_MS}ms ${springCurve} ${delayMs}ms`,
+                                        };
+
                                 return (
-                                    <Link
-                                        key={index}
-                                        href={alertUrl}
-                                        className={`group block flex cursor-pointer items-center justify-between rounded-md border px-4 py-3 transition-all hover:scale-[1.01] hover:shadow-md ${ALERT_SEVERITY_COLORS[alert.severity]}`}
-                                        aria-label={`${alert.title}: clicca per vedere i dettagli`}
+                                    <div
+                                        key={alert.type}
+                                        className={`relative overflow-hidden rounded-xl border transition-shadow ${
+                                            isExiting
+                                                ? 'pointer-events-none'
+                                                : ''
+                                        } ${ALERT_SEVERITY_COLORS[alert.severity]} ${
+                                            isExpanded ? 'shadow-md' : ''
+                                        }`}
+                                        style={cardStyle}
                                     >
-                                        <div className="flex flex-1 items-center gap-3">
-                                            <AlertTriangle className="h-5 w-5" />
-                                            <div className="flex-1">
-                                                <p className="font-semibold">
-                                                    {alert.title}
-                                                </p>
-                                                <p className="text-sm">
-                                                    {alert.message}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-2">
+                                        {/* Riga compatta: icona + titolo + numero + chevron */}
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setExpandedAlertId((prev) =>
+                                                    prev === alert.type
+                                                        ? null
+                                                        : alert.type,
+                                                )
+                                            }
+                                            className="flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left focus:ring-2 focus:ring-ring focus:outline-none focus:ring-inset"
+                                            aria-expanded={isExpanded}
+                                            aria-label={
+                                                isExpanded
+                                                    ? 'Chiudi dettaglio avviso'
+                                                    : `${alert.title}, ${alert.count} elementi. Tocca per aprire.`
+                                            }
+                                        >
+                                            <AlertTriangle className="h-5 w-5 shrink-0" />
+                                            <span className="min-w-0 flex-1 truncate font-semibold">
+                                                {alert.title}
+                                            </span>
                                             <Badge
                                                 variant="outline"
-                                                className="ml-4"
+                                                className="shrink-0 font-medium"
                                             >
                                                 {alert.count}
                                             </Badge>
-                                            <ArrowRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
-                                        </div>
-                                    </Link>
-                                );
-                            }
+                                            <span
+                                                className={`shrink-0 transition-transform duration-200 ${
+                                                    isExpanded
+                                                        ? 'rotate-180'
+                                                        : ''
+                                                }`}
+                                            >
+                                                <ChevronDown className="h-4 w-4" />
+                                            </span>
+                                        </button>
 
-                            return (
-                                <div
-                                    key={index}
-                                    className={`flex items-center justify-between rounded-md border px-4 py-3 ${ALERT_SEVERITY_COLORS[alert.severity]}`}
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <AlertTriangle className="h-5 w-5" />
-                                        <div>
-                                            <p className="font-semibold">
-                                                {alert.title}
-                                            </p>
-                                            <p className="text-sm">
-                                                {alert.message}
-                                            </p>
+                                        {/* Corpo espanso: messaggio + Azioni Accetta / Chiudi */}
+                                        <div
+                                            className="grid transition-[grid-template-rows] duration-300 ease-out"
+                                            style={{
+                                                gridTemplateRows: isExpanded
+                                                    ? '1fr'
+                                                    : '0fr',
+                                            }}
+                                        >
+                                            <div className="min-h-0 overflow-hidden">
+                                                <div className="border-t border-current/20 px-4 py-3">
+                                                    <p className="mb-3 text-sm">
+                                                        {alert.message}
+                                                    </p>
+                                                    <div className="flex flex-wrap items-center gap-2">
+                                                        {actionable &&
+                                                            ctaLabel && (
+                                                                <Link
+                                                                    href={
+                                                                        alertUrl
+                                                                    }
+                                                                    className="inline-flex items-center gap-1.5 rounded-lg bg-white/80 px-3 py-2 text-sm font-semibold shadow-sm transition hover:bg-white dark:bg-black/30 dark:hover:bg-black/40"
+                                                                >
+                                                                    <ArrowRight className="h-3.5 w-3.5" />
+                                                                    {ctaLabel}
+                                                                </Link>
+                                                            )}
+                                                        <button
+                                                            type="button"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleDismiss(
+                                                                    alert,
+                                                                );
+                                                            }}
+                                                            className="inline-flex items-center gap-1.5 rounded-lg border border-current/30 bg-transparent px-3 py-2 text-sm font-medium transition hover:bg-black/5 dark:hover:bg-white/10"
+                                                        >
+                                                            <X className="h-3.5 w-3.5" />
+                                                            Chiudi
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <Badge variant="outline" className="ml-4">
-                                        {alert.count}
-                                    </Badge>
-                                </div>
-                            );
-                        })}
+                                );
+                            })}
+                        </div>
+                    );
+                })()}
+
+                {/* Riga di riepilogo: a rischio · ordini attivi · in pianificazione (ordine per importanza) */}
+                {(statistics.orders.total > 0 ||
+                    alerts.some((a) => a.type === 'overdue')) && (
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+                        <Link
+                            href={`${orders.index().url}?date_to=${new Date().toISOString().slice(0, 10)}&status=0,1,2,3,4`}
+                            className="font-semibold text-red-600 hover:underline dark:text-red-400"
+                        >
+                            {alerts.find((a) => a.type === 'overdue')?.count ??
+                                0}{' '}
+                            a rischio
+                        </Link>
+                        <span className="text-foreground/50">·</span>
+                        <Link
+                            href={`${orders.index().url}?status=2,3`}
+                            className="font-semibold text-foreground hover:underline"
+                        >
+                            {statistics.orders.lanciato +
+                                statistics.orders.in_avanzamento}{' '}
+                            ordini attivi
+                        </Link>
+                        <span className="text-foreground/50">·</span>
+                        <Link
+                            href={planning.index().url}
+                            className="font-semibold text-foreground hover:underline"
+                        >
+                            {statistics.orders.pianificato +
+                                statistics.orders.in_allestimento}{' '}
+                            in pianificazione
+                        </Link>
                     </div>
                 )}
 
@@ -994,6 +1327,14 @@ export default function Dashboard({
                                                 Numero totale di ordini nel
                                                 sistema
                                             </p>
+                                            {dateFilter === 'all' && (
+                                                <p className="mt-1 text-muted-foreground">
+                                                    Con &quot;Tutto il
+                                                    tempo&quot;: dati
+                                                    complessivi (tutti gli
+                                                    ordini).
+                                                </p>
+                                            )}
                                         </TooltipContent>
                                     </Tooltip>
                                 </TooltipProvider>
@@ -1184,6 +1525,108 @@ export default function Dashboard({
                         </Card>
                     </Link>
                 </div>
+
+                {/* Pipeline 7 stati: clic su stato → lista ordini filtrata */}
+                <div className="flex flex-wrap items-center gap-2 rounded-lg border bg-muted/30 px-3 py-2">
+                    {[
+                        {
+                            key: 'pianificato',
+                            label: ORDER_STATUS_LABELS[0],
+                            count: statistics.orders.pianificato,
+                            statusParam: '0',
+                        },
+                        {
+                            key: 'in_allestimento',
+                            label: ORDER_STATUS_LABELS[1],
+                            count: statistics.orders.in_allestimento,
+                            statusParam: '1',
+                        },
+                        {
+                            key: 'lanciato',
+                            label: ORDER_STATUS_LABELS[2],
+                            count: statistics.orders.lanciato,
+                            statusParam: '2',
+                        },
+                        {
+                            key: 'in_avanzamento',
+                            label: ORDER_STATUS_LABELS[3],
+                            count: statistics.orders.in_avanzamento,
+                            statusParam: '3',
+                        },
+                        {
+                            key: 'sospeso',
+                            label: ORDER_STATUS_LABELS[4],
+                            count: statistics.orders.sospeso,
+                            statusParam: '4',
+                        },
+                        {
+                            key: 'completato',
+                            label: 'Completati',
+                            count: statistics.orders.completato,
+                            statusParam: 'completed',
+                        },
+                    ].map(({ key, label, count, statusParam }) => (
+                        <Link
+                            key={key}
+                            href={`${orders.index().url}?status=${statusParam}`}
+                            className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors hover:bg-muted"
+                        >
+                            <span className="text-foreground/80">{label}</span>
+                            <Badge
+                                variant="secondary"
+                                className="h-5 min-w-5 px-1 text-[10px]"
+                            >
+                                {count}
+                            </Badge>
+                        </Link>
+                    ))}
+                </div>
+
+                {/* Pianificazione produzione: ordini in pianificazione / in allestimento → link a Planning */}
+                <Link
+                    href={planning.index().url}
+                    className="group block"
+                    aria-label="Vai a Pianificazione produzione"
+                >
+                    <Card className="flex cursor-pointer flex-row flex-wrap items-center justify-between gap-4 border-l-4 border-l-sky-500 transition-all focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:scale-[1.01] hover:border-primary/50 hover:shadow-lg">
+                        <div className="flex flex-1 items-center gap-4">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-500/10 transition-colors group-hover:bg-sky-500/20">
+                                <Calendar className="h-6 w-6 text-sky-600 dark:text-sky-400" />
+                            </div>
+                            <div>
+                                <CardTitle className="text-base">
+                                    Pianificazione produzione
+                                </CardTitle>
+                                <CardDescription className="text-sm">
+                                    Ordini in pianificazione e in allestimento
+                                </CardDescription>
+                            </div>
+                        </div>
+                        {isLoading ? (
+                            <Skeleton className="h-10 w-24" />
+                        ) : (
+                            <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-2">
+                                    <Badge
+                                        variant="secondary"
+                                        className="border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300"
+                                    >
+                                        {statistics.orders.pianificato}{' '}
+                                        pianificati
+                                    </Badge>
+                                    <Badge
+                                        variant="outline"
+                                        className="border-sky-500/30 text-sky-700 dark:text-sky-300"
+                                    >
+                                        {statistics.orders.in_allestimento} in
+                                        allestimento
+                                    </Badge>
+                                </div>
+                                <ArrowRight className="h-5 w-5 text-sky-600 opacity-0 transition-opacity group-hover:opacity-100 dark:text-sky-400" />
+                            </div>
+                        )}
+                    </Card>
+                </Link>
 
                 {/* Performance Metrics - Most Important, Moved Up */}
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
@@ -1506,6 +1949,15 @@ export default function Dashboard({
                                         </div>
                                     )}
                                 </div>
+                                {advancementsCountToday >= 0 && (
+                                    <div className="border-t pt-2">
+                                        <span className="text-xs font-medium text-foreground/80">
+                                            Avanzamenti oggi:{' '}
+                                            {advancementsCountToday}{' '}
+                                            registrazioni
+                                        </span>
+                                    </div>
+                                )}
                             </div>
                         </CardContent>
                     </Card>
@@ -1736,10 +2188,18 @@ export default function Dashboard({
                                                             undefined && (
                                                             <span className="ml-2">
                                                                 (
-                                                                {order.days_until_delivery <
-                                                                0
-                                                                    ? `${Math.abs(order.days_until_delivery)} giorni in ritardo`
-                                                                    : `${order.days_until_delivery} giorni rimanenti`}
+                                                                {(() => {
+                                                                    const days =
+                                                                        Math.round(
+                                                                            Number(
+                                                                                order.days_until_delivery,
+                                                                            ),
+                                                                        );
+                                                                    return days <
+                                                                        0
+                                                                        ? `${Math.abs(days)} giorni in ritardo`
+                                                                        : `${days} giorni rimanenti`;
+                                                                })()}
                                                                 )
                                                             </span>
                                                         )}

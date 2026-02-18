@@ -1,7 +1,10 @@
-import ProductionPortalController from './ProductionPortalController'
+import ProductionPortalController from './ProductionPortalController';
 
 const Api = {
-    ProductionPortalController: Object.assign(ProductionPortalController, ProductionPortalController),
-}
+    ProductionPortalController: Object.assign(
+        ProductionPortalController,
+        ProductionPortalController,
+    ),
+};
 
-export default Api
+export default Api;

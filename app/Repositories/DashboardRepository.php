@@ -6,6 +6,7 @@ use App\Models\Article;
 use App\Models\Customer;
 use App\Models\Offer;
 use App\Models\Order;
+use App\Models\ProductionOrderProcessing;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -54,6 +55,8 @@ class DashboardRepository
         $ordersStats = $ordersQuery
             ->selectRaw('
                 COUNT(*) as total,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as pianificato,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as in_allestimento,
                 SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as lanciato,
                 SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as in_avanzamento,
                 SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as sospeso,
@@ -61,6 +64,8 @@ class DashboardRepository
                 SUM(quantity) as total_quantity,
                 SUM(worked_quantity) as worked_quantity
             ', [
+                Order::STATUS_PIANIFICATO,
+                Order::STATUS_IN_ALLESTIMENTO,
                 Order::STATUS_LANCIATO,
                 Order::STATUS_IN_AVANZAMENTO,
                 Order::STATUS_SOSPESO,
@@ -107,6 +112,8 @@ class DashboardRepository
         return [
             'orders' => [
                 'total' => (int) ($ordersStats->total ?? 0),
+                'pianificato' => (int) ($ordersStats->pianificato ?? 0),
+                'in_allestimento' => (int) ($ordersStats->in_allestimento ?? 0),
                 'lanciato' => (int) ($ordersStats->lanciato ?? 0),
                 'in_avanzamento' => (int) ($ordersStats->in_avanzamento ?? 0),
                 'sospeso' => (int) ($ordersStats->sospeso ?? 0),
@@ -169,7 +176,7 @@ class DashboardRepository
             ->limit($limit)
             ->get()
             ->map(function ($order) {
-                $daysUntilDelivery = now()->diffInDays($order->delivery_requested_date, false);
+                $daysUntilDelivery = (int) now()->diffInDays($order->delivery_requested_date, false);
                 $totalQuantity = (float) ($order->quantity ?? 0);
                 $workedQuantity = (float) ($order->worked_quantity ?? 0);
                 $progress = $totalQuantity > 0 ? round(($workedQuantity / $totalQuantity) * 100, 2) : 0;
@@ -223,7 +230,7 @@ class DashboardRepository
             ->limit($limit)
             ->get()
             ->map(function ($order) {
-                $daysUntilDelivery = now()->diffInDays($order->delivery_requested_date, false);
+                $daysUntilDelivery = (int) now()->diffInDays($order->delivery_requested_date, false);
 
                 return [
                     'id' => $order->id,
@@ -489,9 +496,13 @@ class DashboardRepository
      * Il filtro data agisce così:
      * - Sospesi / senza autocontrollo: filtro su created_at.
      * - In ritardo: filtro su delivery_requested_date.
+     *
+     * Each alert includes signature and scope_hash for acknowledgement.
+     * When $userId is provided, alerts already acknowledged by that user (same scope + signature) are excluded.
      */
-    public function getAlerts(array $dateRange, ?string $customerUuid = null, ?array $statuses = null): array
+    public function getAlerts(array $dateRange, ?string $customerUuid = null, ?array $statuses = null, ?int $userId = null): array
     {
+        $scopeHash = $this->alertsScopeHash($dateRange, $customerUuid, $statuses);
         $alerts = [];
 
         // Suspended orders
@@ -515,12 +526,16 @@ class DashboardRepository
         $suspendedCount = $suspendedQuery->count();
 
         if ($suspendedCount > 0) {
+            $firstUuid = (clone $suspendedQuery)->orderBy('created_at')->value('uuid');
+            $signature = $suspendedCount.'|'.($firstUuid ?? 'none');
             $alerts[] = [
                 'type' => 'suspended',
                 'severity' => 'high',
                 'title' => 'Ordini Sospesi',
                 'message' => "Ci sono {$suspendedCount} ordine/i sospeso/i che richiedono attenzione.",
                 'count' => $suspendedCount,
+                'signature' => $signature,
+                'scope_hash' => $scopeHash,
             ];
         }
 
@@ -550,13 +565,17 @@ class DashboardRepository
         $overdueCount = $overdueOrders->count();
 
         if ($overdueCount > 0) {
+            $firstUuid = $overdueOrders->first()?->uuid;
+            $signature = $overdueCount.'|'.($firstUuid ?? 'none');
             $alerts[] = [
                 'type' => 'overdue',
                 'severity' => 'critical',
                 'title' => 'Ordini in Ritardo',
                 'message' => "Ci sono {$overdueCount} ordine/i con data di consegna scaduta.",
                 'count' => $overdueCount,
-                'first_order_uuid' => $overdueOrders->first()?->uuid,
+                'first_order_uuid' => $firstUuid,
+                'signature' => $signature,
+                'scope_hash' => $scopeHash,
             ];
         }
 
@@ -582,16 +601,42 @@ class DashboardRepository
         $noAutocontrolloCount = $noAutocontrolloQuery->count();
 
         if ($noAutocontrolloCount > 0) {
+            $firstUuid = (clone $noAutocontrolloQuery)->orderBy('created_at')->value('uuid');
+            $signature = $noAutocontrolloCount.'|'.($firstUuid ?? 'none');
             $alerts[] = [
                 'type' => 'autocontrollo',
                 'severity' => 'medium',
                 'title' => 'Autocontrollo Pendente',
                 'message' => "Ci sono {$noAutocontrolloCount} ordine/i con autocontrollo pendente.",
                 'count' => $noAutocontrolloCount,
+                'signature' => $signature,
+                'scope_hash' => $scopeHash,
             ];
         }
 
+        if ($userId !== null && count($alerts) > 0) {
+            $acks = \App\Models\AlertAcknowledgement::query()
+                ->where('user_id', $userId)
+                ->where('scope_hash', $scopeHash)
+                ->get(['alert_key', 'signature']);
+            $ackedSet = $acks->map(fn ($a) => $a->alert_key.'|'.$a->signature)->flip()->all();
+            $alerts = array_values(array_filter($alerts, function ($alert) use ($ackedSet) {
+                $key = $alert['type'].'|'.$alert['signature'];
+
+                return ! isset($ackedSet[$key]);
+            }));
+        }
+
         return $alerts;
+    }
+
+    private function alertsScopeHash(array $dateRange, ?string $customerUuid, ?array $statuses): string
+    {
+        return md5(json_encode([
+            'date' => $dateRange,
+            'customer' => $customerUuid,
+            'statuses' => $statuses ?? [],
+        ]));
     }
 
     /**
@@ -751,5 +796,35 @@ class DashboardRepository
                 ];
             })
             ->toArray();
+    }
+
+    /**
+     * Count production advancements (ProductionOrderProcessing) with processed_datetime = today.
+     * Respects dashboard filters: only counts advancements for orders matching customer and status.
+     */
+    public function getProductionAdvancementsCountToday(?string $customerUuid = null, ?array $statuses = null): int
+    {
+        $driver = DB::connection()->getDriverName();
+        $today = now()->toDateString();
+
+        $query = ProductionOrderProcessing::active();
+        if ($driver === 'sqlite') {
+            $query->whereRaw('date(processed_datetime) = ?', [$today]);
+        } else {
+            $query->whereDate('processed_datetime', $today);
+        }
+
+        $query->whereHas('order', function ($q) use ($customerUuid, $statuses) {
+            if ($customerUuid) {
+                $q->whereHas('article.offer', function ($oq) use ($customerUuid) {
+                    $oq->where('customer_uuid', $customerUuid);
+                });
+            }
+            if ($statuses && count($statuses) > 0) {
+                $q->whereIn('status', $statuses);
+            }
+        });
+
+        return $query->count();
     }
 }
