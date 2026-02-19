@@ -14,21 +14,21 @@ The seeder creates (approximate numbers, tuned for realistic coverage):
 2. **Customer Divisions** – 1–3 divisions per customer (≈15 in total)
 3. **Shipping Addresses** – 1–2 addresses per division (≈27 in total)
 4. **4 Suppliers** – for employee contracts (including `FORN-DEMO-ALL`)
-5. **13 Employees** – with complete data (including `EMP-DEMO-ALL` y ejemplos “Rossi/Bianchi”)
-6. **25 Employee Contracts** – 1–3 por empleado, todos los campos rellenados:
-   - 100% con proveedor asignado
-   - ≈70% contratos activos (end_date en el futuro)
-   - ≈30% contratos finalizados (end_date en el pasado)
-   - Todos con nivel salarial (0–4)
-   - Todas las fechas válidas (end_date > start_date)
+5. **13 Employees** – with complete data (including `EMP-DEMO-ALL` and examples “Rossi/Bianchi”)
+6. **25 Employee Contracts** – 1–3 per employee, all fields filled:
+   - 100% with supplier assigned
+   - ≈70% active contracts (end_date in the future)
+   - ≈30% ended contracts (end_date in the past)
+   - All with salary level (0–4)
+   - All dates valid (end_date > start_date)
 7. **Materials and Machinery** – 6 materials, 6 machines, 4 pallet types
 8. **Article Categories** – 6 categories
 9. **Instructions and models** – 11 IC, 11 IO, 11 IP, 6 ModelSCQ, 6 CriticalIssue, 6 PalletSheet (all with placeholder files in storage for downloads)
 10. **Offers** – activities, sectors, seasonality, offer/order types, LAS families, operations; 2–4 offers per customer with operations (OfferOperationList) → 22 offers total + 1 DEMO-ALL offer `2026_999_01_A`
 11. **Articles** – 3–6 articles per offer + **1 demo article**
-    - **All** articles have at least 1 Istruzione di Confezionamento (IC), 1 di Pallettizzazione (IP) and 1 Operativa (IO), so that in “Visualizza” the three cards with ⋯ (Scarica file) appear.
-    - **Demo article** to verify **all inputs**: code **`LAS-DEMO-ALL`** (tutti i campi compilati). It has **all fields** filled (informazioni base, offerta, categoria, pallet, piano imballaggio, piani pallet, line_layout, materiali, macchinari, criticità, istruzioni IC/IP/IO, etichette, peso e controllo, approvazioni, media produttività, Verifica Consumi Materiali). In Articoli → search for **"LAS-DEMO-ALL"** → Visualizza / Modifica / Duplica to verify each input.
-    - Relations: materials (1–3), machinery (1–2 with `value` on pivot), criticalIssues (0–2), IC/IO/IP instructions (1–3 per type), pivot offerarticles, Verifica Consumi Materiali (~40% of articles)
+    - **All** articles have at least 1 packaging instruction (IC), 1 palletization (IP) and 1 operational (IO), so that in Show (Visualizza) “Visualizza” the three cards with ⋯ (Download file) appear.
+    - **Demo article** to verify **all inputs**: code **`LAS-DEMO-ALL`** (all fields filled). It has **all fields** filled (base info, offer, category, pallet, packaging plan, pallet plans, line_layout, materials, machinery, critical issues, IC/IP/IO instructions, labels, weight and control, approvals, average productivity, Material Consumption Verification). In Articles (Articoli) → search for **"LAS-DEMO-ALL"** → Show / Edit / Duplicate to verify each input.
+    - Relations: materials (1–3), machinery (1–2 with `value` on pivot), criticalIssues (0–2), IC/IO/IP instructions (1–3 per type), pivot offerarticles, Material Consumption Verification (~40% of articles)
     - Placeholder files for line_layout under `storage/app/line_layout/{uuid}/`
 12. **Orders in all 7 statuses (operational snapshot):**
     - **~6 orders Pianificato** (status 0)
@@ -55,79 +55,78 @@ The seeder creates (approximate numbers, tuned for realistic coverage):
 Each main section has **one DEMO-ALL record** with **all fields and relations filled** (no optional left blank), for:
 
 1. **Show/Edit:** Verify each input displays and saves correctly. If a field is empty on the demo record, that is the one failing or not being passed.
-2. **Create/Duplicate:** Where applicable (e.g. Duplica articolo, Nuova offerta da cliente), the demo record is the source with all fields; when duplicating or creating from context, any field that does not reach the form should be reviewed.
+2. **Create/Duplicate:** Where applicable (e.g. Duplicate article, New offer from customer), the demo record is the source with all fields; when duplicating or creating from context, any field that does not reach the form should be reviewed.
 
 | Section | Code / criterion | Where to find |
 |--------|--------------------|--------------|
-| **Clienti** | `CLI-DEMO-ALL` | Clienti → buscar "CLI-DEMO-ALL" o "Demo All" |
-| **Divisioni** | 2 divisioni del cliente DEMO-ALL | Dentro del cliente CLI-DEMO-ALL |
-| **Indirizzi di spedizione** | 2 per divisione (cliente DEMO-ALL) | Dentro cada divisione de CLI-DEMO-ALL |
-| **Fornitori** | `FORN-DEMO-ALL` | Fornitori → buscar "FORN-DEMO-ALL" |
-| **Personale (Dipendenti)** | `EMP-DEMO-ALL` | Personale → buscar "DEMO-ALL" o "EMP-DEMO-ALL" |
-| **Contratti** | ≥2 contratti del dipendente EMP-DEMO-ALL | Dentro del dipendente EMP-DEMO-ALL |
-| **Offerte** | `2026_999_01_A` | Offerte → buscar "2026_999_01_A" o "Demo All" |
-| **Attività** (Offerte > Attività) | `Demo All - Attività` | Offerte > Attività → buscar "Demo All" |
-| **Settori** (Offerte > Settori) | `Demo All - Settori` | Offerte > Settori → buscar "Demo All" |
-| **Stagionalità** (Offerte > Stagionalità) | `Demo All - Stagionalità` | Offerte > Stagionalità → buscar "Demo All" |
-| **Tipi di offerta** (Offerte > Tipi) | `Demo All - Tipi offerta` | Offerte > Tipi di offerta → buscar "Demo All" |
-| **Famiglie LAS** (Offerte > Famiglie LAS) | `Demo All - Famiglie LAS` / `LAS-FAM-DEMO` | Offerte > Famiglie LAS → buscar "Demo All" |
-| **Linee di lavoro** (Offerte > Linee di lavoro) | `Demo All - Linee di lavoro` / `LWL-DEMO` | Offerte > Linee di lavoro → buscar "Demo All" |
-| **Risorse L&S** (Offerte > Risorse L&S) | `Demo All - Risorse L&S` / `LSR-DEMO` | Offerte > Risorse L&S → buscar "Demo All" |
-| **Tipi di ordine** (Offerte > Tipi di ordine) | `Demo All - Tipi ordine` / `ORD-TIPO-DEMO` | Offerte > Tipi di ordine → buscar "Demo All" |
-| **Categorie operazioni** (Offerte > Categorie operazioni) | `Demo All - Categorie operazioni` / `CAT-OP-DEMO` | Offerte > Categorie operazioni → buscar "Demo All" |
-| **Operazioni** (Offerte > Operazioni) | `Demo All - Operazione` / `OP-DEMO-ALL` | Offerte > Operazioni → buscar "Demo All" o "OP-DEMO-ALL" |
-| **Articoli** | `LAS-DEMO-ALL` | Articoli → buscar "LAS-DEMO-ALL" |
-| **Materiali** (Articoli > Materiali) | `Demo All - Materiale` / `MAT-DEMO-ALL` | Articoli > Materiali → buscar "Demo All" |
-| **Macchinari** (Articoli > Macchinari) | `Demo All - Macchinario` / `MAC-DEMO-ALL` | Articoli > Macchinari → buscar "Demo All" |
-| **Tipi pallet** (Articoli > Tipi pallet) | `Demo All - Tipo pallet` / `PAL-DEMO-ALL` | Articoli > Tipi pallet → buscar "Demo All" |
-| **Categorie articoli** (Articoli > Categorie) | `Demo All - Categorie articoli` | Articoli > Categorie → buscar "Demo All" |
-| **Problemi critici** (Articoli > Problemi critici) | `Demo All - Problemi critici` | Articoli > Problemi critici → buscar "Demo All" |
-| **Istruzioni di confezionamento** (Articoli > IC) | `IC-DEMO-ALL` / `DEMO-ALL` | Articoli > Istruzioni di confezionamento → **Cerca** "Demo" |
-| **Istruzioni operative** (Articoli > IO) | `IO-DEMO-ALL` / `DEMO-ALL` | Articoli > Istruzioni operative → **Cerca** "Demo" |
-| **Istruzioni di pallettizzazione** (Articoli > IP) | `IP-DEMO-ALL` / `DEMO-ALL` | Articoli > Istruzioni di pallettizzazione → **Cerca** "Demo" |
-| **Modelli CQ** (Articoli > Modelli CQ) | `MOD-DEMO-ALL` / "Demo All - Modello SCQ" | Articoli > Modelli CQ → **Cerca** "Demo" |
-| **Fogli pallet** (Articoli > Fogli pallet) | `PAL-SHEET-DEMO` / "Demo All - Foglio pallet" | Articoli > Fogli pallet → **Cerca** "Demo" |
-| **Ordini** | 1 ordine Pianificato con articolo LAS-DEMO-ALL | Ordini → **Cerca** "Demo" o "REF-DEMO-ALL" o "LAS-DEMO" (no filtro Stato) |
+| **Customers (Clienti)** | `CLI-DEMO-ALL` | Customers → search for "CLI-DEMO-ALL" or "Demo All" |
+| **Divisions (Divisioni)** | 2 divisions of DEMO-ALL customer | Inside customer CLI-DEMO-ALL |
+| **Shipping addresses** | 2 per division (DEMO-ALL customer) | Inside each division of CLI-DEMO-ALL |
+| **Suppliers (Fornitori)** | `FORN-DEMO-ALL` | Suppliers → search for "FORN-DEMO-ALL" |
+| **Staff / Employees (Personale)** | `EMP-DEMO-ALL` | Staff → search for "DEMO-ALL" or "EMP-DEMO-ALL" |
+| **Contracts (Contratti)** | ≥2 contracts of employee EMP-DEMO-ALL | Inside employee EMP-DEMO-ALL |
+| **Offers (Offerte)** | `2026_999_01_A` | Offers → search for "2026_999_01_A" or "Demo All" |
+| **Activities (Offerte > Attività)** | `Demo All - Attività` | Offers > Activities → search for "Demo All" |
+| **Sectors (Offerte > Settori)** | `Demo All - Settori` | Offers > Sectors → search for "Demo All" |
+| **Seasonality (Offerte > Stagionalità)** | `Demo All - Stagionalità` | Offers > Seasonality → search for "Demo All" |
+| **Offer types (Offerte > Tipi)** | `Demo All - Tipi offerta` | Offers > Offer types → search for "Demo All" |
+| **LAS families (Offerte > Famiglie LAS)** | `Demo All - Famiglie LAS` / `LAS-FAM-DEMO` | Offers > LAS families → search for "Demo All" |
+| **Work lines (Offerte > Linee di lavoro)** | `Demo All - Linee di lavoro` / `LWL-DEMO` | Offers > Work lines → search for "Demo All" |
+| **L&S resources (Offerte > Risorse L&S)** | `Demo All - Risorse L&S` / `LSR-DEMO` | Offers > L&S resources → search for "Demo All" |
+| **Order types (Offerte > Tipi di ordine)** | `Demo All - Tipi ordine` / `ORD-TIPO-DEMO` | Offers > Order types → search for "Demo All" |
+| **Operation categories (Offerte > Categorie operazioni)** | `Demo All - Categorie operazioni` / `CAT-OP-DEMO` | Offers > Operation categories → search for "Demo All" |
+| **Operations (Offerte > Operazioni)** | `Demo All - Operazione` / `OP-DEMO-ALL` | Offers > Operations → search for "Demo All" or "OP-DEMO-ALL" |
+| **Articles (Articoli)** | `LAS-DEMO-ALL` | Articles → search for "LAS-DEMO-ALL" |
+| **Materials (Articoli > Materiali)** | `Demo All - Materiale` / `MAT-DEMO-ALL` | Articles > Materials → search for "Demo All" |
+| **Machinery (Articoli > Macchinari)** | `Demo All - Macchinario` / `MAC-DEMO-ALL` | Articles > Machinery → search for "Demo All" |
+| **Pallet types (Articoli > Tipi pallet)** | `Demo All - Tipo pallet` / `PAL-DEMO-ALL` | Articles > Pallet types → search for "Demo All" |
+| **Article categories (Articoli > Categorie)** | `Demo All - Categorie articoli` | Articles > Categories → search for "Demo All" |
+| **Critical issues (Articoli > Problemi critici)** | `Demo All - Problemi critici` | Articles > Critical issues → search for "Demo All" |
+| **Packaging instructions (Articoli > IC)** | `IC-DEMO-ALL` / `DEMO-ALL` | Articles > Packaging instructions → search "Demo" |
+| **Operational instructions (Articoli > IO)** | `IO-DEMO-ALL` / `DEMO-ALL` | Articles > Operational instructions → search "Demo" |
+| **Palletization instructions (Articoli > IP)** | `IP-DEMO-ALL` / `DEMO-ALL` | Articles > Palletization instructions → search "Demo" |
+| **CQ models (Articoli > Modelli CQ)** | `MOD-DEMO-ALL` / "Demo All - Modello SCQ" | Articles > CQ models → search "Demo" |
+| **Pallet sheets (Articoli > Fogli pallet)** | `PAL-SHEET-DEMO` / "Demo All - Foglio pallet" | Articles > Pallet sheets → search "Demo" |
+| **Orders (Ordini)** | 1 Planned order with article LAS-DEMO-ALL | Orders → search "Demo" or "REF-DEMO-ALL" or "LAS-DEMO" (no Status filter) |
 
-**Summary:** Each section and sub-section has at least one **Demo All** record findable with **Cerca** "Demo" / "Demo All" and **all fields filled** (no optional empty); in Show/Edit/Create/Duplicate, **if a field is empty, that is the one failing**. Cliente DEMO-ALL → Offerta DEMO-ALL → Artículo LAS-DEMO-ALL (con single-FK e relazioni: IC, IO, IP, Modelli CQ, Fogli pallet, Materiali, Macchinari, Criticità, approvazioni con dipendente demo) → Ordine demo (lot, motivazione, etichette, indicazioni compilati). Indirizzi demo: co, via, città, CAP, contatti sempre compilati.
+**Summary:** Each section and sub-section has at least one **Demo All** record findable by searching "Demo" / "Demo All" with **all fields filled** (no optional empty); in Show/Edit/Create/Duplicate, **if a field is empty, that is the one failing**. DEMO-ALL customer → DEMO-ALL offer → Article LAS-DEMO-ALL (with single FKs and relations: IC, IO, IP, CQ models, pallet sheets, materials, machinery, critical issues, approvals with demo employee) → demo order (lot, reason, labels, notes filled). Demo addresses: company, street, city, postcode, contacts always filled.
 
 ### Sections without a "Demo All" record
 
-
-| Sección | Nota |
+| Section | Note |
 |--------|------|
-| Offerte > Liste operazioni | Vinculado a oferta demo desde Offerte Show (contiene operación OP-DEMO-ALL) |
-| Offerte > Operazioni | Operaciones; la oferta demo tiene lista operazioni |
-| Value Types | Tipos de valor (catálogo) |
-| Order employees | Asignaciones; se prueban desde Ordini / Gestione personale |
+| Offers > Operation lists | Linked to demo offer from Offer Show (contains operation OP-DEMO-ALL) |
+| Offers > Operations | Operations; the demo offer has an operation list |
+| Value Types | Value types (catalogue) |
+| Order employees | Assignments; tested from Orders / Staff management |
 
-### Flujos con prerellenado (desde contexto)
+### Flows with pre-filled context
 
-Con los datos del seeder puedes probar que los formularios reciben y muestran correctamente los datos iniciales cuando se abren desde un contexto:
+With the seeder data you can verify that forms receive and display the initial data correctly when opened from a context:
 
-| Flujo | Dónde | Query / contexto |
+| Flow | Where | Query / context |
 |-------|--------|-------------------|
-| Nuova Offerta desde Cliente | Cliente Show → "Nuova Offerta" | `?customer_uuid=` → Cliente prerellenado |
-| Crea Divisione desde Cliente | Cliente Show → "Nuova Divisione" | `?customer_uuid=` → Cliente prerellenado |
-| Crea Indirizzo desde Cliente/Divisione | Desde división o listado | `?customer_uuid=` y opcional `?customerdivision_uuid=` |
-| Duplica Offerta | Offerte Index/Show → "Duplica" | `?duplicate_from=` → todos los campos desde oferta |
-| Converti in Articolo | Offerte Index/Show → "Converti in Articolo" | `?offer_uuid=` → Offerta y datos derivados |
-| Crea Articolo (duplicar) | Articoli Index/Show → "Duplica" | `?source_article_uuid=` → relaciones IC/IP/IO, criticità, Verifica Consumi |
-| Crea Ordine desde Articolo | Articoli Index/Show → "Crea Ordine" | `?article_uuid=` → Articolo, N. produzione, Luogo di consegna (si uno solo) |
-| Nuova Operazione (categoria) | OfferOperationCategories Show → "Nuova Operazione" | `?category_uuid=` → Categoria prerellenada |
-| Lista Operazioni Offerta | Desde oferta | `?offer_uuid=` → Offerta prerellenada |
+| New offer from customer | Customer Show → "Nuova Offerta" | `?customer_uuid=` → Customer pre-filled |
+| Create division from customer | Customer Show → "Nuova Divisione" | `?customer_uuid=` → Customer pre-filled |
+| Create address from customer/division | From division or list | `?customer_uuid=` and optional `?customerdivision_uuid=` |
+| Duplicate offer | Offers Index/Show → "Duplica" | `?duplicate_from=` → all fields from offer |
+| Convert to article | Offers Index/Show → "Converti in Articolo" | `?offer_uuid=` → Offer and derived data |
+| Create article (duplicate) | Articles Index/Show → "Duplica" | `?source_article_uuid=` → IC/IP/IO relations, critical issues, Material Consumption Verification |
+| Create order from article | Articles Index/Show → "Crea Ordine" | `?article_uuid=` → Article, production number, delivery place (if only one) |
+| New operation (category) | OfferOperationCategories Show → "Nuova Operazione" | `?category_uuid=` → Category pre-filled |
+| Offer operation list | From offer | `?offer_uuid=` → Offer pre-filled |
 
-### Verificación automática (tests)
+### Automated verification (tests)
 
-Un test de integración comprueba que todas las secciones DEMO-ALL cargan correctamente (Show y Edit) y que los datos se pasan al frontend de forma consistente:
+An integration test checks that all DEMO-ALL sections load correctly (Show and Edit) and that data is passed to the frontend consistently:
 
 ```bash
 php artisan test tests/Feature/Flows/DemoAllSectionsVerificationTest.php
 ```
 
-El test crea datos mínimos con los mismos códigos DEMO-ALL (CLI-DEMO-ALL, FORN-DEMO-ALL, EMP-DEMO-ALL, 2026_999_01_A, LAS-DEMO-ALL y una orden) y verifica que cada página responda 200 y que Inertia reciba las props esperadas (p. ej. `customer.divisions`, `offer.customer`, `order.article`).
+The test creates minimal data with the same DEMO-ALL codes (CLI-DEMO-ALL, FORN-DEMO-ALL, EMP-DEMO-ALL, 2026_999_01_A, LAS-DEMO-ALL and one order) and verifies that each page returns 200 and that Inertia receives the expected props (e.g. `customer.divisions`, `offer.customer`, `order.article`).
 
-## 🚀 Cómo Ejecutar el Seeder
+## How to run the seeder
 
 ### Option 1: Run the seeder directly
 

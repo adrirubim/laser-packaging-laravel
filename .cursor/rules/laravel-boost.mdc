@@ -29,13 +29,20 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - eslint (ESLINT) - v9
 - prettier (PRETTIER) - v3
 
-## Skills Activation
+## Skills Activation (apply to the whole project)
 
-This project has domain-specific skills available. You MUST activate the relevant skill whenever you work in that domain—don't wait until you're stuck.
+All skills in `.cursor/skills/` apply to this entire codebase. You MUST activate the relevant skill whenever you work in that domain—don't wait until you're stuck. These skills are committed to the repo so the whole team and any environment get the same enterprise standards.
 
 - `wayfinder-development` — Activates whenever referencing backend routes in frontend components. Use when importing from @/actions or @/routes, calling Laravel routes from TypeScript, or working with Wayfinder route functions.
 - `inertia-react-development` — Develops Inertia.js v2 React client-side applications. Activates when creating React pages, forms, or navigation; using &lt;Link&gt;, &lt;Form&gt;, useForm, or router; working with deferred props, prefetching, or polling; or when user mentions React with Inertia, React pages, React forms, or React navigation.
 - `tailwindcss-development` — Styles applications using Tailwind CSS v4 utilities. Activates when adding styles, restyling components, working with gradients, spacing, layout, flex, grid, responsive design, dark mode, colors, typography, or borders; or when the user mentions CSS, styling, classes, Tailwind, restyle, hero section, cards, buttons, or any visual/UI changes.
+- `phpunit-laravel` — Activates when creating or editing PHPUnit tests, touching code covered by tests, or running php artisan test. Enforces factories, filters, and no removal of tests without approval.
+- `planning-domain` — Activates when working on Planning: PlanningController, Planning/* services, Planning/Index.tsx, /planning and /api/planning/*. Unifies shift rules, zoom, API contract (error_code, lines/planning/contracts/summary), and validations.
+- `react-best-practices` — Use when writing, reviewing, or refactoring React/Inertia code: components, data fetching, bundle size, re-renders (e.g. Planning/Index).
+- `composition-patterns` — Use when refactoring components with many props, building reusable component libraries, or designing flexible component APIs; includes React 19.
+- `web-design-guidelines` — Use when reviewing UI, checking accessibility, auditing design, or checking the site against best practices.
+- `laravel-form-requests` — Use when creating or editing Form Requests, validation rules, or validation messages; follow sibling requests convention (string vs array rules).
+- `laravel-api-json` — Use when working on api/* routes, controllers returning JSON, or API Resources; keep response shape and error_code/message consistent.
 
 ## Conventions
 

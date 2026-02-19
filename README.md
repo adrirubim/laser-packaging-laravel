@@ -251,6 +251,7 @@ All documentation in **[docs/](docs/README.md)**:
 | [docs/TEST_COVERAGE.md](docs/TEST_COVERAGE.md) | Test suites and coverage |
 | [docs/BACKEND_GUIDE.md](docs/BACKEND_GUIDE.md) | Backend (controllers, services, actions, repos, models) |
 | [docs/FRONTEND_GUIDE.md](docs/FRONTEND_GUIDE.md) | Frontend (Inertia + React 19) |
+| [docs/GIT_WHAT_TO_COMMIT.md](docs/GIT_WHAT_TO_COMMIT.md) | What to commit (and what not); commit policy |
 
 [SECURITY](SECURITY.md) · [LICENSE](LICENSE) · [VERSION_STACK](docs/VERSION_STACK.md)
 

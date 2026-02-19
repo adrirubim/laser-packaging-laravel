@@ -2565,11 +2565,11 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                         {/*
                     <div className="overflow-x-auto">
                         <table className="min-w-full border-collapse text-sm">
-                            <thead>
-                                <tr>
+                                <thead>
+                                    <tr>
                                     <th className="sticky left-0 z-10 bg-card px-2 py-2 text-left text-xs font-semibold text-muted-foreground">
-                                        Linea
-                                    </th>
+                                            Linea
+                                        </th>
                                     {rangeDays.map((day) => (
                                         <th
                                             key={day.dateStr}
@@ -2588,9 +2588,9 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                                             </button>
                                         </th>
                                     ))}
-                                </tr>
-                            </thead>
-                            <tbody>
+                                    </tr>
+                                </thead>
+                                <tbody>
                                 {lines.length === 0 ? (
                                     <tr>
                                         <td
@@ -2615,10 +2615,10 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                                                         <td className="sticky left-0 z-10 bg-muted/30 px-2 py-2 text-xs font-semibold text-foreground shadow-sm">
                                                             <div className="flex flex-col">
                                                                 <span>
-                                                                    {line.code}
+                                                            {line.code}
                                                                 </span>
                                                                 <span className="truncate text-[11px] font-normal text-muted-foreground">
-                                                                    {line.name}
+                                                                {line.name}
                                                                 </span>
                                                             </div>
                                                         </td>
@@ -2653,9 +2653,9 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                                                                         }
                                                                     />
                                                                 </button>
-                                                            </td>
+                                                    </td>
                                                         ))}
-                                                    </tr>
+                                                </tr>
                                                     {(line.orders ?? []).map(
                                                         (order) => {
                                                             const orderMap =
@@ -2681,7 +2681,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                                                                                 ? ` — ${order.article_code}`
                                                                                 : ''}
                                                                         </span>
-                                                                    </td>
+                                            </td>
                                                                     {rangeDays.map(
                                                                         (
                                                                             day,
@@ -2692,8 +2692,8 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                                                                                 }
                                                                                 className="px-1 py-1.5 align-middle"
                                                                             >
-                                                                                <button
-                                                                                    type="button"
+                                                    <button
+                                                        type="button"
                                                                                     className="block w-full"
                                                                                     onClick={() =>
                                                                                         openDay(
@@ -2717,17 +2717,17 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                                                                                     />
                                                                                 </button>
                                                                             </td>
-                                                                        ),
-                                                                    )}
-                                                                </tr>
-                                                            );
+                                                            ),
+                                                    )}
+                                                </tr>
+                                            );
                                                         },
                                                     )}
                                                 </Fragment>
                                             );
-                                        })}
-                                        {SUMMARY_ROWS.map((row) => (
-                                            <tr
+                                    })}
+                                    {SUMMARY_ROWS.map((row) => (
+                                        <tr
                                                 key={`summary_${row.id}`}
                                                 className="border-t-2 border-border bg-muted/40 align-middle"
                                             >
@@ -2736,8 +2736,8 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                                                 </td>
                                                 {rangeDays.map((day) => {
                                                     if (day.isWeekend) {
-                                                        return (
-                                                            <td
+                                                    return (
+                                                        <td
                                                                 key={
                                                                     day.dateStr
                                                                 }
@@ -2789,7 +2789,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                                                                         )
                                                                     }
                                                                     onBlur={() => {
-                                                                        void saveSummaryCell(
+                                                                            void saveSummaryCell(
                                                                             summaryKeyRiepilogo,
                                                                             editingSummaryValue,
                                                                         ).then(
@@ -2824,32 +2824,32 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                                                         );
                                                     }
                                                     if (row.editable) {
-                                                        return (
-                                                            <td
+                                                    return (
+                                                        <td
                                                                 key={day.dateStr}
                                                                 className="min-w-[3rem] cursor-pointer px-1 py-2 align-middle"
                                                             >
                                                                 <div
                                                                     className="flex h-8 items-center justify-center rounded-md border border-border bg-background text-xs font-medium text-foreground hover:bg-accent/50"
-                                                                    onClick={() => {
+                                                            onClick={() => {
                                                                         setEditingSummaryKey(
                                                                             summaryKeyRiepilogo,
                                                                         );
                                                                         setEditingSummaryValue(
-                                                                            String(
+                                                                    String(
                                                                                 value,
-                                                                            ),
-                                                                        );
-                                                                    }}
-                                                                >
+                                                                    ),
+                                                                );
+                                                            }}
+                                                        >
                                                                     {value >
                                                                     0
                                                                         ? value
                                                                         : ''}
                                                                 </div>
-                                                            </td>
-                                                        );
-                                                    }
+                                                        </td>
+                                                    );
+                                                }
                                                     return (
                                                         <td
                                                             key={day.dateStr}
@@ -2861,19 +2861,19 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                                                                         ? 'bg-red-500/80 text-red-50'
                                                                         : 'border border-border bg-background text-foreground'
                                                                 }`}
-                                                            >
-                                                                {value}
+                                                    >
+                                                        {value}
                                                             </div>
-                                                        </td>
-                                                    );
-                                                })}
-                                            </tr>
-                                        ))}
+                                                    </td>
+                                                );
+                                            })}
+                                        </tr>
+                                    ))}
                                     </>
                                 )}
-                            </tbody>
-                        </table>
-                    </div>
+                                </tbody>
+                            </table>
+                        </div>
                         */}
                     </>
                 )}

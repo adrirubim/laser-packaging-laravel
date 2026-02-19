@@ -27,7 +27,7 @@ credentials.json
 /.nova
 /.vscode
 /.zed
-.cursor/
+# .cursor/ — do not ignore: skills, rules and docs live in repo for enterprise standard
 
 # Build & deps
 .phpactor.json
