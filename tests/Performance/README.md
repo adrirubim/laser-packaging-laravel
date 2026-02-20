@@ -56,7 +56,7 @@ Tests for Production Portal endpoints to ensure acceptable response times.
 - Processing endpoints: < 400ms
 - Concurrent requests: < 3 seconds for 10 requests
 
-## Running performance tests
+## Running Performance Tests
 
 ### Run all:
 ```bash
@@ -91,9 +91,9 @@ These tests establish baselines. If they start failing:
 - Tests use the `RefreshDatabase` trait for automatic cleanup.
 - These tests focus on response times, not absolute throughput.
 - Adjust performance targets based on actual production requirements.
-- See `README_TEST_DATABASE.md` for database setup instructions.
+- See the project root [README_TEST_DATABASE.md](../../README_TEST_DATABASE.md) for database setup.
 
-## Future improvements
+## Future Improvements
 
 - Add memory usage tracking
 - Add database query count assertions

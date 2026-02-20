@@ -1,8 +1,8 @@
-# What to commit to Git (and what not to)
+# What to Commit to Git (and What Not To)
 
-**Policy:** Commit source code, lock files, config templates, and documentation. Never commit secrets (`.env`, keys, tokens), build artifacts (`vendor/`, `node_modules/`, `public/build/`), or IDE-specific files. This keeps the repo secure, reproducible, and audit-friendly.
+**Policy:** Commit source code, lock files, config templates, and documentation. Never commit secrets (`.env`, keys, tokens), build artifacts (`vendor/`, `node_modules/`, `public/build/`), or IDE-specific files. This keeps the repository secure, reproducible, and audit-friendly.
 
-This document is the single reference for commit policy. It complements `.gitignore` and [CONTRIBUTING.md](../CONTRIBUTING.md). All documentation committed to the repo must be in English.
+This document is the single reference for commit policy. It complements `.gitignore` and [CONTRIBUTING.md](../CONTRIBUTING.md). **All documentation committed to the repository must be in English, professional in tone, and aligned with current best practices.**
 
 ---
 
@@ -48,13 +48,13 @@ This document is the single reference for commit policy. It complements `.gitign
 | **Lock files** | `composer.lock`, `package-lock.json`. Ensure everyone and CI get the same dependency versions. |
 | **`.env.example`** | Template only (no secrets). Documents required env vars; new devs copy it to `.env` and fill values. |
 | **`phpunit.xml`**, **`vite.config.*`**, **`tsconfig.json`**, **ESLint/Prettier config** | Build, test, and lint configuration. Needed to run tests and frontend the same way everywhere. |
-| **README, docs, LICENSE, SECURITY, CONTRIBUTING** | Onboarding, standards, and legal. All in English when committed. |
+| **README, docs, LICENSE, SECURITY, CONTRIBUTING** | Onboarding, standards, and legal. All in English, professional tone, best practices. |
 | **`.cursor/`** (this project) | Skills, rules, and docs under `.cursor/skills/`, `.cursor/rules/`, `.cursor/docs/` are **committed** so the whole team and any environment share the same enterprise standards (see [SKILLS_ENTERPRISE.md](../.cursor/docs/SKILLS_ENTERPRISE.md)). |
 | **`.github/workflows/`** | CI (tests, lint). Needed so pushes and PRs run the same checks. |
 | **`.github/ISSUE_TEMPLATE/`**, **`.github/PULL_REQUEST_TEMPLATE.md`** | Standardised issues and PRs. |
 | **Patches** | `patches/` (if used with patch-package) so dependency patches are applied consistently. |
 
-**Why it matters:** Anyone who clones the repo can install deps, copy `.env.example` → `.env`, run migrations and tests, and get the same behaviour. CI mirrors that. `.cursor/` in the repo keeps agent behaviour consistent for the team.
+**Why it matters:** Anyone who clones the repo can install deps, copy `.env.example` → `.env`, run migrations and tests, and get the same behavior. CI mirrors that. `.cursor/` in the repo keeps agent behavior consistent for the team.
 
 ---
 
@@ -71,10 +71,9 @@ This document is the single reference for commit policy. It complements `.gitign
 
 ## 5. Before pushing (checklist)
 
-- No `.env` or real secrets in any file.
-- No `node_modules/` or `vendor/` in the commit.
-- `composer.lock` and `package-lock.json` are committed when you change dependencies.
-- Run `vendor/bin/pint`, `npm run format`, `npm run lint`, `npm run build`, and `./vendor/bin/phpunit` (or `php artisan test`) so CI stays green.
-- Documentation that goes to git is in English.
+- No `.env` or secrets; no `node_modules/` or `vendor/` in the commit.
+- Commit `composer.lock` and `package-lock.json` when dependencies change.
+- Run: `vendor/bin/pint`, `npm run format`, `npm run lint`, `npm run build`, `php artisan test` (so CI stays green).
+- Documentation committed to the repository is in English and follows project standards.
 
-See also: [CONTRIBUTING.md](../CONTRIBUTING.md), [SECURITY.md](../SECURITY.md).
+See: [CONTRIBUTING.md](../CONTRIBUTING.md), [SECURITY.md](../SECURITY.md).

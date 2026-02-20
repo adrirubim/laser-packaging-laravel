@@ -1,74 +1,13 @@
 # Test Database Configuration
 
-**Last updated:** 13 February 2026
+Tests run against **PostgreSQL**. The connection is configured in `phpunit.xml`.
 
-Tests run against **PostgreSQL** to match the production environment. The connection is configured in `phpunit.xml`.
+**Quick setup:**
 
-## Create the Test Database
+1. Create the database: `psql -U postgres -c "CREATE DATABASE laser_packaging_test;"` (or use `CREATE_TEST_DATABASE.sql`).
+2. Run migrations: `php artisan migrate:fresh --env=testing`.
+3. Run tests: `./vendor/bin/phpunit`.
 
-1. Connect to PostgreSQL as user `postgres`:
+Optional: create **`.env.testing`** in the project root if your PostgreSQL setup requires a user or password (this file is not committed).
 
-```bash
-psql -U postgres
-```
-
-2. Create the test database:
-
-```sql
-CREATE DATABASE laser_packaging_test;
-```
-
-Or run the SQL script included in the project:
-
-```bash
-psql -U postgres -f CREATE_TEST_DATABASE.sql
-```
-
-3. Verify that the database was created:
-
-```bash
-psql -U postgres -l
-```
-
-## Connection configuration
-
-The test credentials live in **`phpunit.xml`** (the `<php><env>...</env></php>` section):
-
-| Variable   | Default value          | Description        |
-|-----------|-------------------------|--------------------|
-| `DB_CONNECTION` | `pgsql`           | Driver             |
-| `DB_DATABASE`   | `laser_packaging_test` | Database name |
-| `DB_USERNAME`   | `postgres`        | User               |
-| `DB_PASSWORD`   | empty by default  | Password (set in `.env.testing` if your PostgreSQL requires it) |
-
-If your environment uses a different user/password, create **`.env.testing`** in the project root (it is not committed). PHPUnit loads `.env.testing` when `APP_ENV=testing`.
-
-## Migrations
-
-Before running the tests for the first time, you should apply migrations on the test environment:
-
-```bash
-php artisan migrate:fresh --env=testing
-```
-
-This creates all tables (including `users`) in `laser_packaging_test`.  
-Tests that use the **`RefreshDatabase`** trait will re‑run migrations automatically; re‑running the command manually is only needed when you change migrations or recreate the test database.
-
-## Running the tests
-
-```bash
-./vendor/bin/phpunit
-```
-
-For tests that render Inertia (Vite) views, generate the build first (this is what GitHub Actions does):
-
-```bash
-npm run build
-./vendor/bin/phpunit
-```
-
-## Notes
-
-- The test database is automatically cleaned after each test thanks to the `RefreshDatabase` trait.
-- The test database is independent from development/production databases.
-- See **`README_SEED_TEST_DATA.md`** for demo data (seeder); the seeder is used in development, not in the PHPUnit test database.
+**Extended details** (connection table, migrations, notes) are maintained locally and are not part of the repository.

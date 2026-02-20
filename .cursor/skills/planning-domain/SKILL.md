@@ -53,4 +53,4 @@ Enabled hours per order: use the same logic as `OrderShiftHours::forOrder()` and
 
 ## Enterprise goal
 
-Single behaviour between backend (PHP) and frontend (React): same shifts, same hours, same API contract and validations. Docs in `docs/planning/` are the reference for parity and evolution.
+Single behavior between backend (PHP) and frontend (React): same shifts, same hours, same API contract and validations. Docs in `docs/planning/` are the reference for parity and evolution.

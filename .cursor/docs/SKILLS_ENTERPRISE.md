@@ -1,8 +1,6 @@
-# Skills for enterprise-level — laser-packaging-laravel
+# Skills (enterprise) — laser-packaging-laravel
 
-**Scope:** Skills in `.cursor/skills/` apply to the **entire project** and are tracked in the repo (not ignored): anyone who clones the project gets the same enterprise standard. Activation rules are in `laravel-boost.mdc`.
-
-This document defines which skills benefit the project and raise it to **enterprise** level: quality, maintainability, security, UX, and domain consistency.
+Skills in `.cursor/skills/` apply to the whole project and are committed so the team shares the same standards. Activation rules: `laravel-boost.mdc`. **Stack:** Laravel 12, Inertia v2, React 19, Tailwind v4, Wayfinder, ESLint 10, PHPUnit 12.
 
 ---
 
@@ -65,7 +63,7 @@ These skills are added in `.cursor/skills/` (source: vercel-labs/agent-skills). 
 | **Frontend performance** | react-best-practices, composition-patterns | Fewer re-renders, more modular and maintainable code. |
 | **Quality and regressions** | phpunit-laravel, laravel-boost (tests) | Mandatory and consistent tests; fewer bugs in production. |
 | **UX and accessibility** | web-design-guidelines, tailwindcss-development | Predictable and accessible UI. |
-| **Planning domain** | planning-domain | Consistent planning behaviour and API across backend and frontend. |
+| **Planning domain** | planning-domain | Consistent planning behavior and API across backend and frontend. |
 | **Routes and forms** | wayfinder-development, inertia-react-development | Navigation and forms without breakage. |
 
 ---
@@ -78,39 +76,6 @@ These skills are added in `.cursor/skills/` (source: vercel-labs/agent-skills). 
 
 ---
 
-## 6. What to install manually
+## Install (optional)
 
-### Project summary
-
-- **Stack:** Laravel 12, Inertia v2, React 19, Tailwind v4, Wayfinder, Fortify, PHPUnit 12, PrimeReact/Radix, TypeScript.
-- **Already in `.cursor/skills/`:** wayfinder, inertia-react, tailwindcss, phpunit-laravel, planning-domain, react-best-practices, composition-patterns, web-design-guidelines, laravel-form-requests, laravel-api-json.
-
-### Install via CLI (Global = all your projects)
-
-To have these skills apply to **all** your projects in Cursor, install them **Global** (one command per skill). **Exact names in the repo** (CLI does not accept `react-best-practices` or `composition-patterns`):
-
-```bash
-npx skills add vercel-labs/agent-skills -a cursor --skill vercel-react-best-practices
-npx skills add vercel-labs/agent-skills -a cursor --skill vercel-composition-patterns
-npx skills add vercel-labs/agent-skills -a cursor --skill web-design-guidelines
-```
-
-For each run: choose **Global** and **Symlink (Recommended)**.
-
-### Create manually (this repo only or copy to Global)
-
-These skills are **not** in vercel-labs/agent-skills; create them by hand (copy the folder to `.cursor/skills/` in the project or to `~/.cursor/skills/` for Global):
-
-| Skill | Location | Purpose |
-|-------|----------|---------|
-| **laravel-form-requests** | `.cursor/skills/laravel-form-requests/SKILL.md` | Validation: always Form Request; rules convention (string vs array); messages; check sibling requests. |
-| **laravel-api-json** | `.cursor/skills/laravel-api-json/SKILL.md` | JSON APIs: consistent response (error_code, message, structure); when to use API Resources; 422 validation. |
-
-They are already created in this project (section 3). To use them in **all** your Laravel projects, copy the `laravel-form-requests` and `laravel-api-json` folders to `~/.cursor/skills/` (or the path Cursor uses on your system).
-
-### What not to install
-
-- **react-native-skills** (Vercel): this project is web-only; not applicable.
-- Skills for other stacks (pure Next.js, etc.) unless you have projects in that stack and want Global.
-
-Reference document for the agent and the team. It does not replace the rules in `laravel-boost.mdc` or in each SKILL.md.
+Skills are already in `.cursor/skills/`. For Global use in Cursor: `npx skills add vercel-labs/agent-skills -a cursor --skill <name>` (e.g. `vercel-react-best-practices`, `web-design-guidelines`). Project-specific skills (phpunit-laravel, planning-domain, laravel-form-requests, laravel-api-json) are in-repo only; copy to `~/.cursor/skills/` if you want them Global. Reference: `laravel-boost.mdc` and each `SKILL.md`.

@@ -1,10 +1,8 @@
-# Test coverage
+# Test Coverage
 
-**Last updated:** 13 February 2026 · **Stack:** [VERSION_STACK.md](VERSION_STACK.md)
+**Stack:** [VERSION_STACK.md](VERSION_STACK.md) · **Suite:** 994 tests, 6682+ assertions (Unit, Feature, Performance).
 
-**Suite:** 994 tests, 6682+ assertions (Unit, Feature, Performance).
-
-## How to run
+## How to Run
 
 Feature tests use Inertia + Vite. If you see *"Unable to locate file in Vite manifest"*, run:
 
@@ -15,7 +13,7 @@ php artisan test
 
 Suites: `--testsuite=Unit` | `--testsuite=Feature` | `--testsuite=Performance`
 
-## Coverage by component
+## Coverage by Component
 
 | Component | Total | Covered | Notes |
 |-----------|-------|---------|-------|

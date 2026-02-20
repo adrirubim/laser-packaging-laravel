@@ -13,8 +13,8 @@
 ## Checklist
 
 - [ ] Code follows PSR-12 (PHP) and project conventions (TypeScript, React)
-- [ ] `vendor/bin/pint` and `npm run format` / `npm run lint` run clean locally
-- [ ] `npm run build` and `./vendor/bin/phpunit` pass locally
+- [ ] `vendor/bin/pint`, `npm run format`, `npm run lint` (and optionally `npm run types`) run clean
+- [ ] `npm run build` and `php artisan test` (or `./vendor/bin/phpunit`) pass
 - [ ] New behavior covered by tests where relevant
 - [ ] Documentation updated if needed (README, `docs/`, or code comments)
 - [ ] Screenshots or GIFs added for UI changes (if applicable)

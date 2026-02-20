@@ -1,7 +1,6 @@
-# Stack versions (exact reference)
+# Stack Versions (Exact Reference)
 
-**Last updated:** 13 February 2026  
-Versions below are **resolved** in `package-lock.json` and `composer.lock`. To check your environment: `npm ls <package>` and `composer show <package>`.
+Versions are resolved in `package-lock.json` and `composer.lock`. Check locally with `npm ls <pkg>` or `composer show <pkg>`.
 
 ---
 
@@ -18,7 +17,7 @@ Versions below are **resolved** in `package-lock.json` and `composer.lock`. To c
 
 ---
 
-## Runtime environment
+## Runtime Environment
 
 | Tool | Version (reference environment) | Note |
 |------|----------------------------------|------|
@@ -38,14 +37,17 @@ Versions below are **resolved** in `package-lock.json` and `composer.lock`. To c
 | **tailwindcss** | 4.1.18 | `^4.0.0` |
 | **@types/react** | (aligned to react 19) | `^19.2.0` |
 | **@types/react-dom** | (aligned to react-dom 19) | `^19.2.0` |
+| **eslint** | 10.x | `^10.0.0` |
+| **@eslint/js** | 10.x | `^10.0.0` |
+| **react-is** | 19.x | `^19.0.0` (for recharts) |
 
 ---
 
-## One-liner summary (for documentation)
+## One-Liner Summary
 
-To cite the stack in other docs:
+To cite the stack in other documentation:
 
 - **Backend:** PHP 8.2+, Laravel 12.48.x, Inertia Laravel 2.0.x, Wayfinder 0.1.x  
 - **Frontend:** React 19.2.x, Inertia.js React 2.3.x, TypeScript 5.9.x, Vite 7.3.x, Tailwind CSS 4.1.x  
 
-Reference: **February 2026**. Full detail: this file (`docs/VERSION_STACK.md`).
+Reference: **February 2026**. Full detail: this file.

@@ -88,7 +88,7 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 
 - ✅ **Full CRUD** — Offers, Articles, Orders, Clients, Master data (40 controllers)
 - ✅ **Production Portal** — Web frontend (Login, Dashboard, Order Detail) + REST API (9 endpoints)
-- ✅ **Production Planning** — Ordini → Pianificazione Produzione (API + UI for planning data, replan, calculations)
+- ✅ **Production Planning** — Orders → Production Planning (API and UI for planning data, replan, calculations)
 - ✅ **UUID-Based Models** — All models use UUIDs as primary identifiers
 - ✅ **Service Layer** — Business logic in Services (codes, calculations, numbers)
 - ✅ **Repository Pattern** — 7 repositories for data access abstraction
@@ -129,8 +129,8 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 ### Development Tools
 
 - **Testing:** PHPUnit 12
-- **Code Quality:** ESLint, Prettier
-- **Package Manager:** Composer, NPM
+- **Code Quality:** ESLint 10, Prettier 3
+- **Package Manager:** Composer, NPM (npm uses `.npmrc` with `legacy-peer-deps` for install/ci)
 
 ---
 
@@ -165,7 +165,7 @@ cd laser-packaging-laravel
 # Install PHP dependencies
 composer install
 
-# Install Node dependencies
+# Install Node dependencies (uses .npmrc; run npm ci in CI)
 npm install
 ```
 
@@ -240,11 +240,11 @@ Then open **http://localhost:8000**. For full dev (Laravel + Vite): `npm run dev
 <a id="documentation"></a>
 ## 📚 Documentation
 
-All documentation in **[docs/](docs/README.md)**:
+All repository documentation is in **English** and follows **current best practices**. Index:
 
 | Doc | Description |
 |-----|-------------|
-| [docs/README.md](docs/README.md) | Documentation index |
+| [docs/README.md](docs/README.md) | Documentation index (English, best practices) |
 | [README_TEST_DATABASE.md](README_TEST_DATABASE.md) | Test database (PostgreSQL) |
 | [README_SEED_TEST_DATA.md](README_SEED_TEST_DATA.md) | Demo/test data seeder |
 | [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md) | Project status and modules |
@@ -262,15 +262,15 @@ All documentation in **[docs/](docs/README.md)**:
 
 GitHub Actions runs **tests** and **lint** on every push and pull request to `main`.
 
-- **Tests** (`.github/workflows/tests.yml`): PHP 8.4, Node 22, `composer install`, `npm ci`, `npm run build`, `./vendor/bin/phpunit`
-- **Lint** (`.github/workflows/lint.yml`): `npm run lint` (ESLint)
+- **Tests** (`.github/workflows/tests.yml`): PHP 8.4, Node 22, `composer install`, `npm ci --legacy-peer-deps`, `npm run build`, PHPUnit
+- **Lint** (`.github/workflows/lint.yml`): `composer install`, `npm install --legacy-peer-deps`, Pint, `npm run format`, `npm run lint` (ESLint 10)
 
 ---
 
 <a id="testing"></a>
 ## 🧪 Testing
 
-### Run tests
+### Run Tests
 
 ```bash
 # Build frontend first (required for Inertia/Vite in Feature tests)
@@ -285,7 +285,7 @@ php artisan test --testsuite=Feature
 php artisan test --testsuite=Performance
 ```
 
-### Test coverage
+### Test Coverage
 
 - ✅ **994 tests passing**
 - ✅ **6682+ assertions** across all test suites
@@ -295,7 +295,7 @@ php artisan test --testsuite=Performance
 
 See [docs/TEST_COVERAGE.md](docs/TEST_COVERAGE.md) for details.
 
-### Test database
+### Test Database
 
 - Configured in `phpunit.xml` (PostgreSQL, database `laser_packaging_test`)
 - CI uses password `postgres`; adjust `phpunit.xml` locally if your test DB uses different credentials
@@ -317,7 +317,7 @@ Request → Controller → Service / Action → Repository → Model
          Inertia response (React pages)
 ```
 
-### Architecture layers
+### Architecture Layers
 
 1. **Controllers** (`app/Http/Controllers/`) — Handle HTTP requests and responses, coordinate services/actions, return Inertia or JSON, apply middleware and authorization.
 2. **Services** (`app/Services/`) — Business logic (codes, calculations, number generation), orchestration.
@@ -325,7 +325,7 @@ Request → Controller → Service / Action → Repository → Model
 4. **Repositories** (`app/Repositories/`) — Data access layer abstraction, complex query building.
 5. **Models** (`app/Models/`) — UUID-based Eloquent models.
 
-### Frontend structure
+### Frontend Structure
 
 | Path | Purpose |
 |------|---------|
@@ -353,19 +353,19 @@ Backend tree: `app/Http/Controllers/`, `app/Services/`, `app/Actions/`, `app/Rep
 | Testing | ✅ Excellent | 10/10 | 994 tests, 6682+ assertions, Unit/Feature/Performance |
 | Documentation | ✅ Complete | 10/10 | `docs/`, test report, DB and seed guides |
 
-### Core modules (100% complete)
+### Core Modules (100% complete)
 
-- ✅ **Offerte** — 11 sub-modules (Attività, Settori, Stagionalità, Tipi ordini, Operazioni, Famiglia LAS, etc.) · Form “Nueva Offerta” (49 campos)
-- ✅ **Clienti** — Anagrafica, Divisioni, Indirizzi
+- ✅ **Offers** — 11 sub-modules (Activities, Sectors, Seasonality, Order types, Operations, LAS families, etc.) · Form “New Offer” (49 fields)
+- ✅ **Customers** — Master data, Divisions, Addresses
 - ✅ **Offers, Articles, Orders** — Full CRUD with React/Inertia
 - ✅ **Production Portal** — Web (Login, Dashboard, Order Detail) + REST API (9 endpoints)
-- ✅ **Anagrafica** — Customers, Divisions, Shipping, Suppliers, Employees, Materials, Machinery, Critical Issues
-- ✅ **Ordini** — Orders, Order States, Order Employee Assignments; **Production Planning** (API + UI: planning data, replan, calculations)
+- ✅ **Master data** — Customers, Divisions, Shipping, Suppliers, Employees, Materials, Machinery, Critical Issues
+- ✅ **Orders** — Orders, Order States, Order Employee Assignments; **Production Planning** (API and UI: planning data, replan, calculations)
 - ✅ **Configuration** — OfferType, OfferSeasonality, OfferSector, ArticleCategory, PalletType, ValueTypes, etc.
 
 ### Recent improvements (February 2026)
 
-- Production Planning module (Ordini): API and UI for planning data, replan, and calculations; full test coverage. Unified documentation under `docs/`; DEMO-ALL seeder and verification test; production ready.
+- Production Planning module (Orders): API and UI for planning data, replan, and calculations; full test coverage. Unified documentation under `docs/`; DEMO-ALL seeder and verification test; production ready.
 
 <a id="default-users-development"></a>
 ## 👥 Default Users (development)
@@ -453,7 +453,7 @@ php artisan storage:link
 <a id="before-pushing-to-github"></a>
 ## 📤 Before Pushing to GitHub
 
-Ensure dependencies are installed (`composer install` and `npm ci`). Then run locally to avoid CI failures:
+Ensure dependencies are installed (`composer install`, `npm ci`). Then run locally to avoid CI failures:
 
 ```bash
 # Linting / formatting
@@ -478,7 +478,7 @@ Optional: `npm run types`.
 
 See **[CONTRIBUTING.md](CONTRIBUTING.md)** for local checks, branch/commit conventions, and how to open PRs and issues. This is an open-source project (MIT); for inquiries, contact the author.
 
-### Code standards
+### Code Standards
 
 - PSR-12 for PHP; TypeScript and project conventions for frontend
 - Write tests for new features; document public methods
@@ -510,6 +510,4 @@ See **[CONTRIBUTING.md](CONTRIBUTING.md)** for local checks, branch/commit conve
 
 ---
 
-**Last Updated:** 13 February 2026  
-**Status:** Production Ready ✅  
-**Stack:** [docs/VERSION_STACK.md](docs/VERSION_STACK.md)
+**Last Updated:** February 2026 · **Status:** Production Ready ✅ · **Stack:** [docs/VERSION_STACK.md](docs/VERSION_STACK.md)

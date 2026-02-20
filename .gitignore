@@ -7,12 +7,14 @@
 /public/storage
 /storage/*.key
 /storage/pail
+/storage/logs/*.log
 /vendor
 
 # Environment & secrets
 .env
 .env.*
 !.env.example
+*.bak
 .env.local
 .env.*.local
 /auth.json

@@ -16,7 +16,7 @@ description: >-
 
 ## Mandatory rules
 
-1. **Every behaviour change** must have a test (new or updated). Run the affected tests before considering the change done.
+1. **Every behavior change** must have a test (new or updated). Run the affected tests before considering the change done.
 2. **Use factories** to create models in tests. Check `states` before building data by hand.
 3. **Do not remove** tests or test files without explicit user approval.
 4. **PHPUnit only:** if Pest appears, convert to PHPUnit (this project uses PHPUnit).

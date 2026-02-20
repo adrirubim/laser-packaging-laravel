@@ -29,7 +29,7 @@ Patterns for flexible and maintainable components. Avoid boolean prop proliferat
 ## Quick reference
 
 ### Architecture
-- **Avoid boolean props** to customise behaviour; use composition (children, subcomponents).
+- **Avoid boolean props** to customize behavior; use composition (children, subcomponents).
 - **Compound components:** structure complex components with shared context instead of many props.
 
 ### State

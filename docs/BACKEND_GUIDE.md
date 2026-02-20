@@ -1,4 +1,4 @@
-# Backend guide
+# Backend Guide
 
 **Stack:** [VERSION_STACK.md](VERSION_STACK.md). Laravel 12.48.x, PHP 8.4.x, PostgreSQL, Inertia.js 2.3.x, PHPUnit 12.
 
@@ -80,7 +80,7 @@ When adding new complex queries:
 - Prefer **adding a method in an existing repository** over inline queries in controllers.  
 - Make sure to cover it with a repository Unit test.
 
-## 5. Models & validation
+## 5. Models and Validation
 
 ### Models
 
@@ -107,7 +107,7 @@ There are dedicated Unit tests for key models (e.g. `OrderModelTest`, `Machinery
 - Ensure caches are **invalidated** when:
   - Orders, offers or articles are created/updated/deleted.  
   - Critical reference data changes.
-- There are Unit tests verifying cache behaviour and dashboard data.
+- There are Unit tests verifying cache behavior and dashboard data.
 
 ## 7. Production Portal API
 
@@ -122,7 +122,7 @@ When adding new API endpoints:
 - Keep auth/token handling consistent.  
 - Add Feature tests and, if performance‑sensitive, extend `tests/Performance/ApiResponseTimeTest.php`.
 
-## 8. Adding a feature (checklist)
+## 8. Adding a Feature (Checklist)
 
 When you add a new backend module or extend an existing one:
 
@@ -143,7 +143,5 @@ When you add a new backend module or extend an existing one:
 6. **Tests**  
    - Add Unit tests for services/actions/repositories.  
    - Add Feature tests for controllers/API endpoints.  
-   - Update `docs/TEST_COVERAGE.md` if you introduce new critical components.
-
-Update [TEST_COVERAGE.md](TEST_COVERAGE.md) when adding critical components.
+   - Update [TEST_COVERAGE.md](TEST_COVERAGE.md) when introducing new critical components.
 
