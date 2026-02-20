@@ -52,7 +52,7 @@ export async function callProductionApi(
         if (error instanceof Error && error.message) {
             throw error;
         }
-        throw new Error('Error de conexión');
+        throw new Error('Error de conexión', { cause: error });
     }
 }
 

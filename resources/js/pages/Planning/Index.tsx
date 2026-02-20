@@ -597,7 +597,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                         )
                             return row;
                         found = true;
-                        let hoursObj: Record<string, number> = {};
+                        let hoursObj: Record<string, number>;
                         try {
                             hoursObj = JSON.parse(row.hours) as Record<
                                 string,
@@ -706,7 +706,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                             row.summary_type !== summaryType
                         )
                             return row;
-                        let hoursObj: Record<string, number> = {};
+                        let hoursObj: Record<string, number>;
                         try {
                             hoursObj = JSON.parse(row.hours) as Record<
                                 string,
@@ -814,7 +814,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
         for (const row of summaries) {
             if (!row.date) continue;
             const dateStr = row.date.slice(0, 10);
-            let hoursObj: Record<string, number> = {};
+            let hoursObj: Record<string, number>;
             try {
                 hoursObj = JSON.parse(row.hours) as Record<string, number>;
             } catch {
@@ -910,7 +910,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
         for (const row of planning) {
             if (!row.date) continue;
             const dateStr = row.date.slice(0, 10);
-            let hoursObj: Record<string, number> = {};
+            let hoursObj: Record<string, number>;
             try {
                 hoursObj = JSON.parse(row.hours) as Record<string, number>;
             } catch {
