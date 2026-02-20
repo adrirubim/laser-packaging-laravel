@@ -15,7 +15,7 @@ createServer((page) =>
                 `./pages/${name}.tsx`,
                 import.meta.glob('./pages/**/*.tsx'),
             ),
-        setup: ({ App, props }) => {
+        setup: function InertiaSetup({ App, props }) {
             return <App {...props} />;
         },
     }),

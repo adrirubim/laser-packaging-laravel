@@ -1,3 +1,4 @@
+import { fixupPluginRules } from '@eslint/compat';
 import js from '@eslint/js';
 import prettier from 'eslint-config-prettier/flat';
 import react from 'eslint-plugin-react';
@@ -8,29 +9,28 @@ import typescript from 'typescript-eslint';
 /** @type {import('eslint').Linter.Config[]} */
 export default [
     js.configs.recommended,
-    reactHooks.configs.flat.recommended,
+    // fixupPluginRules adapta plugins legacy (getSourceCode, etc.) a la API de ESLint 9/10
+    { plugins: { 'react-hooks': fixupPluginRules(reactHooks) }, rules: reactHooks.configs.recommended.rules },
     ...typescript.configs.recommended,
     {
-        ...react.configs.flat.recommended,
-        ...react.configs.flat['jsx-runtime'], // Required for React 17+
+        plugins: { react: fixupPluginRules(react) },
         languageOptions: {
-            globals: {
-                ...globals.browser,
-            },
+            globals: { ...globals.browser },
+            parserOptions: { ecmaFeatures: { jsx: true } },
         },
         rules: {
+            ...react.configs.recommended.rules,
             'react/react-in-jsx-scope': 'off',
             'react/prop-types': 'off',
             'react/no-unescaped-entities': 'off',
         },
         settings: {
-            react: {
-                version: 'detect',
-            },
+            react: { version: 'detect' },
         },
     },
     {
         ignores: [
+            'eslint.config.js',
             'vendor',
             'node_modules',
             'public',
