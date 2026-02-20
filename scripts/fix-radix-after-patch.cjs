@@ -20,10 +20,12 @@ for (const name of files) {
     /nativeSelectKey\s*=\s*\.\.\.Array\.from\(nativeOptionsSet\)\.map/g,
     'nativeSelectKey = Array.from(nativeOptionsSet).map'
   );
-  // Asegurar "..." en el array children (único contexto: línea seguida de "            ]")
+  // Normalizar: nunca más de un "..." antes de Array.from(nativeOptionsSet) (evita ...... por ejecuciones dobles)
+  c = c.replace(/\.{3,}Array\.from\(nativeOptionsSet\)/g, '...Array.from(nativeOptionsSet)');
+  // Asegurar "..." en el array children solo si no está ya (idempotente)
   c = c.replace(
-    /Array\.from\(nativeOptionsSet\)(\r?\n\s+\])/g,
-    (_, bracket) => '...Array.from(nativeOptionsSet)' + bracket
+    /(\.\.\.)?Array\.from\(nativeOptionsSet\)(\r?\n\s+\])/g,
+    (_, existing, bracket) => (existing ? existing : '...') + 'Array.from(nativeOptionsSet)' + bracket
   );
   if (c !== orig) fs.writeFileSync(filePath, c);
 }

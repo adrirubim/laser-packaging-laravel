@@ -13,7 +13,11 @@ createInertiaApp({
     resolve: async (name) => {
         const mod = await resolvePageComponent(
             `./pages/${name}.tsx`,
-            import.meta.glob('./pages/**/*.tsx'),
+            import.meta.glob([
+                './pages/**/*.tsx',
+                '!./pages/**/*.test.tsx',
+                '!./pages/**/*.spec.tsx',
+            ]),
         );
         return (mod as { default?: unknown }).default ?? mod;
     },
