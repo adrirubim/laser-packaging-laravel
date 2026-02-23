@@ -24,6 +24,7 @@ import {
     getOrderStatusColor,
     getOrderStatusLabel,
 } from '@/constants/orderStatus';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import orders from '@/routes/orders/index';
 import { type BreadcrumbItem } from '@/types';
@@ -76,6 +77,7 @@ export default function ProductionAdvancements() {
     const { props } = usePage<ProductionAdvancementsProps>();
     const { orders: ordersPaginated, articles, filters } = props;
     const { flash } = useFlashNotifications();
+    const { t } = useTranslations();
 
     const [searchValue, setSearchValue] = useState(filters.search ?? '');
     const [articleFilter, setArticleFilter] = useState(
@@ -210,24 +212,24 @@ export default function ProductionAdvancements() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Ordini',
+            title: t('nav.orders'),
             href: orders.index().url,
         },
         {
-            title: 'In Produzione',
+            title: t('nav.in_produzione'),
             href: orders.productionAdvancements().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="In Produzione" />
+            <Head title={t('nav.in_produzione')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between gap-3">
                     <div>
                         <h1 className="text-2xl font-semibold tracking-tight">
-                            In Produzione
+                            {t('nav.in_produzione')}
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
                             Ordini lanciati e in avanzamento di produzione con
@@ -247,7 +249,7 @@ export default function ProductionAdvancements() {
                             <SearchInput
                                 value={searchValue}
                                 onChange={handleSearchChange}
-                                placeholder="Numero di produzione o riferimento..."
+                                placeholder={t('orders.search_placeholder')}
                                 isLoading={isSearching}
                                 onClear={clearSearch}
                             />
@@ -268,11 +270,13 @@ export default function ProductionAdvancements() {
                                     className="w-full"
                                     aria-label="Articolo"
                                 >
-                                    <SelectValue placeholder="Tutti gli articoli" />
+                                    <SelectValue
+                                        placeholder={t('filter.all_articles')}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">
-                                        Tutti gli articoli
+                                        {t('filter.all_articles')}
                                     </SelectItem>
                                     {articles.map((article) => (
                                         <SelectItem

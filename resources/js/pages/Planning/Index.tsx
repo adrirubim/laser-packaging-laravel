@@ -1,13 +1,14 @@
 /**
- * Planning Board — Vista moderna 2026
+ * Planning Board — Modern view 2026
  *
- * Zoom ore/quarti, editing celle e riepilogo,
- * turni, weekend, overdue, deadline, navigazione Tab/Enter, gestione errori.
- * Solo Tailwind, nessun CSS aggiuntivo esterno.
+ * Hour/quarter zoom, cell and summary editing, shifts, weekend, overdue, deadline,
+ * Tab/Enter navigation, error handling. Tailwind only, no external CSS.
  */
+import { ErrorBoundary } from '@/components/error-boundary';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
-import { dashboard } from '@/routes';
 import api from '@/routes/api';
+import orders from '@/routes/orders/index';
 import planningRoutes from '@/routes/planning';
 import type { BreadcrumbItem, PageProps } from '@/types';
 import { Head } from '@inertiajs/react';
@@ -21,6 +22,7 @@ import {
     useRef,
     useState,
 } from 'react';
+import { toast } from 'sonner';
 import { END_HOUR, START_HOUR } from './constants';
 import PlanningLegend from './PlanningLegend';
 import PlanningToolbar from './PlanningToolbar';
@@ -327,7 +329,7 @@ type PlanningBoardProps = PageProps<{ today: string }>;
                                                 <div
                                                     className={`flex h-8 items-center justify-center rounded-md text-xs font-medium ${
                                                         isDisponibiliWarning
-                                                            ? 'bg-red-500/80 text-red-50'
+                                                            ? 'bg-red-500/80 text-red-50 dark:bg-red-600/90 dark:text-white'
                                                             : 'border border-border bg-background text-foreground'
                                                     }`}
                                                 >
@@ -347,15 +349,16 @@ type PlanningBoardProps = PageProps<{ today: string }>;
 }); */
 
 export default function PlanningBoard({ today }: PlanningBoardProps) {
+    const { t } = useTranslations();
     const breadcrumbs: BreadcrumbItem[] = useMemo(
         () => [
-            { title: 'Dashboard', href: dashboard().url },
+            { title: t('nav.orders'), href: orders.index().url },
             {
-                title: 'Pianificazione Produzione',
+                title: t('nav.pianificazione_produzione'),
                 href: planningNav.index.url(),
             },
         ],
-        [],
+        [t],
     );
 
     // Data iniziale = oggi (state.currentDate = moment().startOf('day'))
@@ -383,6 +386,14 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
     const [savingSummaryKey, setSavingSummaryKey] = useState<string | null>(
         null,
     );
+    const [cellValidationError, setCellValidationError] = useState<{
+        cellKey: string;
+        message: string;
+    } | null>(null);
+    const [summaryValidationError, setSummaryValidationError] = useState<{
+        key: string;
+        message: string;
+    } | null>(null);
 
     useEffect(() => {
         if (loading) {
@@ -466,46 +477,58 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
     }, []);
 
     const loadData = useCallback(async () => {
-        try {
-            setLoading(true);
-            setError(null);
+        const maxRetries = 2;
+        const delays = [1000, 2000]; // backoff 1s, 2s
 
-            const response = await fetch(api.planning.data.url(), {
-                method: 'POST',
-                credentials: 'same-origin',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                },
-                body: JSON.stringify({
-                    start_date: `${startDate} 00:00:00`,
-                    end_date: `${endDate} 23:59:59`,
-                }),
-            });
+        for (let attempt = 0; attempt <= maxRetries; attempt++) {
+            try {
+                setLoading(true);
+                setError(null);
 
-            if (!response.ok) {
-                const text = await response.text();
-                throw new Error(
-                    `Errore caricamento planning (${response.status}): ${text}`,
-                );
+                const response = await fetch(api.planning.data.url(), {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                    },
+                    body: JSON.stringify({
+                        start_date: `${startDate} 00:00:00`,
+                        end_date: `${endDate} 23:59:59`,
+                    }),
+                });
+
+                if (!response.ok) {
+                    const text = await response.text();
+                    throw new Error(
+                        `Errore caricamento planning (${response.status}): ${text}`,
+                    );
+                }
+
+                const json = (await response.json()) as PlanningDataResponse;
+                if (json.error_code !== 0) {
+                    throw new Error(json.message || 'Errore sconosciuto');
+                }
+
+                setLines(json.lines ?? []);
+                setPlanning(json.planning ?? []);
+                setSummaries(json.summary ?? []);
+                setContracts(json.contracts ?? []);
+                setLoading(false);
+                return;
+            } catch (e) {
+                const err = e as Error;
+                const message =
+                    err.message || 'Errore durante il caricamento del planning';
+                if (attempt === maxRetries) {
+                    setError(message);
+                    setLoading(false);
+                } else {
+                    await new Promise((r) =>
+                        setTimeout(r, delays[attempt] ?? 2000),
+                    );
+                }
             }
-
-            const json = (await response.json()) as PlanningDataResponse;
-            if (json.error_code !== 0) {
-                throw new Error(json.message || 'Errore sconosciuto');
-            }
-
-            setLines(json.lines ?? []);
-            setPlanning(json.planning ?? []);
-            setSummaries(json.summary ?? []);
-            setContracts(json.contracts ?? []);
-        } catch (e) {
-            const err = e as Error;
-            setError(
-                err.message || 'Errore durante il caricamento del planning',
-            );
-        } finally {
-            setLoading(false);
         }
     }, [startDate, endDate]);
 
@@ -514,7 +537,11 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
     }, [loadData]);
 
     const savePlanningCell = useCallback(
-        async (cellKey: string, newValue: number) => {
+        async (
+            cellKey: string,
+            newValue: number,
+            options?: { skipUndo?: boolean },
+        ) => {
             setSavingCellKey(cellKey);
             try {
                 const parts = cellKey.split('_');
@@ -528,6 +555,45 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                 const hour = Number(timestamp.slice(8, 10));
                 const minute = Number(timestamp.slice(10, 12));
                 const dateStr = `${y}-${m}-${d}`;
+
+                // Calcola il valore precedente (per Undo) solo se richiesto
+                let previousWorkers = 0;
+                if (!options?.skipUndo) {
+                    const timeKey = (h: number, mm: number) =>
+                        String(h * 100 + mm);
+                    const keysToSet =
+                        zoomLevel === 'hour'
+                            ? [0, 15, 30, 45].map((mm) => timeKey(hour, mm))
+                            : [timeKey(hour, minute)];
+                    const dateOnly = dateStr;
+
+                    for (const row of planning) {
+                        if (
+                            row.order_uuid !== orderUuid ||
+                            row.lasworkline_uuid !== lineUuid ||
+                            !row.date ||
+                            row.date.slice(0, 10) !== dateOnly
+                        ) {
+                            continue;
+                        }
+                        let hoursObj: Record<string, number>;
+                        try {
+                            hoursObj = JSON.parse(row.hours) as Record<
+                                string,
+                                number
+                            >;
+                        } catch {
+                            hoursObj = {};
+                        }
+                        for (const k of keysToSet) {
+                            if (hoursObj[k] != null) {
+                                previousWorkers = hoursObj[k];
+                                break;
+                            }
+                        }
+                        if (previousWorkers > 0) break;
+                    }
+                }
 
                 const response = await fetch(api.planning.save.url(), {
                     method: 'POST',
@@ -555,14 +621,16 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                     const firstErrorFromFields =
                         data.errors &&
                         Object.values(data.errors).flat().find(Boolean);
-                    setError(
+                    const msg =
                         firstErrorFromFields ??
-                            data.message ??
-                            'Errore di validazione',
-                    );
+                        data.message ??
+                        'Errore di validazione';
+                    setError(msg);
+                    setCellValidationError({ cellKey, message: msg });
                     return;
                 }
 
+                setCellValidationError(null);
                 const json = (await response
                     .json()
                     .catch(() => ({}))) as SavePlanningResponse;
@@ -627,18 +695,38 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                     }
                     return next;
                 });
-                setInfoMessage(
-                    hasReplan
-                        ? `Aggiornato: ${newValue} addetti. ${replan?.message ?? ''}`.trim()
-                        : `Aggiornato: ${newValue} addetti`,
-                );
+                setError(null);
+                const showUndoToast =
+                    !options?.skipUndo && previousWorkers > 0 && newValue <= 0;
+                if (showUndoToast) {
+                    toast.success('Cella svuotata', {
+                        action: {
+                            label: 'Annulla',
+                            onClick: () => {
+                                void savePlanningCell(
+                                    cellKey,
+                                    previousWorkers,
+                                    {
+                                        skipUndo: true,
+                                    },
+                                );
+                            },
+                        },
+                    });
+                } else {
+                    setInfoMessage(
+                        hasReplan
+                            ? `Aggiornato: ${newValue} addetti. ${replan?.message ?? ''}`.trim()
+                            : `Aggiornato: ${newValue} addetti`,
+                    );
+                }
             } catch (e) {
                 setError((e as Error).message ?? 'Errore di connessione');
             } finally {
                 setSavingCellKey(null);
             }
         },
-        [zoomLevel],
+        [planning, zoomLevel],
     );
 
     const saveSummaryCell = useCallback(
@@ -682,14 +770,19 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                     const firstErrorFromFields =
                         data.errors &&
                         Object.values(data.errors).flat().find(Boolean);
-                    setError(
+                    const msg =
                         firstErrorFromFields ??
-                            data.message ??
-                            'Errore di validazione summary',
-                    );
+                        data.message ??
+                        'Errore di validazione summary';
+                    setError(msg);
+                    setSummaryValidationError({
+                        key: summaryKey,
+                        message: msg,
+                    });
                     return;
                 }
 
+                setSummaryValidationError(null);
                 const json = (await response
                     .json()
                     .catch(() => ({}))) as SaveSummaryResponse;
@@ -721,6 +814,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                         return { ...row, hours: JSON.stringify(next) };
                     });
                 });
+                setError(null);
                 setInfoMessage('Riepilogo aggiornato');
             } catch (e) {
                 setError((e as Error).message ?? 'Errore di connessione');
@@ -1083,126 +1177,193 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
         return byDay;
     }, [rangeDays, contracts, totaleImpegnoByDay, getSummaryValueForDay]);
 
+    const planningErrorFallback = (
+        <div
+            className="flex min-h-[40vh] flex-col items-center justify-center gap-4 p-6 text-center"
+            role="alert"
+        >
+            <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-6">
+                <h2 className="mb-2 text-lg font-semibold">
+                    Errore nella vista Pianificazione
+                </h2>
+                <p className="mb-4 text-sm text-muted-foreground">
+                    Si è verificato un errore. Ricarica la pagina per riprovare.
+                </p>
+                <button
+                    type="button"
+                    onClick={() => window.location.reload()}
+                    className="rounded-md border border-border bg-background px-4 py-2 text-sm font-medium shadow-sm hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
+                >
+                    Ricarica
+                </button>
+            </div>
+        </div>
+    );
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head
                 title={`Pianificazione — ${formatDateRangeLabel(currentDate, rangeMode)}`}
             />
 
-            <div
-                ref={containerRef}
-                className="flex min-w-0 flex-1 flex-col gap-4 rounded-xl border border-border bg-card p-4 shadow-sm"
-                aria-busy={loading}
-                aria-label="Pianificazione produzione"
-            >
-                <PlanningToolbar
-                    currentDate={currentDate}
-                    today={today}
-                    rangeMode={rangeMode}
-                    zoomLevel={zoomLevel}
-                    loading={toolbarLoading}
-                    goPrev={goPrev}
-                    goNext={goNext}
-                    goToday={goToday}
-                    onSetRangeMode={handleSetRangeMode}
-                    onSetZoomLevel={handleSetZoomLevel}
-                    formatDateRangeLabel={formatDateRangeLabel}
-                />
-
-                {infoMessage ? (
-                    <div
-                        role="status"
-                        aria-live="polite"
-                        className="rounded-md border border-primary/40 bg-primary/10 px-3 py-2 text-sm text-primary"
+            <ErrorBoundary fallback={planningErrorFallback}>
+                <div
+                    ref={containerRef}
+                    className="flex min-w-0 flex-1 flex-col gap-4 rounded-xl border border-border bg-card p-4 shadow-sm"
+                    aria-busy={loading}
+                    aria-labelledby="planning-section-heading"
+                >
+                    <h1
+                        id="planning-section-heading"
+                        className="text-2xl font-semibold tracking-tight text-foreground"
                     >
-                        {infoMessage}
-                    </div>
-                ) : null}
+                        Pianificazione produzione
+                    </h1>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                        {rangeMode === 'day'
+                            ? 'Vista giornaliera per linea e ordine.'
+                            : rangeMode === 'week'
+                              ? 'Vista settimanale per linea e ordine.'
+                              : 'Vista mensile per linea e ordine.'}
+                    </p>
+                    <PlanningToolbar
+                        currentDate={currentDate}
+                        today={today}
+                        rangeMode={rangeMode}
+                        zoomLevel={zoomLevel}
+                        loading={toolbarLoading}
+                        goPrev={goPrev}
+                        goNext={goNext}
+                        goToday={goToday}
+                        onSetRangeMode={handleSetRangeMode}
+                        onSetZoomLevel={handleSetZoomLevel}
+                        formatDateRangeLabel={formatDateRangeLabel}
+                    />
 
-                {error ? (
-                    <div
-                        role="alert"
-                        aria-live="assertive"
-                        className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive"
-                    >
-                        <span>{error}</span>
-                        <button
-                            type="button"
-                            onClick={() => void loadData()}
-                            className="rounded-md border border-destructive/60 bg-destructive/20 px-2.5 py-1 font-medium hover:bg-destructive/30"
-                        >
-                            Riprova
-                        </button>
-                    </div>
-                ) : null}
-
-                <PlanningLegend rangeMode={rangeMode} zoomLevel={zoomLevel} />
-                <Suspense
-                    fallback={
+                    {infoMessage ? (
                         <div
-                            className="flex min-h-[6rem] items-center justify-center text-sm text-muted-foreground"
                             role="status"
                             aria-live="polite"
+                            className="rounded-md border border-primary/40 bg-primary/10 px-3 py-2 text-sm text-primary"
                         >
-                            Caricamento griglia…
+                            {infoMessage}
                         </div>
-                    }
-                >
-                    {rangeMode !== 'month' ? (
-                        <PlanningDayGridView
-                            slotColumns={slotColumns}
-                            lines={lines}
-                            planningData={planningData}
-                            totalsByTimestamp={totalsByTimestamp}
-                            zoomLevel={zoomLevel}
-                            onZoomDay={
-                                rangeMode === 'week'
-                                    ? openDayQuarter
-                                    : undefined
-                            }
-                            getSummaryValueForSlot={getSummaryValueForSlot}
-                            isSummaryValueCustom={isSummaryValueCustom}
-                            contracts={contracts}
-                            loading={loading}
-                            editingCellKey={editingCellKey}
-                            editingValue={editingValue}
-                            setEditingCellKey={setEditingCellKey}
-                            setEditingValue={setEditingValue}
-                            onSavePlanningCell={savePlanningCell}
-                            editingSummaryKey={editingSummaryKey}
-                            editingSummaryValue={editingSummaryValue}
-                            setEditingSummaryKey={setEditingSummaryKey}
-                            setEditingSummaryValue={setEditingSummaryValue}
-                            onSaveSummaryCell={saveSummaryCell}
-                            savingCellKey={savingCellKey}
-                            savingSummaryKey={savingSummaryKey}
-                            onEmptyGoToday={goToday}
-                            onEmptyChangeRange={() =>
-                                handleSetRangeMode('week')
-                            }
-                        />
-                    ) : (
-                        <>
-                            <PlanningMonthSummary
-                                rangeDays={rangeDays}
+                    ) : null}
+
+                    {error ? (
+                        <div
+                            role="alert"
+                            aria-live="assertive"
+                            className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+                        >
+                            <span>{error}</span>
+                            <button
+                                type="button"
+                                onClick={() => void loadData()}
+                                className="rounded-md border border-destructive/60 bg-destructive/20 px-2.5 py-1 font-medium hover:bg-destructive/30"
+                                aria-label="Riprova caricamento"
+                            >
+                                Riprova
+                            </button>
+                        </div>
+                    ) : null}
+
+                    <PlanningLegend
+                        rangeMode={rangeMode}
+                        zoomLevel={zoomLevel}
+                    />
+                    <Suspense
+                        fallback={
+                            <div
+                                className="flex min-h-[6rem] items-center justify-center text-sm text-muted-foreground"
+                                role="status"
+                                aria-live="polite"
+                                aria-busy="true"
+                            >
+                                Caricamento griglia…
+                            </div>
+                        }
+                    >
+                        {rangeMode !== 'month' ? (
+                            <PlanningDayGridView
+                                slotColumns={slotColumns}
                                 lines={lines}
+                                planningData={planningData}
+                                totalsByTimestamp={totalsByTimestamp}
+                                zoomLevel={zoomLevel}
+                                onZoomDay={
+                                    rangeMode === 'week'
+                                        ? openDayQuarter
+                                        : undefined
+                                }
+                                getSummaryValueForSlot={getSummaryValueForSlot}
+                                isSummaryValueCustom={isSummaryValueCustom}
+                                contracts={contracts}
                                 loading={loading}
-                                occupancyByLineAndDay={occupancyByLineAndDay}
-                                occupancyByOrderAndDay={occupancyByOrderAndDay}
-                                summaryValuesByDay={summaryValuesByDay}
+                                editingCellKey={editingCellKey}
+                                editingValue={editingValue}
+                                setEditingCellKey={(k: string | null) => {
+                                    setEditingCellKey(k);
+                                    if (k !== null)
+                                        setCellValidationError(null);
+                                }}
+                                setEditingValue={setEditingValue}
+                                onSavePlanningCell={savePlanningCell}
                                 editingSummaryKey={editingSummaryKey}
                                 editingSummaryValue={editingSummaryValue}
-                                setEditingSummaryKey={setEditingSummaryKey}
+                                setEditingSummaryKey={(k: string | null) => {
+                                    setEditingSummaryKey(k);
+                                    if (k !== null)
+                                        setSummaryValidationError(null);
+                                }}
                                 setEditingSummaryValue={setEditingSummaryValue}
-                                saveSummaryCell={saveSummaryCell}
+                                onSaveSummaryCell={saveSummaryCell}
+                                savingCellKey={savingCellKey}
                                 savingSummaryKey={savingSummaryKey}
+                                cellValidationError={cellValidationError}
+                                summaryValidationError={summaryValidationError}
                                 onEmptyGoToday={goToday}
                                 onEmptyChangeRange={() =>
                                     handleSetRangeMode('week')
                                 }
-                                openDay={openDay}
                             />
-                            {/*
+                        ) : (
+                            <>
+                                <PlanningMonthSummary
+                                    rangeDays={rangeDays}
+                                    lines={lines}
+                                    loading={loading}
+                                    occupancyByLineAndDay={
+                                        occupancyByLineAndDay
+                                    }
+                                    occupancyByOrderAndDay={
+                                        occupancyByOrderAndDay
+                                    }
+                                    summaryValuesByDay={summaryValuesByDay}
+                                    editingSummaryKey={editingSummaryKey}
+                                    editingSummaryValue={editingSummaryValue}
+                                    setEditingSummaryKey={(
+                                        k: string | null,
+                                    ) => {
+                                        setEditingSummaryKey(k);
+                                        if (k !== null)
+                                            setSummaryValidationError(null);
+                                    }}
+                                    setEditingSummaryValue={
+                                        setEditingSummaryValue
+                                    }
+                                    saveSummaryCell={saveSummaryCell}
+                                    savingSummaryKey={savingSummaryKey}
+                                    summaryValidationError={
+                                        summaryValidationError
+                                    }
+                                    onEmptyGoToday={goToday}
+                                    onEmptyChangeRange={() =>
+                                        handleSetRangeMode('week')
+                                    }
+                                    openDay={openDay}
+                                />
+                                {/*
                     <div className="overflow-x-auto">
                         <table className="min-w-full border-collapse text-sm">
                                 <thead>
@@ -1498,7 +1659,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                                                             <div
                                                                 className={`flex h-8 items-center justify-center rounded-md text-xs font-medium ${
                                                                     isDisponibiliWarning
-                                                                        ? 'bg-red-500/80 text-red-50'
+                                                                        ? 'bg-red-500/80 text-red-50 dark:bg-red-600/90 dark:text-white'
                                                                         : 'border border-border bg-background text-foreground'
                                                                 }`}
                                                     >
@@ -1515,10 +1676,11 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                             </table>
                         </div>
                         */}
-                        </>
-                    )}
-                </Suspense>
-            </div>
+                            </>
+                        )}
+                    </Suspense>
+                </div>
+            </ErrorBoundary>
         </AppLayout>
     );
 }

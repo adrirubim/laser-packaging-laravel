@@ -15,6 +15,7 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useTranslations } from '@/hooks/use-translations';
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
@@ -31,6 +32,7 @@ type SuppliersCreateProps = {
 export default function SuppliersCreate({
     errors: serverErrors,
 }: SuppliersCreateProps) {
+    const { t } = useTranslations();
     const [vatNumber, setVatNumber] = useState('');
     const [postalCode, setPostalCode] = useState('');
     const [province, setProvince] = useState('');
@@ -49,11 +51,11 @@ export default function SuppliersCreate({
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Fornitori',
+            title: t('nav.suppliers'),
             href: suppliers.index().url,
         },
         {
-            title: 'Crea',
+            title: t('common.new'),
             href: suppliers.create().url,
         },
     ];

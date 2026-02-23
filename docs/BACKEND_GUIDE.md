@@ -122,7 +122,13 @@ When adding new API endpoints:
 - Keep auth/token handling consistent.  
 - Add Feature tests and, if performance‑sensitive, extend `tests/Performance/ApiResponseTimeTest.php`.
 
-## 8. Adding a Feature (Checklist)
+## 8. Locale and i18n
+
+- **SetLocale** middleware reads `session('locale')` and sets `App::setLocale()`; registered in the `web` group (see `bootstrap/app.php`).
+- **POST /locale** validates `locale` (it, es, en) and stores it in the session; Inertia then receives `locale` via `HandleInertiaRequests::share()`.
+- Translations live in `lang/it/`, `lang/es/`, `lang/en/` (auth, validation, pagination, messages). See [I18N.md](I18N.md).
+
+## 9. Adding a Feature (Checklist)
 
 When you add a new backend module or extend an existing one:
 

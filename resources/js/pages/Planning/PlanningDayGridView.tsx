@@ -2,7 +2,7 @@
  * Griglia giorno/settimana — slot orari, celle pianificazione e riepilogo.
  * Header sticky, navigazione Tab/Enter, Shift+rueda scroll orizzontale.
  */
-import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SUMMARY_ROWS } from './constants';
 import type { PlanningContract, PlanningLine, SlotColumn } from './types';
 import {
@@ -43,6 +43,8 @@ export type DayGridViewProps = {
     onSaveSummaryCell: (summaryKey: string, value: string) => Promise<void>;
     savingCellKey: string | null;
     savingSummaryKey: string | null;
+    cellValidationError: { cellKey: string; message: string } | null;
+    summaryValidationError: { key: string; message: string } | null;
 };
 
 const PlanningDayGridView = memo(function PlanningDayGridView({
@@ -70,8 +72,17 @@ const PlanningDayGridView = memo(function PlanningDayGridView({
     onSaveSummaryCell,
     savingCellKey,
     savingSummaryKey,
+    cellValidationError,
+    summaryValidationError,
 }: DayGridViewProps) {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const [hasHorizontalOverflow, setHasHorizontalOverflow] = useState(false);
+
+    const checkOverflow = useCallback(() => {
+        const el = scrollContainerRef.current;
+        if (!el) return;
+        setHasHorizontalOverflow(el.scrollWidth > el.clientWidth);
+    }, []);
 
     useEffect(() => {
         const el = scrollContainerRef.current;
@@ -84,6 +95,18 @@ const PlanningDayGridView = memo(function PlanningDayGridView({
         el.addEventListener('wheel', onWheel, { passive: false });
         return () => el.removeEventListener('wheel', onWheel);
     }, []);
+
+    useEffect(() => {
+        const el = scrollContainerRef.current;
+        if (!el) return;
+        const raf = requestAnimationFrame(() => checkOverflow());
+        const ro = new ResizeObserver(() => checkOverflow());
+        ro.observe(el);
+        return () => {
+            cancelAnimationFrame(raf);
+            ro.disconnect();
+        };
+    }, [checkOverflow, slotColumns.length, lines.length]);
 
     const contractCountsByDate = useMemo(() => {
         const map: Record<
@@ -428,677 +451,776 @@ const PlanningDayGridView = memo(function PlanningDayGridView({
     }
 
     return (
-        <div
-            ref={scrollContainerRef}
-            className="max-h-[calc(100vh-14rem)] overflow-x-auto overflow-y-auto"
-            title="Scroll orizzontale: Shift + rotella del mouse. Rotella senza Shift = scroll verticale (su/giù)."
-        >
-            <table
-                className="min-w-full border-collapse text-sm"
-                aria-describedby="planning-grid-caption"
+        <div className="flex min-w-0 flex-col gap-0">
+            <div
+                ref={scrollContainerRef}
+                className="max-h-[calc(100vh-14rem)] overflow-x-auto overflow-y-auto"
+                title="Scroll orizzontale: Shift + rotella del mouse. Rotella senza Shift = scroll verticale (su/giù)."
             >
-                <caption id="planning-grid-caption" className="sr-only">
-                    Griglia di pianificazione per linea di lavoro, ordine e slot
-                    orari.
-                </caption>
-                <thead className="sticky top-0 z-20 border-b-2 border-border bg-card shadow-[0_1px_0_0_rgba(0,0,0,0.05)]">
-                    <tr>
-                        <th
-                            rowSpan={3}
-                            scope="col"
-                            className="sticky left-0 z-30 w-32 border-r border-border/60 bg-muted/40 px-2 py-2.5 text-left text-xs font-semibold text-muted-foreground"
-                        >
-                            Linea
-                        </th>
-                        <th
-                            rowSpan={3}
-                            scope="col"
-                            className="sticky left-[8rem] z-30 w-40 border-r border-border/60 bg-muted/40 px-2 py-2.5 text-left text-xs font-semibold text-muted-foreground"
-                        >
-                            Ordine
-                        </th>
-                        {headerGroups.weeks.map((w) => (
-                            <th
-                                key={`w_${w.week}`}
-                                scope="col"
-                                colSpan={w.colspan}
-                                className="px-1 py-1.5 text-center text-[10px] font-semibold text-muted-foreground"
-                            >
-                                W{w.week}
-                            </th>
-                        ))}
-                    </tr>
-                    <tr>
-                        {headerGroups.days.map((d, dayIdx) => (
-                            <th
-                                key={`d_${d.dateStr}`}
-                                scope="col"
-                                colSpan={d.colspan}
-                                className={`px-1 py-1.5 text-center text-[10px] font-semibold ${
-                                    d.isWeekend
-                                        ? 'bg-muted/50 text-muted-foreground'
-                                        : 'text-muted-foreground'
-                                }${headerGroups.days.length > 1 && dayIdx < headerGroups.days.length - 1 ? 'border-r-2 border-border/80' : ''}${headerGroups.days.length > 1 && !d.isWeekend && dayIdx % 2 === 1 ? 'bg-muted/15' : ''}`}
-                            >
-                                <div className="flex items-center justify-center gap-1">
-                                    <span>{d.label}</span>
-                                    {d.showZoomButton ? (
-                                        <button
-                                            type="button"
-                                            className="inline-flex size-5 items-center justify-center rounded border border-border bg-background text-muted-foreground shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:outline-none"
-                                            title="Zoom quarti"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                onZoomDay?.(d.dateStr);
-                                            }}
-                                            disabled={loading}
-                                        >
-                                            +
-                                        </button>
-                                    ) : null}
-                                </div>
-                            </th>
-                        ))}
-                    </tr>
-                    <tr>
-                        {slotColumns.map((col) => (
-                            <th
-                                key={col.timestamp}
-                                scope="col"
-                                className={`min-w-[3rem] px-1 py-2 text-center text-[10px] font-medium ${
-                                    col.isWeekend
-                                        ? 'bg-muted/50 text-muted-foreground'
-                                        : 'text-muted-foreground'
-                                }${col.isDayEnd ? 'border-r-2 border-border/80' : ''}`}
-                            >
-                                {col.label}
-                            </th>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {loading && lines.length === 0 ? (
-                        <>
-                            {Array.from({ length: 8 }).map((_, idx) => (
-                                <tr
-                                    key={`skeleton_row_${idx}`}
-                                    className="border-b border-border/40"
-                                >
-                                    <td className="sticky left-0 z-10 bg-card px-2 py-1.5">
-                                        <div className="h-4 w-16 animate-pulse rounded bg-muted/60" />
-                                    </td>
-                                    <td className="sticky left-[8rem] z-10 bg-card px-2 py-1.5">
-                                        <div className="h-4 w-28 animate-pulse rounded bg-muted/60" />
-                                    </td>
-                                    {slotColumns.map((col) => (
-                                        <td
-                                            key={`skeleton_cell_${idx}_${col.timestamp}`}
-                                            className="min-w-[3rem] px-1 py-1.5 align-middle"
-                                        >
-                                            <div className="h-6 w-full animate-pulse rounded bg-muted/40" />
-                                        </td>
-                                    ))}
-                                </tr>
-                            ))}
-                        </>
-                    ) : lines.length === 0 ? (
+                <table
+                    className="min-w-full border-collapse text-sm"
+                    aria-describedby="planning-grid-caption"
+                >
+                    <caption id="planning-grid-caption" className="sr-only">
+                        Griglia di pianificazione per linea di lavoro, ordine e
+                        slot orari.
+                    </caption>
+                    <thead className="sticky top-0 z-20 border-b-2 border-border bg-card shadow-[0_1px_0_0_rgba(0,0,0,0.05)]">
                         <tr>
-                            <td
-                                colSpan={2 + slotColumns.length}
-                                className="px-4 py-8 text-center text-muted-foreground"
+                            <th
+                                rowSpan={3}
+                                scope="col"
+                                className="sticky left-0 z-30 w-32 border-r border-border/60 bg-muted/40 px-2 py-2.5 text-left text-xs font-semibold text-muted-foreground"
                             >
-                                <div className="space-y-3">
-                                    <p>
-                                        Nessuna linea nel periodo selezionato.
-                                    </p>
-                                    <div className="flex justify-center gap-3">
-                                        {onEmptyGoToday ? (
+                                Linea
+                            </th>
+                            <th
+                                rowSpan={3}
+                                scope="col"
+                                className="sticky left-[8rem] z-30 w-40 border-r border-border/60 bg-muted/40 px-2 py-2.5 text-left text-xs font-semibold text-muted-foreground"
+                            >
+                                Ordine
+                            </th>
+                            {headerGroups.weeks.map((w) => (
+                                <th
+                                    key={`w_${w.week}`}
+                                    scope="col"
+                                    colSpan={w.colspan}
+                                    className="px-1 py-1.5 text-center text-[10px] font-semibold text-muted-foreground"
+                                >
+                                    W{w.week}
+                                </th>
+                            ))}
+                        </tr>
+                        <tr>
+                            {headerGroups.days.map((d, dayIdx) => (
+                                <th
+                                    key={`d_${d.dateStr}`}
+                                    scope="col"
+                                    colSpan={d.colspan}
+                                    className={`px-1 py-1.5 text-center text-[10px] font-semibold ${
+                                        d.isWeekend
+                                            ? 'bg-muted/50 text-muted-foreground'
+                                            : 'text-muted-foreground'
+                                    }${headerGroups.days.length > 1 && dayIdx < headerGroups.days.length - 1 ? 'border-r-2 border-border/80' : ''}${headerGroups.days.length > 1 && !d.isWeekend && dayIdx % 2 === 1 ? 'bg-muted/15' : ''}`}
+                                >
+                                    <div className="flex items-center justify-center gap-1">
+                                        <span>{d.label}</span>
+                                        {d.showZoomButton ? (
                                             <button
                                                 type="button"
-                                                className="rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium shadow-sm hover:bg-accent hover:text-accent-foreground"
-                                                onClick={onEmptyGoToday}
+                                                className="inline-flex size-5 min-h-[22px] min-w-[22px] items-center justify-center rounded border border-border bg-background text-muted-foreground shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:outline-none"
+                                                title="Zoom quarti"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    onZoomDay?.(d.dateStr);
+                                                }}
+                                                disabled={loading}
                                             >
-                                                Vai a oggi
-                                            </button>
-                                        ) : null}
-                                        {onEmptyChangeRange ? (
-                                            <button
-                                                type="button"
-                                                className="rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium shadow-sm hover:bg-accent hover:text-accent-foreground"
-                                                onClick={onEmptyChangeRange}
-                                            >
-                                                Cambia periodo
+                                                +
                                             </button>
                                         ) : null}
                                     </div>
-                                </div>
-                            </td>
+                                </th>
+                            ))}
                         </tr>
-                    ) : (
-                        <>
-                            {lines.map((line) =>
-                                (line.orders ?? []).map((order, orderIdx) => {
-                                    const isFirstOrder = orderIdx === 0;
-                                    const deliveryDateStr =
-                                        order.delivery_requested_date
-                                            ? new Date(
-                                                  order.delivery_requested_date *
-                                                      1000,
-                                              )
-                                                  .toISOString()
-                                                  .slice(0, 10)
-                                            : null;
+                        <tr>
+                            {slotColumns.map((col) => (
+                                <th
+                                    key={col.timestamp}
+                                    scope="col"
+                                    className={`min-w-[3rem] px-1 py-2 text-center text-[10px] font-medium ${
+                                        col.isWeekend
+                                            ? 'bg-muted/50 text-muted-foreground'
+                                            : 'text-muted-foreground'
+                                    }${col.isDayEnd ? 'border-r-2 border-border/80' : ''}`}
+                                >
+                                    {col.label}
+                                </th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loading && lines.length === 0 ? (
+                            <>
+                                {Array.from({ length: 8 }).map((_, idx) => (
+                                    <tr
+                                        key={`skeleton_row_${idx}`}
+                                        className="border-b border-border/40"
+                                    >
+                                        <td className="sticky left-0 z-10 bg-card px-2 py-1.5">
+                                            <div className="h-4 w-16 animate-pulse rounded bg-muted/60" />
+                                        </td>
+                                        <td className="sticky left-[8rem] z-10 bg-card px-2 py-1.5">
+                                            <div className="h-4 w-28 animate-pulse rounded bg-muted/60" />
+                                        </td>
+                                        {slotColumns.map((col) => (
+                                            <td
+                                                key={`skeleton_cell_${idx}_${col.timestamp}`}
+                                                className="min-w-[3rem] px-1 py-1.5 align-middle"
+                                            >
+                                                <div className="h-6 w-full animate-pulse rounded bg-muted/40" />
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </>
+                        ) : lines.length === 0 ? (
+                            <tr>
+                                <td
+                                    colSpan={2 + slotColumns.length}
+                                    className="px-4 py-8 text-center text-muted-foreground"
+                                >
+                                    <div className="space-y-3">
+                                        <p>
+                                            Nessuna linea nel periodo
+                                            selezionato.
+                                        </p>
+                                        <div className="flex justify-center gap-3">
+                                            {onEmptyGoToday ? (
+                                                <button
+                                                    type="button"
+                                                    className="rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium shadow-sm hover:bg-accent hover:text-accent-foreground"
+                                                    onClick={onEmptyGoToday}
+                                                >
+                                                    Vai a oggi
+                                                </button>
+                                            ) : null}
+                                            {onEmptyChangeRange ? (
+                                                <button
+                                                    type="button"
+                                                    className="rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium shadow-sm hover:bg-accent hover:text-accent-foreground"
+                                                    onClick={onEmptyChangeRange}
+                                                >
+                                                    Cambia periodo
+                                                </button>
+                                            ) : null}
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        ) : (
+                            <>
+                                {lines.map((line) =>
+                                    (line.orders ?? []).map(
+                                        (order, orderIdx) => {
+                                            const isFirstOrder = orderIdx === 0;
+                                            const deliveryDateStr =
+                                                order.delivery_requested_date
+                                                    ? new Date(
+                                                          order.delivery_requested_date *
+                                                              1000,
+                                                      )
+                                                          .toISOString()
+                                                          .slice(0, 10)
+                                                    : null;
+                                            return (
+                                                <tr
+                                                    key={order.uuid}
+                                                    className="border-b border-border/60 align-middle [content-visibility:auto]"
+                                                >
+                                                    <td className="sticky left-0 z-10 bg-card px-2 py-1.5 text-xs font-medium text-foreground shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)]">
+                                                        {isFirstOrder ? (
+                                                            <>
+                                                                <span>
+                                                                    {line.code}
+                                                                </span>
+                                                                <span className="block truncate text-[10px] font-normal text-muted-foreground">
+                                                                    {line.name}
+                                                                </span>
+                                                            </>
+                                                        ) : (
+                                                            '\u00A0'
+                                                        )}
+                                                    </td>
+                                                    <td
+                                                        className="sticky left-[8rem] z-10 bg-card py-1.5 pr-2 pl-2 text-xs text-muted-foreground shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)]"
+                                                        title={
+                                                            [
+                                                                order.code,
+                                                                order.article_code,
+                                                                order.description,
+                                                            ]
+                                                                .filter(Boolean)
+                                                                .join(' — ') ||
+                                                            order.code
+                                                        }
+                                                    >
+                                                        <span className="block truncate">
+                                                            {order.code}
+                                                            {order.article_code
+                                                                ? ` — ${order.article_code}`
+                                                                : ''}
+                                                        </span>
+                                                    </td>
+                                                    {slotColumns.map(
+                                                        (col, colIdx) => {
+                                                            const cellKey =
+                                                                getCellKey(
+                                                                    line.uuid,
+                                                                    order.uuid,
+                                                                    col.timestamp,
+                                                                );
+                                                            const colDayOfWeek =
+                                                                new Date(
+                                                                    col.dateStr +
+                                                                        'T12:00:00',
+                                                                ).getDay();
+                                                            const enabled =
+                                                                isCellEnabledForOrder(
+                                                                    order,
+                                                                    col.hour,
+                                                                    colDayOfWeek,
+                                                                );
+                                                            const isOverdue =
+                                                                !!deliveryDateStr &&
+                                                                col.dateStr >
+                                                                    deliveryDateStr;
+                                                            const isDeadlineBorder =
+                                                                !!deliveryDateStr &&
+                                                                col.dateStr <=
+                                                                    deliveryDateStr &&
+                                                                colIdx <
+                                                                    slotColumns.length -
+                                                                        1 &&
+                                                                (slotColumns[
+                                                                    colIdx + 1
+                                                                ]?.dateStr ??
+                                                                    '') >
+                                                                    deliveryDateStr;
+                                                            const dayEndClass =
+                                                                !isDeadlineBorder &&
+                                                                col.isDayEnd
+                                                                    ? ' border-r-2 border-border/80'
+                                                                    : '';
+                                                            let value: number;
+                                                            let displayMixed = false;
+                                                            if (
+                                                                zoomLevel ===
+                                                                'hour'
+                                                            ) {
+                                                                const q0 =
+                                                                    planningData[
+                                                                        getCellKey(
+                                                                            line.uuid,
+                                                                            order.uuid,
+                                                                            toTimestamp(
+                                                                                col.dateStr,
+                                                                                col.hour,
+                                                                                0,
+                                                                            ),
+                                                                        )
+                                                                    ] ?? 0;
+                                                                const q15 =
+                                                                    planningData[
+                                                                        getCellKey(
+                                                                            line.uuid,
+                                                                            order.uuid,
+                                                                            toTimestamp(
+                                                                                col.dateStr,
+                                                                                col.hour,
+                                                                                15,
+                                                                            ),
+                                                                        )
+                                                                    ] ?? 0;
+                                                                const q30 =
+                                                                    planningData[
+                                                                        getCellKey(
+                                                                            line.uuid,
+                                                                            order.uuid,
+                                                                            toTimestamp(
+                                                                                col.dateStr,
+                                                                                col.hour,
+                                                                                30,
+                                                                            ),
+                                                                        )
+                                                                    ] ?? 0;
+                                                                const q45 =
+                                                                    planningData[
+                                                                        getCellKey(
+                                                                            line.uuid,
+                                                                            order.uuid,
+                                                                            toTimestamp(
+                                                                                col.dateStr,
+                                                                                col.hour,
+                                                                                45,
+                                                                            ),
+                                                                        )
+                                                                    ] ?? 0;
+                                                                const vals = [
+                                                                    q0,
+                                                                    q15,
+                                                                    q30,
+                                                                    q45,
+                                                                ].filter(
+                                                                    (v) =>
+                                                                        v > 0,
+                                                                );
+                                                                if (
+                                                                    vals.length ===
+                                                                    0
+                                                                )
+                                                                    value = 0;
+                                                                else if (
+                                                                    vals.length ===
+                                                                        4 &&
+                                                                    vals.every(
+                                                                        (v) =>
+                                                                            v ===
+                                                                            vals[0],
+                                                                    )
+                                                                )
+                                                                    value =
+                                                                        vals[0];
+                                                                else {
+                                                                    value =
+                                                                        Math.round(
+                                                                            (q0 +
+                                                                                q15 +
+                                                                                q30 +
+                                                                                q45) /
+                                                                                4,
+                                                                        );
+                                                                    displayMixed = true;
+                                                                }
+                                                            } else {
+                                                                value =
+                                                                    planningData[
+                                                                        cellKey
+                                                                    ] ?? 0;
+                                                            }
+                                                            const isEditing =
+                                                                editingCellKey !==
+                                                                    null &&
+                                                                editingCellKey ===
+                                                                    cellKey;
+                                                            const isSavingCell =
+                                                                savingCellKey ===
+                                                                cellKey;
+
+                                                            if (isEditing) {
+                                                                const editDeadlineClass =
+                                                                    isDeadlineBorder
+                                                                        ? ' border-r-2 border-amber-500 dark:border-amber-400'
+                                                                        : '';
+                                                                return (
+                                                                    <td
+                                                                        key={
+                                                                            col.timestamp
+                                                                        }
+                                                                        data-editing-cell="true"
+                                                                        className={
+                                                                            'min-w-[3rem] border border-primary p-0 align-middle' +
+                                                                            editDeadlineClass +
+                                                                            dayEndClass
+                                                                        }
+                                                                    >
+                                                                        <div className="flex flex-col">
+                                                                            <input
+                                                                                type="number"
+                                                                                min={
+                                                                                    0
+                                                                                }
+                                                                                className="h-9 w-full border-0 bg-primary/10 px-1 text-center text-xs focus:outline-none"
+                                                                                value={
+                                                                                    editingValue
+                                                                                }
+                                                                                disabled={
+                                                                                    isSavingCell
+                                                                                }
+                                                                                onChange={(
+                                                                                    e,
+                                                                                ) =>
+                                                                                    setEditingValue(
+                                                                                        e
+                                                                                            .target
+                                                                                            .value,
+                                                                                    )
+                                                                                }
+                                                                                onBlur={() => {
+                                                                                    const val =
+                                                                                        Number.parseInt(
+                                                                                            editingValue,
+                                                                                            10,
+                                                                                        );
+                                                                                    if (
+                                                                                        !Number.isNaN(
+                                                                                            val,
+                                                                                        ) &&
+                                                                                        val >=
+                                                                                            0
+                                                                                    ) {
+                                                                                        void onSavePlanningCell(
+                                                                                            cellKey,
+                                                                                            val,
+                                                                                        ).then(
+                                                                                            () => {
+                                                                                                setEditingCellKey(
+                                                                                                    null,
+                                                                                                );
+                                                                                                setEditingValue(
+                                                                                                    '',
+                                                                                                );
+                                                                                            },
+                                                                                        );
+                                                                                    } else {
+                                                                                        setEditingCellKey(
+                                                                                            null,
+                                                                                        );
+                                                                                        setEditingValue(
+                                                                                            '',
+                                                                                        );
+                                                                                    }
+                                                                                }}
+                                                                                onKeyDown={(
+                                                                                    e,
+                                                                                ) =>
+                                                                                    handlePlanningKeyDown(
+                                                                                        e,
+                                                                                        cellKey,
+                                                                                    )
+                                                                                }
+                                                                                autoFocus
+                                                                            />
+                                                                            {cellValidationError &&
+                                                                                cellValidationError.cellKey ===
+                                                                                    cellKey && (
+                                                                                    <span
+                                                                                        className="px-1 py-0.5 text-[10px] text-destructive"
+                                                                                        role="alert"
+                                                                                    >
+                                                                                        {
+                                                                                            cellValidationError.message
+                                                                                        }
+                                                                                    </span>
+                                                                                )}
+                                                                        </div>
+                                                                    </td>
+                                                                );
+                                                            }
+
+                                                            const base =
+                                                                'min-w-[3rem] cursor-pointer px-1 py-1.5 text-center text-xs align-middle';
+                                                            const style =
+                                                                !enabled
+                                                                    ? `${base} bg-muted/50 text-muted-foreground`
+                                                                    : isOverdue
+                                                                      ? `${base} bg-red-500/80 text-red-50 font-medium dark:bg-red-600/90 dark:text-white`
+                                                                      : value >
+                                                                              0 ||
+                                                                          displayMixed
+                                                                        ? `${base} border border-emerald-500/60 bg-emerald-500/80 text-emerald-50 dark:border-emerald-400/70 dark:bg-emerald-600/90 dark:text-white`
+                                                                        : `${base} border border-dashed border-muted bg-background/40 dark:bg-muted/30`;
+                                                            const deadlineClass =
+                                                                isDeadlineBorder
+                                                                    ? ' border-r-2 border-amber-500 dark:border-amber-400'
+                                                                    : '';
+
+                                                            return (
+                                                                <td
+                                                                    key={
+                                                                        col.timestamp
+                                                                    }
+                                                                    className={
+                                                                        style +
+                                                                        deadlineClass +
+                                                                        dayEndClass
+                                                                    }
+                                                                    onClick={() => {
+                                                                        if (
+                                                                            enabled
+                                                                        ) {
+                                                                            setEditingCellKey(
+                                                                                cellKey,
+                                                                            );
+                                                                            setEditingValue(
+                                                                                zoomLevel ===
+                                                                                    'hour' &&
+                                                                                    displayMixed
+                                                                                    ? ''
+                                                                                    : value >
+                                                                                        0
+                                                                                      ? String(
+                                                                                            value,
+                                                                                        )
+                                                                                      : '',
+                                                                            );
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    {displayMixed
+                                                                        ? '*'
+                                                                        : value >
+                                                                            0
+                                                                          ? value
+                                                                          : '—'}
+                                                                </td>
+                                                            );
+                                                        },
+                                                    )}
+                                                </tr>
+                                            );
+                                        },
+                                    ),
+                                )}
+                                {SUMMARY_ROWS.map((row) => {
+                                    const isEditable = row.editable === true;
                                     return (
                                         <tr
-                                            key={order.uuid}
-                                            className="border-b border-border/60 align-middle [content-visibility:auto]"
+                                            key={`sum_${row.id}`}
+                                            className="border-t-2 border-border bg-muted/40 align-middle [content-visibility:auto]"
                                         >
-                                            <td className="sticky left-0 z-10 bg-card px-2 py-1.5 text-xs font-medium text-foreground shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)]">
-                                                {isFirstOrder ? (
-                                                    <>
-                                                        <span>{line.code}</span>
-                                                        <span className="block truncate text-[10px] font-normal text-muted-foreground">
-                                                            {line.name}
-                                                        </span>
-                                                    </>
-                                                ) : (
-                                                    '\u00A0'
-                                                )}
-                                            </td>
                                             <td
-                                                className="sticky left-[8rem] z-10 bg-card py-1.5 pr-2 pl-2 text-xs text-muted-foreground shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)]"
-                                                title={
-                                                    [
-                                                        order.code,
-                                                        order.article_code,
-                                                        order.description,
-                                                    ]
-                                                        .filter(Boolean)
-                                                        .join(' — ') ||
-                                                    order.code
-                                                }
+                                                colSpan={2}
+                                                className="sticky left-0 z-10 bg-muted/50 px-2 py-2 text-xs font-semibold text-foreground"
                                             >
-                                                <span className="block truncate">
-                                                    {order.code}
-                                                    {order.article_code
-                                                        ? ` — ${order.article_code}`
-                                                        : ''}
-                                                </span>
+                                                {row.label}
                                             </td>
-                                            {slotColumns.map((col, colIdx) => {
-                                                const cellKey = getCellKey(
-                                                    line.uuid,
-                                                    order.uuid,
-                                                    col.timestamp,
-                                                );
-                                                const colDayOfWeek = new Date(
-                                                    col.dateStr + 'T12:00:00',
-                                                ).getDay();
-                                                const enabled =
-                                                    isCellEnabledForOrder(
-                                                        order,
-                                                        col.hour,
-                                                        colDayOfWeek,
-                                                    );
-                                                const isOverdue =
-                                                    !!deliveryDateStr &&
-                                                    col.dateStr >
-                                                        deliveryDateStr;
-                                                const isDeadlineBorder =
-                                                    !!deliveryDateStr &&
-                                                    col.dateStr <=
-                                                        deliveryDateStr &&
-                                                    colIdx <
-                                                        slotColumns.length -
-                                                            1 &&
-                                                    (slotColumns[colIdx + 1]
-                                                        ?.dateStr ?? '') >
-                                                        deliveryDateStr;
-                                                const dayEndClass =
-                                                    !isDeadlineBorder &&
+                                            {slotColumns.map((col) => {
+                                                const summaryDayEndClass =
                                                     col.isDayEnd
                                                         ? ' border-r-2 border-border/80'
                                                         : '';
-                                                let value: number;
-                                                let displayMixed = false;
-                                                if (zoomLevel === 'hour') {
-                                                    const q0 =
-                                                        planningData[
-                                                            getCellKey(
-                                                                line.uuid,
-                                                                order.uuid,
-                                                                toTimestamp(
-                                                                    col.dateStr,
-                                                                    col.hour,
-                                                                    0,
-                                                                ),
-                                                            )
-                                                        ] ?? 0;
-                                                    const q15 =
-                                                        planningData[
-                                                            getCellKey(
-                                                                line.uuid,
-                                                                order.uuid,
-                                                                toTimestamp(
-                                                                    col.dateStr,
-                                                                    col.hour,
-                                                                    15,
-                                                                ),
-                                                            )
-                                                        ] ?? 0;
-                                                    const q30 =
-                                                        planningData[
-                                                            getCellKey(
-                                                                line.uuid,
-                                                                order.uuid,
-                                                                toTimestamp(
-                                                                    col.dateStr,
-                                                                    col.hour,
-                                                                    30,
-                                                                ),
-                                                            )
-                                                        ] ?? 0;
-                                                    const q45 =
-                                                        planningData[
-                                                            getCellKey(
-                                                                line.uuid,
-                                                                order.uuid,
-                                                                toTimestamp(
-                                                                    col.dateStr,
-                                                                    col.hour,
-                                                                    45,
-                                                                ),
-                                                            )
-                                                        ] ?? 0;
-                                                    const vals = [
-                                                        q0,
-                                                        q15,
-                                                        q30,
-                                                        q45,
-                                                    ].filter((v) => v > 0);
-                                                    if (vals.length === 0)
-                                                        value = 0;
-                                                    else if (
-                                                        vals.length === 4 &&
-                                                        vals.every(
-                                                            (v) =>
-                                                                v === vals[0],
-                                                        )
-                                                    )
-                                                        value = vals[0];
-                                                    else {
-                                                        value = Math.round(
-                                                            (q0 +
-                                                                q15 +
-                                                                q30 +
-                                                                q45) /
-                                                                4,
-                                                        );
-                                                        displayMixed = true;
-                                                    }
-                                                } else {
-                                                    value =
-                                                        planningData[cellKey] ??
-                                                        0;
-                                                }
-                                                const isEditing =
-                                                    editingCellKey !== null &&
-                                                    editingCellKey === cellKey;
-                                                const isSavingCell =
-                                                    savingCellKey === cellKey;
-
-                                                if (isEditing) {
-                                                    const editDeadlineClass =
-                                                        isDeadlineBorder
-                                                            ? ' border-r-2 border-amber-500'
-                                                            : '';
+                                                if (col.isWeekend) {
                                                     return (
                                                         <td
                                                             key={col.timestamp}
-                                                            data-editing-cell="true"
                                                             className={
-                                                                'min-w-[3rem] border border-primary p-0 align-middle' +
-                                                                editDeadlineClass +
-                                                                dayEndClass
+                                                                'min-w-[3rem] px-1 py-2 text-center text-xs text-muted-foreground' +
+                                                                summaryDayEndClass
                                                             }
                                                         >
-                                                            <input
-                                                                type="number"
-                                                                min={0}
-                                                                className="h-9 w-full border-0 bg-primary/10 px-1 text-center text-xs focus:outline-none"
-                                                                value={
-                                                                    editingValue
+                                                            —
+                                                        </td>
+                                                    );
+                                                }
+                                                const contractCounts =
+                                                    contractCountsByDate[
+                                                        col.dateStr
+                                                    ] ??
+                                                    countContractsByQualifica(
+                                                        col.dateStr,
+                                                        contracts,
+                                                    );
+                                                const totaleImpegno =
+                                                    totalsByTimestamp[
+                                                        col.timestamp
+                                                    ] ?? 0;
+                                                const assenze =
+                                                    getSummaryValueForSlot(
+                                                        col.timestamp,
+                                                        'assenze',
+                                                        0,
+                                                    );
+                                                const caporeparto =
+                                                    getSummaryValueForSlot(
+                                                        col.timestamp,
+                                                        'caporeparto',
+                                                        contractCounts.capo_reparto,
+                                                    );
+                                                const magazzinieri =
+                                                    getSummaryValueForSlot(
+                                                        col.timestamp,
+                                                        'magazzinieri',
+                                                        contractCounts.magazzinieri,
+                                                    );
+                                                const daImpiegare =
+                                                    contractCounts.contratto -
+                                                    assenze -
+                                                    caporeparto -
+                                                    magazzinieri;
+                                                const disponibili =
+                                                    daImpiegare - totaleImpegno;
+
+                                                let displayVal: number;
+                                                if (row.id === 'totale_impegno')
+                                                    displayVal = totaleImpegno;
+                                                else if (
+                                                    row.id === 'da_impiegare'
+                                                )
+                                                    displayVal = daImpiegare;
+                                                else if (row.id === 'assenze')
+                                                    displayVal = assenze;
+                                                else if (
+                                                    row.id === 'disponibili'
+                                                )
+                                                    displayVal = disponibili;
+                                                else if (
+                                                    row.id === 'caporeparto'
+                                                )
+                                                    displayVal = caporeparto;
+                                                else if (
+                                                    row.id === 'magazzinieri'
+                                                )
+                                                    displayVal = magazzinieri;
+                                                else displayVal = 0;
+
+                                                const summaryKey = `${col.timestamp}_${row.id}`;
+                                                const isSummaryEditing =
+                                                    isEditable &&
+                                                    editingSummaryKey ===
+                                                        summaryKey;
+                                                const isSummarySaving =
+                                                    savingSummaryKey ===
+                                                    summaryKey;
+
+                                                if (
+                                                    isEditable &&
+                                                    (row.id === 'assenze' ||
+                                                        row.id ===
+                                                            'caporeparto' ||
+                                                        row.id ===
+                                                            'magazzinieri')
+                                                ) {
+                                                    const defaultVal =
+                                                        row.id === 'caporeparto'
+                                                            ? contractCounts.capo_reparto
+                                                            : row.id ===
+                                                                'magazzinieri'
+                                                              ? contractCounts.magazzinieri
+                                                              : 0;
+                                                    const currentVal =
+                                                        getSummaryValueForSlot(
+                                                            col.timestamp,
+                                                            row.id,
+                                                            defaultVal,
+                                                        );
+                                                    if (isSummaryEditing) {
+                                                        return (
+                                                            <td
+                                                                key={
+                                                                    col.timestamp
                                                                 }
-                                                                disabled={
-                                                                    isSavingCell
+                                                                className={
+                                                                    'min-w-[3rem] border border-primary p-0 align-middle' +
+                                                                    summaryDayEndClass
                                                                 }
-                                                                onChange={(e) =>
-                                                                    setEditingValue(
-                                                                        e.target
-                                                                            .value,
-                                                                    )
-                                                                }
-                                                                onBlur={() => {
-                                                                    const val =
-                                                                        Number.parseInt(
-                                                                            editingValue,
-                                                                            10,
-                                                                        );
-                                                                    if (
-                                                                        !Number.isNaN(
-                                                                            val,
-                                                                        ) &&
-                                                                        val >= 0
-                                                                    ) {
-                                                                        void onSavePlanningCell(
-                                                                            cellKey,
-                                                                            val,
-                                                                        ).then(
-                                                                            () => {
-                                                                                setEditingCellKey(
-                                                                                    null,
-                                                                                );
-                                                                                setEditingValue(
-                                                                                    '',
-                                                                                );
-                                                                            },
-                                                                        );
-                                                                    } else {
-                                                                        setEditingCellKey(
-                                                                            null,
-                                                                        );
-                                                                        setEditingValue(
-                                                                            '',
-                                                                        );
-                                                                    }
-                                                                }}
-                                                                onKeyDown={(
-                                                                    e,
-                                                                ) =>
-                                                                    handlePlanningKeyDown(
-                                                                        e,
-                                                                        cellKey,
-                                                                    )
-                                                                }
-                                                                autoFocus
-                                                            />
+                                                            >
+                                                                <div className="flex flex-col">
+                                                                    <input
+                                                                        type="number"
+                                                                        min={0}
+                                                                        className="h-8 w-full border-0 bg-primary/10 px-1 text-center text-xs focus:outline-none"
+                                                                        value={
+                                                                            editingSummaryValue
+                                                                        }
+                                                                        disabled={
+                                                                            isSummarySaving
+                                                                        }
+                                                                        onChange={(
+                                                                            e,
+                                                                        ) =>
+                                                                            setEditingSummaryValue(
+                                                                                e
+                                                                                    .target
+                                                                                    .value,
+                                                                            )
+                                                                        }
+                                                                        onBlur={() => {
+                                                                            void onSaveSummaryCell(
+                                                                                summaryKey,
+                                                                                editingSummaryValue,
+                                                                            ).then(
+                                                                                () => {
+                                                                                    setEditingSummaryKey(
+                                                                                        null,
+                                                                                    );
+                                                                                    setEditingSummaryValue(
+                                                                                        '',
+                                                                                    );
+                                                                                },
+                                                                            );
+                                                                        }}
+                                                                        onKeyDown={(
+                                                                            e,
+                                                                        ) =>
+                                                                            handleSummaryKeyDown(
+                                                                                e,
+                                                                                summaryKey,
+                                                                            )
+                                                                        }
+                                                                        autoFocus
+                                                                    />
+                                                                    {summaryValidationError?.key ===
+                                                                        summaryKey && (
+                                                                        <span
+                                                                            className="px-1 py-0.5 text-[10px] text-destructive"
+                                                                            role="alert"
+                                                                        >
+                                                                            {
+                                                                                summaryValidationError.message
+                                                                            }
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            </td>
+                                                        );
+                                                    }
+                                                    return (
+                                                        <td
+                                                            key={col.timestamp}
+                                                            className={
+                                                                'min-w-[3rem] cursor-pointer border border-border bg-background px-1 py-2 text-center align-middle text-xs hover:bg-accent/50' +
+                                                                summaryDayEndClass
+                                                            }
+                                                            onClick={() => {
+                                                                setEditingSummaryKey(
+                                                                    summaryKey,
+                                                                );
+                                                                setEditingSummaryValue(
+                                                                    String(
+                                                                        currentVal,
+                                                                    ),
+                                                                );
+                                                            }}
+                                                        >
+                                                            {currentVal > 0
+                                                                ? currentVal
+                                                                : isSummaryValueCustom(
+                                                                        col.timestamp,
+                                                                        row.id,
+                                                                    ) &&
+                                                                    currentVal ===
+                                                                        0
+                                                                  ? '0'
+                                                                  : ''}
                                                         </td>
                                                     );
                                                 }
 
-                                                const base =
-                                                    'min-w-[3rem] cursor-pointer px-1 py-1.5 text-center text-xs align-middle';
-                                                const style = !enabled
-                                                    ? `${base} bg-muted/50 text-muted-foreground`
-                                                    : isOverdue
-                                                      ? `${base} bg-red-500/80 text-red-50 font-medium`
-                                                      : value > 0 ||
-                                                          displayMixed
-                                                        ? `${base} border border-emerald-500/60 bg-emerald-500/80 text-emerald-50`
-                                                        : `${base} border border-dashed border-muted bg-background/40`;
-                                                const deadlineClass =
-                                                    isDeadlineBorder
-                                                        ? ' border-r-2 border-amber-500'
-                                                        : '';
-
+                                                const isDisponibiliWarning =
+                                                    row.id === 'disponibili' &&
+                                                    displayVal !== 0;
                                                 return (
                                                     <td
                                                         key={col.timestamp}
-                                                        className={
-                                                            style +
-                                                            deadlineClass +
-                                                            dayEndClass
-                                                        }
-                                                        onClick={() => {
-                                                            if (enabled) {
-                                                                setEditingCellKey(
-                                                                    cellKey,
-                                                                );
-                                                                setEditingValue(
-                                                                    zoomLevel ===
-                                                                        'hour' &&
-                                                                        displayMixed
-                                                                        ? ''
-                                                                        : value >
-                                                                            0
-                                                                          ? String(
-                                                                                value,
-                                                                            )
-                                                                          : '',
-                                                                );
-                                                            }
-                                                        }}
+                                                        className={`min-w-[3rem] px-1 py-2 text-center align-middle text-xs ${
+                                                            isDisponibiliWarning
+                                                                ? 'bg-red-500/80 font-medium text-red-50 dark:bg-red-600/90 dark:text-white'
+                                                                : 'border border-border bg-background'
+                                                        }${summaryDayEndClass}`}
                                                     >
-                                                        {displayMixed
-                                                            ? '*'
-                                                            : value > 0
-                                                              ? value
-                                                              : '—'}
+                                                        {displayVal}
                                                     </td>
                                                 );
                                             })}
                                         </tr>
                                     );
-                                }),
-                            )}
-                            {SUMMARY_ROWS.map((row) => {
-                                const isEditable = row.editable === true;
-                                return (
-                                    <tr
-                                        key={`sum_${row.id}`}
-                                        className="border-t-2 border-border bg-muted/40 align-middle [content-visibility:auto]"
-                                    >
-                                        <td
-                                            colSpan={2}
-                                            className="sticky left-0 z-10 bg-muted/50 px-2 py-2 text-xs font-semibold text-foreground"
-                                        >
-                                            {row.label}
-                                        </td>
-                                        {slotColumns.map((col) => {
-                                            const summaryDayEndClass =
-                                                col.isDayEnd
-                                                    ? ' border-r-2 border-border/80'
-                                                    : '';
-                                            if (col.isWeekend) {
-                                                return (
-                                                    <td
-                                                        key={col.timestamp}
-                                                        className={
-                                                            'min-w-[3rem] px-1 py-2 text-center text-xs text-muted-foreground' +
-                                                            summaryDayEndClass
-                                                        }
-                                                    >
-                                                        —
-                                                    </td>
-                                                );
-                                            }
-                                            const contractCounts =
-                                                contractCountsByDate[
-                                                    col.dateStr
-                                                ] ??
-                                                countContractsByQualifica(
-                                                    col.dateStr,
-                                                    contracts,
-                                                );
-                                            const totaleImpegno =
-                                                totalsByTimestamp[
-                                                    col.timestamp
-                                                ] ?? 0;
-                                            const assenze =
-                                                getSummaryValueForSlot(
-                                                    col.timestamp,
-                                                    'assenze',
-                                                    0,
-                                                );
-                                            const caporeparto =
-                                                getSummaryValueForSlot(
-                                                    col.timestamp,
-                                                    'caporeparto',
-                                                    contractCounts.capo_reparto,
-                                                );
-                                            const magazzinieri =
-                                                getSummaryValueForSlot(
-                                                    col.timestamp,
-                                                    'magazzinieri',
-                                                    contractCounts.magazzinieri,
-                                                );
-                                            const daImpiegare =
-                                                contractCounts.contratto -
-                                                assenze -
-                                                caporeparto -
-                                                magazzinieri;
-                                            const disponibili =
-                                                daImpiegare - totaleImpegno;
-
-                                            let displayVal: number;
-                                            if (row.id === 'totale_impegno')
-                                                displayVal = totaleImpegno;
-                                            else if (row.id === 'da_impiegare')
-                                                displayVal = daImpiegare;
-                                            else if (row.id === 'assenze')
-                                                displayVal = assenze;
-                                            else if (row.id === 'disponibili')
-                                                displayVal = disponibili;
-                                            else if (row.id === 'caporeparto')
-                                                displayVal = caporeparto;
-                                            else if (row.id === 'magazzinieri')
-                                                displayVal = magazzinieri;
-                                            else displayVal = 0;
-
-                                            const summaryKey = `${col.timestamp}_${row.id}`;
-                                            const isSummaryEditing =
-                                                isEditable &&
-                                                editingSummaryKey ===
-                                                    summaryKey;
-                                            const isSummarySaving =
-                                                savingSummaryKey === summaryKey;
-
-                                            if (
-                                                isEditable &&
-                                                (row.id === 'assenze' ||
-                                                    row.id === 'caporeparto' ||
-                                                    row.id === 'magazzinieri')
-                                            ) {
-                                                const defaultVal =
-                                                    row.id === 'caporeparto'
-                                                        ? contractCounts.capo_reparto
-                                                        : row.id ===
-                                                            'magazzinieri'
-                                                          ? contractCounts.magazzinieri
-                                                          : 0;
-                                                const currentVal =
-                                                    getSummaryValueForSlot(
-                                                        col.timestamp,
-                                                        row.id,
-                                                        defaultVal,
-                                                    );
-                                                if (isSummaryEditing) {
-                                                    return (
-                                                        <td
-                                                            key={col.timestamp}
-                                                            className={
-                                                                'min-w-[3rem] border border-primary p-0 align-middle' +
-                                                                summaryDayEndClass
-                                                            }
-                                                        >
-                                                            <input
-                                                                type="number"
-                                                                min={0}
-                                                                className="h-8 w-full border-0 bg-primary/10 px-1 text-center text-xs focus:outline-none"
-                                                                value={
-                                                                    editingSummaryValue
-                                                                }
-                                                                disabled={
-                                                                    isSummarySaving
-                                                                }
-                                                                onChange={(e) =>
-                                                                    setEditingSummaryValue(
-                                                                        e.target
-                                                                            .value,
-                                                                    )
-                                                                }
-                                                                onBlur={() => {
-                                                                    void onSaveSummaryCell(
-                                                                        summaryKey,
-                                                                        editingSummaryValue,
-                                                                    ).then(
-                                                                        () => {
-                                                                            setEditingSummaryKey(
-                                                                                null,
-                                                                            );
-                                                                            setEditingSummaryValue(
-                                                                                '',
-                                                                            );
-                                                                        },
-                                                                    );
-                                                                }}
-                                                                onKeyDown={(
-                                                                    e,
-                                                                ) =>
-                                                                    handleSummaryKeyDown(
-                                                                        e,
-                                                                        summaryKey,
-                                                                    )
-                                                                }
-                                                                autoFocus
-                                                            />
-                                                        </td>
-                                                    );
-                                                }
-                                                return (
-                                                    <td
-                                                        key={col.timestamp}
-                                                        className={
-                                                            'min-w-[3rem] cursor-pointer border border-border bg-background px-1 py-2 text-center align-middle text-xs hover:bg-accent/50' +
-                                                            summaryDayEndClass
-                                                        }
-                                                        onClick={() => {
-                                                            setEditingSummaryKey(
-                                                                summaryKey,
-                                                            );
-                                                            setEditingSummaryValue(
-                                                                String(
-                                                                    currentVal,
-                                                                ),
-                                                            );
-                                                        }}
-                                                    >
-                                                        {currentVal > 0
-                                                            ? currentVal
-                                                            : isSummaryValueCustom(
-                                                                    col.timestamp,
-                                                                    row.id,
-                                                                ) &&
-                                                                currentVal === 0
-                                                              ? '0'
-                                                              : ''}
-                                                    </td>
-                                                );
-                                            }
-
-                                            const isDisponibiliWarning =
-                                                row.id === 'disponibili' &&
-                                                displayVal !== 0;
-                                            return (
-                                                <td
-                                                    key={col.timestamp}
-                                                    className={`min-w-[3rem] px-1 py-2 text-center align-middle text-xs ${
-                                                        isDisponibiliWarning
-                                                            ? 'bg-red-500/80 font-medium text-red-50'
-                                                            : 'border border-border bg-background'
-                                                    }${summaryDayEndClass}`}
-                                                >
-                                                    {displayVal}
-                                                </td>
-                                            );
-                                        })}
-                                    </tr>
-                                );
-                            })}
-                        </>
-                    )}
-                </tbody>
-            </table>
+                                })}
+                            </>
+                        )}
+                    </tbody>
+                </table>
+            </div>
+            {hasHorizontalOverflow ? (
+                <p
+                    className="py-1.5 text-center text-xs text-muted-foreground"
+                    role="status"
+                    aria-live="polite"
+                >
+                    Scorri per vedere più colonne
+                </p>
+            ) : null}
         </div>
     );
 });

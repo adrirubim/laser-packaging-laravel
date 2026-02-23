@@ -13,24 +13,27 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import { Form } from '@inertiajs/react';
 import { useRef } from 'react';
 
 export default function DeleteUser() {
     const passwordInput = useRef<HTMLInputElement>(null);
+    const { t } = useTranslations();
 
     return (
         <div className="space-y-6">
             <HeadingSmall
-                title="Elimina account"
-                description="Elimina il tuo account e tutte le risorse associate"
+                title={t('settings.delete_account.title')}
+                description={t('settings.delete_account.description')}
             />
             <div className="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4 dark:border-red-200/10 dark:bg-red-700/10">
                 <div className="relative space-y-0.5 text-red-600 dark:text-red-100">
-                    <p className="font-medium">Attenzione</p>
+                    <p className="font-medium">
+                        {t('settings.delete_account.warning_title')}
+                    </p>
                     <p className="text-sm">
-                        Procedi con cautela: questa azione non può essere
-                        annullata.
+                        {t('settings.delete_account.warning_text')}
                     </p>
                 </div>
 
@@ -40,18 +43,15 @@ export default function DeleteUser() {
                             variant="destructive"
                             data-test="delete-user-button"
                         >
-                            Elimina account
+                            {t('settings.delete_account.button')}
                         </Button>
                     </DialogTrigger>
                     <DialogContent>
                         <DialogTitle>
-                            Sei sicuro di voler eliminare il tuo account?
+                            {t('settings.delete_account.dialog_title')}
                         </DialogTitle>
                         <DialogDescription>
-                            Una volta eliminato, l'account e tutti i dati
-                            associati saranno cancellati definitivamente.
-                            Inserisci la password per confermare l'eliminazione
-                            permanente.
+                            {t('settings.delete_account.dialog_description')}
                         </DialogDescription>
 
                         <Form
@@ -70,7 +70,9 @@ export default function DeleteUser() {
                                             htmlFor="password"
                                             className="sr-only"
                                         >
-                                            Password
+                                            {t(
+                                                'settings.delete_account.password_label',
+                                            )}
                                         </Label>
 
                                         <Input
@@ -78,7 +80,9 @@ export default function DeleteUser() {
                                             type="password"
                                             name="password"
                                             ref={passwordInput}
-                                            placeholder="Password"
+                                            placeholder={t(
+                                                'settings.delete_account.password_placeholder',
+                                            )}
                                             autoComplete="current-password"
                                         />
 
@@ -93,7 +97,7 @@ export default function DeleteUser() {
                                                     resetAndClearErrors()
                                                 }
                                             >
-                                                Annulla
+                                                {t('common.cancel')}
                                             </Button>
                                         </DialogClose>
 
@@ -106,7 +110,9 @@ export default function DeleteUser() {
                                                 type="submit"
                                                 data-test="confirm-delete-user-button"
                                             >
-                                                Elimina account
+                                                {t(
+                                                    'settings.delete_account.confirm_button',
+                                                )}
                                             </button>
                                         </Button>
                                     </DialogFooter>

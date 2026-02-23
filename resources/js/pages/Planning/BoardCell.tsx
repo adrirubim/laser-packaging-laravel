@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react';
+import { memo, type ReactNode } from 'react';
 
-export default function BoardCell({
+function BoardCell({
     value,
     children,
 }: {
@@ -9,15 +9,17 @@ export default function BoardCell({
 }) {
     if (value <= 0) {
         return (
-            <div className="flex h-10 items-center justify-center rounded-md border border-dashed border-muted bg-background/40 text-xs text-muted-foreground">
+            <div className="flex h-10 items-center justify-center rounded-md border border-dashed border-muted bg-background/40 text-xs text-muted-foreground dark:bg-muted/30">
                 {children ?? '-'}
             </div>
         );
     }
 
     return (
-        <div className="flex h-10 items-center justify-center rounded-md border border-emerald-500/60 bg-emerald-500/80 px-2 text-xs font-semibold text-emerald-50 shadow-sm">
+        <div className="flex h-10 items-center justify-center rounded-md border border-emerald-500/60 bg-emerald-500/80 px-2 text-xs font-semibold text-emerald-50 shadow-sm dark:border-emerald-400/70 dark:bg-emerald-600/90 dark:text-white">
             {value}
         </div>
     );
 }
+
+export default memo(BoardCell);

@@ -34,9 +34,9 @@ This document is the single reference for commit policy. It complements `.gitign
 | **`.DS_Store`** | macOS metadata; useless for others and can cause noise in diffs. |
 | **`.idea/`**, **`.vscode/`**, **`.fleet/`**, **`.nova/`**, **`.zed/`** | IDE/editor config. Often personal or machine-specific. Some teams **do** commit `.vscode/` for shared settings; this project does not. |
 | **`.github/copilot/`**, **`.github/copilot-instructions.md`** | Copilot-specific; optional and can be personal. Kept out so the repo stays agent-agnostic. |
-| **`docs/planning/`** | Marked as internal documentation not for GitHub; may contain internal or legacy details. |
+| **Internal documentation** | Certain paths are excluded via `.gitignore` and must not be committed or pushed. See `.gitignore` for the list. |
 
-**Why it matters:** Reduces noise and avoids forcing one editor on everyone. Internal docs stay out of the public repo by policy.
+**Why it matters:** Internal or legacy documentation stays out of the repository; the exact path is not referenced here so it is not named outside its own location.
 
 ---
 

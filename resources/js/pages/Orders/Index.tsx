@@ -18,6 +18,7 @@ import {
     getOrderStatusColor,
     getOrderStatusLabel,
 } from '@/constants/orderStatus';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import {
     calculateProgress,
@@ -119,17 +120,17 @@ type OrdersIndexProps = {
     };
 };
 
-const STATUS_OPTIONS = [
-    { value: '', label: 'Tutti gli stati' },
-    { value: '0,1,2,3,4', label: 'Attivi (esclusi Evaso/Saldato)' },
-    { value: '2,3', label: 'Lanciato + In Avanzamento' },
-    { value: '0', label: 'Pianificato' },
-    { value: '1', label: 'In Allestimento' },
-    { value: '2', label: 'Lanciato' },
-    { value: '3', label: 'In Avanzamento' },
-    { value: '4', label: 'Sospeso' },
-    { value: 'completed', label: 'Completate (Evaso + Saldato)' },
-];
+const STATUS_OPTIONS_VALUES = [
+    { value: '', key: 'orders.filter.status_all' },
+    { value: '0,1,2,3,4', key: 'orders.filter.status_active' },
+    { value: '2,3', key: 'orders.filter.status_launched_advancement' },
+    { value: '0', key: 'orders.filter.status_planned' },
+    { value: '1', key: 'orders.filter.status_preparation' },
+    { value: '2', key: 'orders.filter.status_launched' },
+    { value: '3', key: 'orders.filter.status_advancement' },
+    { value: '4', key: 'orders.filter.status_suspended' },
+    { value: 'completed', key: 'orders.filter.status_completed' },
+] as const;
 
 export default function OrdersIndex() {
     const { props } = usePage<OrdersIndexProps>();
@@ -140,6 +141,15 @@ export default function OrdersIndex() {
         filters,
     } = props;
     const { flash } = useFlashNotifications();
+    const { t } = useTranslations();
+    const statusOptions = useMemo(
+        () =>
+            STATUS_OPTIONS_VALUES.map((o) => ({
+                value: o.value,
+                label: t(o.key),
+            })),
+        [t],
+    );
 
     const [searchValue, setSearchValue] = useState(filters.search ?? '');
     const [selectedArticle, setSelectedArticle] = useState(
@@ -833,20 +843,20 @@ export default function OrdersIndex() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Ordini',
+            title: t('nav.orders'),
             href: orders.index().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Ordini" />
+            <Head title={t('nav.orders')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
                         <h1 className="text-2xl font-semibold tracking-tight">
-                            Ordini
+                            {t('nav.orders')}
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
                             Elenco degli ordini di produzione attivi.
@@ -1027,8 +1037,11 @@ export default function OrdersIndex() {
                                 <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
                                     Stato:{' '}
                                     {
-                                        STATUS_OPTIONS.find(
-                                            (o) => o.value === filters.status,
+                                        statusOptions.find(
+                                            (o: {
+                                                value: string;
+                                                label: string;
+                                            }) => o.value === filters.status,
                                         )?.label
                                     }
                                     <button
@@ -1254,7 +1267,7 @@ export default function OrdersIndex() {
                                             }
                                         }}
                                         className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
-                                        placeholder="Minimo"
+                                        placeholder={t('filter.minimum')}
                                         min="0"
                                         step="0.01"
                                     />
@@ -1292,7 +1305,7 @@ export default function OrdersIndex() {
                                             }
                                         }}
                                         className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
-                                        placeholder="Massimo"
+                                        placeholder={t('filter.maximum')}
                                         min="0"
                                         step="0.01"
                                     />
@@ -1353,7 +1366,7 @@ export default function OrdersIndex() {
                             <SearchInput
                                 value={searchValue}
                                 onChange={handleSearchChange}
-                                placeholder="Numero di produzione o riferimento..."
+                                placeholder={t('orders.search_placeholder')}
                                 isLoading={isSearching}
                                 onClear={clearSearch}
                             />
@@ -1378,7 +1391,7 @@ export default function OrdersIndex() {
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {STATUS_OPTIONS.map((option) => (
+                                    {statusOptions.map((option) => (
                                         <SelectItem
                                             key={option.value || 'all'}
                                             value={option.value || 'all'}
@@ -1408,11 +1421,13 @@ export default function OrdersIndex() {
                                     className="w-full"
                                     aria-label="Cliente"
                                 >
-                                    <SelectValue placeholder="Tutti i clienti" />
+                                    <SelectValue
+                                        placeholder={t('filter.all_customers')}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">
-                                        Tutti i clienti
+                                        {t('filter.all_customers')}
                                     </SelectItem>
                                     {customers.map((customer) => (
                                         <SelectItem
@@ -1445,11 +1460,13 @@ export default function OrdersIndex() {
                                     className="w-full"
                                     aria-label="Articolo"
                                 >
-                                    <SelectValue placeholder="Tutti gli articoli" />
+                                    <SelectValue
+                                        placeholder={t('filter.all_articles')}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">
-                                        Tutti gli articoli
+                                        {t('filter.all_articles')}
                                     </SelectItem>
                                     {articles.map((article) => (
                                         <SelectItem
@@ -1483,10 +1500,14 @@ export default function OrdersIndex() {
                                     className="w-full"
                                     aria-label="Autocontrollo"
                                 >
-                                    <SelectValue placeholder="Tutti" />
+                                    <SelectValue
+                                        placeholder={t('filter.all')}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">Tutti</SelectItem>
+                                    <SelectItem value="all">
+                                        {t('filter.all')}
+                                    </SelectItem>
                                     <SelectItem value="false">
                                         Pendente
                                     </SelectItem>

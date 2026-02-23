@@ -2,39 +2,24 @@ import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useActiveUrl } from '@/hooks/use-active-url';
+import { useTranslations } from '@/hooks/use-translations';
 import { cn, toUrl } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance/index';
 import { edit } from '@/routes/profile/index';
 import { show } from '@/routes/two-factor/index';
 import { edit as editPassword } from '@/routes/user-password/index';
-import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import { type PropsWithChildren } from 'react';
 
-const sidebarNavItems: NavItem[] = [
-    {
-        title: 'Profilo',
-        href: edit(),
-        icon: null,
-    },
-    {
-        title: 'Password',
-        href: editPassword(),
-        icon: null,
-    },
-    {
-        title: 'Autenticazione a due fattori',
-        href: show(),
-        icon: null,
-    },
-    {
-        title: 'Aspetto',
-        href: editAppearance(),
-        icon: null,
-    },
+const sidebarNavItems: { titleKey: string; href: ReturnType<typeof edit> }[] = [
+    { titleKey: 'settings.nav_profile', href: edit() },
+    { titleKey: 'settings.nav_password', href: editPassword() },
+    { titleKey: 'settings.nav_two_factor', href: show() },
+    { titleKey: 'settings.nav_appearance', href: editAppearance() },
 ];
 
 export default function SettingsLayout({ children }: PropsWithChildren) {
+    const { t } = useTranslations();
     const { urlIsActive } = useActiveUrl();
 
     // When server-side rendering, we only render the layout on the client...
@@ -45,15 +30,15 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
     return (
         <div className="px-4 py-6">
             <Heading
-                title="Impostazioni"
-                description="Gestisci profilo e impostazioni account"
+                title={t('settings.title')}
+                description={t('settings.description')}
             />
 
             <div className="flex flex-col lg:flex-row lg:space-x-12">
                 <aside className="w-full max-w-xl lg:w-48">
                     <nav
                         className="flex flex-col space-y-1 space-x-0"
-                        aria-label="Impostazioni"
+                        aria-label={t('settings.title')}
                     >
                         {sidebarNavItems.map((item, index) => (
                             <Button
@@ -65,12 +50,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                     'bg-muted': urlIsActive(item.href),
                                 })}
                             >
-                                <Link href={item.href}>
-                                    {item.icon && (
-                                        <item.icon className="h-4 w-4" />
-                                    )}
-                                    {item.title}
-                                </Link>
+                                <Link href={item.href}>{t(item.titleKey)}</Link>
                             </Button>
                         ))}
                     </nav>

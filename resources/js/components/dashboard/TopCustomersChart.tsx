@@ -13,6 +13,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { useTranslations } from '@/hooks/use-translations';
 import { Maximize2 } from 'lucide-react';
 import { useState } from 'react';
 import {
@@ -58,6 +59,7 @@ function TopCustomersTooltipContent({
     active,
     payload,
 }: TopCustomersTooltipProps) {
+    const { t } = useTranslations();
     if (!active || !payload || payload.length === 0) {
         return null;
     }
@@ -95,7 +97,7 @@ function TopCustomersTooltipContent({
                     fontSize: '14px',
                 }}
             >
-                Cliente: {data.fullName}
+                {t('dashboard.customer_label')} {data.fullName}
             </p>
             <p
                 style={{
@@ -104,7 +106,7 @@ function TopCustomersTooltipContent({
                     fontSize: '13px',
                 }}
             >
-                Ordini totali:{' '}
+                {t('dashboard.chart_orders_total')}{' '}
                 {Number(payload[0].value ?? 0).toLocaleString(undefined, {
                     maximumFractionDigits: 0,
                 })}
@@ -117,6 +119,7 @@ export function TopCustomersChart({
     data,
     onBarClick,
 }: TopCustomersChartProps) {
+    const { t } = useTranslations();
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
     const [isFocusOpen, setIsFocusOpen] = useState(false);
 
@@ -124,9 +127,11 @@ export function TopCustomersChart({
         return (
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-base">Top 5 Clienti</CardTitle>
+                    <CardTitle className="text-base">
+                        {t('dashboard.chart_top_customers_title')}
+                    </CardTitle>
                     <CardDescription className="text-xs text-foreground/80">
-                        Clienti con più ordini
+                        {t('dashboard.chart_top_customers_desc')}
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -276,17 +281,19 @@ export function TopCustomersChart({
                 <CardHeader className="flex flex-row items-center justify-between gap-2">
                     <div>
                         <CardTitle className="text-base">
-                            Top 5 Clienti
+                            {t('dashboard.chart_top_customers_title')}
                         </CardTitle>
                         <CardDescription className="text-xs text-foreground/80">
-                            Clienti con più ordini
+                            {t('dashboard.chart_top_customers_desc')}
                         </CardDescription>
                     </div>
                     <Button
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8"
-                        aria-label="Apri grafico Top 5 Clienti in vista dettagliata"
+                        aria-label={t(
+                            'dashboard.chart_top_customers_expand_aria',
+                        )}
                         onClick={() => setIsFocusOpen(true)}
                     >
                         <Maximize2 className="h-4 w-4" />
@@ -298,7 +305,9 @@ export function TopCustomersChart({
             <Dialog open={isFocusOpen} onOpenChange={setIsFocusOpen}>
                 <DialogContent className="max-w-3xl">
                     <DialogHeader>
-                        <DialogTitle>Top 5 Clienti</DialogTitle>
+                        <DialogTitle>
+                            {t('dashboard.chart_top_customers_title')}
+                        </DialogTitle>
                     </DialogHeader>
                     <div className="mt-2">{renderChart(360)}</div>
                 </DialogContent>

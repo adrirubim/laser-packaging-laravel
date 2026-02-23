@@ -13,10 +13,18 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { useTranslations } from '@/hooks/use-translations';
 import { Maximize2 } from 'lucide-react';
 import { useState } from 'react';
 import type { LegendPayload } from 'recharts';
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from 'recharts';
+
+const STATUS_LABEL_KEYS: Record<OrderStatusKey, string> = {
+    lanciato: 'dashboard.chart_status_launched',
+    in_avanzamento: 'dashboard.chart_status_in_progress',
+    sospeso: 'dashboard.chart_status_suspended',
+    completato: 'dashboard.chart_status_completed',
+};
 
 type OrderStatusKey = 'lanciato' | 'in_avanzamento' | 'sospeso' | 'completato';
 
@@ -59,29 +67,30 @@ export function OrderStatusChart({
     data,
     onStatusClick,
 }: OrderStatusChartProps) {
+    const { t } = useTranslations();
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
     const [isFocusOpen, setIsFocusOpen] = useState(false);
     const chartData: OrderStatusData[] = [
         {
-            name: 'Lanciate',
+            name: t(STATUS_LABEL_KEYS.lanciato),
             value: data.lanciato,
             color: COLORS.lanciato,
             statusKey: 'lanciato' as const,
         },
         {
-            name: 'In Avanzamento',
+            name: t(STATUS_LABEL_KEYS.in_avanzamento),
             value: data.in_avanzamento,
             color: COLORS.in_avanzamento,
             statusKey: 'in_avanzamento' as const,
         },
         {
-            name: 'Sospese',
+            name: t(STATUS_LABEL_KEYS.sospeso),
             value: data.sospeso,
             color: COLORS.sospeso,
             statusKey: 'sospeso' as const,
         },
         {
-            name: 'Completate',
+            name: t(STATUS_LABEL_KEYS.completato),
             value: data.completato,
             color: COLORS.completato,
             statusKey: 'completato' as const,
@@ -113,7 +122,13 @@ export function OrderStatusChart({
                             total > 0 && count != null
                                 ? ((count / total) * 100).toFixed(1)
                                 : '0';
-                        const label = `${labelValue} — ${count} ordini (${percentage}%)`;
+                        const label = `${labelValue} — ${t(
+                            'dashboard.chart_orders_legend',
+                            {
+                                count,
+                                pct: percentage,
+                            },
+                        )}`;
 
                         return (
                             <li
@@ -177,7 +192,10 @@ export function OrderStatusChart({
             typeof value === 'number' ? value : Number(value ?? 0);
         const percentage =
             total > 0 ? ((numericValue / total) * 100).toFixed(1) : '0';
-        const label = `${name ?? ''} — ${numericValue} ordini (${percentage}%)`;
+        const label = `${name ?? ''} — ${t('dashboard.chart_orders_legend', {
+            count: numericValue,
+            pct: percentage,
+        })}`;
         const color = payload?.color ?? 'currentColor';
 
         return (
@@ -256,17 +274,19 @@ export function OrderStatusChart({
                 <CardHeader className="flex flex-row items-center justify-between gap-2">
                     <div>
                         <CardTitle className="text-base">
-                            Distribuzione Ordini per Stato
+                            {t('dashboard.chart_order_status_title')}
                         </CardTitle>
                         <CardDescription className="text-xs text-foreground/80">
-                            Visualizzazione percentuale degli ordini per stato
+                            {t('dashboard.chart_order_status_desc')}
                         </CardDescription>
                     </div>
                     <Button
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8"
-                        aria-label="Apri grafico Distribuzione Ordini per Stato in vista dettagliata"
+                        aria-label={t(
+                            'dashboard.chart_order_status_expand_aria',
+                        )}
                         onClick={() => setIsFocusOpen(true)}
                     >
                         <Maximize2 className="h-4 w-4" />
@@ -279,7 +299,7 @@ export function OrderStatusChart({
                 <DialogContent className="max-w-3xl">
                     <DialogHeader>
                         <DialogTitle>
-                            Distribuzione Ordini per Stato
+                            {t('dashboard.chart_order_status_title')}
                         </DialogTitle>
                     </DialogHeader>
                     <div className="mt-2">{renderChart(360)}</div>

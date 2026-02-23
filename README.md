@@ -45,7 +45,7 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 - **Enterprise Security:** Form Requests, validation, `.env` handling, test DB isolation
 - **Optimized Performance:** Caching, indexes, Performance test suite (Concurrency, Load, API)
 - **Comprehensive Testing:** 994 tests with 6682+ assertions covering all critical paths
-- **Full Documentation:** [docs/](docs/README.md) index, [test coverage](docs/TEST_COVERAGE.md), DB and seeding guides. **Exact versions:** [docs/VERSION_STACK.md](docs/VERSION_STACK.md)
+- **Documentation:** [docs/README.md](docs/README.md) (index), [test coverage](docs/TEST_COVERAGE.md), [VERSION_STACK](docs/VERSION_STACK.md)
 
 ---
 
@@ -61,6 +61,8 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 - ✅ **Soft Deletes** — `removed` flag for data retention
 - ✅ **CSRF Protection** — Built-in Laravel CSRF token validation
 - ✅ **API Authentication** — Token-based auth for Production Portal API
+- ✅ **Login rate limiting** — 5 attempts/minute per email+IP (Fortify); 2FA throttle (see `FortifyServiceProvider`)
+- ✅ **Multi-language auth/validation** — `lang/it/`, `lang/es/`, `lang/en/` for login, password, and validation messages
 
 ### ⚡ Performance
 
@@ -83,6 +85,7 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 - ✅ **Accessibility (A11y)** — WCAG AA compliance, ARIA labels, keyboard navigation
 - ✅ **File Upload** — OfferOperations with validation and storage
 - ✅ **Consistent Icons** — Standardized action icons (Eye, Edit, Trash2)
+- ✅ **Password UX** — Visibility toggle (eye) on all password fields; strength indicator (Debole/Media/Forte) on register and settings; real-time “Le password non coincidono” when confirmation does not match (register, reset password, change password)
 
 ### ⚙️ Functionality
 
@@ -95,7 +98,8 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 - ✅ **Action Classes** — 7 actions for complex flows (Create/Update Article, Order, Offer)
 - ✅ **Form Requests** — 32 classes for validation
 - ✅ **Enums** — Type-safe (OrderStatus, OrderLabelStatus)
-- ✅ **Centralized Messages** — `lang/it/messages.php` for error and success messages
+- ✅ **Centralized Messages** — `lang/{it,es,en}/` for auth, validation, pagination, and messages (multi-language)
+- ✅ **Language selector (IT, ES, GB)** — Session-based locale; selector on **Welcome** (`LocaleDropdown`) and **Settings → Appearance** (`LocaleTabs`) only; `POST /locale`, `SetLocale` middleware
 
 ### 🏗️ Code Quality
 
@@ -240,20 +244,15 @@ Then open **http://localhost:8000**. For full dev (Laravel + Vite): `npm run dev
 <a id="documentation"></a>
 ## 📚 Documentation
 
-All repository documentation is in **English** and follows **current best practices**. Index:
+All documentation is in **English**. Single index: **[docs/README.md](docs/README.md)**.
 
-| Doc | Description |
-|-----|-------------|
-| [docs/README.md](docs/README.md) | Documentation index (English, best practices) |
-| [README_TEST_DATABASE.md](README_TEST_DATABASE.md) | Test database (PostgreSQL) |
-| [README_SEED_TEST_DATA.md](README_SEED_TEST_DATA.md) | Demo/test data seeder |
-| [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md) | Project status and modules |
-| [docs/TEST_COVERAGE.md](docs/TEST_COVERAGE.md) | Test suites and coverage |
-| [docs/BACKEND_GUIDE.md](docs/BACKEND_GUIDE.md) | Backend (controllers, services, actions, repos, models) |
-| [docs/FRONTEND_GUIDE.md](docs/FRONTEND_GUIDE.md) | Frontend (Inertia + React 19) |
-| [docs/GIT_WHAT_TO_COMMIT.md](docs/GIT_WHAT_TO_COMMIT.md) | What to commit (and what not); commit policy |
-
-[SECURITY](SECURITY.md) · [LICENSE](LICENSE) · [VERSION_STACK](docs/VERSION_STACK.md)
+| Section | Links |
+|---------|--------|
+| **Overview** | [VERSION_STACK](docs/VERSION_STACK.md) · [PROJECT_STATUS](docs/PROJECT_STATUS.md) |
+| **Getting started** | [Test DB](README_TEST_DATABASE.md) · [Demo data](README_SEED_TEST_DATA.md) |
+| **Development** | [Backend](docs/BACKEND_GUIDE.md) · [Frontend](docs/FRONTEND_GUIDE.md) · [i18n](docs/I18N.md) |
+| **Testing** | [Coverage](docs/TEST_COVERAGE.md) |
+| **Policy** | [What to commit](docs/GIT_WHAT_TO_COMMIT.md) · [SECURITY](SECURITY.md) · [CONTRIBUTING](CONTRIBUTING.md) · [LICENSE](LICENSE) |
 
 ---
 
@@ -283,7 +282,14 @@ php artisan test
 php artisan test --testsuite=Unit
 php artisan test --testsuite=Feature
 php artisan test --testsuite=Performance
+
+# Run PHP + frontend (Vitest) tests together
+php artisan test:all
+# If PHP tests show 419 (Page Expired) under test:all, run separately:
+#   php artisan test && npm run test -- --run
 ```
+
+**Frontend tests (Vitest):** Planning and other React tests live in `resources/js/pages/**/*.test.tsx`. Run them with `npm run test` or include them in one go with `php artisan test:all`.
 
 ### Test Coverage
 
@@ -365,7 +371,8 @@ Backend tree: `app/Http/Controllers/`, `app/Services/`, `app/Actions/`, `app/Rep
 
 ### Recent improvements (February 2026)
 
-- Production Planning module (Orders): API and UI for planning data, replan, and calculations; full test coverage. Unified documentation under `docs/`; DEMO-ALL seeder and verification test; production ready.
+- **Production Planning** (Orders): API and UI for planning data, replan, calculations; full test coverage; docs in `docs/planning/`.
+- **Language selector (IT, ES, GB):** Session-based locale; selector on Welcome and Settings → Appearance only (not in app header); welcome, login, register and settings use `lang/*.json`; `lang/it/`, `lang/es/`, `lang/en/` for auth and validation.
 
 <a id="default-users-development"></a>
 ## 👥 Default Users (development)

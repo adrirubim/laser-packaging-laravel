@@ -11,6 +11,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import { formatDecimal, parseDecimal } from '@/lib/utils/number';
 import ordersRoutes from '@/routes/orders/index';
@@ -92,6 +93,7 @@ export default function ProductionOrderProcessingIndex() {
         filters,
     } = props;
     const { flash } = useFlashNotifications();
+    const { t } = useTranslations();
 
     const [searchValue, setSearchValue] = useState(filters.search ?? '');
     const [selectedEmployee, setSelectedEmployee] = useState(
@@ -378,11 +380,11 @@ export default function ProductionOrderProcessingIndex() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Ordini',
+            title: t('nav.orders'),
             href: ordersRoutes.index().url,
         },
         {
-            title: 'Gestione Lavorazione Ordini',
+            title: t('nav.avanzamenti_produzione'),
             href: productionOrderProcessing.index().url,
         },
     ];
@@ -557,7 +559,9 @@ export default function ProductionOrderProcessingIndex() {
                                     onChange={(e) =>
                                         setSearchValue(e.target.value)
                                     }
-                                    placeholder="Personale, ordine..."
+                                    placeholder={t(
+                                        'production_order_processing.search_placeholder',
+                                    )}
                                     className="w-full rounded-md border border-input bg-background px-3 py-2 pr-9 pl-9 text-sm shadow-sm focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
                                 />
                                 {isSearching && (
@@ -596,11 +600,13 @@ export default function ProductionOrderProcessingIndex() {
                                     className="w-full"
                                     aria-label="Personale"
                                 >
-                                    <SelectValue placeholder="Tutti i dipendenti" />
+                                    <SelectValue
+                                        placeholder={t('filter.all_employees')}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">
-                                        Tutti i dipendenti
+                                        {t('filter.all_employees')}
                                     </SelectItem>
                                     {employees.map((employee) => (
                                         <SelectItem
@@ -633,11 +639,13 @@ export default function ProductionOrderProcessingIndex() {
                                     className="w-full"
                                     aria-label="Ordine"
                                 >
-                                    <SelectValue placeholder="Tutti gli ordini" />
+                                    <SelectValue
+                                        placeholder={t('filter.all_orders')}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">
-                                        Tutti gli ordini
+                                        {t('filter.all_orders')}
                                     </SelectItem>
                                     {orders.map((order) => (
                                         <SelectItem
@@ -676,7 +684,7 @@ export default function ProductionOrderProcessingIndex() {
                                     }
                                 }}
                                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
-                                placeholder="Minimo"
+                                placeholder={t('filter.minimum')}
                                 min="0"
                                 step="0.01"
                             />

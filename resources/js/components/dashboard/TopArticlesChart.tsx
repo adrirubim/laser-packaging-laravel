@@ -13,6 +13,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { useTranslations } from '@/hooks/use-translations';
 import { Maximize2 } from 'lucide-react';
 import { useState } from 'react';
 import {
@@ -59,6 +60,7 @@ function TopArticlesTooltipContent({
     active,
     payload,
 }: TopArticlesTooltipProps) {
+    const { t } = useTranslations();
     if (!active || !payload || payload.length === 0) {
         return null;
     }
@@ -96,7 +98,7 @@ function TopArticlesTooltipContent({
                     fontSize: '14px',
                 }}
             >
-                Articolo: {data.name}
+                {t('dashboard.chart_article_label')} {data.name}
             </p>
             <p
                 style={{
@@ -106,7 +108,7 @@ function TopArticlesTooltipContent({
                     fontSize: '12px',
                 }}
             >
-                Descrizione: {data.description}
+                {t('common.description')}: {data.description}
             </p>
             <p
                 style={{
@@ -115,7 +117,7 @@ function TopArticlesTooltipContent({
                     fontSize: '13px',
                 }}
             >
-                Quantità totale:{' '}
+                {t('dashboard.chart_quantity_total')}{' '}
                 {Number(payload[0].value ?? 0).toLocaleString(undefined, {
                     maximumFractionDigits: 0,
                 })}
@@ -125,6 +127,7 @@ function TopArticlesTooltipContent({
 }
 
 export function TopArticlesChart({ data, onBarClick }: TopArticlesChartProps) {
+    const { t } = useTranslations();
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
     const [isFocusOpen, setIsFocusOpen] = useState(false);
 
@@ -132,9 +135,11 @@ export function TopArticlesChart({ data, onBarClick }: TopArticlesChartProps) {
         return (
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-base">Top 5 Articoli</CardTitle>
+                    <CardTitle className="text-base">
+                        {t('dashboard.chart_top_articles_title')}
+                    </CardTitle>
                     <CardDescription className="text-xs text-foreground/80">
-                        Articoli più prodotti
+                        {t('dashboard.chart_top_articles_desc')}
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -146,7 +151,7 @@ export function TopArticlesChart({ data, onBarClick }: TopArticlesChartProps) {
 
     const chartData: TopArticleChartRow[] = data.map((article) => ({
         name: article.cod_article_las,
-        description: article.article_descr || 'Senza descrizione',
+        description: article.article_descr || t('dashboard.no_description'),
         quantita: article.total_quantity,
         raw: article,
     }));
@@ -282,17 +287,19 @@ export function TopArticlesChart({ data, onBarClick }: TopArticlesChartProps) {
                 <CardHeader className="flex flex-row items-center justify-between gap-2">
                     <div>
                         <CardTitle className="text-base">
-                            Top 5 Articoli
+                            {t('dashboard.chart_top_articles_title')}
                         </CardTitle>
                         <CardDescription className="text-xs text-foreground/80">
-                            Articoli più prodotti (quantità totale)
+                            {t('dashboard.chart_top_articles_desc_full')}
                         </CardDescription>
                     </div>
                     <Button
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8"
-                        aria-label="Apri grafico Top 5 Articoli in vista dettagliata"
+                        aria-label={t(
+                            'dashboard.chart_top_articles_expand_aria',
+                        )}
                         onClick={() => setIsFocusOpen(true)}
                     >
                         <Maximize2 className="h-4 w-4" />
@@ -304,7 +311,9 @@ export function TopArticlesChart({ data, onBarClick }: TopArticlesChartProps) {
             <Dialog open={isFocusOpen} onOpenChange={setIsFocusOpen}>
                 <DialogContent className="max-w-3xl">
                     <DialogHeader>
-                        <DialogTitle>Top 5 Articoli</DialogTitle>
+                        <DialogTitle>
+                            {t('dashboard.chart_top_articles_title')}
+                        </DialogTitle>
                     </DialogHeader>
                     <div className="mt-2">{renderChart(360)}</div>
                 </DialogContent>

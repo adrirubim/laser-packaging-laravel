@@ -29,6 +29,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import * as contractsRoutes from '@/routes/employees/contracts/index';
 import { type BreadcrumbItem } from '@/types';
@@ -115,6 +116,7 @@ export default function ContractsIndex() {
         filters,
     } = props;
     const { flash } = useFlashNotifications();
+    const { t } = useTranslations();
     const [viewDialog, setViewDialog] = useState<{
         open: boolean;
         contract: EmployeeContract | null;
@@ -375,11 +377,13 @@ export default function ContractsIndex() {
                                 onValueChange={handleEmployeeChange}
                             >
                                 <SelectTrigger className="h-8 w-48 text-xs">
-                                    <SelectValue placeholder="Tutti i dipendenti" />
+                                    <SelectValue
+                                        placeholder={t('filter.all_employees')}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">
-                                        Tutti i dipendenti
+                                        {t('filter.all_employees')}
                                     </SelectItem>
                                     {employees
                                         .filter((emp) => emp.uuid)
@@ -402,11 +406,13 @@ export default function ContractsIndex() {
                                 onValueChange={handleSupplierChange}
                             >
                                 <SelectTrigger className="h-8 w-48 text-xs">
-                                    <SelectValue placeholder="Tutti i datori" />
+                                    <SelectValue
+                                        placeholder={t('filter.all_employers')}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">
-                                        Tutti i datori
+                                        {t('filter.all_employers')}
                                     </SelectItem>
                                     {suppliers
                                         .filter((sup) => sup.uuid)

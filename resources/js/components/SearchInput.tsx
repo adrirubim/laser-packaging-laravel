@@ -1,3 +1,4 @@
+import { useTranslations } from '@/hooks/use-translations';
 import { Loader2, Search, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -14,12 +15,14 @@ type SearchInputProps = {
 export function SearchInput({
     value,
     onChange,
-    placeholder = 'Cerca...',
+    placeholder,
     isLoading = false,
     debounceMs = 500,
     onClear,
     className = '',
 }: SearchInputProps) {
+    const { t } = useTranslations();
+    const resolvedPlaceholder = placeholder ?? t('common.search_placeholder');
     const [localValue, setLocalValue] = useState(value);
 
     useEffect(() => {
@@ -55,7 +58,7 @@ export function SearchInput({
                 type="text"
                 value={localValue}
                 onChange={(e) => setLocalValue(e.target.value)}
-                placeholder={placeholder}
+                placeholder={resolvedPlaceholder}
                 className="w-full rounded-md border border-input bg-background px-3 py-2 pr-9 pl-9 text-sm shadow-sm focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
             />
             {isLoading && (
@@ -66,7 +69,7 @@ export function SearchInput({
                     onClick={handleClear}
                     className="absolute top-1/2 right-3 -translate-y-1/2 transform transition-opacity hover:opacity-70"
                     type="button"
-                    aria-label="Cancella Cerca"
+                    aria-label={t('common.search_clear')}
                 >
                     <X className="h-4 w-4 text-muted-foreground" />
                 </button>

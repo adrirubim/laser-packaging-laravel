@@ -13,6 +13,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { useTranslations } from '@/hooks/use-translations';
 import { Maximize2 } from 'lucide-react';
 import { useState } from 'react';
 import {
@@ -61,6 +62,7 @@ function ProductionProgressTooltip({
     active,
     payload,
 }: TooltipProps<number, string> & { payload?: TooltipPayloadEntry[] }) {
+    const { t } = useTranslations();
     if (!active || !payload || payload.length === 0) {
         return null;
     }
@@ -110,32 +112,32 @@ function ProductionProgressTooltip({
     const progressPercent =
         total > 0 ? ((progress / total) * 100).toFixed(1) : '0.0';
 
-    let stato = 'In lavorazione';
+    type StatoKey = 'in_progress' | 'completed' | 'overdue_urgent' | 'urgent';
+    let statoKey: StatoKey = 'in_progress';
     if (progress >= 100) {
-        stato = 'Completato';
+        statoKey = 'completed';
     } else if (
         rawPayload.isUrgent &&
         rawPayload.daysUntilDelivery !== undefined
     ) {
         if (rawPayload.daysUntilDelivery < 0) {
-            stato = 'In ritardo (urgente)';
+            statoKey = 'overdue_urgent';
         } else if (rawPayload.daysUntilDelivery <= 3) {
-            stato = 'Urgente';
+            statoKey = 'urgent';
         }
     }
+    const stato = t(`dashboard.chart_progress_${statoKey}`);
 
-    // Colori per la pill di stato, allineati alla palette delle barre.
-    let statoBg = 'rgba(59, 130, 246, 0.12)'; // blu morbido
+    let statoBg = 'rgba(59, 130, 246, 0.12)';
     let statoBorder = 'rgba(59, 130, 246, 0.6)';
-
-    if (stato === 'Completato') {
-        statoBg = 'rgba(34, 197, 94, 0.12)'; // verde
+    if (statoKey === 'completed') {
+        statoBg = 'rgba(34, 197, 94, 0.12)';
         statoBorder = 'rgba(34, 197, 94, 0.65)';
-    } else if (stato === 'In ritardo (urgente)') {
-        statoBg = 'rgba(248, 113, 113, 0.12)'; // rosso
+    } else if (statoKey === 'overdue_urgent') {
+        statoBg = 'rgba(248, 113, 113, 0.12)';
         statoBorder = 'rgba(248, 113, 113, 0.7)';
-    } else if (stato === 'Urgente') {
-        statoBg = 'rgba(245, 158, 11, 0.12)'; // giallo/ambra
+    } else if (statoKey === 'urgent') {
+        statoBg = 'rgba(245, 158, 11, 0.12)';
         statoBorder = 'rgba(245, 158, 11, 0.7)';
     }
 
@@ -202,7 +204,7 @@ function ProductionProgressTooltip({
                     fontSize: '13px',
                 }}
             >
-                Avanzamento:{' '}
+                {t('dashboard.chart_progress_advancement')}{' '}
                 {worked.toLocaleString(undefined, {
                     maximumFractionDigits: 0,
                 })}{' '}
@@ -210,7 +212,7 @@ function ProductionProgressTooltip({
                 {total.toLocaleString(undefined, {
                     maximumFractionDigits: 0,
                 })}{' '}
-                pezzi ({progressPercent}%)
+                {t('dashboard.chart_pieces')} ({progressPercent}%)
             </p>
             {remaining > 0 && (
                 <p
@@ -220,11 +222,11 @@ function ProductionProgressTooltip({
                         fontSize: '13px',
                     }}
                 >
-                    Rimanenti:{' '}
+                    {t('dashboard.chart_remaining')}{' '}
                     {remaining.toLocaleString(undefined, {
                         maximumFractionDigits: 0,
                     })}{' '}
-                    pezzi
+                    {t('dashboard.chart_pieces')}
                 </p>
             )}
         </div>
@@ -236,6 +238,7 @@ export function ProductionProgressChart({
     maxItems = 10,
     onBarClick,
 }: ProductionProgressChartProps) {
+    const { t } = useTranslations();
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
     const [isFocusOpen, setIsFocusOpen] = useState(false);
     const chartData = data.slice(0, maxItems).map((item) => ({
@@ -372,18 +375,17 @@ export function ProductionProgressChart({
                 <CardHeader className="flex flex-row items-center justify-between gap-2">
                     <div>
                         <CardTitle className="text-base">
-                            Progresso di Produzione per Ordine
+                            {t('dashboard.chart_progress_title')}
                         </CardTitle>
                         <CardDescription className="text-xs text-foreground/80">
-                            Visualizzazione del progresso di produzione degli
-                            ordini più urgenti
+                            {t('dashboard.chart_progress_desc')}
                         </CardDescription>
                     </div>
                     <Button
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8"
-                        aria-label="Apri grafico Progresso di Produzione per Ordine in vista dettagliata"
+                        aria-label={t('dashboard.chart_progress_expand_aria')}
                         onClick={() => setIsFocusOpen(true)}
                     >
                         <Maximize2 className="h-4 w-4" />
@@ -396,7 +398,7 @@ export function ProductionProgressChart({
                 <DialogContent className="max-w-5xl">
                     <DialogHeader>
                         <DialogTitle>
-                            Progresso di Produzione per Ordine
+                            {t('dashboard.chart_progress_title')}
                         </DialogTitle>
                     </DialogHeader>
                     <div className="mt-2">{renderChart(420)}</div>

@@ -74,7 +74,8 @@ class FortifyServiceProvider extends ServiceProvider
     }
 
     /**
-     * Configure rate limiting.
+     * Configure rate limiting for auth (login and two-factor).
+     * Fortify applies the 'login' limiter to login attempts (5/minute per email+IP).
      */
     private function configureRateLimiting(): void
     {

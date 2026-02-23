@@ -16,7 +16,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
+import articles from '@/routes/articles/index';
 import machineryRoutes from '@/routes/machinery/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
@@ -32,6 +34,7 @@ type MachineryCreateProps = {
 };
 
 export default function MachineryCreate() {
+    const { t } = useTranslations();
     const { props } = usePage<MachineryCreateProps>();
     const { valueTypes = [], errors: serverErrors } = props;
     const form = useForm<{
@@ -48,11 +51,15 @@ export default function MachineryCreate() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Macchinari',
+            title: t('nav.articles'),
+            href: articles.index().url,
+        },
+        {
+            title: t('nav.macchinari'),
             href: machineryRoutes.index().url,
         },
         {
-            title: 'Crea',
+            title: t('common.new'),
             href: machineryRoutes.create().url,
         },
     ];
@@ -190,7 +197,11 @@ export default function MachineryCreate() {
                                                         }
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona tipo valore" />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'machinery.select_value_type',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             <SelectItem value="none">

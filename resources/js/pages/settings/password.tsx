@@ -1,40 +1,53 @@
 import PasswordController from '@/actions/App/Http/Controllers/Settings/PasswordController';
 import InputError from '@/components/input-error';
+import { PasswordStrengthIndicator } from '@/components/password-strength';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { type BreadcrumbItem } from '@/types';
 import { Transition } from '@headlessui/react';
 import { Form, Head } from '@inertiajs/react';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 
 import HeadingSmall from '@/components/heading-small';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { PasswordInput } from '@/components/ui/password-input';
 import { edit } from '@/routes/user-password/index';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Impostazioni password',
-        href: edit().url,
-    },
-];
-
 export default function Password() {
+    const { t } = useTranslations();
     const passwordInput = useRef<HTMLInputElement>(null);
     const currentPasswordInput = useRef<HTMLInputElement>(null);
+    const confirmationRef = useRef<HTMLInputElement>(null);
+    const [passwordMismatch, setPasswordMismatch] = useState(false);
+    const [newPasswordForStrength, setNewPasswordForStrength] = useState('');
+
+    const checkPasswordMatch = () => {
+        const p = document.getElementById(
+            'password',
+        ) as HTMLInputElement | null;
+        const c = confirmationRef.current;
+        setPasswordMismatch(
+            !!(p && c && c.value.length > 0 && p.value !== c.value),
+        );
+    };
+
+    const breadcrumbs: BreadcrumbItem[] = [
+        { title: t('settings.password.title'), href: edit().url },
+    ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Impostazioni password" />
+            <Head title={t('settings.password.title')} />
 
-            <h1 className="sr-only">Impostazioni password</h1>
+            <h1 className="sr-only">{t('settings.password.title')}</h1>
 
             <SettingsLayout>
                 <div className="space-y-6">
                     <HeadingSmall
-                        title="Aggiorna password"
-                        description="Usa una password lunga e casuale per mantenere l'account sicuro"
+                        title={t('settings.password.heading')}
+                        description={t('settings.password.description')}
                     />
 
                     <Form
@@ -63,17 +76,18 @@ export default function Password() {
                             <>
                                 <div className="grid gap-2">
                                     <Label htmlFor="current_password">
-                                        Password attuale
+                                        {t('settings.password.current_label')}
                                     </Label>
 
-                                    <Input
+                                    <PasswordInput
                                         id="current_password"
                                         ref={currentPasswordInput}
                                         name="current_password"
-                                        type="password"
                                         className="mt-1 block w-full"
                                         autoComplete="current-password"
-                                        placeholder="Password attuale"
+                                        placeholder={t(
+                                            'settings.password.current_placeholder',
+                                        )}
                                     />
 
                                     <InputError
@@ -83,35 +97,55 @@ export default function Password() {
 
                                 <div className="grid gap-2">
                                     <Label htmlFor="password">
-                                        Nuova password
+                                        {t('settings.password.new_label')}
                                     </Label>
 
-                                    <Input
+                                    <PasswordInput
                                         id="password"
                                         ref={passwordInput}
                                         name="password"
-                                        type="password"
                                         className="mt-1 block w-full"
                                         autoComplete="new-password"
-                                        placeholder="Nuova password"
+                                        placeholder={t(
+                                            'settings.password.new_placeholder',
+                                        )}
+                                        onBlur={checkPasswordMatch}
+                                        onChange={(e) =>
+                                            setNewPasswordForStrength(
+                                                e.target.value,
+                                            )
+                                        }
                                     />
-
+                                    <PasswordStrengthIndicator
+                                        password={newPasswordForStrength}
+                                    />
                                     <InputError message={errors.password} />
                                 </div>
 
                                 <div className="grid gap-2">
                                     <Label htmlFor="password_confirmation">
-                                        Conferma password
+                                        {t('settings.password.confirm_label')}
                                     </Label>
 
-                                    <Input
+                                    <PasswordInput
+                                        ref={confirmationRef}
                                         id="password_confirmation"
                                         name="password_confirmation"
-                                        type="password"
                                         className="mt-1 block w-full"
                                         autoComplete="new-password"
-                                        placeholder="Conferma password"
+                                        placeholder={t(
+                                            'settings.password.confirm_placeholder',
+                                        )}
+                                        onBlur={checkPasswordMatch}
                                     />
+
+                                    {passwordMismatch && (
+                                        <p className="text-sm text-destructive">
+                                            {t(
+                                                'auth.register.password_mismatch',
+                                            )}
+                                        </p>
+                                    )}
 
                                     <InputError
                                         message={errors.password_confirmation}
@@ -123,7 +157,7 @@ export default function Password() {
                                         disabled={processing}
                                         data-test="update-password-button"
                                     >
-                                        Salva password
+                                        {t('settings.password.submit')}
                                     </Button>
 
                                     <Transition
@@ -134,7 +168,7 @@ export default function Password() {
                                         leaveTo="opacity-0"
                                     >
                                         <p className="text-sm text-neutral-600">
-                                            Salvato
+                                            {t('settings.saved')}
                                         </p>
                                     </Transition>
                                 </div>

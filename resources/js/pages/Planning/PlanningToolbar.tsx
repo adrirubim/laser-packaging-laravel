@@ -50,7 +50,10 @@ const PlanningToolbar = memo(function PlanningToolbar(
                               ? 'Settimana precedente'
                               : 'Mese precedente'
                     }
-                    disabled={loading || currentDate <= today}
+                    disabled={
+                        loading ||
+                        (rangeMode !== 'month' && currentDate <= today)
+                    }
                 >
                     <ChevronLeft className="h-4 w-4" />
                 </button>
@@ -80,9 +83,15 @@ const PlanningToolbar = memo(function PlanningToolbar(
                 </button>
             </div>
             <div className="hidden h-6 w-px bg-border sm:block" aria-hidden />
-            <div className="flex min-w-0 shrink-0 items-center gap-2">
-                <CalendarDays className="h-4 w-4 shrink-0 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">
+            <div className="flex min-w-0 shrink items-center gap-2">
+                <CalendarDays
+                    className="h-4 w-4 shrink-0 text-muted-foreground"
+                    aria-hidden
+                />
+                <span
+                    className="min-w-0 truncate text-sm text-muted-foreground"
+                    title={formatDateRangeLabel(currentDate, rangeMode)}
+                >
                     {rangeMode === 'day' ? 'Data:' : 'Range:'}{' '}
                     <strong className="font-semibold text-foreground">
                         {formatDateRangeLabel(currentDate, rangeMode)}
@@ -150,7 +159,7 @@ const PlanningToolbar = memo(function PlanningToolbar(
                             disabled={loading}
                             aria-pressed={rangeMode === 'day'}
                         >
-                            Diaria
+                            Giornaliera
                         </button>
                         <button
                             type="button"

@@ -31,7 +31,7 @@ const PlanningLegend = memo(function PlanningLegend({
                             <dt className="sr-only">Occupato</dt>
                             <dd className="flex items-center gap-1.5">
                                 <span
-                                    className="size-4 shrink-0 rounded border border-emerald-500/60 bg-emerald-500/80"
+                                    className="size-4 shrink-0 rounded border border-emerald-500/60 bg-emerald-500/80 dark:border-emerald-400/70 dark:bg-emerald-600/90"
                                     aria-hidden
                                 />
                                 <span>Verde = occupato (addetti)</span>
@@ -41,7 +41,7 @@ const PlanningLegend = memo(function PlanningLegend({
                             <dt className="sr-only">Libero</dt>
                             <dd className="flex items-center gap-1.5">
                                 <span
-                                    className="size-4 shrink-0 rounded border border-dashed border-muted bg-background/40"
+                                    className="size-4 shrink-0 rounded border border-dashed border-muted bg-background/40 dark:bg-muted/30"
                                     aria-hidden
                                 />
                                 <span>Grigio = libero</span>
@@ -51,7 +51,7 @@ const PlanningLegend = memo(function PlanningLegend({
                             <dt className="sr-only">Deficit / overdue</dt>
                             <dd className="flex items-center gap-1.5">
                                 <span
-                                    className="size-4 shrink-0 rounded border border-red-500/60 bg-red-500/80"
+                                    className="size-4 shrink-0 rounded border border-red-500/60 bg-red-500/80 dark:border-red-400/70 dark:bg-red-600/90"
                                     aria-hidden
                                 />
                                 <span>Rosso = deficit / celle overdue</span>
@@ -61,7 +61,7 @@ const PlanningLegend = memo(function PlanningLegend({
                             <dt className="sr-only">Deadline</dt>
                             <dd className="flex items-center gap-1.5">
                                 <span
-                                    className="size-4 shrink-0 border-r-2 border-amber-500 bg-transparent px-1"
+                                    className="size-4 shrink-0 border-r-2 border-amber-500 bg-transparent px-1 dark:border-amber-400"
                                     aria-hidden
                                 />
                                 <span>Bordo ambra = deadline consegna</span>

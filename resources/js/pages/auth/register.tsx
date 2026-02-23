@@ -1,22 +1,41 @@
 import { login } from '@/routes';
 import { store } from '@/routes/register/index';
 import { Form, Head } from '@inertiajs/react';
+import { useRef, useState } from 'react';
 
 import InputError from '@/components/input-error';
+import { PasswordStrengthIndicator } from '@/components/password-strength';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Spinner } from '@/components/ui/spinner';
+import { useTranslations } from '@/hooks/use-translations';
 import AuthLayout from '@/layouts/auth-layout';
 
 export default function Register() {
+    const { t } = useTranslations();
+    const confirmationRef = useRef<HTMLInputElement>(null);
+    const [passwordMismatch, setPasswordMismatch] = useState(false);
+    const [passwordForStrength, setPasswordForStrength] = useState('');
+
+    const checkPasswordMatch = () => {
+        const p = document.getElementById(
+            'password',
+        ) as HTMLInputElement | null;
+        const c = confirmationRef.current;
+        setPasswordMismatch(
+            !!(p && c && c.value.length > 0 && p.value !== c.value),
+        );
+    };
+
     return (
         <AuthLayout
-            title="Crea account"
-            description="Inserisci i dati qui sotto per creare il tuo account"
+            title={t('auth.register.title')}
+            description={t('auth.register.description')}
         >
-            <Head title="Crea account" />
+            <Head title={t('auth.register.page_title')} />
             <Form
                 {...store.form()}
                 resetOnSuccess={['password', 'password_confirmation']}
@@ -27,7 +46,9 @@ export default function Register() {
                     <>
                         <div className="grid gap-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="name">Nome</Label>
+                                <Label htmlFor="name">
+                                    {t('auth.register.name_label')}
+                                </Label>
                                 <Input
                                     id="name"
                                     type="text"
@@ -36,7 +57,9 @@ export default function Register() {
                                     tabIndex={1}
                                     autoComplete="name"
                                     name="name"
-                                    placeholder="Nome completo"
+                                    placeholder={t(
+                                        'auth.register.name_placeholder',
+                                    )}
                                 />
                                 <InputError
                                     message={errors.name}
@@ -45,7 +68,9 @@ export default function Register() {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Indirizzo email</Label>
+                                <Label htmlFor="email">
+                                    {t('auth.register.email_label')}
+                                </Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -53,38 +78,58 @@ export default function Register() {
                                     tabIndex={2}
                                     autoComplete="email"
                                     name="email"
-                                    placeholder="email@example.com"
+                                    placeholder={t(
+                                        'auth.register.email_placeholder',
+                                    )}
                                 />
                                 <InputError message={errors.email} />
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="password">Password</Label>
-                                <Input
+                                <Label htmlFor="password">
+                                    {t('auth.register.password_label')}
+                                </Label>
+                                <PasswordInput
                                     id="password"
-                                    type="password"
                                     required
                                     tabIndex={3}
                                     autoComplete="new-password"
                                     name="password"
-                                    placeholder="Password"
+                                    placeholder={t(
+                                        'auth.register.password_placeholder',
+                                    )}
+                                    onBlur={checkPasswordMatch}
+                                    onChange={(e) =>
+                                        setPasswordForStrength(e.target.value)
+                                    }
+                                />
+                                <PasswordStrengthIndicator
+                                    password={passwordForStrength}
                                 />
                                 <InputError message={errors.password} />
                             </div>
 
                             <div className="grid gap-2">
                                 <Label htmlFor="password_confirmation">
-                                    Conferma password
+                                    {t('auth.register.confirm_label')}
                                 </Label>
-                                <Input
+                                <PasswordInput
+                                    ref={confirmationRef}
                                     id="password_confirmation"
-                                    type="password"
                                     required
                                     tabIndex={4}
                                     autoComplete="new-password"
                                     name="password_confirmation"
-                                    placeholder="Conferma password"
+                                    placeholder={t(
+                                        'auth.register.confirm_placeholder',
+                                    )}
+                                    onBlur={checkPasswordMatch}
                                 />
+                                {passwordMismatch && (
+                                    <p className="text-sm text-destructive">
+                                        {t('auth.register.password_mismatch')}
+                                    </p>
+                                )}
                                 <InputError
                                     message={errors.password_confirmation}
                                 />
@@ -97,14 +142,14 @@ export default function Register() {
                                 data-test="register-user-button"
                             >
                                 {processing && <Spinner />}
-                                Crea account
+                                {t('auth.register.submit')}
                             </Button>
                         </div>
 
                         <div className="text-center text-sm text-muted-foreground">
-                            Hai già un account?{' '}
+                            {t('auth.register.has_account')}{' '}
                             <TextLink href={login()} tabIndex={6}>
-                                Accedi
+                                {t('auth.register.login_link')}
                             </TextLink>
                         </div>
                     </>

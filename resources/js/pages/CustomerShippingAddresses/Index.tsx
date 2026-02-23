@@ -15,6 +15,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import customerShippingAddresses from '@/routes/customer-shipping-addresses/index';
 import { type BreadcrumbItem } from '@/types';
@@ -70,6 +71,7 @@ export default function CustomerShippingAddressesIndex() {
     const { props } = usePage<CustomerShippingAddressesIndexProps>();
     const { addresses: addressesPaginated, divisions, filters } = props;
     const { flash } = useFlashNotifications();
+    const { t } = useTranslations();
 
     const [searchValue, setSearchValue] = useState(filters.search ?? '');
     const [divisionFilter, setDivisionFilter] = useState(
@@ -241,11 +243,13 @@ export default function CustomerShippingAddressesIndex() {
                                     className="w-full"
                                     aria-label="Divisione"
                                 >
-                                    <SelectValue placeholder="Tutte le divisioni" />
+                                    <SelectValue
+                                        placeholder={t('filter.all_divisions')}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">
-                                        Tutte le divisioni
+                                        {t('filter.all_divisions')}
                                     </SelectItem>
                                     {divisions.map((division) => (
                                         <SelectItem

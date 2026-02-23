@@ -45,10 +45,8 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
-import {
-    getOrderStatusColor,
-    ORDER_STATUS_LABELS,
-} from '@/constants/orderStatus';
+import { getOrderStatusColor } from '@/constants/orderStatus';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import { dashboard } from '@/routes';
 import articles from '@/routes/articles/index';
@@ -223,6 +221,14 @@ const ALERT_SEVERITY_COLORS = {
     critical: 'border-red-500/40 bg-red-500/5 text-red-700 dark:text-red-300',
 };
 
+/** Maps order status code (0–6) to dashboard order_status_* translation key. */
+function getOrderStatusLabelKey(status: number): string {
+    if (status >= 0 && status <= 6) {
+        return `dashboard.order_status_${status}`;
+    }
+    return 'dashboard.export_nd';
+}
+
 /** Ordine di gravità per mostrare gli avvisi (prima i più gravi). */
 const ALERT_SEVERITY_ORDER: Record<string, number> = {
     critical: 0,
@@ -236,13 +242,6 @@ const ALERT_ENTER_DURATION_MS = 320;
 const ALERT_EXIT_DURATION_MS = 260;
 /** Ritardo tra un avviso e il successo (effetto scalettato tipo iOS). */
 const ALERT_STAGGER_DELAY_MS = 120;
-
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard().url,
-    },
-];
 
 /** Intervalo de auto-refresh (ms). */
 const DASHBOARD_AUTO_REFRESH_INTERVAL_MS = 60_000;
@@ -283,6 +282,7 @@ export default function Dashboard({
     orderStatusesForFilter,
     advancementsCountToday = 0,
 }: DashboardProps) {
+    const { t } = useTranslations();
     const [dateFilter, setDateFilter] = useState(initialDateFilter);
     const [customerFilter, setCustomerFilter] = useState<string | null>(
         initialCustomerFilter || null,
@@ -499,27 +499,28 @@ export default function Dashboard({
         );
     };
 
-    // Memoize breadcrumbs to avoid recalculation
-    const breadcrumbsMemo = useMemo<BreadcrumbItem[]>(() => breadcrumbs, []);
+    const breadcrumbsMemo = useMemo<BreadcrumbItem[]>(
+        () => [{ title: t('dashboard.title'), href: dashboard().url }],
+        [t],
+    );
 
     // Memoize export function to avoid recreation on every render
     const handleExport = useCallback(() => {
-        // Enhanced CSV export with all metrics
         const timestamp = new Date().toISOString().split('T')[0];
         const csv = [
-            ['Statistiche Dashboard - Laser Packaging', ''],
-            ['Generato', new Date().toLocaleString('it-IT')],
-            ['Filtro data', dateFilter],
+            [t('dashboard.export_csv_title'), ''],
+            [t('dashboard.export_generated'), new Date().toLocaleString()],
+            [t('dashboard.export_date_filter'), dateFilter],
             customerFilter
                 ? [
-                      'Filtro cliente',
+                      t('dashboard.export_customer_filter'),
                       customersForFilter.find((c) => c.uuid === customerFilter)
-                          ?.label || 'N/D',
+                          ?.label || t('dashboard.export_nd'),
                   ]
                 : null,
             statusFilter.length > 0
                 ? [
-                      'Filtro stato',
+                      t('dashboard.export_status_filter'),
                       statusFilter
                           .map(
                               (s) =>
@@ -531,58 +532,85 @@ export default function Dashboard({
                   ]
                 : null,
             [''],
-            ['=== ORDINI ===', ''],
-            ['Totale', statistics.orders.total],
-            ['Lanciate', statistics.orders.lanciato],
-            ['In Avanzamento', statistics.orders.in_avanzamento],
-            ['Sospese', statistics.orders.sospeso],
-            ['Completati', statistics.orders.completato],
-            [''],
-            ['=== PRODUZIONE ===', ''],
-            ['Quantità totale', statistics.production.total_quantity],
-            ['Quantità lavorata', statistics.production.worked_quantity],
+            [t('dashboard.export_orders_section'), ''],
+            [t('dashboard.total'), statistics.orders.total],
+            [t('dashboard.launched'), statistics.orders.lanciato],
+            [t('dashboard.in_progress'), statistics.orders.in_avanzamento],
+            [t('dashboard.order_status_4'), statistics.orders.sospeso],
             [
-                'Quantità rimanente',
+                t('dashboard.order_status_completed'),
+                statistics.orders.completato,
+            ],
+            [''],
+            [t('dashboard.export_production_section'), ''],
+            [
+                t('dashboard.export_quantity_total'),
+                statistics.production.total_quantity,
+            ],
+            [
+                t('dashboard.export_quantity_worked'),
+                statistics.production.worked_quantity,
+            ],
+            [
+                t('dashboard.export_quantity_remaining'),
                 statistics.production.total_quantity -
                     statistics.production.worked_quantity,
             ],
-            ['Avanzamento %', statistics.production.progress_percentage],
-            [''],
-            ['=== METRICHE PRESTAZIONI ===', ''],
-            ['Tasso completamento %', performanceMetrics.completion_rate],
             [
-                'Tempo medio produzione (giorni)',
+                t('dashboard.export_progress_pct'),
+                statistics.production.progress_percentage,
+            ],
+            [''],
+            [t('dashboard.export_metrics_section'), ''],
+            [
+                t('dashboard.export_completion_rate'),
+                performanceMetrics.completion_rate,
+            ],
+            [
+                t('dashboard.export_avg_days'),
                 performanceMetrics.avg_production_time_days,
             ],
-            ['Ordini per giorno', performanceMetrics.orders_per_day],
-            ['Ordini totali', performanceMetrics.total_orders],
-            ['Ordini completati', performanceMetrics.completed_orders],
+            [
+                t('dashboard.export_orders_per_day'),
+                performanceMetrics.orders_per_day,
+            ],
+            [
+                t('dashboard.export_total_orders'),
+                performanceMetrics.total_orders,
+            ],
+            [
+                t('dashboard.export_completed_orders'),
+                performanceMetrics.completed_orders,
+            ],
             [''],
-            ['=== ALTRE STATISTICHE ===', ''],
-            ['Offerte totali', statistics.offers.total],
-            ['Offerte attive', statistics.offers.active],
-            ['Articoli totali', statistics.articles.total],
-            ['Clienti totali', statistics.customers.total],
+            [t('dashboard.export_other_section'), ''],
+            [t('dashboard.export_offers_total'), statistics.offers.total],
+            [t('dashboard.export_offers_active'), statistics.offers.active],
+            [t('dashboard.export_articles_total'), statistics.articles.total],
+            [t('dashboard.export_customers_total'), statistics.customers.total],
             [''],
-            ['=== AVVISI ===', ''],
-            ...alerts.map((alert) => [alert.title, alert.count]),
+            [t('dashboard.export_alerts_section'), ''],
+            ...alerts.map((alert) => [
+                t(`dashboard.alert_title_${alert.type}`),
+                alert.count,
+            ]),
             [''],
-            ['=== TOP CLIENTI ===', ''],
+            [t('dashboard.export_top_customers'), ''],
             ...topCustomers.map((customer, index) => [
                 `${index + 1}. ${customer.company_name}`,
                 customer.order_count,
             ]),
             [''],
-            ['=== TOP ARTICOLI ===', ''],
+            [t('dashboard.export_top_articles'), ''],
             ...topArticles.map((article, index) => [
                 `${index + 1}. ${article.cod_article_las}`,
                 article.total_quantity,
             ]),
             [''],
-            ['=== ANDAMENTO ORDINI ===', ''],
+            [t('dashboard.export_trend_section'), ''],
             ...ordersTrend.map((trend) => [`${trend.period}`, trend.count]),
             previousTrend && previousTrend.length > 0
-                ? ['', '=== ANDAMENTO PERIODO PRECEDENTE ===', '']
+                ? ['', t('dashboard.export_trend_previous'), '']
                 : null,
             ...(previousTrend && previousTrend.length > 0
                 ? previousTrend.map((trend) => [`${trend.period}`, trend.count])
@@ -600,6 +628,7 @@ export default function Dashboard({
         a.click();
         window.URL.revokeObjectURL(url);
     }, [
+        t,
         dateFilter,
         customerFilter,
         statusFilter,
@@ -621,8 +650,8 @@ export default function Dashboard({
     );
     const pageTitle =
         visibleAlertOrders > 0
-            ? `(${visibleAlertOrders}) Dashboard`
-            : 'Dashboard';
+            ? `(${visibleAlertOrders}) ${t('dashboard.title')}`
+            : t('dashboard.title');
 
     return (
         <AppLayout breadcrumbs={breadcrumbsMemo}>
@@ -636,11 +665,10 @@ export default function Dashboard({
                     <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
                         <div className="flex-1">
                             <h1 className="text-2xl font-bold tracking-tight">
-                                Dashboard
+                                {t('dashboard.title')}
                             </h1>
                             <p className="mt-0.5 text-sm text-foreground/80">
-                                Panoramica del sistema e statistiche di
-                                produzione
+                                {t('dashboard.subtitle')}
                             </p>
                         </div>
 
@@ -653,7 +681,7 @@ export default function Dashboard({
                                     className="h-9"
                                 >
                                     <Plus className="mr-1.5 h-3.5 w-3.5" />
-                                    Nuovo Ordine
+                                    {t('dashboard.new_order')}
                                 </Button>
                             </Link>
                             <Link href={offers.create().url}>
@@ -663,7 +691,7 @@ export default function Dashboard({
                                     className="h-9"
                                 >
                                     <Plus className="mr-1.5 h-3.5 w-3.5" />
-                                    Nuova Offerta
+                                    {t('dashboard.new_offer')}
                                 </Button>
                             </Link>
                             <Link href={planning.index().url}>
@@ -673,7 +701,7 @@ export default function Dashboard({
                                     className="h-9"
                                 >
                                     <Calendar className="mr-1.5 h-3.5 w-3.5" />
-                                    Pianificazione
+                                    {t('dashboard.planning')}
                                 </Button>
                             </Link>
                         </div>
@@ -690,12 +718,14 @@ export default function Dashboard({
                                 >
                                     <SelectTrigger
                                         className="h-9 w-[180px]"
-                                        aria-label="Seleziona filtro data"
+                                        aria-label={t(
+                                            'dashboard.date_filter_label',
+                                        )}
                                     >
                                         <Calendar className="mr-2 h-3.5 w-3.5 shrink-0" />
                                         {dateFilter === 'all' ? (
                                             <span className="truncate">
-                                                Tutto il tempo
+                                                {t('dashboard.date_all')}
                                             </span>
                                         ) : (
                                             <SelectValue />
@@ -703,25 +733,25 @@ export default function Dashboard({
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="all">
-                                            Tutto il tempo (Dati complessivi)
+                                            {t('dashboard.date_all_full')}
                                         </SelectItem>
                                         <SelectItem value="today">
-                                            Oggi
+                                            {t('dashboard.date_today')}
                                         </SelectItem>
                                         <SelectItem value="week">
-                                            Questa settimana
+                                            {t('dashboard.date_week')}
                                         </SelectItem>
                                         <SelectItem value="month">
-                                            Questo mese
+                                            {t('dashboard.date_month')}
                                         </SelectItem>
                                         <SelectItem value="custom">
-                                            Personalizzato
+                                            {t('dashboard.date_custom')}
                                         </SelectItem>
                                     </SelectContent>
                                 </Select>
                                 {dateFilter === 'all' && (
                                     <span className="rounded bg-muted px-2 py-1 text-xs text-muted-foreground">
-                                        Dati complessivi
+                                        {t('dashboard.date_aggregate')}
                                     </span>
                                 )}
 
@@ -733,17 +763,20 @@ export default function Dashboard({
                                     <DialogContent>
                                         <DialogHeader>
                                             <DialogTitle>
-                                                Seleziona Range di Date
+                                                {t(
+                                                    'dashboard.date_range_title',
+                                                )}
                                             </DialogTitle>
                                             <DialogDescription>
-                                                Scegli un periodo personalizzato
-                                                per visualizzare le statistiche
+                                                {t(
+                                                    'dashboard.date_range_description',
+                                                )}
                                             </DialogDescription>
                                         </DialogHeader>
                                         <div className="grid gap-4 py-4">
                                             <div className="grid gap-2">
                                                 <Label htmlFor="start_date">
-                                                    Data Inizio
+                                                    {t('dashboard.date_start')}
                                                 </Label>
                                                 <Input
                                                     id="start_date"
@@ -758,7 +791,7 @@ export default function Dashboard({
                                             </div>
                                             <div className="grid gap-2">
                                                 <Label htmlFor="end_date">
-                                                    Data Fine
+                                                    {t('dashboard.date_end')}
                                                 </Label>
                                                 <Input
                                                     id="end_date"
@@ -795,7 +828,7 @@ export default function Dashboard({
                                                     }}
                                                     className="flex-1"
                                                 >
-                                                    Ultimi 7 giorni
+                                                    {t('dashboard.last_7_days')}
                                                 </Button>
                                                 <Button
                                                     variant="outline"
@@ -821,7 +854,7 @@ export default function Dashboard({
                                                     }}
                                                     className="flex-1"
                                                 >
-                                                    Ultimo mese
+                                                    {t('dashboard.last_month')}
                                                 </Button>
                                             </div>
                                         </div>
@@ -834,7 +867,7 @@ export default function Dashboard({
                                                     )
                                                 }
                                             >
-                                                Annulla
+                                                {t('common.cancel')}
                                             </Button>
                                             <Button
                                                 onClick={handleCustomDateApply}
@@ -843,7 +876,7 @@ export default function Dashboard({
                                                     !customEndDate
                                                 }
                                             >
-                                                Applica
+                                                {t('common.apply')}
                                             </Button>
                                         </DialogFooter>
                                     </DialogContent>
@@ -857,14 +890,18 @@ export default function Dashboard({
                             >
                                 <SelectTrigger
                                     className="h-9 w-[180px]"
-                                    aria-label="Filtro cliente"
+                                    aria-label={t('dashboard.customer_filter')}
                                 >
                                     <Users className="mr-2 h-3.5 w-3.5" />
-                                    <SelectValue placeholder="Tutti i clienti" />
+                                    <SelectValue
+                                        placeholder={t(
+                                            'dashboard.all_customers',
+                                        )}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">
-                                        Tutti i clienti
+                                        {t('dashboard.all_customers')}
                                     </SelectItem>
                                     {customersForFilter.map((customer) => (
                                         <SelectItem
@@ -886,7 +923,7 @@ export default function Dashboard({
                                         className="h-9"
                                     >
                                         <Filter className="mr-1.5 h-3.5 w-3.5" />
-                                        Stato
+                                        {t('dashboard.status')}
                                         {statusFilter.length > 0 && (
                                             <Badge
                                                 variant="secondary"
@@ -902,7 +939,7 @@ export default function Dashboard({
                                     className="w-56"
                                 >
                                     <DropdownMenuLabel>
-                                        Filtra per Stato
+                                        {t('dashboard.filter_by_status')}
                                     </DropdownMenuLabel>
                                     <DropdownMenuSeparator />
                                     {orderStatusesForFilter.map((status) => (
@@ -949,7 +986,7 @@ export default function Dashboard({
                                                 className="text-red-600 dark:text-red-400"
                                             >
                                                 <X className="mr-2 h-3.5 w-3.5" />
-                                                Rimuovi filtri
+                                                {t('dashboard.remove_filters')}
                                             </DropdownMenuCheckboxItem>
                                         </>
                                     )}
@@ -962,7 +999,7 @@ export default function Dashboard({
                             {/* Switch estilo iOS para auto-refresh */}
                             <div className="flex items-center gap-2">
                                 <span className="text-xs font-medium text-foreground/75">
-                                    Auto
+                                    {t('dashboard.auto')}
                                 </span>
                                 <button
                                     type="button"
@@ -976,7 +1013,9 @@ export default function Dashboard({
                                             ? 'border-primary bg-primary/80'
                                             : 'border-border bg-muted'
                                     }`}
-                                    aria-label="Attiva o disattiva l'aggiornamento automatico della dashboard"
+                                    aria-label={t(
+                                        'dashboard.auto_refresh_aria',
+                                    )}
                                 >
                                     <span
                                         className={`inline-block h-4 w-4 transform rounded-full bg-background shadow-sm transition-transform ${
@@ -997,7 +1036,9 @@ export default function Dashboard({
                                             onClick={handleRefresh}
                                             disabled={isRefreshing}
                                             className="h-9 w-9"
-                                            aria-label="Aggiorna dati dashboard"
+                                            aria-label={t(
+                                                'dashboard.refresh_aria',
+                                            )}
                                         >
                                             <RefreshCw
                                                 className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`}
@@ -1005,7 +1046,7 @@ export default function Dashboard({
                                         </Button>
                                     </TooltipTrigger>
                                     <TooltipContent>
-                                        <span>Aggiorna</span>
+                                        <span>{t('dashboard.refresh')}</span>
                                     </TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
@@ -1020,28 +1061,33 @@ export default function Dashboard({
                                         },
                                     )}
                                 >
-                                    Aggiornato alle{' '}
-                                    {lastUpdatedAt.toLocaleTimeString('it-IT', {
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                    })}
+                                    {t('dashboard.updated_at')}{' '}
+                                    {lastUpdatedAt.toLocaleTimeString(
+                                        undefined,
+                                        {
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                        },
+                                    )}
                                 </span>
                             )}
                             <Button
                                 variant="outline"
                                 size="sm"
                                 className="h-9"
-                                aria-label="Esporta dati dashboard in CSV"
+                                aria-label={t('dashboard.export_aria')}
                                 onClick={handleExport}
                             >
                                 <Download className="mr-1.5 h-3.5 w-3.5" />
-                                Esporta
+                                {t('dashboard.export')}
                             </Button>
                             <Link
                                 href={productionPortal.login.url()}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                aria-label="Apri Portale Produzione"
+                                aria-label={t(
+                                    'dashboard.production_portal_aria',
+                                )}
                             >
                                 <Button
                                     variant="outline"
@@ -1049,7 +1095,7 @@ export default function Dashboard({
                                     className="h-9"
                                 >
                                     <Eye className="mr-1.5 h-3.5 w-3.5" />
-                                    Portale Produzione
+                                    {t('dashboard.production_portal')}
                                 </Button>
                             </Link>
                         </div>
@@ -1122,11 +1168,11 @@ export default function Dashboard({
 
                     const getCtaLabel = (alert: (typeof alerts)[0]) => {
                         if (alert.type === 'overdue')
-                            return 'Vai agli ordini in ritardo';
+                            return t('dashboard.cta_overdue');
                         if (alert.type === 'suspended')
-                            return 'Vai agli ordini sospesi';
+                            return t('dashboard.cta_suspended');
                         if (alert.type === 'autocontrollo')
-                            return 'Vai agli ordini con autocontrollo pendente';
+                            return t('dashboard.cta_autocontrollo');
                         return null;
                     };
 
@@ -1196,13 +1242,17 @@ export default function Dashboard({
                                             aria-expanded={isExpanded}
                                             aria-label={
                                                 isExpanded
-                                                    ? 'Chiudi dettaglio avviso'
-                                                    : `${alert.title}, ${alert.count} elementi. Tocca per aprire.`
+                                                    ? t(
+                                                          'dashboard.alert_close_detail',
+                                                      )
+                                                    : `${t(`dashboard.alert_title_${alert.type}`)}, ${alert.count} ${t('dashboard.alert_tap_hint')}`
                                             }
                                         >
                                             <AlertTriangle className="h-5 w-5 shrink-0" />
                                             <span className="min-w-0 flex-1 truncate font-semibold">
-                                                {alert.title}
+                                                {t(
+                                                    `dashboard.alert_title_${alert.type}`,
+                                                )}
                                             </span>
                                             <Badge
                                                 variant="outline"
@@ -1233,7 +1283,12 @@ export default function Dashboard({
                                             <div className="min-h-0 overflow-hidden">
                                                 <div className="border-t border-current/20 px-4 py-3">
                                                     <p className="mb-3 text-sm">
-                                                        {alert.message}
+                                                        {t(
+                                                            `dashboard.alert_message_${alert.type}`,
+                                                            {
+                                                                count: alert.count,
+                                                            },
+                                                        )}
                                                     </p>
                                                     <div className="flex flex-wrap items-center gap-2">
                                                         {actionable &&
@@ -1259,7 +1314,9 @@ export default function Dashboard({
                                                             className="inline-flex items-center gap-1.5 rounded-lg border border-current/30 bg-transparent px-3 py-2 text-sm font-medium transition hover:bg-black/5 dark:hover:bg-white/10"
                                                         >
                                                             <X className="h-3.5 w-3.5" />
-                                                            Chiudi
+                                                            {t(
+                                                                'dashboard.close',
+                                                            )}
                                                         </button>
                                                     </div>
                                                 </div>
@@ -1282,7 +1339,7 @@ export default function Dashboard({
                         >
                             {alerts.find((a) => a.type === 'overdue')?.count ??
                                 0}{' '}
-                            a rischio
+                            {t('dashboard.at_risk')}
                         </Link>
                         <span className="text-foreground/50">·</span>
                         <Link
@@ -1291,7 +1348,7 @@ export default function Dashboard({
                         >
                             {statistics.orders.lanciato +
                                 statistics.orders.in_avanzamento}{' '}
-                            ordini attivi
+                            {t('dashboard.active_orders')}
                         </Link>
                         <span className="text-foreground/50">·</span>
                         <Link
@@ -1300,7 +1357,7 @@ export default function Dashboard({
                         >
                             {statistics.orders.pianificato +
                                 statistics.orders.in_allestimento}{' '}
-                            in pianificazione
+                            {t('dashboard.in_planning')}
                         </Link>
                     </div>
                 )}
@@ -1311,7 +1368,7 @@ export default function Dashboard({
                     <Link
                         href={orders.index().url}
                         className="group block h-full"
-                        aria-label="Vedi tutti gli ordini"
+                        aria-label={t('dashboard.view_all_orders')}
                     >
                         <Card className="flex h-full cursor-pointer flex-col border-l-4 border-l-blue-500 transition-all focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:scale-[1.02] hover:border-primary/50 hover:shadow-lg">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
@@ -1319,20 +1376,20 @@ export default function Dashboard({
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <CardTitle className="cursor-help text-sm font-semibold text-foreground/80">
-                                                Ordini Totali
+                                                {t('dashboard.orders_total')}
                                             </CardTitle>
                                         </TooltipTrigger>
                                         <TooltipContent>
                                             <p>
-                                                Numero totale di ordini nel
-                                                sistema
+                                                {t(
+                                                    'dashboard.orders_total_tooltip',
+                                                )}
                                             </p>
                                             {dateFilter === 'all' && (
                                                 <p className="mt-1 text-muted-foreground">
-                                                    Con &quot;Tutto il
-                                                    tempo&quot;: dati
-                                                    complessivi (tutti gli
-                                                    ordini).
+                                                    {t(
+                                                        'dashboard.orders_total_tooltip_all',
+                                                    )}
                                                 </p>
                                             )}
                                         </TooltipContent>
@@ -1369,7 +1426,7 @@ export default function Dashboard({
                                             %
                                         </span>
                                         <span className="text-foreground/75">
-                                            vs periodo precedente
+                                            {t('dashboard.vs_previous_period')}
                                         </span>
                                     </div>
                                 )}
@@ -1378,14 +1435,15 @@ export default function Dashboard({
                                         variant="outline"
                                         className="border-blue-500/30 text-xs text-blue-700 dark:text-blue-300"
                                     >
-                                        {statistics.orders.lanciato} lanciate
+                                        {statistics.orders.lanciato}{' '}
+                                        {t('dashboard.launched')}
                                     </Badge>
                                     <Badge
                                         variant="outline"
                                         className="border-yellow-500/30 text-xs text-yellow-700 dark:text-yellow-300"
                                     >
-                                        {statistics.orders.in_avanzamento} in
-                                        avanzamento
+                                        {statistics.orders.in_avanzamento}{' '}
+                                        {t('dashboard.in_progress')}
                                     </Badge>
                                 </div>
                             </CardContent>
@@ -1396,7 +1454,7 @@ export default function Dashboard({
                     <Link
                         href={offers.index().url}
                         className="group block h-full"
-                        aria-label="Vedi tutte le offerte"
+                        aria-label={t('dashboard.view_all_offers')}
                     >
                         <Card className="flex h-full cursor-pointer flex-col border-l-4 border-l-purple-500 transition-all focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:scale-[1.02] hover:border-primary/50 hover:shadow-lg">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
@@ -1404,13 +1462,12 @@ export default function Dashboard({
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <CardTitle className="cursor-help text-sm font-semibold text-foreground/80">
-                                                Offerte
+                                                {t('dashboard.offers')}
                                             </CardTitle>
                                         </TooltipTrigger>
                                         <TooltipContent>
                                             <p>
-                                                Numero totale di offerte nel
-                                                sistema
+                                                {t('dashboard.offers_tooltip')}
                                             </p>
                                         </TooltipContent>
                                     </Tooltip>
@@ -1433,7 +1490,8 @@ export default function Dashboard({
                                         variant="outline"
                                         className="border-emerald-500/30 text-xs text-emerald-700 dark:text-emerald-300"
                                     >
-                                        {statistics.offers.active} attive
+                                        {statistics.offers.active}{' '}
+                                        {t('dashboard.active')}
                                     </Badge>
                                 </div>
                             </CardContent>
@@ -1444,7 +1502,7 @@ export default function Dashboard({
                     <Link
                         href={articles.index().url}
                         className="group block h-full"
-                        aria-label="Vedi tutti gli articoli"
+                        aria-label={t('dashboard.view_all_articles')}
                     >
                         <Card className="flex h-full cursor-pointer flex-col border-l-4 border-l-orange-500 transition-all focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:scale-[1.02] hover:border-primary/50 hover:shadow-lg">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
@@ -1452,13 +1510,14 @@ export default function Dashboard({
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <CardTitle className="cursor-help text-sm font-semibold text-foreground/80">
-                                                Articoli
+                                                {t('dashboard.articles')}
                                             </CardTitle>
                                         </TooltipTrigger>
                                         <TooltipContent>
                                             <p>
-                                                Numero totale di articoli
-                                                registrati nel sistema
+                                                {t(
+                                                    'dashboard.articles_tooltip',
+                                                )}
                                             </p>
                                         </TooltipContent>
                                     </Tooltip>
@@ -1477,7 +1536,7 @@ export default function Dashboard({
                                 )}
                                 {!comparisonStats && <div className="mb-3" />}
                                 <p className="mt-auto border-t pt-3 text-xs text-foreground/75">
-                                    Articoli registrati nel sistema
+                                    {t('dashboard.articles_registered')}
                                 </p>
                             </CardContent>
                         </Card>
@@ -1494,13 +1553,14 @@ export default function Dashboard({
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <CardTitle className="cursor-help text-sm font-semibold text-foreground/80">
-                                                Clienti
+                                                {t('dashboard.customers')}
                                             </CardTitle>
                                         </TooltipTrigger>
                                         <TooltipContent>
                                             <p>
-                                                Numero totale di clienti attivi
-                                                nel sistema
+                                                {t(
+                                                    'dashboard.customers_tooltip',
+                                                )}
                                             </p>
                                         </TooltipContent>
                                     </Tooltip>
@@ -1519,7 +1579,7 @@ export default function Dashboard({
                                 )}
                                 {!comparisonStats && <div className="mb-3" />}
                                 <p className="mt-auto border-t pt-3 text-xs text-foreground/75">
-                                    Clienti attivi nel sistema
+                                    {t('dashboard.customers_active')}
                                 </p>
                             </CardContent>
                         </Card>
@@ -1531,37 +1591,37 @@ export default function Dashboard({
                     {[
                         {
                             key: 'pianificato',
-                            label: ORDER_STATUS_LABELS[0],
+                            label: t('dashboard.order_status_0'),
                             count: statistics.orders.pianificato,
                             statusParam: '0',
                         },
                         {
                             key: 'in_allestimento',
-                            label: ORDER_STATUS_LABELS[1],
+                            label: t('dashboard.order_status_1'),
                             count: statistics.orders.in_allestimento,
                             statusParam: '1',
                         },
                         {
                             key: 'lanciato',
-                            label: ORDER_STATUS_LABELS[2],
+                            label: t('dashboard.order_status_2'),
                             count: statistics.orders.lanciato,
                             statusParam: '2',
                         },
                         {
                             key: 'in_avanzamento',
-                            label: ORDER_STATUS_LABELS[3],
+                            label: t('dashboard.order_status_3'),
                             count: statistics.orders.in_avanzamento,
                             statusParam: '3',
                         },
                         {
                             key: 'sospeso',
-                            label: ORDER_STATUS_LABELS[4],
+                            label: t('dashboard.order_status_4'),
                             count: statistics.orders.sospeso,
                             statusParam: '4',
                         },
                         {
                             key: 'completato',
-                            label: 'Completati',
+                            label: t('dashboard.order_status_completed'),
                             count: statistics.orders.completato,
                             statusParam: 'completed',
                         },
@@ -1586,7 +1646,7 @@ export default function Dashboard({
                 <Link
                     href={planning.index().url}
                     className="group block"
-                    aria-label="Vai a Pianificazione produzione"
+                    aria-label={t('dashboard.planning_aria')}
                 >
                     <Card className="flex cursor-pointer flex-row flex-wrap items-center justify-between gap-4 border-l-4 border-l-sky-500 transition-all focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:scale-[1.01] hover:border-primary/50 hover:shadow-lg">
                         <div className="flex flex-1 items-center gap-4">
@@ -1595,10 +1655,10 @@ export default function Dashboard({
                             </div>
                             <div>
                                 <CardTitle className="text-base">
-                                    Pianificazione produzione
+                                    {t('dashboard.planning_production')}
                                 </CardTitle>
                                 <CardDescription className="text-sm">
-                                    Ordini in pianificazione e in allestimento
+                                    {t('dashboard.planning_production_desc')}
                                 </CardDescription>
                             </div>
                         </div>
@@ -1612,14 +1672,14 @@ export default function Dashboard({
                                         className="border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300"
                                     >
                                         {statistics.orders.pianificato}{' '}
-                                        pianificati
+                                        {t('dashboard.planned')}
                                     </Badge>
                                     <Badge
                                         variant="outline"
                                         className="border-sky-500/30 text-sky-700 dark:text-sky-300"
                                     >
-                                        {statistics.orders.in_allestimento} in
-                                        allestimento
+                                        {statistics.orders.in_allestimento}{' '}
+                                        {t('dashboard.in_allestimento')}
                                     </Badge>
                                 </div>
                                 <ArrowRight className="h-5 w-5 text-sky-600 opacity-0 transition-opacity group-hover:opacity-100 dark:text-sky-400" />
@@ -1633,7 +1693,7 @@ export default function Dashboard({
                     <Link
                         href={`${orders.index().url}?status=completed`}
                         className="group block h-full"
-                        aria-label="Vedi ordini completati"
+                        aria-label={t('dashboard.view_completed_orders')}
                     >
                         <Card className="flex h-full cursor-pointer flex-col border-emerald-200 bg-gradient-to-br from-emerald-50/50 to-transparent transition-all focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:scale-[1.01] hover:border-primary/50 hover:shadow-lg dark:border-emerald-900 dark:from-emerald-950/20">
                             <CardHeader className="pb-2">
@@ -1646,14 +1706,16 @@ export default function Dashboard({
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
                                                     <CardDescription className="cursor-help text-xs font-medium">
-                                                        Tasso di Completamento
+                                                        {t(
+                                                            'dashboard.completion_rate',
+                                                        )}
                                                     </CardDescription>
                                                 </TooltipTrigger>
                                                 <TooltipContent>
                                                     <p>
-                                                        Percentuale di ordini
-                                                        completati rispetto al
-                                                        totale
+                                                        {t(
+                                                            'dashboard.completion_rate_tooltip',
+                                                        )}
                                                     </p>
                                                 </TooltipContent>
                                             </Tooltip>
@@ -1670,8 +1732,8 @@ export default function Dashboard({
                                         >
                                             {performanceMetrics.completion_rate >=
                                             80
-                                                ? 'On track'
-                                                : 'A rischio'}
+                                                ? t('dashboard.on_track')
+                                                : t('dashboard.at_risk_badge')}
                                         </span>
                                     )}
                                 </div>
@@ -1690,9 +1752,10 @@ export default function Dashboard({
                                 <div className="flex items-center gap-2 border-t pt-2">
                                     <CheckCircle className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                                     <p className="text-xs text-foreground/75">
-                                        {performanceMetrics.completed_orders} di{' '}
-                                        {performanceMetrics.total_orders} ordini
-                                        completati
+                                        {performanceMetrics.completed_orders}{' '}
+                                        {t('dashboard.orders_completed_of')}{' '}
+                                        {performanceMetrics.total_orders}{' '}
+                                        {t('dashboard.orders_completed')}
                                     </p>
                                 </div>
                             </CardContent>
@@ -1709,14 +1772,16 @@ export default function Dashboard({
                                         <Tooltip>
                                             <TooltipTrigger asChild>
                                                 <CardDescription className="cursor-help text-xs font-medium">
-                                                    Tempo Medio di Produzione
+                                                    {t(
+                                                        'dashboard.avg_production_time',
+                                                    )}
                                                 </CardDescription>
                                             </TooltipTrigger>
                                             <TooltipContent>
                                                 <p>
-                                                    Tempo medio in giorni dalla
-                                                    creazione al completamento
-                                                    di un ordine
+                                                    {t(
+                                                        'dashboard.avg_production_time_tooltip',
+                                                    )}
                                                 </p>
                                             </TooltipContent>
                                         </Tooltip>
@@ -1733,8 +1798,8 @@ export default function Dashboard({
                                     >
                                         {performanceMetrics.avg_production_time_days <=
                                         14
-                                            ? 'Buono'
-                                            : 'Lento'}
+                                            ? t('dashboard.good')
+                                            : t('dashboard.slow')}
                                     </span>
                                 )}
                             </div>
@@ -1746,7 +1811,7 @@ export default function Dashboard({
                                         1,
                                     )}
                                     <span className="ml-1 text-base text-foreground/75">
-                                        giorni
+                                        {t('dashboard.days')}
                                     </span>
                                 </CardTitle>
                             )}
@@ -1755,7 +1820,7 @@ export default function Dashboard({
                             <div className="mt-auto flex items-center gap-2 border-t pt-2">
                                 <BarChart3 className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
                                 <p className="text-xs text-foreground/75">
-                                    Tempo medio dalla creazione al completamento
+                                    {t('dashboard.avg_time_tooltip')}
                                 </p>
                             </div>
                         </CardContent>
@@ -1763,7 +1828,7 @@ export default function Dashboard({
                     <Link
                         href={orders.index().url}
                         className="group block h-full"
-                        aria-label="Vedi tutti gli ordini"
+                        aria-label={t('dashboard.view_all_orders')}
                     >
                         <Card className="flex h-full cursor-pointer flex-col border-purple-200 bg-gradient-to-br from-purple-50/50 to-transparent transition-all focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:scale-[1.01] hover:border-primary/50 hover:shadow-lg dark:border-purple-900 dark:from-purple-950/20">
                             <CardHeader className="pb-2">
@@ -1775,14 +1840,16 @@ export default function Dashboard({
                                         <Tooltip>
                                             <TooltipTrigger asChild>
                                                 <CardDescription className="cursor-help text-xs font-medium">
-                                                    Ordini per Giorno
+                                                    {t(
+                                                        'dashboard.orders_per_day',
+                                                    )}
                                                 </CardDescription>
                                             </TooltipTrigger>
                                             <TooltipContent>
                                                 <p>
-                                                    Media di ordini processati
-                                                    per giorno nel periodo
-                                                    selezionato
+                                                    {t(
+                                                        'dashboard.orders_per_day_tooltip',
+                                                    )}
                                                 </p>
                                             </TooltipContent>
                                         </Tooltip>
@@ -1802,7 +1869,7 @@ export default function Dashboard({
                                 <div className="flex items-center gap-2 border-t pt-2">
                                     <Calendar className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
                                     <p className="text-xs text-foreground/75">
-                                        Media di ordini processati per giorno
+                                        {t('dashboard.orders_per_day_short')}
                                     </p>
                                 </div>
                             </CardContent>
@@ -1824,11 +1891,12 @@ export default function Dashboard({
                                     </div>
                                     <div>
                                         <CardTitle className="text-base">
-                                            Progresso di Produzione
+                                            {t('dashboard.production_progress')}
                                         </CardTitle>
                                         <CardDescription className="text-xs">
-                                            Quantità totale processata vs.
-                                            quantità totale
+                                            {t(
+                                                'dashboard.production_progress_desc',
+                                            )}
                                             {comparisonStats && (
                                                 <span className="ml-2 inline-flex items-center gap-1">
                                                     <span
@@ -1845,7 +1913,9 @@ export default function Dashboard({
                                                         %
                                                     </span>
                                                     <span className="text-xs text-foreground/75">
-                                                        vs periodo precedente
+                                                        {t(
+                                                            'dashboard.vs_previous_period',
+                                                        )}
                                                     </span>
                                                 </span>
                                             )}
@@ -1866,8 +1936,12 @@ export default function Dashboard({
                                             >
                                                 {statistics.production
                                                     .progress_percentage >= 80
-                                                    ? 'Avanzamento buono'
-                                                    : 'Avanzamento da monitorare'}
+                                                    ? t(
+                                                          'dashboard.progress_good',
+                                                      )
+                                                    : t(
+                                                          'dashboard.progress_monitor',
+                                                      )}
                                             </span>
                                         )}
                                     </div>
@@ -1879,7 +1953,7 @@ export default function Dashboard({
                                             %
                                         </div>
                                         <p className="text-xs text-foreground/75">
-                                            Completamento
+                                            {t('dashboard.completion')}
                                         </p>
                                     </div>
                                 </div>
@@ -1891,7 +1965,7 @@ export default function Dashboard({
                                     <div className="flex items-center gap-4">
                                         <div>
                                             <p className="mb-0.5 text-xs font-medium text-foreground/80">
-                                                Processato
+                                                {t('dashboard.processed')}
                                             </p>
                                             <p className="text-lg font-bold">
                                                 {statistics.production.worked_quantity.toLocaleString()}
@@ -1900,7 +1974,7 @@ export default function Dashboard({
                                         <div className="h-10 w-px bg-border" />
                                         <div>
                                             <p className="mb-0.5 text-xs font-medium text-foreground/80">
-                                                Totale
+                                                {t('dashboard.total')}
                                             </p>
                                             <p className="text-lg font-bold">
                                                 {statistics.production.total_quantity.toLocaleString()}
@@ -1909,7 +1983,7 @@ export default function Dashboard({
                                         <div className="h-10 w-px bg-border" />
                                         <div>
                                             <p className="mb-0.5 text-xs font-medium text-foreground/80">
-                                                Rimanente
+                                                {t('dashboard.remaining')}
                                             </p>
                                             <p className="text-lg font-bold text-orange-600 dark:text-orange-400">
                                                 {(
@@ -1952,9 +2026,11 @@ export default function Dashboard({
                                 {advancementsCountToday >= 0 && (
                                     <div className="border-t pt-2">
                                         <span className="text-xs font-medium text-foreground/80">
-                                            Avanzamenti oggi:{' '}
+                                            {t('dashboard.advancements_today')}{' '}
                                             {advancementsCountToday}{' '}
-                                            registrazioni
+                                            {t(
+                                                'dashboard.advancements_registrations',
+                                            )}
                                         </span>
                                     </div>
                                 )}
@@ -2066,10 +2142,11 @@ export default function Dashboard({
                                         <Zap className="h-5 w-5 text-orange-600 dark:text-orange-400" />
                                     </div>
                                     <div>
-                                        <CardTitle>Ordini Urgenti</CardTitle>
+                                        <CardTitle>
+                                            {t('dashboard.urgent_orders')}
+                                        </CardTitle>
                                         <CardDescription>
-                                            Ordini con consegna nei prossimi 7
-                                            giorni
+                                            {t('dashboard.urgent_orders_desc')}
                                         </CardDescription>
                                     </div>
                                 </div>
@@ -2079,7 +2156,7 @@ export default function Dashboard({
                                         size="sm"
                                         className="border-orange-200 hover:bg-orange-50 dark:border-orange-800 dark:hover:bg-orange-950/30"
                                     >
-                                        Vedi tutte
+                                        {t('dashboard.view_all')}
                                         <ArrowRight className="ml-2 h-4 w-4" />
                                     </Button>
                                 </Link>
@@ -2098,7 +2175,7 @@ export default function Dashboard({
                             ) : urgentOrders.length === 0 ? (
                                 <div className="py-8 text-center text-foreground/70">
                                     <CheckCircle className="mx-auto mb-4 h-12 w-12 opacity-50" />
-                                    <p>Non ci sono ordini urgenti</p>
+                                    <p>{t('dashboard.no_urgent_orders')}</p>
                                 </div>
                             ) : (
                                 <div className="space-y-3">
@@ -2147,16 +2224,22 @@ export default function Dashboard({
                                                                 },
                                                             );
                                                         }}
-                                                        aria-label={`Filtra ordini per stato ${order.status_label}`}
+                                                        aria-label={`${t('dashboard.filter_orders_by_status')} ${t(getOrderStatusLabelKey(order.status))}`}
                                                     >
-                                                        {order.status_label}
+                                                        {t(
+                                                            getOrderStatusLabelKey(
+                                                                order.status,
+                                                            ),
+                                                        )}
                                                     </Badge>
                                                     {order.is_overdue && (
                                                         <Badge
                                                             variant="destructive"
                                                             className="text-xs"
                                                         >
-                                                            In Ritardo
+                                                            {t(
+                                                                'dashboard.overdue',
+                                                            )}
                                                         </Badge>
                                                     )}
                                                 </div>
@@ -2169,7 +2252,9 @@ export default function Dashboard({
                                                         -{' '}
                                                         {order.article
                                                             .article_descr ||
-                                                            'Senza descrizione'}
+                                                            t(
+                                                                'dashboard.no_description',
+                                                            )}
                                                     </p>
                                                 )}
                                                 {order.delivery_requested_date && (
@@ -2180,7 +2265,9 @@ export default function Dashboard({
                                                                 : 'text-foreground/75'
                                                         }`}
                                                     >
-                                                        Consegna:{' '}
+                                                        {t(
+                                                            'dashboard.delivery',
+                                                        )}{' '}
                                                         {
                                                             order.delivery_requested_date
                                                         }
@@ -2197,8 +2284,8 @@ export default function Dashboard({
                                                                         );
                                                                     return days <
                                                                         0
-                                                                        ? `${Math.abs(days)} giorni in ritardo`
-                                                                        : `${days} giorni rimanenti`;
+                                                                        ? `${Math.abs(days)} ${t('dashboard.days_overdue')}`
+                                                                        : `${days} ${t('dashboard.days_remaining')}`;
                                                                 })()}
                                                                 )
                                                             </span>
@@ -2228,9 +2315,11 @@ export default function Dashboard({
                                         <Clock className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                                     </div>
                                     <div>
-                                        <CardTitle>Ordini Recenti</CardTitle>
+                                        <CardTitle>
+                                            {t('dashboard.recent_orders')}
+                                        </CardTitle>
                                         <CardDescription>
-                                            Ultimi 10 ordini creati
+                                            {t('dashboard.recent_orders_desc')}
                                         </CardDescription>
                                     </div>
                                 </div>
@@ -2240,7 +2329,7 @@ export default function Dashboard({
                                         size="sm"
                                         className="border-blue-200 hover:bg-blue-50 dark:border-blue-800 dark:hover:bg-blue-950/30"
                                     >
-                                        Vedi tutte
+                                        {t('dashboard.view_all')}
                                         <ArrowRight className="ml-2 h-4 w-4" />
                                     </Button>
                                 </Link>
@@ -2250,7 +2339,7 @@ export default function Dashboard({
                             {recentOrders.length === 0 ? (
                                 <div className="py-8 text-center text-foreground/75">
                                     <Package className="mx-auto mb-4 h-12 w-12 opacity-50" />
-                                    <p>Non ci sono ordini recenti</p>
+                                    <p>{t('dashboard.no_recent_orders')}</p>
                                 </div>
                             ) : (
                                 <div className="space-y-3">
@@ -2291,9 +2380,13 @@ export default function Dashboard({
                                                                 },
                                                             );
                                                         }}
-                                                        aria-label={`Filtra ordini per stato ${order.status_label}`}
+                                                        aria-label={`${t('dashboard.filter_orders_by_status')} ${t(getOrderStatusLabelKey(order.status))}`}
                                                     >
-                                                        {order.status_label}
+                                                        {t(
+                                                            getOrderStatusLabelKey(
+                                                                order.status,
+                                                            ),
+                                                        )}
                                                     </Badge>
                                                 </div>
                                                 {order.article && (
@@ -2305,12 +2398,16 @@ export default function Dashboard({
                                                         -{' '}
                                                         {order.article
                                                             .article_descr ||
-                                                            'Senza descrizione'}
+                                                            t(
+                                                                'dashboard.no_description',
+                                                            )}
                                                     </p>
                                                 )}
                                                 {order.customer && (
                                                     <p className="text-xs text-foreground/75">
-                                                        Cliente:{' '}
+                                                        {t(
+                                                            'dashboard.customer_label',
+                                                        )}{' '}
                                                         {order.customer}
                                                     </p>
                                                 )}

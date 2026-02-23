@@ -16,6 +16,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import articles from '@/routes/articles/index';
 import offers from '@/routes/offers/index';
@@ -73,6 +74,7 @@ type OffersIndexProps = {
 };
 
 export default function OffersIndex() {
+    const { t } = useTranslations();
     const { props } = usePage<OffersIndexProps>();
     const { offers: offersPaginated, customers, filters } = props;
     const { flash } = useFlashNotifications();
@@ -298,18 +300,18 @@ export default function OffersIndex() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: offers.index().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Offerte" />
+            <Head title={t('nav.offers')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="Offerte"
+                    title={t('nav.offers')}
                     subtitle="Elenco delle offerte attive con Cerca e filtri di base."
                     createHref={offers.create().url}
                     createLabel="Nuova Offerta"
@@ -326,7 +328,7 @@ export default function OffersIndex() {
                             <SearchInput
                                 value={searchValue}
                                 onChange={handleSearchChange}
-                                placeholder="Numero o descrizione offerta..."
+                                placeholder={t('offers.search_placeholder')}
                                 isLoading={isSearching}
                                 onClear={clearSearch}
                             />
@@ -348,11 +350,13 @@ export default function OffersIndex() {
                                     className="w-full"
                                     aria-label="Cliente"
                                 >
-                                    <SelectValue placeholder="Tutti i clienti" />
+                                    <SelectValue
+                                        placeholder={t('filter.all_customers')}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">
-                                        Tutti i clienti
+                                        {t('filter.all_customers')}
                                     </SelectItem>
                                     {customers.map((customer) => (
                                         <SelectItem

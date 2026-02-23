@@ -15,6 +15,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import offerOperations from '@/routes/offer-operations';
 import { type BreadcrumbItem } from '@/types';
@@ -80,6 +81,7 @@ export default function OfferOperationsIndex() {
     const { props } = usePage<OfferOperationsIndexProps>();
     const { operations: operationsPaginated, categories, filters } = props;
     const { flash } = useFlashNotifications();
+    const { t } = useTranslations();
 
     const [searchValue, setSearchValue] = useState(filters.search ?? '');
     const [isSearching, setIsSearching] = useState(false);
@@ -212,11 +214,15 @@ export default function OfferOperationsIndex() {
                                         className="w-full"
                                         aria-label="Categoria"
                                     >
-                                        <SelectValue placeholder="Tutte le categorie" />
+                                        <SelectValue
+                                            placeholder={t(
+                                                'filter.all_categories',
+                                            )}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="all">
-                                            Tutte le categorie
+                                            {t('filter.all_categories')}
                                         </SelectItem>
                                         {categories.map((category) => (
                                             <SelectItem

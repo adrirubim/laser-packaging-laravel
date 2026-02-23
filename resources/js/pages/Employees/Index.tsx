@@ -13,6 +13,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import employees from '@/routes/employees/index';
 import { type BreadcrumbItem } from '@/types';
@@ -54,6 +55,7 @@ type EmployeesIndexProps = {
 };
 
 export default function EmployeesIndex() {
+    const { t } = useTranslations();
     const { props } = usePage<EmployeesIndexProps>();
     const { employees: employeesPaginated, filters, flash } = props;
 
@@ -153,18 +155,18 @@ export default function EmployeesIndex() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Personale',
+            title: t('nav.personale'),
             href: employees.index().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Personale" />
+            <Head title={t('nav.personale')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="Personale"
+                    title={t('nav.personale')}
                     subtitle="Elenco dipendenti attivi con Cerca e filtri."
                     createHref={employees.create().url}
                     createLabel="Nuovo Dipendente"
@@ -232,7 +234,7 @@ export default function EmployeesIndex() {
                                 value={filters.search || ''}
                                 onChange={handleSearchChange}
                                 onClear={clearSearch}
-                                placeholder="Cerca per nome, cognome o matricola..."
+                                placeholder={t('employees.search_placeholder')}
                                 className="w-48"
                             />
                             <label className="text-xs font-medium text-muted-foreground">
@@ -253,7 +255,9 @@ export default function EmployeesIndex() {
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">Tutti</SelectItem>
+                                    <SelectItem value="all">
+                                        {t('filter.all')}
+                                    </SelectItem>
                                     <SelectItem value="1">Abilitato</SelectItem>
                                     <SelectItem value="0">
                                         Disabilitato

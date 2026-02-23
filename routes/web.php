@@ -8,8 +8,15 @@ use Laravel\Fortify\Features;
 Route::get('/', function () {
     return Inertia::render('welcome', [
         'canRegister' => Features::enabled(Features::registration()),
+        'url' => url()->current(),
     ]);
 })->name('home');
+
+Route::post('/locale', function (\Illuminate\Http\Request $request) {
+    $request->validate(['locale' => 'required|string|in:it,es,en']);
+    $request->session()->put('locale', $request->input('locale'));
+    return redirect()->back();
+})->name('locale.update');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');

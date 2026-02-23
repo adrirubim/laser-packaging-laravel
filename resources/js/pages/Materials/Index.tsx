@@ -5,7 +5,9 @@ import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
+import articles from '@/routes/articles/index';
 import materials from '@/routes/materials/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
@@ -35,6 +37,7 @@ type MaterialsIndexProps = {
 };
 
 export default function MaterialsIndex() {
+    const { t } = useTranslations();
     const { props } = usePage<MaterialsIndexProps>();
     const { materials: materialsPaginated, filters, flash } = props;
 
@@ -95,21 +98,25 @@ export default function MaterialsIndex() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Materiali',
+            title: t('nav.articles'),
+            href: articles.index().url,
+        },
+        {
+            title: t('nav.materiali'),
             href: materials.index().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Materiali" />
+            <Head title={t('materials.title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="Materiali"
-                    subtitle="Elenco dei materiali attivi con Cerca."
+                    title={t('materials.title')}
+                    subtitle={t('materials.index.subtitle')}
                     createHref={materials.create().url}
-                    createLabel="Nuovo materiale"
+                    createLabel={t('materials.index.create')}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -117,13 +124,13 @@ export default function MaterialsIndex() {
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="space-y-1">
                         <label className="text-xs font-medium text-muted-foreground">
-                            Cerca
+                            {t('common.search')}
                         </label>
                         <SearchInput
                             value={filters.search || ''}
                             onChange={handleSearchChange}
                             onClear={clearSearch}
-                            placeholder="Codice o descrizione..."
+                            placeholder={t('materials.search_placeholder')}
                         />
                     </div>
                 </div>
@@ -156,8 +163,7 @@ export default function MaterialsIndex() {
                             {!isLoading &&
                                 (materialsPaginated.data.length === 0 ? (
                                     <div className="py-8 text-center text-sm text-muted-foreground">
-                                        Nessun materiale trovato per i filtri
-                                        attuali.
+                                        {t('materials.empty_filtered')}
                                     </div>
                                 ) : (
                                     materialsPaginated.data.map((material) => (
@@ -215,13 +221,13 @@ export default function MaterialsIndex() {
                                             uuid
                                         </th>
                                         <th className="border-b px-3 py-2 font-medium">
-                                            Codice
+                                            {t('common.code')}
                                         </th>
                                         <th className="border-b px-3 py-2 font-medium">
-                                            Descrizione
+                                            {t('common.description')}
                                         </th>
                                         <th className="border-b px-3 py-2 text-right font-medium">
-                                            Azioni
+                                            {t('common.actions')}
                                         </th>
                                     </tr>
                                 </thead>
@@ -259,8 +265,9 @@ export default function MaterialsIndex() {
                                                     colSpan={5}
                                                     className="px-3 py-6 text-center text-sm text-muted-foreground"
                                                 >
-                                                    Nessun materiale trovato per
-                                                    i filtri attuali.
+                                                    {t(
+                                                        'materials.empty_filtered',
+                                                    )}
                                                 </td>
                                             </tr>
                                         )}
@@ -327,8 +334,8 @@ export default function MaterialsIndex() {
                 }
                 onConfirm={handleDeleteConfirm}
                 isDeleting={isDeleting}
-                title="Elimina Materiale"
-                description="Sei sicuro di voler eliminare questo materiale? L'operazione non può essere annullata."
+                title={t('materials.delete.title')}
+                description={t('materials.delete.description')}
             />
         </AppLayout>
     );

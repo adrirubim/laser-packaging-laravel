@@ -7,7 +7,9 @@ import {
 import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
+import articles from '@/routes/articles/index';
 import palletTypes from '@/routes/pallet-types/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
@@ -37,6 +39,7 @@ type PalletTypesIndexProps = {
 };
 
 export default function PalletTypesIndex() {
+    const { t } = useTranslations();
     const { props } = usePage<PalletTypesIndexProps>();
     const { palletTypes: palletTypesPaginated, filters } = props;
     const { flash } = useFlashNotifications();
@@ -95,21 +98,25 @@ export default function PalletTypesIndex() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Tipi pallet',
+            title: t('nav.articles'),
+            href: articles.index().url,
+        },
+        {
+            title: t('nav.tipo_pallet'),
             href: palletTypes.index().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Tipi pallet" />
+            <Head title={t('pallet_types.title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="Tipi pallet"
-                    subtitle="Elenco dei tipi pallet attivi con Cerca."
+                    title={t('pallet_types.title')}
+                    subtitle={t('pallet_types.index.subtitle')}
                     createHref={palletTypes.create().url}
-                    createLabel="Nuovo tipo pallet"
+                    createLabel={t('pallet_types.index.create')}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -117,13 +124,13 @@ export default function PalletTypesIndex() {
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="space-y-1">
                         <label className="text-xs font-medium text-muted-foreground">
-                            Cerca
+                            {t('common.search')}
                         </label>
                         <SearchInput
                             value={filters.search || ''}
                             onChange={handleSearchChange}
                             onClear={clearSearch}
-                            placeholder="Codice o descrizione..."
+                            placeholder={t('pallet_types.search_placeholder')}
                         />
                     </div>
                 </div>
@@ -140,13 +147,13 @@ export default function PalletTypesIndex() {
                                         UUID
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Codice
+                                        {t('common.code')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Descrizione
+                                        {t('common.description')}
                                     </th>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t('common.actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -157,8 +164,7 @@ export default function PalletTypesIndex() {
                                             colSpan={5}
                                             className="px-3 py-6 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessun tipo pallet trovato per i
-                                            filtri attuali.
+                                            {t('pallet_types.empty_filtered')}
                                         </td>
                                     </tr>
                                 )}
@@ -221,8 +227,8 @@ export default function PalletTypesIndex() {
                 }
                 onConfirm={handleDeleteConfirm}
                 isDeleting={isDeleting}
-                title="Elimina tipo pallet"
-                description="Sei sicuro di voler eliminare questo tipo pallet? L'operazione non può essere annullata."
+                title={t('pallet_types.delete.title')}
+                description={t('pallet_types.delete.description')}
             />
         </AppLayout>
     );

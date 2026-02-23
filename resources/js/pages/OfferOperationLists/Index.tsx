@@ -7,8 +7,10 @@ import {
 import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import offerOperationLists from '@/routes/offer-operation-lists/index';
+import offers from '@/routes/offers/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
@@ -51,6 +53,7 @@ type OfferOperationListsIndexProps = {
 };
 
 export default function OfferOperationListsIndex() {
+    const { t } = useTranslations();
     const { props } = usePage<OfferOperationListsIndexProps>();
     const { operationLists: operationListsPaginated, filters } = props;
     const { flash } = useFlashNotifications();
@@ -111,7 +114,7 @@ export default function OfferOperationListsIndex() {
     };
 
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Offerte', href: '/offers' },
+        { title: t('nav.offers'), href: offers.index().url },
         {
             title: 'Liste Operazioni Offerta',
             href: offerOperationLists.index().url,
@@ -146,7 +149,9 @@ export default function OfferOperationListsIndex() {
                             value={filters.search || ''}
                             onChange={handleSearchChange}
                             onClear={clearSearch}
-                            placeholder="Cerca per numero offerta o codice operazione..."
+                            placeholder={t(
+                                'offer_operation_lists.search_placeholder',
+                            )}
                         />
                     </div>
                 </div>

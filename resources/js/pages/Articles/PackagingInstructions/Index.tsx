@@ -10,6 +10,7 @@ import { SearchInput } from '@/components/SearchInput';
 import { SortableTableHeader } from '@/components/SortableTableHeader';
 import { Button } from '@/components/ui/button';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import articles from '@/routes/articles/index';
 import { type BreadcrumbItem } from '@/types';
@@ -47,6 +48,7 @@ export default function PackagingInstructionsIndex() {
     const { props } = usePage<PackagingInstructionsIndexProps>();
     const { instructions: instructionsPaginated, filters } = props;
     const { flash } = useFlashNotifications();
+    const { t } = useTranslations();
 
     const [searchValue, setSearchValue] = useState(filters.search ?? '');
     const [isSearching, setIsSearching] = useState(false);
@@ -141,11 +143,11 @@ export default function PackagingInstructionsIndex() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Articoli',
+            title: t('nav.articles'),
             href: articles.index().url,
         },
         {
-            title: 'Istruzioni di Confezionamento',
+            title: t('nav.istruzioni_confezionamento'),
             href: articles.packagingInstructions.index().url,
         },
     ];

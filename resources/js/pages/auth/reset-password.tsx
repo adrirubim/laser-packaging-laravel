@@ -1,10 +1,12 @@
 import { update } from '@/routes/password/index';
 import { Form, Head } from '@inertiajs/react';
+import { useRef, useState } from 'react';
 
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
 
@@ -14,6 +16,19 @@ interface ResetPasswordProps {
 }
 
 export default function ResetPassword({ token, email }: ResetPasswordProps) {
+    const confirmationRef = useRef<HTMLInputElement>(null);
+    const [passwordMismatch, setPasswordMismatch] = useState(false);
+
+    const checkPasswordMatch = () => {
+        const p = document.getElementById(
+            'password',
+        ) as HTMLInputElement | null;
+        const c = confirmationRef.current;
+        setPasswordMismatch(
+            !!(p && c && c.value.length > 0 && p.value !== c.value),
+        );
+    };
+
     return (
         <AuthLayout
             title="Reimposta password"
@@ -47,14 +62,14 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
 
                         <div className="grid gap-2">
                             <Label htmlFor="password">Password</Label>
-                            <Input
+                            <PasswordInput
                                 id="password"
-                                type="password"
                                 name="password"
                                 autoComplete="new-password"
                                 className="mt-1 block w-full"
                                 autoFocus
                                 placeholder="Password"
+                                onBlur={checkPasswordMatch}
                             />
                             <InputError message={errors.password} />
                         </div>
@@ -63,14 +78,20 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                             <Label htmlFor="password_confirmation">
                                 Conferma password
                             </Label>
-                            <Input
+                            <PasswordInput
+                                ref={confirmationRef}
                                 id="password_confirmation"
-                                type="password"
                                 name="password_confirmation"
                                 autoComplete="new-password"
                                 className="mt-1 block w-full"
                                 placeholder="Conferma password"
+                                onBlur={checkPasswordMatch}
                             />
+                            {passwordMismatch && (
+                                <p className="text-sm text-destructive">
+                                    Le password non coincidono
+                                </p>
+                            )}
                             <InputError
                                 message={errors.password_confirmation}
                                 className="mt-2"

@@ -28,3 +28,5 @@ Suites: `--testsuite=Unit` | `--testsuite=Feature` | `--testsuite=Performance`
 | **Models** | many | 3 Unit | OfferRelations, Order, Machinery; rest via Feature. |
 
 Coverage report (when PCOV/Xdebug available): `php artisan test --coverage`.
+
+Performance suites (Concurrency, Load, API response time) are described in [tests/Performance/README.md](../tests/Performance/README.md).

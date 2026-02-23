@@ -12,6 +12,8 @@ import {
 } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
+import { useTranslations } from '@/hooks/use-translations';
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
@@ -39,6 +41,7 @@ export default function EmployeesEdit({
     employee,
     errors: serverErrors = {},
 }: EmployeesEditProps) {
+    const { t } = useTranslations();
     const [name, setName] = useState(employee.name);
     const [surname, setSurname] = useState(employee.surname);
     const [matriculationNumber, setMatriculationNumber] = useState(
@@ -99,7 +102,7 @@ export default function EmployeesEdit({
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Personale',
+            title: t('nav.personale'),
             href: employees.index().url,
         },
         {
@@ -107,7 +110,7 @@ export default function EmployeesEdit({
             href: employees.show({ employee: employee.uuid }).url,
         },
         {
-            title: 'Modifica',
+            title: t('common.edit'),
             href: employees.edit({ employee: employee.uuid }).url,
         },
     ];
@@ -310,10 +313,9 @@ export default function EmployeesEdit({
                                                         vuoto per mantenere
                                                         l'attuale)
                                                     </FormLabel>
-                                                    <Input
+                                                    <PasswordInput
                                                         id="password"
                                                         name="password"
-                                                        type="password"
                                                         value={password}
                                                         onChange={(e) =>
                                                             setPassword(

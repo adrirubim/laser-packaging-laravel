@@ -15,6 +15,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import customerDivisions from '@/routes/customer-divisions/index';
 import { type BreadcrumbItem } from '@/types';
@@ -59,6 +60,7 @@ export default function CustomerDivisionsIndex() {
     const { props } = usePage<CustomerDivisionsIndexProps>();
     const { divisions: divisionsPaginated, customers, filters } = props;
     const { flash } = useFlashNotifications();
+    const { t } = useTranslations();
 
     const [searchValue, setSearchValue] = useState(filters.search ?? '');
     const [customerFilter, setCustomerFilter] = useState(
@@ -230,11 +232,13 @@ export default function CustomerDivisionsIndex() {
                                     className="w-full"
                                     aria-label="Cliente"
                                 >
-                                    <SelectValue placeholder="Tutti i clienti" />
+                                    <SelectValue
+                                        placeholder={t('filter.all_customers')}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">
-                                        Tutti i clienti
+                                        {t('filter.all_customers')}
                                     </SelectItem>
                                     {customers.map((customer) => (
                                         <SelectItem

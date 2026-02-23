@@ -24,7 +24,7 @@ describe('PlanningToolbar', () => {
         const html = renderToString(<PlanningToolbar {...baseProps} />);
 
         expect(html).toContain('Oggi');
-        expect(html).toContain('Diaria');
+        expect(html).toContain('Giornaliera');
         expect(html).toContain('Settimanale');
         expect(html).toContain('Mensile');
         expect(baseProps.formatDateRangeLabel).toHaveBeenCalledWith(
@@ -44,7 +44,7 @@ describe('PlanningToolbar', () => {
             <PlanningToolbar {...baseProps} rangeMode={'month' as RangeMode} />,
         );
 
-        expect(htmlDay).toContain('Diaria');
+        expect(htmlDay).toContain('Giornaliera');
         expect(htmlWeek).toContain('Settimanale');
         expect(htmlMonth).toContain('Mensile');
     });

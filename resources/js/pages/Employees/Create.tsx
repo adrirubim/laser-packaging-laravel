@@ -12,6 +12,8 @@ import {
 } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
+import { useTranslations } from '@/hooks/use-translations';
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
@@ -28,6 +30,7 @@ type EmployeesCreateProps = {
 export default function EmployeesCreate({
     errors: serverErrors = {},
 }: EmployeesCreateProps) {
+    const { t } = useTranslations();
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
     const [matriculationNumber, setMatriculationNumber] = useState('');
@@ -84,11 +87,11 @@ export default function EmployeesCreate({
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Personale',
+            title: t('nav.personale'),
             href: employees.index().url,
         },
         {
-            title: 'Crea',
+            title: t('common.new'),
             href: employees.create().url,
         },
     ];
@@ -291,10 +294,9 @@ export default function EmployeesCreate({
                                                     >
                                                         Password
                                                     </FormLabel>
-                                                    <Input
+                                                    <PasswordInput
                                                         id="password"
                                                         name="password"
-                                                        type="password"
                                                         value={password}
                                                         onChange={(e) =>
                                                             setPassword(

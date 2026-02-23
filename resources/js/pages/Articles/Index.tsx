@@ -25,6 +25,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import articles from '@/routes/articles/index';
 import offers from '@/routes/offers/index';
@@ -104,6 +105,7 @@ export default function ArticlesIndex() {
         filters,
         flash,
     } = props;
+    const { t } = useTranslations();
 
     const [searchValue, setSearchValue] = useState(filters.search ?? '');
     const [offerFilter, setOfferFilter] = useState(filters.offer_uuid ?? '');
@@ -233,18 +235,18 @@ export default function ArticlesIndex() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Articoli',
+            title: t('nav.articles'),
             href: articles.index().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Articoli" />
+            <Head title={t('nav.articles')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="Articoli"
+                    title={t('nav.articles')}
                     subtitle="Elenco degli articoli attivi con Cerca e filtri."
                     createHref={articles.create().url}
                     createLabel="Nuovo Articolo"
@@ -400,11 +402,17 @@ export default function ArticlesIndex() {
                                     className="w-full"
                                     aria-label="Offerta"
                                 >
-                                    <SelectValue placeholder="Tutte le offerte" />
+                                    <SelectValue
+                                        placeholder={t(
+                                            'articles.filter_offers_placeholder',
+                                        )}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">
-                                        Tutte le offerte
+                                        {t(
+                                            'articles.filter_offers_placeholder',
+                                        )}
                                     </SelectItem>
                                     {offersList.map((offer) => (
                                         <SelectItem
@@ -432,11 +440,17 @@ export default function ArticlesIndex() {
                                     className="w-full"
                                     aria-label="Categoria"
                                 >
-                                    <SelectValue placeholder="Tutte le categorie" />
+                                    <SelectValue
+                                        placeholder={t(
+                                            'articles.filter_categories_placeholder',
+                                        )}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">
-                                        Tutte le categorie
+                                        {t(
+                                            'articles.filter_categories_placeholder',
+                                        )}
                                     </SelectItem>
                                     {categories.map((category) => (
                                         <SelectItem

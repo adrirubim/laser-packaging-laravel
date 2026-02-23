@@ -21,6 +21,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { LOT_TYPE_OPTIONS } from '@/constants/lotTypes';
 import { LABEL_OPTIONS } from '@/constants/orderLabels';
+import { useTranslations } from '@/hooks/use-translations';
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
@@ -91,6 +92,7 @@ export default function OrdersCreate({
     lotTypeOptions = [...LOT_TYPE_OPTIONS],
     errors: serverErrors,
 }: OrdersCreateProps) {
+    const { t } = useTranslations();
     const [shippingAddresses, setShippingAddresses] =
         useState<ShippingAddress[]>(initialAddresses);
     const [selectedArticle, setSelectedArticle] = useState<string>(
@@ -157,11 +159,11 @@ export default function OrdersCreate({
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Ordini',
+            title: t('nav.orders'),
             href: orders.index().url,
         },
         {
-            title: 'Crea',
+            title: t('common.new'),
             href: orders.create().url,
         },
     ];

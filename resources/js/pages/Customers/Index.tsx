@@ -15,6 +15,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import customers from '@/routes/customers';
 import { type BreadcrumbItem } from '@/types';
@@ -56,6 +57,7 @@ type CustomersIndexProps = {
 };
 
 export default function CustomersIndex() {
+    const { t } = useTranslations();
     const { props } = usePage<CustomersIndexProps>();
     const { customers: customersPaginated, filters, provinces = [] } = props;
     const { flash } = useFlashNotifications();
@@ -202,14 +204,14 @@ export default function CustomersIndex() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Clienti',
+            title: t('nav.customers'),
             href: customers.index().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Clienti" />
+            <Head title={t('nav.customers')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
@@ -249,11 +251,15 @@ export default function CustomersIndex() {
                                         className="w-full"
                                         aria-label="Provincia"
                                     >
-                                        <SelectValue placeholder="Tutte le province" />
+                                        <SelectValue
+                                            placeholder={t(
+                                                'filter.all_provinces',
+                                            )}
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="all">
-                                            Tutte le province
+                                            {t('filter.all_provinces')}
                                         </SelectItem>
                                         {provinces.map((province) => (
                                             <SelectItem

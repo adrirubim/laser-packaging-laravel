@@ -10,11 +10,13 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useTranslations } from '@/hooks/use-translations';
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { generateUUID } from '@/lib/utils/uuid';
 import { validationRules } from '@/lib/validation/rules';
 import customerDivisions from '@/routes/customer-divisions/index';
+import customersRoutes from '@/routes/customers/index';
 import { type BreadcrumbItem } from '@/types';
 import { Form, Head, router } from '@inertiajs/react';
 import { useState } from 'react';
@@ -35,6 +37,7 @@ export default function CustomerDivisionsCreate({
     customer_uuid: initialCustomerUuid,
     errors: serverErrors,
 }: CustomerDivisionsCreateProps) {
+    const { t } = useTranslations();
     const [uuid, setUuid] = useState<string>(generateUUID());
     const [selectedCustomer, setSelectedCustomer] = useState<string>(
         initialCustomerUuid ?? '',
@@ -51,11 +54,15 @@ export default function CustomerDivisionsCreate({
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Divisioni Clienti',
+            title: t('nav.customers'),
+            href: customersRoutes.index().url,
+        },
+        {
+            title: t('nav.divisioni'),
             href: customerDivisions.index().url,
         },
         {
-            title: 'Crea',
+            title: t('common.new'),
             href: customerDivisions.create().url,
         },
     ];

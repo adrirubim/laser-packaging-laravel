@@ -25,6 +25,8 @@ export interface NavItem {
 
 export interface SharedData {
     name: string;
+    locale: string;
+    translations: Record<string, string>;
     quote: { message: string; author: string };
     auth: Auth;
     sidebarOpen: boolean;

@@ -5,7 +5,9 @@ import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
+import articles from '@/routes/articles/index';
 import machineryRoutes from '@/routes/machinery/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
@@ -43,6 +45,7 @@ type MachineryIndexProps = {
 };
 
 export default function MachineryIndex() {
+    const { t } = useTranslations();
     const { props } = usePage<MachineryIndexProps>();
     const { machinery: machineryPaginated, filters, flash } = props;
 
@@ -105,18 +108,22 @@ export default function MachineryIndex() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Macchinari',
+            title: t('nav.articles'),
+            href: articles.index().url,
+        },
+        {
+            title: t('nav.macchinari'),
             href: machineryRoutes.index().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Macchinari" />
+            <Head title={t('nav.macchinari')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="Macchinari"
+                    title={t('nav.macchinari')}
                     subtitle="Elenco dei macchinari attivi con Cerca."
                     createHref={machineryRoutes.create().url}
                     createLabel="Nuovo Macchinario"
@@ -133,7 +140,7 @@ export default function MachineryIndex() {
                             value={filters.search || ''}
                             onChange={handleSearchChange}
                             onClear={clearSearch}
-                            placeholder="Codice, descrizione o parametro..."
+                            placeholder={t('machinery.search_placeholder')}
                         />
                     </div>
                 </div>

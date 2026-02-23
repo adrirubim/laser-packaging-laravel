@@ -13,6 +13,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { useTranslations } from '@/hooks/use-translations';
 import { Maximize2 } from 'lucide-react';
 import { useState } from 'react';
 import {
@@ -58,6 +59,7 @@ type OrdersTrendTooltipProps = {
 
 function OrdersTrendTooltipContent(props: OrdersTrendTooltipProps) {
     const { active, payload, label, formatPeriod } = props;
+    const { t } = useTranslations();
     if (!active || !payload || payload.length === 0) {
         return null;
     }
@@ -87,23 +89,24 @@ function OrdersTrendTooltipContent(props: OrdersTrendTooltipProps) {
     if (hasPreviousPoint) {
         if (hasNonZeroPrevious) {
             if (delta > 0) {
-                deltaLabel = `Δ +${delta.toLocaleString(
-                    'it-IT',
-                )} ordini (+${deltaPercent}%)`;
-                deltaColor = 'rgb(34, 197, 94)'; // verde
+                deltaLabel = t('dashboard.chart_trend_tooltip_delta_positive', {
+                    delta: delta.toLocaleString(),
+                    percent: deltaPercent,
+                });
+                deltaColor = 'rgb(34, 197, 94)';
             } else if (delta < 0) {
-                deltaLabel = `Δ ${delta.toLocaleString(
-                    'it-IT',
-                )} ordini (${deltaPercent}%)`;
-                deltaColor = 'rgb(248, 113, 113)'; // rosso
+                deltaLabel = t('dashboard.chart_trend_tooltip_delta_negative', {
+                    delta: delta.toLocaleString(),
+                    percent: deltaPercent,
+                });
+                deltaColor = 'rgb(248, 113, 113)';
             } else {
-                deltaLabel = `Δ 0 ordini (0,0%)`;
+                deltaLabel = t('dashboard.chart_trend_tooltip_delta_zero');
             }
         } else {
-            // Periodo precedente presente ma con valore 0.
-            deltaLabel = `Δ +${currentValue.toLocaleString(
-                'it-IT',
-            )} ordini (nuovo periodo)`;
+            deltaLabel = t('dashboard.chart_trend_tooltip_delta_new', {
+                current: currentValue.toLocaleString(),
+            });
             deltaColor = 'rgb(34, 197, 94)';
         }
     }
@@ -129,7 +132,7 @@ function OrdersTrendTooltipContent(props: OrdersTrendTooltipProps) {
                     fontSize: '14px',
                 }}
             >
-                Periodo: {formattedLabel}
+                {t('dashboard.chart_trend_tooltip_period')} {formattedLabel}
             </p>
             <p
                 style={{
@@ -139,7 +142,8 @@ function OrdersTrendTooltipContent(props: OrdersTrendTooltipProps) {
                     marginBottom: '4px',
                 }}
             >
-                Ordini periodo corrente: {currentValue.toLocaleString('it-IT')}
+                {t('dashboard.chart_trend_tooltip_current')}{' '}
+                {currentValue.toLocaleString()}
             </p>
             {previous && (
                 <p
@@ -150,8 +154,8 @@ function OrdersTrendTooltipContent(props: OrdersTrendTooltipProps) {
                         marginBottom: hasPreviousPoint ? '4px' : '0px',
                     }}
                 >
-                    Ordini periodo precedente:{' '}
-                    {previousValue.toLocaleString('it-IT')}
+                    {t('dashboard.chart_trend_tooltip_previous')}{' '}
+                    {previousValue.toLocaleString()}
                 </p>
             )}
             {hasPreviousPoint && (
@@ -173,7 +177,7 @@ function OrdersTrendTooltipContent(props: OrdersTrendTooltipProps) {
                         fontSize: '13px',
                     }}
                 >
-                    Nessun dato per il periodo precedente
+                    {t('dashboard.chart_trend_tooltip_no_previous')}
                 </p>
             )}
         </div>
@@ -186,6 +190,7 @@ export function OrdersTrendChart({
     groupBy = 'day',
     onPointClick,
 }: OrdersTrendChartProps) {
+    const { t } = useTranslations();
     const [isFocusOpen, setIsFocusOpen] = useState(false);
 
     // Merge current and previous period data
@@ -350,20 +355,20 @@ export function OrdersTrendChart({
                 <CardHeader className="flex flex-row items-center justify-between gap-2">
                     <div>
                         <CardTitle className="text-base">
-                            Tendenze Ordini
+                            {t('dashboard.chart_trend_title')}
                         </CardTitle>
                         <CardDescription className="text-xs text-foreground/80">
-                            Andamento degli ordini nel tempo{' '}
+                            {t('dashboard.chart_trend_desc')}{' '}
                             {previousPeriodData &&
                                 previousPeriodData.length > 0 &&
-                                '(con confronto periodo precedente)'}
+                                t('dashboard.chart_trend_desc_compare')}
                         </CardDescription>
                     </div>
                     <Button
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8"
-                        aria-label="Apri grafico Tendenze Ordini in vista dettagliata"
+                        aria-label={t('dashboard.chart_trend_expand_aria')}
                         onClick={() => setIsFocusOpen(true)}
                     >
                         <Maximize2 className="h-4 w-4" />
@@ -375,7 +380,9 @@ export function OrdersTrendChart({
             <Dialog open={isFocusOpen} onOpenChange={setIsFocusOpen}>
                 <DialogContent className="max-w-5xl">
                     <DialogHeader>
-                        <DialogTitle>Tendenze Ordini</DialogTitle>
+                        <DialogTitle>
+                            {t('dashboard.chart_trend_title')}
+                        </DialogTitle>
                     </DialogHeader>
                     <div className="mt-2">{renderChart(420)}</div>
                 </DialogContent>

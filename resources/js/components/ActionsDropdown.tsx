@@ -5,6 +5,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useTranslations } from '@/hooks/use-translations';
 import { Link } from '@inertiajs/react';
 import { Edit, Eye, MoreHorizontal, Trash2 } from 'lucide-react';
 import { type ReactNode } from 'react';
@@ -26,6 +27,7 @@ export function ActionsDropdown({
     onDelete,
     extraItems,
 }: ActionsDropdownProps) {
+    const { t } = useTranslations();
     const hasAnyAction = viewHref || editHref || extraItems || onDelete;
 
     if (!hasAnyAction) {
@@ -39,7 +41,7 @@ export function ActionsDropdown({
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8"
-                    aria-label="Apri menu azioni"
+                    aria-label={t('common.open_actions_menu')}
                 >
                     <MoreHorizontal className="h-4 w-4" />
                 </Button>
@@ -49,7 +51,7 @@ export function ActionsDropdown({
                     <DropdownMenuItem asChild>
                         <Link href={viewHref}>
                             <Eye className="mr-2 h-4 w-4" />
-                            Visualizza
+                            {t('common.view')}
                         </Link>
                     </DropdownMenuItem>
                 )}
@@ -57,7 +59,7 @@ export function ActionsDropdown({
                     <DropdownMenuItem asChild>
                         <Link href={editHref}>
                             <Edit className="mr-2 h-4 w-4" />
-                            Modifica
+                            {t('common.edit')}
                         </Link>
                     </DropdownMenuItem>
                 )}
@@ -73,7 +75,7 @@ export function ActionsDropdown({
                         }}
                     >
                         <Trash2 className="mr-2 h-4 w-4" />
-                        Elimina
+                        {t('common.delete')}
                     </DropdownMenuItem>
                 )}
             </DropdownMenuContent>

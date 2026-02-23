@@ -3,6 +3,7 @@ import TwoFactorRecoveryCodes from '@/components/two-factor-recovery-codes';
 import TwoFactorSetupModal from '@/components/two-factor-setup-modal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { useTranslations } from '@/hooks/use-translations';
 import { useTwoFactorAuth } from '@/hooks/use-two-factor-auth';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
@@ -17,17 +18,11 @@ interface TwoFactorProps {
     twoFactorEnabled?: boolean;
 }
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Autenticazione a due fattori',
-        href: show.url(),
-    },
-];
-
 export default function TwoFactor({
     requiresConfirmation = false,
     twoFactorEnabled = false,
 }: TwoFactorProps) {
+    const { t } = useTranslations();
     const {
         qrCodeSvg,
         hasSetupData,
@@ -40,29 +35,29 @@ export default function TwoFactor({
     } = useTwoFactorAuth();
     const [showSetupModal, setShowSetupModal] = useState<boolean>(false);
 
+    const breadcrumbs: BreadcrumbItem[] = [
+        { title: t('settings.two_factor.title'), href: show.url() },
+    ];
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Autenticazione a due fattori" />
+            <Head title={t('settings.two_factor.title')} />
 
-            <h1 className="sr-only">
-                Impostazioni autenticazione a due fattori
-            </h1>
+            <h1 className="sr-only">{t('settings.two_factor.sr_only')}</h1>
 
             <SettingsLayout>
                 <div className="space-y-6">
                     <HeadingSmall
-                        title="Autenticazione a due fattori"
-                        description="Gestisci le impostazioni di autenticazione a due fattori"
+                        title={t('settings.two_factor.heading')}
+                        description={t('settings.two_factor.description')}
                     />
                     {twoFactorEnabled ? (
                         <div className="flex flex-col items-start justify-start space-y-4">
-                            <Badge variant="default">Attivata</Badge>
+                            <Badge variant="default">
+                                {t('settings.two_factor.enabled_badge')}
+                            </Badge>
                             <p className="text-muted-foreground">
-                                Con l'autenticazione a due fattori attivata, ti
-                                verrà richiesto un codice sicuro e casuale
-                                durante l'accesso, che puoi ottenere
-                                dall'applicazione compatibile con TOTP sul tuo
-                                telefono.
+                                {t('settings.two_factor.enabled_description')}
                             </p>
 
                             <TwoFactorRecoveryCodes
@@ -79,7 +74,10 @@ export default function TwoFactor({
                                             type="submit"
                                             disabled={processing}
                                         >
-                                            <ShieldBan /> Disattiva 2FA
+                                            <ShieldBan />{' '}
+                                            {t(
+                                                'settings.two_factor.disable_2fa',
+                                            )}
                                         </Button>
                                     )}
                                 </Form>
@@ -87,13 +85,11 @@ export default function TwoFactor({
                         </div>
                     ) : (
                         <div className="flex flex-col items-start justify-start space-y-4">
-                            <Badge variant="destructive">Disattivata</Badge>
+                            <Badge variant="destructive">
+                                {t('settings.two_factor.disabled_badge')}
+                            </Badge>
                             <p className="text-muted-foreground">
-                                Quando attivi l'autenticazione a due fattori, ti
-                                verrà richiesto un codice sicuro durante
-                                l'accesso. Questo codice può essere ottenuto da
-                                un'applicazione compatibile con TOTP sul tuo
-                                telefono.
+                                {t('settings.two_factor.disabled_description')}
                             </p>
 
                             <div>
@@ -102,7 +98,9 @@ export default function TwoFactor({
                                         onClick={() => setShowSetupModal(true)}
                                     >
                                         <ShieldCheck />
-                                        Continua configurazione
+                                        {t(
+                                            'settings.two_factor.continue_setup',
+                                        )}
                                     </Button>
                                 ) : (
                                     <Form
@@ -117,7 +115,9 @@ export default function TwoFactor({
                                                 disabled={processing}
                                             >
                                                 <ShieldCheck />
-                                                Attiva 2FA
+                                                {t(
+                                                    'settings.two_factor.enable_2fa',
+                                                )}
                                             </Button>
                                         )}
                                     </Form>
