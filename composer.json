@@ -62,6 +62,9 @@
             "@php artisan config:clear --ansi",
             "@php artisan test"
         ],
+        "i18n:check": [
+            "@php scripts/i18n-check.php"
+        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"

@@ -3,6 +3,8 @@ import { usePage } from '@inertiajs/react';
 
 export type TranslationParams = Record<string, string | number>;
 
+const missingKeys = new Set<string>();
+
 /**
  * Returns a translation function for the current locale.
  * Uses shared `translations` from HandleInertiaRequests (lang/{locale}.json).
@@ -21,12 +23,24 @@ export function useTranslations(): {
 
     return {
         t: (key: string, params?: TranslationParams) => {
-            let value = typeof dict[key] === 'string' ? dict[key] : key;
+            const exists = typeof dict[key] === 'string';
+
+            if (!exists && import.meta.env.DEV && !missingKeys.has(key)) {
+                // eslint-disable-next-line no-console
+                console.warn(
+                    `[i18n] Missing translation key: "${key}" (current locale)`,
+                );
+                missingKeys.add(key);
+            }
+
+            let value = exists ? dict[key] : key;
+
             if (params && typeof value === 'string') {
                 for (const [k, v] of Object.entries(params)) {
                     value = value.replace(new RegExp(`:${k}`, 'g'), String(v));
                 }
             }
+
             return value;
         },
     };
