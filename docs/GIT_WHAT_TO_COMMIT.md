@@ -83,11 +83,6 @@ See: [CONTRIBUTING.md](../CONTRIBUTING.md), [SECURITY.md](../SECURITY.md).
 
 ---
 
-## 6. Preparing for initial push (adrirubim)
+## 6. First-time setup (contributors)
 
-Before the first `git push` to `origin`:
-
-1. **Remote:** `git remote add origin https://github.com/adrirubim/laser-packaging-laravel.git` (or update if already set).
-2. **Verify:** `.env` is in `.gitignore`; run `git status` to ensure no secrets or `node_modules`/`vendor` are staged.
-3. **CI compatibility:** Run the full pipeline (i18n-check, pint, format, format:check, lint, types, config:clear, php artisan test, npm run test -- --run, npm run build).
-4. **Documentation:** Ensure `docs/` and root `README.md` reflect the current state; all links point to `adrirubim/laser-packaging-laravel`.
+Before the first push: verify `.env` is in `.gitignore`, run `git status` to ensure no secrets or `node_modules`/`vendor` are staged, run the full pipeline (see section 5), and ensure `docs/` and root `README.md` reflect the current project state.

@@ -19,7 +19,14 @@
 - **SearchInput** — Uses `useTranslations()`; default placeholder from `t('common.search_placeholder')` when `placeholder` is not passed; `aria-label` for clear button from `t('common.search_clear')`.
 - **ActionsDropdown** — Uses `t('common.view')`, `t('common.edit')`, `t('common.delete')`, `t('common.open_actions_menu')`. Use for all standard View/Edit/Delete actions.
 - **LocaleDropdown** — Language selector on the **welcome** page. Round button with SVG flag; menu label from `t('settings.appearance.language_label')`. Uses `usePage().props.locale` and `router.post('/locale', { locale })`.
-- **LocaleTabs** — Language selector in **Settings → Appearance** only (three options in a row). `aria-label` from `t('settings.appearance.language_label')`. See [I18N.md](I18N.md).
+- **LocaleTabs** — Language selector in **Settings → Appearance** only (three options in a row). `aria-label` from `t('settings.appearance.language_label')`. Locale is persisted in user preferences when authenticated. See [I18N.md](I18N.md).
+
+## Settings pages
+
+- **Profile** (`/settings/profile`) — Name, email, avatar (optional), phone (optional); update and soft-delete account.
+- **Appearance** (`/settings/appearance`) — Theme, locale, timezone, date_format; stored in `user_preferences`.
+- **Sessions** (`/settings/sessions`) — Active sessions list; revoke other sessions.
+- **Data Export** (`/settings/data-export`) — GDPR data export (JSON download).
 
 ## i18n
 

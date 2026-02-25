@@ -99,7 +99,7 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 - ✅ **Form Requests** — 32 classes for validation
 - ✅ **Enums** — Type-safe (OrderStatus, OrderLabelStatus)
 - ✅ **Centralized Messages** — `lang/{it,es,en}/` for auth, validation, pagination, and messages (multi-language)
-- ✅ **Language selector (IT, ES, GB)** — Session-based locale; selector on **Welcome** (`LocaleDropdown`) and **Settings → Appearance** (`LocaleTabs`) only; `POST /locale`, `SetLocale` middleware
+- ✅ **Language selector (IT, ES, GB)** — Locale persisted in `user_preferences` (authenticated) or session (guests); selector on **Welcome** (`LocaleDropdown`) and **Settings → Appearance** (`LocaleTabs`); `POST /locale`, `SetLocale` middleware
 
 ### 🏗️ Code Quality
 
@@ -365,11 +365,13 @@ Backend tree: `app/Http/Controllers/`, `app/Services/`, `app/Actions/`, `app/Rep
 - ✅ **Master data** — Customers, Divisions, Shipping, Suppliers, Employees, Materials, Machinery, Critical Issues
 - ✅ **Orders** — Orders, Order States, Order Employee Assignments; **Production Planning** (API and UI: planning data, replan, calculations)
 - ✅ **Configuration** — OfferType, OfferSeasonality, OfferSector, ArticleCategory, PalletType, ValueTypes, etc.
+- ✅ **Settings** — Profile (avatar, phone), Appearance (theme, locale, timezone, date_format in BD), Sessions (active sessions, revoke), GDPR data export, soft-delete account.
 
 ### Recent improvements (February 2026)
 
 - **Production Planning** (Orders): API and UI for planning data, replan, calculations; full test coverage.
-- **Language selector (IT, ES, GB):** Session-based locale; selector on Welcome and Settings → Appearance only; `lang/*.json` for UI; `lang/{it,es,en}/` for auth and validation. Articles Create/Show fully internationalized.
+- **Profile & Settings (enterprise):** User preferences (theme, locale, timezone, date_format) in BD; avatar and phone; active sessions (view and revoke); GDPR data export; soft-delete account.
+- **i18n:** Locale persisted in `user_preferences`; selector on Welcome and Settings → Appearance; `lang/*.json` for UI; `lang/{it,es,en}/` for auth and validation.
 
 <a id="default-users-development"></a>
 ## 👥 Default Users (development)

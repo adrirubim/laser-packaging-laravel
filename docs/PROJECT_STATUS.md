@@ -7,8 +7,8 @@
 ## Quick Summary
 
 - **Status:** Production-ready
-- **Core modules:** Offers, Customers, Articles, Orders (incl. Production Planning), master data, Production Portal (web + API)
-- **i18n:** IT, ES, EN — session locale; selector on Welcome and Settings → Appearance. See [I18N.md](I18N.md)
+- **Core modules:** Offers, Customers, Articles, Orders (incl. Production Planning), master data, Production Portal (web + API), Settings (Profile, Appearance, Sessions, Data Export)
+- **i18n:** IT, ES, EN — locale persisted in `user_preferences` (authenticated) or session (guests); selector on Welcome and Settings → Appearance. See [I18N.md](I18N.md)
 
 ## Quick Links
 

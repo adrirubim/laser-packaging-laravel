@@ -124,11 +124,18 @@ When adding new API endpoints:
 
 ## 8. Locale and i18n
 
-- **SetLocale** middleware reads `session('locale')` and sets `App::setLocale()`; registered in the `web` group (see `bootstrap/app.php`).
-- **POST /locale** validates `locale` (it, es, en) and stores it in the session; Inertia then receives `locale` via `HandleInertiaRequests::share()`.
+- **SetLocale** middleware resolves locale in order: `user.preferences['locale']` (when authenticated), then `session('locale')`, then config fallback; registered in the `web` group (see `bootstrap/app.php`).
+- **POST /locale** validates `locale` (it, es, en) and stores it in the session for guests, or in `user_preferences` when authenticated (via Settings → Appearance).
 - Translations live in `lang/it/`, `lang/es/`, `lang/en/` (auth, validation, pagination, messages). See [I18N.md](I18N.md).
 
-## 9. Adding a Feature (Checklist)
+## 9. Settings (Profile, Appearance, Sessions, Data Export)
+
+- **ProfileController** — Edit profile (name, email, avatar, phone), update, and soft-delete account (requires password confirmation).
+- **AppearanceController** — Theme, locale, timezone, date_format; persisted in `user_preferences`.
+- **SessionsController** — List active sessions; revoke other sessions.
+- **DataExportController** — GDPR data export (JSON).
+
+## 10. Adding a Feature (Checklist)
 
 When you add a new backend module or extend an existing one:
 
