@@ -6,6 +6,7 @@ import { useTranslations } from '@/hooks/use-translations';
 import { cn, toUrl } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance/index';
 import { edit } from '@/routes/profile/index';
+import { index as sessionsIndex } from '@/routes/sessions/index';
 import { show } from '@/routes/two-factor/index';
 import { edit as editPassword } from '@/routes/user-password/index';
 import { Link } from '@inertiajs/react';
@@ -16,6 +17,7 @@ const sidebarNavItems: { titleKey: string; href: ReturnType<typeof edit> }[] = [
     { titleKey: 'settings.nav_password', href: editPassword() },
     { titleKey: 'settings.nav_two_factor', href: show() },
     { titleKey: 'settings.nav_appearance', href: editAppearance() },
+    { titleKey: 'settings.nav_sessions', href: sessionsIndex() },
 ];
 
 export default function SettingsLayout({ children }: PropsWithChildren) {

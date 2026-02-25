@@ -98,6 +98,68 @@ export default function Profile({
                                     />
                                 </div>
 
+                                <div className="grid gap-2">
+                                    <Label htmlFor="phone">
+                                        {t('settings.profile.phone_label')}
+                                    </Label>
+
+                                    <Input
+                                        id="phone"
+                                        type="tel"
+                                        className="mt-1 block w-full"
+                                        defaultValue={
+                                            auth.user.phone ?? undefined
+                                        }
+                                        name="phone"
+                                        autoComplete="tel"
+                                        placeholder={t(
+                                            'settings.profile.phone_placeholder',
+                                        )}
+                                    />
+
+                                    <InputError
+                                        className="mt-2"
+                                        message={errors.phone}
+                                    />
+                                </div>
+
+                                <div className="grid gap-2">
+                                    <Label htmlFor="avatar">
+                                        {t('settings.profile.avatar_label')}
+                                    </Label>
+
+                                    <p className="text-sm text-muted-foreground">
+                                        {t(
+                                            'settings.profile.avatar_description',
+                                        )}
+                                    </p>
+
+                                    <Input
+                                        id="avatar"
+                                        type="file"
+                                        name="avatar"
+                                        accept="image/jpeg,image/png,image/webp"
+                                    />
+
+                                    <InputError
+                                        className="mt-2"
+                                        message={errors.avatar}
+                                    />
+                                </div>
+
+                                {auth.user.last_login_at && (
+                                    <p className="text-sm text-muted-foreground">
+                                        {t('settings.profile.last_login', {
+                                            date: new Date(
+                                                auth.user.last_login_at,
+                                            ).toLocaleString(undefined, {
+                                                dateStyle: 'medium',
+                                                timeStyle: 'short',
+                                            }),
+                                        })}
+                                    </p>
+                                )}
+
                                 {mustVerifyEmail &&
                                     auth.user.email_verified_at === null && (
                                         <div>

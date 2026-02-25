@@ -9,6 +9,9 @@ use App\Models\ArticleIO;
 use App\Models\ArticleIP;
 use App\Models\CriticalIssue;
 use App\Models\Offer;
+use App\Models\User;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
@@ -63,6 +66,13 @@ class AppServiceProvider extends ServiceProvider
 
         Route::bind('article', function ($value) {
             return Article::where('uuid', $value)->whereNull('deleted_at')->firstOrFail();
+        });
+
+        Event::listen(Login::class, function (Login $event): void {
+            $user = $event->user;
+            if ($user instanceof User) {
+                $user->updateQuietly(['last_login_at' => now()]);
+            }
         });
 
         Route::bind('criticalIssue', function ($value) {

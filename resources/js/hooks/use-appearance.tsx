@@ -56,15 +56,22 @@ const handleSystemThemeChange = (): void => {
     notify();
 };
 
-export function initializeTheme(): void {
+export function initializeTheme(serverAppearance?: Appearance): void {
     if (typeof window === 'undefined') return;
 
-    if (!localStorage.getItem('appearance')) {
+    const stored = localStorage.getItem('appearance');
+    if (!stored && serverAppearance) {
+        localStorage.setItem('appearance', serverAppearance);
+        setCookie('appearance', serverAppearance);
+        currentAppearance = serverAppearance;
+    } else if (!stored) {
         localStorage.setItem('appearance', 'system');
         setCookie('appearance', 'system');
+        currentAppearance = 'system';
+    } else {
+        currentAppearance = getStoredAppearance();
     }
 
-    currentAppearance = getStoredAppearance();
     applyTheme(currentAppearance);
 
     // Set up system theme change listener

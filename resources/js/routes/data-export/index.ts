@@ -5,9 +5,9 @@ import {
     type RouteQueryOptions,
 } from './../../wayfinder';
 /**
- * @see \App\Http\Controllers\Planning\PlanningController::index
- * @see app/Http/Controllers/Planning/PlanningController.php:37
- * @route '/planning'
+ * @see \App\Http\Controllers\Settings\DataExportController::__invoke
+ * @see app/Http/Controllers/Settings/DataExportController.php:11
+ * @route '/settings/data-export'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: index.url(options),
@@ -16,22 +16,22 @@ export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 index.definition = {
     methods: ['get', 'head'],
-    url: '/planning',
+    url: '/settings/data-export',
 } satisfies RouteDefinition<['get', 'head']>;
 
 /**
- * @see \App\Http\Controllers\Planning\PlanningController::index
- * @see app/Http/Controllers/Planning/PlanningController.php:37
- * @route '/planning'
+ * @see \App\Http\Controllers\Settings\DataExportController::__invoke
+ * @see app/Http/Controllers/Settings/DataExportController.php:11
+ * @route '/settings/data-export'
  */
 index.url = (options?: RouteQueryOptions) => {
     return index.definition.url + queryParams(options);
 };
 
 /**
- * @see \App\Http\Controllers\Planning\PlanningController::index
- * @see app/Http/Controllers/Planning/PlanningController.php:37
- * @route '/planning'
+ * @see \App\Http\Controllers\Settings\DataExportController::__invoke
+ * @see app/Http/Controllers/Settings/DataExportController.php:11
+ * @route '/settings/data-export'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: index.url(options),
@@ -39,9 +39,9 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 });
 
 /**
- * @see \App\Http\Controllers\Planning\PlanningController::index
- * @see app/Http/Controllers/Planning/PlanningController.php:37
- * @route '/planning'
+ * @see \App\Http\Controllers\Settings\DataExportController::__invoke
+ * @see app/Http/Controllers/Settings/DataExportController.php:11
+ * @route '/settings/data-export'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
@@ -49,9 +49,9 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 });
 
 /**
- * @see \App\Http\Controllers\Planning\PlanningController::index
- * @see app/Http/Controllers/Planning/PlanningController.php:37
- * @route '/planning'
+ * @see \App\Http\Controllers\Settings\DataExportController::__invoke
+ * @see app/Http/Controllers/Settings/DataExportController.php:11
+ * @route '/settings/data-export'
  */
 const indexForm = (
     options?: RouteQueryOptions,
@@ -61,9 +61,9 @@ const indexForm = (
 });
 
 /**
- * @see \App\Http\Controllers\Planning\PlanningController::index
- * @see app/Http/Controllers/Planning/PlanningController.php:37
- * @route '/planning'
+ * @see \App\Http\Controllers\Settings\DataExportController::__invoke
+ * @see app/Http/Controllers/Settings/DataExportController.php:11
+ * @route '/settings/data-export'
  */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: index.url(options),
@@ -71,9 +71,9 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 });
 
 /**
- * @see \App\Http\Controllers\Planning\PlanningController::index
- * @see app/Http/Controllers/Planning/PlanningController.php:37
- * @route '/planning'
+ * @see \App\Http\Controllers\Settings\DataExportController::__invoke
+ * @see app/Http/Controllers/Settings/DataExportController.php:11
+ * @route '/settings/data-export'
  */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: index.url({
@@ -87,8 +87,8 @@ indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 index.form = indexForm;
 
-const planning = {
+const dataExport = {
     index: Object.assign(index, index),
 };
 
-export default planning;
+export default dataExport;

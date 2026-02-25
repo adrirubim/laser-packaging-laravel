@@ -36,9 +36,8 @@ This document is the single reference for commit policy. It complements `.gitign
 | **`.DS_Store`** | macOS metadata; useless for others and can cause noise in diffs. |
 | **`.idea/`**, **`.vscode/`**, **`.fleet/`**, **`.nova/`**, **`.zed/`** | IDE/editor config. Often personal or machine-specific. Some teams **do** commit `.vscode/` for shared settings; this project does not. |
 | **`.github/copilot/`**, **`.github/copilot-instructions.md`** | Copilot-specific; optional and can be personal. Kept out so the repo stays agent-agnostic. |
-| **`docs/planning/`** | Internal planning docs (not for GitHub). Excluded via `.gitignore`. |
 
-**Why it matters:** Internal planning stays out of the repository. Public docs live in `docs/` (see [docs/README.md](README.md)). `docs/planning/` and `.github/copilot-instructions.md` are in `.gitignore` and are not committed.
+**Why it matters:** Internal planning and IDE-specific files stay out of the repository. Public docs live in `docs/` (see [docs/README.md](README.md)). `.github/copilot-instructions.md` is in `.gitignore` and is not committed.
 
 ---
 
@@ -66,7 +65,6 @@ This document is the single reference for commit policy. It complements `.gitign
 |------|--------------|-------------|
 | **`.cursor/`** | Committed (skills, rules, docs). | Ignore if you want agent config to be personal only. |
 | **`.vscode/`** | Ignored. | Some teams commit recommended extensions and settings. |
-| **`docs/planning/`** | Ignored (internal). | Commit if you want planning docs public. |
 | **`.env.testing`** | Ignored (`.env.*`). | Can commit a **template** `.env.testing.example` with no secrets if you want to document test DB config. |
 
 ---

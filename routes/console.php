@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Process;
+use Illuminate\Support\Facades\Schedule;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -43,3 +44,5 @@ Artisan::command('test:all', function () {
 
     return 0;
 })->purpose('Run PHPUnit and Vitest (Planning/frontend tests)');
+
+Schedule::command('users:purge-deleted')->daily();

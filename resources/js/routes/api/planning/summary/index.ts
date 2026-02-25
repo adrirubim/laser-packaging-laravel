@@ -6,7 +6,7 @@ import {
 } from './../../../../wayfinder';
 /**
  * @see \App\Http\Controllers\Planning\PlanningController::save
- * @see app/Http/Controllers/Planning/PlanningController.php:158
+ * @see app/Http/Controllers/Planning/PlanningController.php:157
  * @route '/api/planning/summary/save'
  */
 export const save = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -21,7 +21,7 @@ save.definition = {
 
 /**
  * @see \App\Http\Controllers\Planning\PlanningController::save
- * @see app/Http/Controllers/Planning/PlanningController.php:158
+ * @see app/Http/Controllers/Planning/PlanningController.php:157
  * @route '/api/planning/summary/save'
  */
 save.url = (options?: RouteQueryOptions) => {
@@ -30,7 +30,7 @@ save.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\Planning\PlanningController::save
- * @see app/Http/Controllers/Planning/PlanningController.php:158
+ * @see app/Http/Controllers/Planning/PlanningController.php:157
  * @route '/api/planning/summary/save'
  */
 save.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -40,7 +40,7 @@ save.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
  * @see \App\Http\Controllers\Planning\PlanningController::save
- * @see app/Http/Controllers/Planning/PlanningController.php:158
+ * @see app/Http/Controllers/Planning/PlanningController.php:157
  * @route '/api/planning/summary/save'
  */
 const saveForm = (
@@ -52,7 +52,7 @@ const saveForm = (
 
 /**
  * @see \App\Http\Controllers\Planning\PlanningController::save
- * @see app/Http/Controllers/Planning/PlanningController.php:158
+ * @see app/Http/Controllers/Planning/PlanningController.php:157
  * @route '/api/planning/summary/save'
  */
 saveForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

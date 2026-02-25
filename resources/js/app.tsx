@@ -24,6 +24,9 @@ createInertiaApp({
     },
     setup({ el, App, props }) {
         const root = createRoot(el);
+        const serverAppearance = (props as { appearance?: string })
+            .appearance as 'light' | 'dark' | 'system' | undefined;
+        initializeTheme(serverAppearance);
         const translations =
             (
                 props as {
@@ -51,6 +54,3 @@ createInertiaApp({
         color: '#4B5563',
     },
 });
-
-// This will set light / dark mode on load...
-initializeTheme();

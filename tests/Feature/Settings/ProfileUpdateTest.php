@@ -76,7 +76,9 @@ class ProfileUpdateTest extends TestCase
             ->assertRedirect(route('home'));
 
         $this->assertGuest();
-        $this->assertNull($user->fresh());
+        // Soft delete: user exists with deleted_at, but is excluded from default queries
+        $this->assertNull(User::find($user->id));
+        $this->assertNotNull(User::withTrashed()->find($user->id));
     }
 
     public function test_correct_password_must_be_provided_to_delete_account()

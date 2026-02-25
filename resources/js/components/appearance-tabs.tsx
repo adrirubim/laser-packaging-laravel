@@ -4,12 +4,24 @@ import { cn } from '@/lib/utils';
 import { LucideIcon, Monitor, Moon, Sun } from 'lucide-react';
 import { HTMLAttributes } from 'react';
 
+type AppearanceTabsProps = HTMLAttributes<HTMLDivElement> & {
+    value?: Appearance;
+    onThemeChange?: (theme: Appearance) => void;
+};
+
 export default function AppearanceToggleTab({
     className = '',
+    value: controlledValue,
+    onThemeChange,
     ...props
-}: HTMLAttributes<HTMLDivElement>) {
+}: AppearanceTabsProps) {
     const { t } = useTranslations();
-    const { appearance, updateAppearance } = useAppearance();
+    const {
+        appearance: hookAppearance,
+        updateAppearance: hookUpdateAppearance,
+    } = useAppearance();
+    const appearance = controlledValue ?? hookAppearance;
+    const handleChange = onThemeChange ?? hookUpdateAppearance;
 
     const tabs: { value: Appearance; icon: LucideIcon; labelKey: string }[] = [
         {
@@ -40,7 +52,7 @@ export default function AppearanceToggleTab({
             {tabs.map(({ value, icon: Icon, labelKey }) => (
                 <button
                     key={value}
-                    onClick={() => updateAppearance(value)}
+                    onClick={() => handleChange(value)}
                     className={cn(
                         'flex items-center rounded-md px-3.5 py-1.5 transition-colors',
                         appearance === value

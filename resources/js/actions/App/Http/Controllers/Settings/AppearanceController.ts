@@ -3,7 +3,7 @@ import {
     type RouteDefinition,
     type RouteFormDefinition,
     type RouteQueryOptions,
-} from './../../wayfinder';
+} from './../../../../../wayfinder';
 /**
  * @see \App\Http\Controllers\Settings\AppearanceController::edit
  * @see app/Http/Controllers/Settings/AppearanceController.php:15
@@ -157,9 +157,6 @@ updateForm.patch = (
 
 update.form = updateForm;
 
-const appearance = {
-    edit: Object.assign(edit, edit),
-    update: Object.assign(update, update),
-};
+const AppearanceController = { edit, update };
 
-export default appearance;
+export default AppearanceController;

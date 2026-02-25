@@ -29,6 +29,7 @@ export interface SharedData {
     translations: Record<string, string>;
     quote: { message: string; author: string };
     auth: Auth;
+    appearance?: 'light' | 'dark' | 'system';
     sidebarOpen: boolean;
     [key: string]: unknown;
 }
@@ -37,8 +38,11 @@ export interface User {
     id: number;
     name: string;
     email: string;
-    avatar?: string;
+    avatar?: string | null;
+    phone?: string | null;
     email_verified_at: string | null;
+    last_login_at?: string | null;
+    preferences?: Record<string, string> | null;
     two_factor_enabled?: boolean;
     created_at: string;
     updated_at: string;

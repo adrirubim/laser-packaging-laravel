@@ -39,6 +39,11 @@ class HandleInertiaRequests extends Middleware
     {
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
+        $user = $request->user();
+        $appearance = $user?->preferences['theme']
+            ?? $request->cookie('appearance')
+            ?? 'system';
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
@@ -46,8 +51,9 @@ class HandleInertiaRequests extends Middleware
             'translations' => $this->loadTranslations(app()->getLocale()),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
-                'user' => $request->user(),
+                'user' => $user,
             ],
+            'appearance' => $appearance,
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
     }

@@ -18,8 +18,7 @@ use Throwable;
 /**
  * Controlador de planificación de producción.
  *
- * De momento solo define la firma de los endpoints; la lógica se implementará
- * siguiendo los documentos de `docs/planning/`.
+ * Handles the Planning view and API endpoints.
  */
 class PlanningController extends Controller
 {
