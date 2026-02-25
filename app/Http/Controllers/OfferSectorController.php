@@ -56,11 +56,11 @@ class OfferSectorController extends Controller
     {
         OfferSector::create($request->validated());
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->offerRepository->clearFormOptionsCache();
 
         return redirect()->route('offer-sectors.index')
-            ->with('success', 'Settore creato con successo.');
+            ->with('success', __('flash.offer_sector.created'));
     }
 
     public function show(OfferSector $offerSector): Response
@@ -82,24 +82,24 @@ class OfferSectorController extends Controller
         $offerSector->update($request->validated());
 
         return redirect()->route('offer-sectors.index')
-            ->with('success', 'Settore aggiornato con successo.');
+            ->with('success', __('flash.offer_sector.updated'));
     }
 
     public function destroy(OfferSector $offerSector)
     {
-        // Verificar si tiene ofertas activas
+        // Verify if has active offers
         if ($offerSector->offers()->where('removed', false)->exists()) {
             return back()->withErrors([
-                'error' => 'Non è possibile eliminare il settore. Ha offerte associate.',
+                'error' => __('flash.cannot_delete_sector'),
             ]);
         }
 
         $offerSector->update(['removed' => true]);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->offerRepository->clearFormOptionsCache();
 
         return redirect()->route('offer-sectors.index')
-            ->with('success', 'Settore eliminato con successo.');
+            ->with('success', __('flash.offer_sector.deleted'));
     }
 }

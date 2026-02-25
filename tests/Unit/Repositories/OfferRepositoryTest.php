@@ -31,7 +31,7 @@ class OfferRepositoryTest extends TestCase
     #[Test]
     public function it_returns_form_options_with_all_required_keys()
     {
-        // Crear datos de prueba
+        // Create test data
         OfferActivity::factory()->create(['name' => 'Activity 1', 'removed' => false]);
         OfferSector::factory()->create(['name' => 'Sector 1', 'removed' => false]);
         OfferSeasonality::factory()->create(['name' => 'Seasonality 1', 'removed' => false]);
@@ -57,7 +57,7 @@ class OfferRepositoryTest extends TestCase
     #[Test]
     public function it_returns_only_active_records()
     {
-        // Crear registros activos e inactivos
+        // Create active and inactive records
         OfferActivity::factory()->create(['name' => 'Active Activity', 'removed' => false]);
         OfferActivity::factory()->create(['name' => 'Inactive Activity', 'removed' => true]);
 
@@ -100,7 +100,7 @@ class OfferRepositoryTest extends TestCase
         $this->assertNotNull($activity->uuid);
         $this->assertNotNull($activity->name);
 
-        // Verificar que solo tiene uuid y name (usando getAttributes o toArray)
+        // Verify it only has uuid and name (using getAttributes or toArray)
         $attributes = $activity->getAttributes();
         $this->assertArrayHasKey('uuid', $attributes);
         $this->assertArrayHasKey('name', $attributes);
@@ -113,11 +113,11 @@ class OfferRepositoryTest extends TestCase
     {
         OfferActivity::factory()->create(['name' => 'Cached Activity', 'removed' => false]);
 
-        // Primera llamada - debe crear el cache
+        // First call - must create the cache
         $options1 = $this->repository->getFormOptions();
         $this->assertTrue(Cache::has('offer_form_options'));
 
-        // Segunda llamada - debe usar el cache
+        // Second call - must use the cache
         $options2 = $this->repository->getFormOptions();
         $this->assertEquals($options1, $options2);
     }
@@ -127,7 +127,7 @@ class OfferRepositoryTest extends TestCase
     {
         OfferActivity::factory()->create(['name' => 'Test Activity', 'removed' => false]);
 
-        // Crear el cache
+        // Create the cache
         $this->repository->getFormOptions();
         $this->assertTrue(Cache::has('offer_form_options'));
 

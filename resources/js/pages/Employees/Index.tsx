@@ -167,9 +167,9 @@ export default function EmployeesIndex() {
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
                     title={t('nav.personale')}
-                    subtitle="Elenco dipendenti attivi con Cerca e filtri."
+                    subtitle={t('employees.index.subtitle')}
                     createHref={employees.create().url}
-                    createLabel="Nuovo Dipendente"
+                    createLabel={t('employees.index.create_label')}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -177,13 +177,13 @@ export default function EmployeesIndex() {
                 {employeesPaginated.total === 0 && (
                     <div className="flex flex-col items-center justify-center gap-4 rounded-xl border border-sidebar-border/70 bg-card p-8 text-center dark:border-sidebar-border">
                         <p className="text-muted-foreground">
-                            Nessun dipendente presente.
+                            {t('employees.index.empty_state')}
                         </p>
                         <Link
                             href={employees.create().url}
                             className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
                         >
-                            Crea il primo dipendente
+                            {t('employees.index.create_first')}
                         </Link>
                     </div>
                 )}
@@ -192,7 +192,7 @@ export default function EmployeesIndex() {
                     <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-2">
                             <label className="text-xs font-medium text-muted-foreground">
-                                Mostra
+                                {t('employees.index.show_label')}
                             </label>
                             <Select
                                 value={String(
@@ -214,7 +214,9 @@ export default function EmployeesIndex() {
                             >
                                 <SelectTrigger
                                     className="h-8 w-[92px]"
-                                    aria-label="Elementi per pagina"
+                                    aria-label={t(
+                                        'employees.index.aria_items_per_page',
+                                    )}
                                 >
                                     <SelectValue />
                                 </SelectTrigger>
@@ -226,7 +228,7 @@ export default function EmployeesIndex() {
                                 </SelectContent>
                             </Select>
                             <label className="text-xs font-medium text-muted-foreground">
-                                elementi
+                                {t('employees.index.items_label')}
                             </label>
                         </div>
                         <div className="flex flex-wrap items-center gap-2">
@@ -238,7 +240,7 @@ export default function EmployeesIndex() {
                                 className="w-48"
                             />
                             <label className="text-xs font-medium text-muted-foreground">
-                                Accesso al Portale Abilitato
+                                {t('employees.index.portal_filter_label')}
                             </label>
                             <Select
                                 value={filters.portal_enabled || '' || 'all'}
@@ -250,7 +252,7 @@ export default function EmployeesIndex() {
                             >
                                 <SelectTrigger
                                     className="h-8 w-[160px]"
-                                    aria-label="Accesso al portale"
+                                    aria-label={t('common.portal_access')}
                                 >
                                     <SelectValue />
                                 </SelectTrigger>
@@ -258,9 +260,11 @@ export default function EmployeesIndex() {
                                     <SelectItem value="all">
                                         {t('filter.all')}
                                     </SelectItem>
-                                    <SelectItem value="1">Abilitato</SelectItem>
+                                    <SelectItem value="1">
+                                        {t('employees.index.portal_enabled')}
+                                    </SelectItem>
                                     <SelectItem value="0">
-                                        Disabilitato
+                                        {t('employees.index.portal_disabled')}
                                     </SelectItem>
                                 </SelectContent>
                             </Select>
@@ -291,7 +295,7 @@ export default function EmployeesIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Nome
+                                        {t('employees.index.columns.name')}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="surname"
@@ -299,7 +303,7 @@ export default function EmployeesIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Cognome
+                                        {t('employees.index.columns.surname')}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="matriculation_number"
@@ -307,13 +311,15 @@ export default function EmployeesIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Numero di Matricola
+                                        {t(
+                                            'employees.index.columns.matriculation',
+                                        )}
                                     </SortableTableHeader>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Accesso al Portale Abilitato
+                                        {t('employees.index.columns.portal')}
                                     </th>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t('employees.index.columns.actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -324,7 +330,7 @@ export default function EmployeesIndex() {
                                             colSpan={7}
                                             className="px-3 py-8 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessun dipendente trovato
+                                            {t('employees.index.empty_table')}
                                         </td>
                                     </tr>
                                 )}
@@ -351,11 +357,15 @@ export default function EmployeesIndex() {
                                         <td className="px-3 py-2 align-middle">
                                             {employee.portal_enabled ? (
                                                 <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-300">
-                                                    Abilitato
+                                                    {t(
+                                                        'employees.index.portal_enabled',
+                                                    )}
                                                 </span>
                                             ) : (
                                                 <span className="inline-flex items-center rounded-full bg-muted px-2 py-1 text-xs font-medium text-muted-foreground">
-                                                    Disabilitato
+                                                    {t(
+                                                        'employees.index.portal_disabled',
+                                                    )}
                                                 </span>
                                             )}
                                         </td>
@@ -392,7 +402,9 @@ export default function EmployeesIndex() {
                                                                 rel="noopener noreferrer"
                                                             >
                                                                 <Printer className="mr-2 h-4 w-4" />
-                                                                Stampa Barcode
+                                                                {t(
+                                                                    'employees.index.print_barcode',
+                                                                )}
                                                             </a>
                                                         </DropdownMenuItem>
                                                     </>
@@ -410,7 +422,7 @@ export default function EmployeesIndex() {
                 <div className="space-y-3 md:hidden">
                     {employeesPaginated.data.length === 0 ? (
                         <div className="py-8 text-center text-sm text-muted-foreground">
-                            Nessun dipendente trovato
+                            {t('employees.index.empty_table')}
                         </div>
                     ) : (
                         employeesPaginated.data.map((employee) => (
@@ -424,8 +436,10 @@ export default function EmployeesIndex() {
                                             {employee.surname} {employee.name}
                                         </div>
                                         <div className="mt-1 font-mono text-xs text-muted-foreground">
-                                            Matricola:{' '}
-                                            {employee.matriculation_number}
+                                            {t(
+                                                'employees.index.matriculation_mobile',
+                                            )}
+                                            : {employee.matriculation_number}
                                         </div>
                                         <div className="mt-1 font-mono text-xs text-muted-foreground">
                                             ID: {employee.id}
@@ -461,7 +475,9 @@ export default function EmployeesIndex() {
                                                         rel="noopener noreferrer"
                                                     >
                                                         <Printer className="mr-2 h-4 w-4" />
-                                                        Stampa Barcode
+                                                        {t(
+                                                            'employees.index.print_barcode',
+                                                        )}
                                                     </a>
                                                 </DropdownMenuItem>
                                             </>
@@ -470,15 +486,22 @@ export default function EmployeesIndex() {
                                 </div>
                                 <div className="flex items-center justify-between border-t pt-2">
                                     <span className="text-xs text-muted-foreground">
-                                        Accesso Portale:
+                                        {t(
+                                            'employees.index.portal_access_mobile',
+                                        )}
+                                        :
                                     </span>
                                     {employee.portal_enabled ? (
                                         <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-300">
-                                            Abilitato
+                                            {t(
+                                                'employees.index.portal_enabled',
+                                            )}
                                         </span>
                                     ) : (
                                         <span className="inline-flex items-center rounded-full bg-muted px-2 py-1 text-xs font-medium text-muted-foreground">
-                                            Disabilitato
+                                            {t(
+                                                'employees.index.portal_disabled',
+                                            )}
                                         </span>
                                     )}
                                 </div>
@@ -500,8 +523,8 @@ export default function EmployeesIndex() {
                         setDeleteDialog({ open, employee: null })
                     }
                     onConfirm={handleDeleteConfirm}
-                    title="Elimina dipendente"
-                    description="Il dipendente verrà rimosso. Questa azione non può essere annullata."
+                    title={t('employees.index.delete_title')}
+                    description={t('employees.index.delete_description')}
                     itemName={
                         deleteDialog.employee
                             ? `${deleteDialog.employee.surname} ${deleteDialog.employee.name} (${deleteDialog.employee.matriculation_number})`

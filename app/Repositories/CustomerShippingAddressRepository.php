@@ -25,9 +25,9 @@ class CustomerShippingAddressRepository
         // Filtro per divisione
         $this->applyFilter($query, $request, 'customerdivision_uuid');
 
-        // Ricerca (Via, città, CAP, C/O, contatti e Divisione Cliente).
+        // Search (Street, city, postal code, C/O, contacts and Customer Division).
         // Manteniamo il filtro customerdivision_uuid sempre applicato PRIMA,
-        // così la ricerca non "scappa" fuori dalla divisione selezionata.
+        // so search does not "escape" outside selected division.
         if ($request->filled('search')) {
             $search = $request->get('search');
             $query->where(function ($q) use ($search) {
@@ -46,13 +46,13 @@ class CustomerShippingAddressRepository
         $sortColumn = $request->get('sort_by', 'street');
         $sortDirection = $request->get('sort_order', 'asc');
 
-        // Verificare che la colonna di ordinamento sia valida
+        // Verify that sort column is valid
         $allowedSorts = ['street', 'city', 'postal_code', 'province'];
         if (! in_array($sortColumn, $allowedSorts)) {
             $sortColumn = 'street';
         }
 
-        // Verificare indirizzo
+        // Verify address
         if (! in_array($sortDirection, ['asc', 'desc'])) {
             $sortDirection = 'asc';
         }

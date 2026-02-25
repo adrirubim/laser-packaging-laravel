@@ -8,6 +8,7 @@ import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { SortableTableHeader } from '@/components/SortableTableHeader';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import offerOrderTypes from '@/routes/offer-order-types';
 import { type BreadcrumbItem } from '@/types';
@@ -40,6 +41,7 @@ type OfferOrderTypesIndexProps = {
 };
 
 export default function OfferOrderTypesIndex() {
+    const { t } = useTranslations();
     const { props } = usePage<OfferOrderTypesIndexProps>();
     const { orderTypes: orderTypesPaginated, filters } = props;
     const { flash } = useFlashNotifications();
@@ -55,7 +57,7 @@ export default function OfferOrderTypesIndex() {
     });
     const [isDeleting, setIsDeleting] = useState(false);
 
-    // Sincronizzare stato iniziale con i filtri del server
+    // Sync initial state with server filters
     useEffect(() => {
         queueMicrotask(() => setSearchValue(filters.search ?? ''));
     }, [filters.search]);
@@ -138,20 +140,23 @@ export default function OfferOrderTypesIndex() {
     };
 
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Offerte', href: '/offers' },
-        { title: 'Tipi ordini', href: '/offers/order-types' },
+        { title: t('nav.offers'), href: '/offers' },
+        {
+            title: t('offer_order_types.page_title'),
+            href: '/offers/order-types',
+        },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Tipi ordini" />
+            <Head title={t('offer_order_types.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="Tipi ordini"
-                    subtitle="Elenco dei tipi ordine attivi con Cerca."
+                    title={t('offer_order_types.page_title')}
+                    subtitle={t('offer_order_types.index.subtitle')}
                     createHref={offerOrderTypes.create().url}
-                    createLabel="Nuovo Tipo Ordine"
+                    createLabel={t('offer_order_types.index.create')}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -159,12 +164,14 @@ export default function OfferOrderTypesIndex() {
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="space-y-1">
                         <label className="text-xs font-medium text-muted-foreground">
-                            Cerca
+                            {t('common.search')}
                         </label>
                         <SearchInput
                             value={searchValue}
                             onChange={handleSearchChange}
-                            placeholder="Nome o codice..."
+                            placeholder={t(
+                                'offer_order_types.search_placeholder',
+                            )}
                             isLoading={isSearching}
                             onClear={clearSearch}
                         />
@@ -175,7 +182,7 @@ export default function OfferOrderTypesIndex() {
                 <div className="block space-y-3 p-4 md:hidden">
                     {orderTypesPaginated.data.length === 0 ? (
                         <div className="py-8 text-center text-sm text-muted-foreground">
-                            Nessun tipo ordine trovato per i filtri attuali.
+                            {t('offer_order_types.index.empty')}
                         </div>
                     ) : (
                         orderTypesPaginated.data.map((orderType) => (
@@ -190,7 +197,8 @@ export default function OfferOrderTypesIndex() {
                                         </h3>
                                         {orderType.code && (
                                             <p className="mt-1 text-sm text-muted-foreground">
-                                                Codice: {orderType.code}
+                                                {t('common.code')}:{' '}
+                                                {orderType.code}
                                             </p>
                                         )}
                                         <p className="mt-1 font-mono text-xs text-muted-foreground">
@@ -236,7 +244,7 @@ export default function OfferOrderTypesIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Codice
+                                        {t('offer_order_types.form.code_label')}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="name"
@@ -244,10 +252,10 @@ export default function OfferOrderTypesIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Nome
+                                        {t('offer_order_types.form.name_label')}
                                     </SortableTableHeader>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t('common.actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -258,8 +266,7 @@ export default function OfferOrderTypesIndex() {
                                             colSpan={5}
                                             className="px-3 py-6 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessun tipo ordine trovato per i
-                                            filtri attuali.
+                                            {t('offer_order_types.index.empty')}
                                         </td>
                                     </tr>
                                 )}
@@ -321,8 +328,11 @@ export default function OfferOrderTypesIndex() {
                         })
                     }
                     onConfirm={handleDeleteConfirm}
-                    title="Elimina Tipo Ordine"
-                    description="Sei sicuro di voler eliminare questo tipo ordine? Questa azione non può essere annullata."
+                    title={t('offer_order_types.delete.title')}
+                    description={t('offer_order_types.delete.description', {
+                        name: deleteDialog.orderType?.name ?? '',
+                        code: deleteDialog.orderType?.code ?? '',
+                    })}
                     itemName={deleteDialog.orderType?.name}
                     isLoading={isDeleting}
                 />

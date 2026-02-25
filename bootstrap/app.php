@@ -20,7 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // $middleware->statefulApi();
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
 
-        // Excluir rutas específicas de órdenes de la validación CSRF
+        // Exclude order-specific routes from CSRF validation
         // (se usan solo desde el backoffice autenticado)
         $middleware->validateCsrfTokens(except: [
             'orders/*/save-semaforo',

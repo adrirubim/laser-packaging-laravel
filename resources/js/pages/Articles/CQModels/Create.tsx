@@ -14,6 +14,7 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import articles from '@/routes/articles/index';
 import { type BreadcrumbItem } from '@/types';
@@ -28,12 +29,13 @@ type CQModelsCreateProps = {
 export default function CQModelsCreate({
     errors: serverErrors,
 }: CQModelsCreateProps) {
+    const { t } = useTranslations();
     const [cquCode, setCquCode] = useState<string>('');
     const [isLoadingCode, setIsLoadingCode] = useState(false);
 
     useEffect(() => {
         queueMicrotask(() => setIsLoadingCode(true));
-        fetch('/articles/cq-models/generate-cqu-number')
+        fetch(articles.cqModels.generateCquNumber().url)
             .then((res) => res.json())
             .then((data) => {
                 if (data.cod_model) {
@@ -46,32 +48,35 @@ export default function CQModelsCreate({
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Articoli',
+            title: t('nav.articles'),
             href: articles.index().url,
         },
         {
-            title: 'Modelli CQ',
-            href: '/articles/cq-models',
+            title: t('articles.cq_models.title'),
+            href: articles.cqModels.index().url,
         },
         {
-            title: 'Crea',
-            href: '/articles/cq-models/create',
+            title: t('articles.cq_models.create.breadcrumb'),
+            href: articles.cqModels.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Crea Modello CQ" />
+            <Head title={t('articles.cq_models.create.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Nuovo Modello CQ</CardTitle>
+                                <CardTitle>
+                                    {t('articles.cq_models.create.card_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Inserisci i dettagli per creare un nuovo
-                                    modello
+                                    {t(
+                                        'articles.cq_models.create.card_description',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -94,7 +99,9 @@ export default function CQModelsCreate({
                                                             htmlFor="cod_model"
                                                             required
                                                         >
-                                                            Codice Modello
+                                                            {t(
+                                                                'articles.cq_models.form.cod_model_label',
+                                                            )}
                                                         </FormLabel>
                                                         <Tooltip>
                                                             <TooltipTrigger
@@ -104,13 +111,9 @@ export default function CQModelsCreate({
                                                             </TooltipTrigger>
                                                             <TooltipContent>
                                                                 <p>
-                                                                    Il codice
-                                                                    modello è
-                                                                    proposto
-                                                                    automaticamente
-                                                                    ma può
-                                                                    essere
-                                                                    modificato
+                                                                    {t(
+                                                                        'articles.cq_models.form.cod_model_tooltip',
+                                                                    )}
                                                                 </p>
                                                             </TooltipContent>
                                                         </Tooltip>
@@ -131,15 +134,15 @@ export default function CQModelsCreate({
                                                     />
                                                     {isLoadingCode && (
                                                         <p className="text-xs text-muted-foreground">
-                                                            Generazione
-                                                            codice...
+                                                            {t(
+                                                                'articles.cq_models.form.generating_code',
+                                                            )}
                                                         </p>
                                                     )}
                                                     <p className="text-xs text-muted-foreground">
-                                                        Il codice modello è
-                                                        proposto automaticamente
-                                                        ma può essere
-                                                        modificato.
+                                                        {t(
+                                                            'articles.cq_models.form.cod_model_tooltip',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -153,13 +156,17 @@ export default function CQModelsCreate({
                                                         htmlFor="description_model"
                                                         required
                                                     >
-                                                        Descrizione Modello
+                                                        {t(
+                                                            'articles.cq_models.form.description_model_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="description_model"
                                                         name="description_model"
                                                         required
-                                                        placeholder="Descrizione del modello"
+                                                        placeholder={t(
+                                                            'articles.cq_models.form.description_model_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                     />
                                                     <InputError
@@ -171,7 +178,9 @@ export default function CQModelsCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="filename">
-                                                        Allegato
+                                                        {t(
+                                                            'articles.cq_models.form.attachment_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="filename"
@@ -185,9 +194,9 @@ export default function CQModelsCreate({
                                                         id="filename-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Seleziona un allegato
-                                                        PDF da associare al
-                                                        modello (opzionale).
+                                                        {t(
+                                                            'articles.cq_models.form.attachment_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -202,8 +211,12 @@ export default function CQModelsCreate({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Creando...'
-                                                            : 'Crea Modello'}
+                                                            ? t(
+                                                                  'articles.cq_models.create.submitting',
+                                                              )
+                                                            : t(
+                                                                  'articles.cq_models.create.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -215,7 +228,7 @@ export default function CQModelsCreate({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

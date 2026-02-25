@@ -1,10 +1,10 @@
 # Contributing
 
-Thank you for your interest in contributing. Please read the [README](README.md) first (installation, code standards, and **Before Pushing to GitHub**).
+Thank you for your interest in contributing. **Repository:** [github.com/adrirubim/laser-packaging-laravel](https://github.com/adrirubim/laser-packaging-laravel). Please read the [README](README.md) first (installation, code standards, and **Before Pushing to GitHub**).
 
 ## Before You Submit
 
-1. **Run locally** (same as CI): `vendor/bin/pint`, `npm run format`, `npm run lint`, `npm run build`, `./vendor/bin/phpunit`. Optional: `npm run types`.
+1. **Run locally** (same as CI): `php scripts/i18n-check.php`, `./vendor/bin/pint`, `npm run format`, `npm run format:check`, `npm run lint`, `npm run types`, `php artisan config:clear`, `php artisan test`, `npm run test -- --run`, `npm run build`. See [docs/TEST_COVERAGE.md](docs/TEST_COVERAGE.md) and [README Before Pushing](README.md#-before-pushing-to-github).
 2. Follow **PSR-12** (PHP) and project conventions (TypeScript/React).
 3. Add or update tests for new behavior where relevant.
 4. **Documentation:** Any documentation you add or change must be in **English**, professional in tone, and aligned with current best practices (see [docs/GIT_WHAT_TO_COMMIT.md](docs/GIT_WHAT_TO_COMMIT.md)).

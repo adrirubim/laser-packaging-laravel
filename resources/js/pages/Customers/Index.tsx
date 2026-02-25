@@ -100,7 +100,7 @@ export default function CustomersIndex() {
         // eslint-disable-next-line react-hooks/exhaustive-deps -- debounce: run on searchValue only to avoid loops
     }, [searchValue]);
 
-    // Sincronizzare stato iniziale con i filtri del server
+    // Sync initial state with server filters
     useEffect(() => {
         queueMicrotask(() => setProvinceFilter(filters.province ?? ''));
     }, [filters.province]);
@@ -215,10 +215,10 @@ export default function CustomersIndex() {
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="Clienti"
-                    subtitle="Elenco dei clienti attivi con Cerca e filtri di base."
+                    title={t('customers.index.title')}
+                    subtitle={t('customers.index.subtitle')}
                     createHref={customers.create().url}
-                    createLabel="Nuovo Cliente"
+                    createLabel={t('customers.index.create')}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -227,12 +227,14 @@ export default function CustomersIndex() {
                     <div className="grid gap-3 md:grid-cols-2">
                         <div className="space-y-1">
                             <label className="text-xs font-medium text-muted-foreground">
-                                Cerca
+                                {t('common.search')}
                             </label>
                             <SearchInput
                                 value={searchValue}
                                 onChange={handleSearchChange}
-                                placeholder="Codice, ragione sociale o partita IVA..."
+                                placeholder={t(
+                                    'customers.index.search_placeholder',
+                                )}
                                 isLoading={isSearching}
                                 onClear={clearSearch}
                             />
@@ -241,7 +243,7 @@ export default function CustomersIndex() {
                         {provinces.length > 0 && (
                             <div className="space-y-1">
                                 <label className="text-xs font-medium text-muted-foreground">
-                                    Provincia
+                                    {t('customers.index.province_label')}
                                 </label>
                                 <Select
                                     value={provinceFilter || 'all'}
@@ -249,7 +251,9 @@ export default function CustomersIndex() {
                                 >
                                     <SelectTrigger
                                         className="w-full"
-                                        aria-label="Provincia"
+                                        aria-label={t(
+                                            'customers.index.province_label',
+                                        )}
                                     >
                                         <SelectValue
                                             placeholder={t(
@@ -281,7 +285,7 @@ export default function CustomersIndex() {
                         <div className="block space-y-3 p-4 md:hidden">
                             {customersPaginated.data.length === 0 ? (
                                 <div className="py-8 text-center text-sm text-muted-foreground">
-                                    Nessun cliente trovato per i filtri attuali.
+                                    {t('customers.index.empty')}
                                 </div>
                             ) : (
                                 customersPaginated.data.map((customer) => (
@@ -295,7 +299,10 @@ export default function CustomersIndex() {
                                                     {customer.company_name}
                                                 </h3>
                                                 <p className="mt-1 font-mono text-xs text-muted-foreground">
-                                                    Codice: {customer.code}
+                                                    {t(
+                                                        'customers.index.mobile_code_label',
+                                                    )}{' '}
+                                                    {customer.code}
                                                 </p>
                                             </div>
                                             <ActionsDropdown
@@ -318,7 +325,9 @@ export default function CustomersIndex() {
                                             {customer.vat_number && (
                                                 <div>
                                                     <span className="text-muted-foreground">
-                                                        P.IVA:{' '}
+                                                        {t(
+                                                            'customers.index.mobile_vat_label',
+                                                        )}{' '}
                                                     </span>
                                                     <span>
                                                         {customer.vat_number}
@@ -328,7 +337,9 @@ export default function CustomersIndex() {
                                             {customer.city && (
                                                 <div>
                                                     <span className="text-muted-foreground">
-                                                        Città:{' '}
+                                                        {t(
+                                                            'customers.index.mobile_city_label',
+                                                        )}{' '}
                                                     </span>
                                                     <span>{customer.city}</span>
                                                 </div>
@@ -336,7 +347,9 @@ export default function CustomersIndex() {
                                             {customer.province && (
                                                 <div>
                                                     <span className="text-muted-foreground">
-                                                        Provincia:{' '}
+                                                        {t(
+                                                            'customers.index.mobile_province_label',
+                                                        )}{' '}
                                                     </span>
                                                     <span>
                                                         {customer.province}
@@ -346,7 +359,9 @@ export default function CustomersIndex() {
                                             {customer.postal_code && (
                                                 <div>
                                                     <span className="text-muted-foreground">
-                                                        CAP:{' '}
+                                                        {t(
+                                                            'customers.index.mobile_cap_label',
+                                                        )}{' '}
                                                     </span>
                                                     <span>
                                                         {customer.postal_code}
@@ -373,7 +388,7 @@ export default function CustomersIndex() {
                                         currentDirection={filters.direction}
                                         onSort={handleSort}
                                     >
-                                        Codice Cliente
+                                        {t('customers.table.code')}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="company_name"
@@ -381,19 +396,19 @@ export default function CustomersIndex() {
                                         currentDirection={filters.direction}
                                         onSort={handleSort}
                                     >
-                                        Ragione Sociale
+                                        {t('customers.table.company_name')}
                                     </SortableTableHeader>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Partita IVA
+                                        {t('customers.table.vat')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        C/O
+                                        {t('customers.table.co')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Via
+                                        {t('customers.table.street')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        CAP
+                                        {t('customers.table.cap')}
                                     </th>
                                     <SortableTableHeader
                                         column="city"
@@ -401,7 +416,7 @@ export default function CustomersIndex() {
                                         currentDirection={filters.direction}
                                         onSort={handleSort}
                                     >
-                                        Città
+                                        {t('customers.table.city')}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="province"
@@ -409,13 +424,13 @@ export default function CustomersIndex() {
                                         currentDirection={filters.direction}
                                         onSort={handleSort}
                                     >
-                                        Provincia
+                                        {t('customers.table.province')}
                                     </SortableTableHeader>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Nazione
+                                        {t('customers.table.country')}
                                     </th>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t('customers.table.actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -426,8 +441,7 @@ export default function CustomersIndex() {
                                             colSpan={12}
                                             className="px-3 py-6 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessun cliente trovato per i filtri
-                                            attuali.
+                                            {t('customers.index.empty')}
                                         </td>
                                     </tr>
                                 )}
@@ -509,8 +523,8 @@ export default function CustomersIndex() {
                         })
                     }
                     onConfirm={handleDeleteConfirm}
-                    title="Elimina Cliente"
-                    description="Sei sicuro di voler eliminare questo cliente? Questa azione non può essere annullata."
+                    title={t('customers.delete_title')}
+                    description={t('customers.delete_description')}
                     itemName={
                         deleteDialog.customer?.company_name ||
                         deleteDialog.customer?.code

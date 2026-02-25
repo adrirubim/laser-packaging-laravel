@@ -6,6 +6,7 @@ import {
 } from '@/components/flash-notifications';
 import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import lasWorkLines from '@/routes/las-work-lines';
 import { type BreadcrumbItem } from '@/types';
@@ -37,6 +38,7 @@ type LasWorkLinesIndexProps = {
 };
 
 export default function LasWorkLinesIndex() {
+    const { t } = useTranslations();
     const { props } = usePage<LasWorkLinesIndexProps>();
     const { workLines: workLinesPaginated, filters } = props;
     const { flash } = useFlashNotifications();
@@ -107,20 +109,23 @@ export default function LasWorkLinesIndex() {
     };
 
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Offerte', href: '/offers' },
-        { title: 'LAS Linee di Lavoro', href: lasWorkLines.index().url },
+        { title: t('nav.offers'), href: '/offers' },
+        {
+            title: t('offer_las_work_lines.page_title'),
+            href: lasWorkLines.index().url,
+        },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="LAS Linee di Lavoro" />
+            <Head title={t('offer_las_work_lines.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="LAS Linee di Lavoro"
-                    subtitle="Elenco delle linee di lavoro LAS attive con Cerca."
+                    title={t('offer_las_work_lines.page_title')}
+                    subtitle={t('offer_las_work_lines.index.subtitle')}
                     createHref={lasWorkLines.create().url}
-                    createLabel="Nuova Linea di Lavoro"
+                    createLabel={t('offer_las_work_lines.index.create')}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -128,7 +133,7 @@ export default function LasWorkLinesIndex() {
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4">
                     <div className="space-y-1">
                         <label className="text-xs font-medium text-muted-foreground">
-                            Cerca
+                            {t('common.search')}
                         </label>
                         <div className="relative flex items-center gap-2">
                             <div className="relative flex-1">
@@ -139,7 +144,9 @@ export default function LasWorkLinesIndex() {
                                     onChange={(e) =>
                                         setSearchValue(e.target.value)
                                     }
-                                    placeholder="Codice o nome..."
+                                    placeholder={t(
+                                        'offer_las_work_lines.search_placeholder',
+                                    )}
                                     className="w-full rounded-md border border-input bg-background px-3 py-2 pr-9 pl-9 text-sm shadow-sm focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
                                 />
                                 {isSearching && (
@@ -170,13 +177,15 @@ export default function LasWorkLinesIndex() {
                                         uuid
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Codice
+                                        {t('common.code')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Nome
+                                        {t(
+                                            'offer_las_work_lines.form.name_label',
+                                        )}
                                     </th>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t('common.actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -187,8 +196,9 @@ export default function LasWorkLinesIndex() {
                                             colSpan={5}
                                             className="px-3 py-6 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessuna linea di lavoro trovata per
-                                            i filtri attuali.
+                                            {t(
+                                                'offer_las_work_lines.index.empty',
+                                            )}
                                         </td>
                                     </tr>
                                 )}
@@ -250,8 +260,11 @@ export default function LasWorkLinesIndex() {
                         })
                     }
                     onConfirm={handleDeleteConfirm}
-                    title="Elimina Linea di Lavoro LAS"
-                    description="Sei sicuro di voler eliminare questa linea di lavoro LAS? Questa azione non può essere annullata."
+                    title={t('offer_las_work_lines.delete.title')}
+                    description={t('offer_las_work_lines.delete.description', {
+                        name: deleteDialog.workLine?.name ?? '',
+                        code: deleteDialog.workLine?.code ?? '',
+                    })}
                     itemName={deleteDialog.workLine?.name}
                     isLoading={isDeleting}
                 />

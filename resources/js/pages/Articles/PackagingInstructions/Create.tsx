@@ -16,6 +16,7 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import articles from '@/routes/articles/index';
 import { type BreadcrumbItem } from '@/types';
@@ -30,14 +31,14 @@ type PackagingInstructionsCreateProps = {
 export default function PackagingInstructionsCreate({
     errors: serverErrors,
 }: PackagingInstructionsCreateProps) {
+    const { t } = useTranslations();
     const [icNumber, setIcNumber] = useState<string>('');
     const [isLoadingNumber, setIsLoadingNumber] = useState(false);
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
 
     useEffect(() => {
-        // Generare numero IC automaticamente al caricamento
         queueMicrotask(() => setIsLoadingNumber(true));
-        fetch('/articles/packaging-instructions/generate-ic-number')
+        fetch(articles.packagingInstructions.generateIcNumber().url)
             .then((res) => res.json())
             .then((data) => {
                 if (data.number) {
@@ -50,22 +51,24 @@ export default function PackagingInstructionsCreate({
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Articoli',
+            title: t('nav.articles'),
             href: articles.index().url,
         },
         {
-            title: 'Istruzioni di Confezionamento',
-            href: '/articles/packaging-instructions',
+            title: t('articles.packaging_instructions.index.title'),
+            href: articles.packagingInstructions.index().url,
         },
         {
-            title: 'Crea',
-            href: '/articles/packaging-instructions/create',
+            title: t('articles.packaging_instructions.create.breadcrumb'),
+            href: articles.packagingInstructions.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Crea Istruzione di Confezionamento" />
+            <Head
+                title={t('articles.packaging_instructions.create.page_title')}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
@@ -73,11 +76,14 @@ export default function PackagingInstructionsCreate({
                         <Card>
                             <CardHeader>
                                 <CardTitle>
-                                    Nuova Istruzione di Confezionamento
+                                    {t(
+                                        'articles.packaging_instructions.create.card_title',
+                                    )}
                                 </CardTitle>
                                 <CardDescription>
-                                    Inserisci i dettagli per creare una nuova
-                                    istruzione
+                                    {t(
+                                        'articles.packaging_instructions.create.card_description',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -111,7 +117,9 @@ export default function PackagingInstructionsCreate({
                                                             htmlFor="code"
                                                             required
                                                         >
-                                                            Codice
+                                                            {t(
+                                                                'articles.packaging_instructions.form.code_label',
+                                                            )}
                                                         </FormLabel>
                                                         <Tooltip>
                                                             <TooltipTrigger
@@ -121,9 +129,9 @@ export default function PackagingInstructionsCreate({
                                                             </TooltipTrigger>
                                                             <TooltipContent>
                                                                 <p>
-                                                                    Il codice
-                                                                    deve essere
-                                                                    univoco
+                                                                    {t(
+                                                                        'articles.packaging_instructions.form.code_tooltip',
+                                                                    )}
                                                                 </p>
                                                             </TooltipContent>
                                                         </Tooltip>
@@ -147,7 +155,9 @@ export default function PackagingInstructionsCreate({
                                                             htmlFor="number"
                                                             required
                                                         >
-                                                            Numero
+                                                            {t(
+                                                                'articles.packaging_instructions.form.number_label',
+                                                            )}
                                                         </FormLabel>
                                                         <Tooltip>
                                                             <TooltipTrigger
@@ -157,10 +167,9 @@ export default function PackagingInstructionsCreate({
                                                             </TooltipTrigger>
                                                             <TooltipContent>
                                                                 <p>
-                                                                    Numero
-                                                                    progressivo
-                                                                    generato
-                                                                    automaticamente
+                                                                    {t(
+                                                                        'articles.packaging_instructions.form.number_tooltip',
+                                                                    )}
                                                                 </p>
                                                             </TooltipContent>
                                                         </Tooltip>
@@ -183,8 +192,9 @@ export default function PackagingInstructionsCreate({
                                                     />
                                                     {isLoadingNumber && (
                                                         <p className="text-xs text-muted-foreground">
-                                                            Generazione
-                                                            numero...
+                                                            {t(
+                                                                'articles.packaging_instructions.form.generating_number',
+                                                            )}
                                                         </p>
                                                     )}
                                                     <InputError
@@ -196,7 +206,9 @@ export default function PackagingInstructionsCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="filename">
-                                                        Allegato
+                                                        {t(
+                                                            'articles.packaging_instructions.form.attachment_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="filename"
@@ -210,10 +222,9 @@ export default function PackagingInstructionsCreate({
                                                         id="filename-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Seleziona un allegato
-                                                        PDF da associare
-                                                        all'istruzione
-                                                        (opzionale).
+                                                        {t(
+                                                            'articles.packaging_instructions.form.attachment_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -228,8 +239,12 @@ export default function PackagingInstructionsCreate({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Creando...'
-                                                            : 'Crea Istruzione'}
+                                                            ? t(
+                                                                  'articles.packaging_instructions.create.submitting',
+                                                              )
+                                                            : t(
+                                                                  'articles.packaging_instructions.create.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -240,7 +255,7 @@ export default function PackagingInstructionsCreate({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

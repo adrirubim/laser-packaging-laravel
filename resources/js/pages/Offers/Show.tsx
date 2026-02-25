@@ -10,6 +10,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import offerOperations from '@/routes/offer-operations/index';
 import offers from '@/routes/offers/index';
@@ -18,7 +19,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import { Download, FileText, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 
-// Formattare numeri in formato italiano (virgola decimali, punto migliaia)
+// Format numbers in Italian format (comma decimals, period thousands)
 const formatNumber = (
     value: number | null | undefined,
     decimals: number = 5,
@@ -32,13 +33,13 @@ const formatNumber = (
     const integerPart = parts[0];
     const decimalPart = parts[1] || '';
 
-    // Aggiungere separatori migliaia (punto)
+    // Add thousands separators (dot)
     const formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
     return formattedInteger + ',' + decimalPart;
 };
 
-// Formattare interi
+// Format integers
 const formatInteger = (value: number | null | undefined): string => {
     if (value === null || value === undefined || isNaN(value)) {
         return '';
@@ -178,10 +179,11 @@ export default function OffersShow({ offer }: OffersShowProps) {
     const [downloadingPdf, setDownloadingPdf] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const { t } = useTranslations();
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: offers.index().url,
         },
         {
@@ -231,13 +233,15 @@ export default function OffersShow({ offer }: OffersShowProps) {
             setDownloadingPdf(false);
             alert(
                 error instanceof Error
-                    ? `Errore nello scaricare il PDF: ${error.message}`
-                    : 'Errore nello scaricare il PDF. Riprova.',
+                    ? t('offers.pdf_download_error', {
+                          message: error.message,
+                      })
+                    : t('offers.pdf_download_error_fallback'),
             );
         }
     };
 
-    // Formattare data per input type="date"
+    // Format date for input type="date"
     const formatDateForInput = (dateString?: string): string => {
         if (!dateString) return '';
         const date = new Date(dateString);
@@ -246,17 +250,23 @@ export default function OffersShow({ offer }: OffersShowProps) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Offerta ${offer.offer_number}`} />
+            <Head
+                title={t('offers.show.page_title', {
+                    number: offer.offer_number,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-2xl font-bold">
-                            Offerta {offer.offer_number}
+                            {t('offers.show.heading', {
+                                number: offer.offer_number,
+                            })}
                         </h1>
                         {offer.offer_date && (
                             <p className="mt-1 text-sm text-muted-foreground">
-                                Data:{' '}
+                                {t('offers.show.date_label')}{' '}
                                 {new Date(
                                     offer.offer_date,
                                 ).toLocaleDateString()}
@@ -275,18 +285,18 @@ export default function OffersShow({ offer }: OffersShowProps) {
                             {downloadingPdf ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Generando PDF...
+                                    {t('offers.actions.generating_pdf')}
                                 </>
                             ) : (
                                 <>
                                     <FileText className="mr-2 h-4 w-4" />
-                                    Genera PDF
+                                    {t('offers.actions.generate_pdf')}
                                 </>
                             )}
                         </Button>
                         <Button asChild variant="outline">
                             <Link href={offers.edit({ offer: offer.uuid }).url}>
-                                Modifica
+                                {t('common.edit')}
                             </Link>
                         </Button>
                         <Button
@@ -294,30 +304,30 @@ export default function OffersShow({ offer }: OffersShowProps) {
                             onClick={() => setDeleteDialogOpen(true)}
                             disabled={isDeleting}
                         >
-                            Elimina
+                            {t('common.delete')}
                         </Button>
                     </div>
                 </div>
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Dettagli Offerta</CardTitle>
+                        <CardTitle>{t('offers.show.details_title')}</CardTitle>
                         <CardDescription>
-                            Informazioni complete sull'offerta
+                            {t('offers.show.details_subtitle')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-5">
-                        {/* Sezione: Informazione Generale (senza titolo/separatore visivo extra) */}
-                        {/* Contenitore centrato con righe titolo-input */}
+                        {/* Section: General information (no extra title/separator) */}
+                        {/* Centered container with title-input rows */}
                         <div className="flex justify-center">
                             <div className="w-full max-w-4xl space-y-1">
-                                {/* Numero Offerta */}
+                                {/* Offer number */}
                                 <div className="grid grid-cols-2 items-center gap-4">
                                     <Label
                                         htmlFor="offer_number"
                                         className="text-left"
                                     >
-                                        Numero Offerta
+                                        {t('offers.show.number_label')}
                                     </Label>
                                     <Input
                                         id="offer_number"
@@ -329,13 +339,13 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                     />
                                 </div>
 
-                                {/* Data Offerta */}
+                                {/* Offer date */}
                                 <div className="grid grid-cols-2 items-center gap-4">
                                     <Label
                                         htmlFor="offer_date"
                                         className="text-left"
                                     >
-                                        Data Offerta
+                                        {t('offers.show.date_offer_label')}
                                     </Label>
                                     <Input
                                         id="offer_date"
@@ -349,13 +359,13 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                     />
                                 </div>
 
-                                {/* Data Validità */}
+                                {/* Validity Date */}
                                 <div className="grid grid-cols-2 items-center gap-4">
                                     <Label
                                         htmlFor="validity_date"
                                         className="text-left"
                                     >
-                                        Data Validità
+                                        {t('offers.show.date_validity_label')}
                                     </Label>
                                     <Input
                                         id="validity_date"
@@ -372,9 +382,9 @@ export default function OffersShow({ offer }: OffersShowProps) {
                         </div>
                     </CardContent>
 
-                    {/* Sezione: Dati Cliente */}
+                    {/* Section: Customer Data */}
                     <div className="space-y-1 rounded-md bg-muted/30 px-3 py-2">
-                        {/* Contenitore centrato con righe titolo-input */}
+                        {/* Centered container with title-input rows */}
                         <div className="flex justify-center">
                             <div className="w-full max-w-4xl space-y-1">
                                 {/* Cliente */}
@@ -383,7 +393,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         htmlFor="customer_uuid"
                                         className="text-left"
                                     >
-                                        Cliente
+                                        {t('offers.show.customer_label')}
                                     </Label>
                                     <Input
                                         id="customer_uuid"
@@ -405,7 +415,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         htmlFor="customerdivision_uuid"
                                         className="text-left"
                                     >
-                                        Divisione
+                                        {t('offers.show.division_label')}
                                     </Label>
                                     <Input
                                         id="customerdivision_uuid"
@@ -423,7 +433,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         placeholder={
                                             offer.customerDivision?.name
                                                 ? undefined
-                                                : 'Non specificato'
+                                                : t('offers.show.not_specified')
                                         }
                                     />
                                 </div>
@@ -434,7 +444,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         htmlFor="customer_ref"
                                         className="text-left"
                                     >
-                                        Rif. Cliente
+                                        {t('offers.show.customer_ref_label')}
                                     </Label>
                                     <Input
                                         id="customer_ref"
@@ -450,7 +460,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         placeholder={
                                             offer.customer_ref
                                                 ? undefined
-                                                : 'Non specificato'
+                                                : t('offers.show.not_specified')
                                         }
                                     />
                                 </div>
@@ -458,18 +468,18 @@ export default function OffersShow({ offer }: OffersShowProps) {
                         </div>
                     </div>
 
-                    {/* Sezione: Classificazione */}
+                    {/* Section: Classification */}
                     <div className="space-y-1 rounded-md bg-muted/30 px-3 py-2">
-                        {/* Contenitore centrato con righe titolo-input */}
+                        {/* Centered container with title-input rows */}
                         <div className="flex justify-center">
                             <div className="w-full max-w-4xl space-y-1">
-                                {/* Attività */}
+                                {/* Activity */}
                                 <div className="grid grid-cols-2 items-center gap-4">
                                     <Label
                                         htmlFor="activity_uuid"
                                         className="text-left"
                                     >
-                                        Attività
+                                        {t('offers.show.activity_label')}
                                     </Label>
                                     <Input
                                         id="activity_uuid"
@@ -487,7 +497,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         htmlFor="sector_uuid"
                                         className="text-left"
                                     >
-                                        Settore
+                                        {t('offers.show.sector_label')}
                                     </Label>
                                     <Input
                                         id="sector_uuid"
@@ -499,13 +509,13 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                     />
                                 </div>
 
-                                {/* Stagionalità */}
+                                {/* Seasonality */}
                                 <div className="grid grid-cols-2 items-center gap-4">
                                     <Label
                                         htmlFor="type_uuid"
                                         className="text-left"
                                     >
-                                        Stagionalità
+                                        {t('offers.show.seasonality_label')}
                                     </Label>
                                     <Input
                                         id="type_uuid"
@@ -523,7 +533,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         htmlFor="order_type_uuid"
                                         className="text-left"
                                     >
-                                        Tipo Ordine
+                                        {t('offers.show.order_type_label')}
                                     </Label>
                                     <Input
                                         id="order_type_uuid"
@@ -538,9 +548,9 @@ export default function OffersShow({ offer }: OffersShowProps) {
                         </div>
                     </div>
 
-                    {/* Sezione: Dati LAS */}
+                    {/* Section: LAS Data */}
                     <div className="space-y-1 rounded-md bg-muted/30 px-3 py-2">
-                        {/* Contenitore centrato con righe titolo-input */}
+                        {/* Centered container with title-input rows */}
                         <div className="flex justify-center">
                             <div className="w-full max-w-4xl space-y-1">
                                 {/* Famiglia LAS */}
@@ -549,7 +559,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         htmlFor="lasfamily_uuid"
                                         className="text-left"
                                     >
-                                        Famiglia LAS
+                                        {t('offers.show.las_family_label')}
                                     </Label>
                                     <Input
                                         id="lasfamily_uuid"
@@ -571,7 +581,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         htmlFor="lsresource_uuid"
                                         className="text-left"
                                     >
-                                        L&S Risorsa
+                                        {t('offers.show.ls_resource_label')}
                                     </Label>
                                     <Input
                                         id="lsresource_uuid"
@@ -593,7 +603,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         htmlFor="lasworkline_uuid"
                                         className="text-left"
                                     >
-                                        Linea di Lavoro LAS
+                                        {t('offers.show.las_work_line_label')}
                                     </Label>
                                     <Input
                                         id="lasworkline_uuid"
@@ -612,9 +622,9 @@ export default function OffersShow({ offer }: OffersShowProps) {
                         </div>
                     </div>
 
-                    {/* Sezione: Dati Articolo */}
+                    {/* Section: Article Data */}
                     <div className="space-y-1">
-                        {/* Contenitore centrato con righe titolo-input */}
+                        {/* Centered container with title-input rows */}
                         <div className="flex justify-center">
                             <div className="w-full max-w-4xl space-y-1">
                                 {/* Codice articolo di riferimento */}
@@ -623,7 +633,9 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         htmlFor="article_code_ref"
                                         className="text-left"
                                     >
-                                        Codice articolo di riferimento
+                                        {t(
+                                            'offers.show.article_code_ref_label',
+                                        )}
                                     </Label>
                                     <Input
                                         id="article_code_ref"
@@ -641,7 +653,9 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         htmlFor="provisional_description"
                                         className="pt-2 text-left"
                                     >
-                                        Descrizione provvisoria
+                                        {t(
+                                            'offers.show.provisional_description_label',
+                                        )}
                                     </Label>
                                     <Textarea
                                         id="provisional_description"
@@ -655,7 +669,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                     />
                                 </div>
 
-                                {/* Unità di Misura */}
+                                {/* Unit of Measure */}
                                 <div className="grid grid-cols-2 items-center gap-4">
                                     <Label
                                         htmlFor="unit_of_measure"
@@ -673,13 +687,13 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                     />
                                 </div>
 
-                                {/* Quantità */}
+                                {/* Quantity */}
                                 <div className="grid grid-cols-2 items-center gap-4">
                                     <Label
                                         htmlFor="quantity"
                                         className="text-left"
                                     >
-                                        Quantità
+                                        {t('offers.show.quantity_label')}
                                     </Label>
                                     <Input
                                         id="quantity"
@@ -804,7 +818,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         placeholder={
                                             offer.notes
                                                 ? undefined
-                                                : 'Nessuna nota'
+                                                : t('offers.show.notes_empty')
                                         }
                                         rows={3}
                                     />
@@ -813,7 +827,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                         </div>
                     </div>
 
-                    {/* Sezione: Operazioni */}
+                    {/* Section: Operations */}
                     <div className="space-y-1">
                         {offer.operations && offer.operations.length > 0 ? (
                             <div className="overflow-hidden rounded-md border">
@@ -822,22 +836,34 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         <thead>
                                             <tr className="border-b bg-muted/50">
                                                 <th className="px-4 py-3 text-left text-sm font-medium">
-                                                    Categoria
+                                                    {t(
+                                                        'offers.show.operations_category',
+                                                    )}
                                                 </th>
                                                 <th className="px-4 py-3 text-left text-sm font-medium">
-                                                    Operazione
+                                                    {t(
+                                                        'offers.show.operations_operation',
+                                                    )}
                                                 </th>
                                                 <th className="px-4 py-3 text-right text-sm font-medium">
-                                                    Secondi
+                                                    {t(
+                                                        'offers.show.operations_seconds',
+                                                    )}
                                                 </th>
                                                 <th className="px-4 py-3 text-right text-sm font-medium">
-                                                    N° Op
+                                                    {t(
+                                                        'offers.show.operations_num',
+                                                    )}
                                                 </th>
                                                 <th className="px-4 py-3 text-right text-sm font-medium">
-                                                    Totale
+                                                    {t(
+                                                        'offers.show.operations_total',
+                                                    )}
                                                 </th>
                                                 <th className="px-4 py-3 text-right text-sm font-medium">
-                                                    Allegato
+                                                    {t(
+                                                        'offers.show.operations_attachment',
+                                                    )}
                                                 </th>
                                             </tr>
                                         </thead>
@@ -885,8 +911,12 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                                                                 },
                                                                             ).url;
                                                                     }}
-                                                                    title="Scarica allegato"
-                                                                    aria-label="Scarica allegato operazione"
+                                                                    title={t(
+                                                                        'offers.show.operations_download_title',
+                                                                    )}
+                                                                    aria-label={t(
+                                                                        'offers.show.operations_download_aria',
+                                                                    )}
                                                                 >
                                                                     <Download className="h-4 w-4" />
                                                                 </button>
@@ -908,19 +938,19 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                 <div className="w-full max-w-4xl">
                                     <div className="grid grid-cols-2 items-center gap-4">
                                         <Label className="text-left">
-                                            Operazioni
+                                            {t('offers.show.operations_title')}
                                         </Label>
                                         <p className="text-muted-foreground italic">
-                                            Nessuna offerta presente
+                                            {t('offers.show.operations_empty')}
                                         </p>
                                     </div>
                                 </div>
                             </div>
                         )}
                     </div>
-                    {/* Sezione: Calcoli Tempo */}
+                    {/* Section: Time Calculations */}
                     <div className="space-y-1 rounded-md bg-muted/30 px-3 py-2">
-                        {/* Contenitore centrato con righe titolo-input */}
+                        {/* Centered container with title-input rows */}
                         <div className="flex justify-center">
                             <div className="w-full max-w-4xl space-y-1">
                                 {/* Tempo teorico (sec/cfz) */}
@@ -929,7 +959,9 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         htmlFor="theoretical_time_cfz"
                                         className="text-left"
                                     >
-                                        Tempo teorico (sec/cfz)
+                                        {t(
+                                            'offers.show.time_theoretical_cfz_label',
+                                        )}
                                     </Label>
                                     <div className="flex">
                                         <Input
@@ -961,7 +993,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         htmlFor="unexpected"
                                         className="text-left"
                                     >
-                                        Imprevisti
+                                        {t('offers.show.time_unexpected_label')}
                                     </Label>
                                     <Input
                                         id="unexpected"
@@ -984,7 +1016,9 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         htmlFor="total_theoretical_time"
                                         className="text-left"
                                     >
-                                        Tempo teorico totale (sec/cfz)
+                                        {t(
+                                            'offers.show.time_total_theoretical_label',
+                                        )}
                                     </Label>
                                     <div className="flex">
                                         <Input
@@ -1016,7 +1050,9 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         htmlFor="theoretical_time"
                                         className="text-left"
                                     >
-                                        Tempo teorico (sec/pz)
+                                        {t(
+                                            'offers.show.time_theoretical_pz_label',
+                                        )}
                                     </Label>
                                     <div className="flex">
                                         <Input
@@ -1205,9 +1241,9 @@ export default function OffersShow({ offer }: OffersShowProps) {
                         </div>
                     </div>
 
-                    {/* Sezione: Tariffe e Costi */}
+                    {/* Section: Rates and Costs */}
                     <div className="space-y-1 rounded-md bg-muted/30 px-3 py-2">
-                        {/* Contenitore centrato con righe titolo-input */}
+                        {/* Centered container with title-input rows */}
                         <div className="flex justify-center">
                             <div className="w-full max-w-4xl space-y-1">
                                 {/* Ricavo Manodopera prevista */}
@@ -1248,7 +1284,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         htmlFor="rate_cfz"
                                         className="text-left"
                                     >
-                                        Tariffa mdo cfz
+                                        {t('offers.show.rate_cfz_label')}
                                     </Label>
                                     <div className="flex">
                                         <Input
@@ -1278,7 +1314,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         htmlFor="rate_pz"
                                         className="text-left"
                                     >
-                                        Tariffa mdo pz
+                                        {t('offers.show.rate_pz_label')}
                                     </Label>
                                     <div className="flex">
                                         <Input
@@ -1308,7 +1344,9 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         htmlFor="rate_rounding_cfz"
                                         className="text-left"
                                     >
-                                        Tariffa mdo cfz arrotondata
+                                        {t(
+                                            'offers.show.rate_rounding_cfz_label',
+                                        )}
                                     </Label>
                                     <div className="flex">
                                         <Input
@@ -1372,7 +1410,9 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         htmlFor="rate_rounding_cfz_perc"
                                         className="text-left"
                                     >
-                                        Tariffa mdo cfz arrotondata %
+                                        {t(
+                                            'offers.show.rate_rounding_cfz_perc_label',
+                                        )}
                                     </Label>
                                     <div className="flex">
                                         <Input
@@ -1404,7 +1444,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         htmlFor="final_rate_cfz"
                                         className="text-left"
                                     >
-                                        Tariffa definitiva mdo cfz
+                                        {t('offers.show.final_rate_cfz_label')}
                                     </Label>
                                     <div className="flex">
                                         <Input
@@ -1435,7 +1475,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         htmlFor="final_rate_pz"
                                         className="text-left"
                                     >
-                                        Tariffa definitiva mdo pz
+                                        {t('offers.show.final_rate_pz_label')}
                                     </Label>
                                     <div className="flex">
                                         <Input
@@ -1558,7 +1598,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         htmlFor="total_rate_cfz"
                                         className="text-left"
                                     >
-                                        Tariffa totale cfz
+                                        {t('offers.show.total_rate_cfz_label')}
                                     </Label>
                                     <div className="flex">
                                         <Input
@@ -1589,7 +1629,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         htmlFor="total_rate_pz"
                                         className="text-left"
                                     >
-                                        Tariffa totale pz
+                                        {t('offers.show.total_rate_pz_label')}
                                     </Label>
                                     <div className="flex">
                                         <Input
@@ -1617,9 +1657,9 @@ export default function OffersShow({ offer }: OffersShowProps) {
                         </div>
                     </div>
 
-                    {/* Sezione: Informazioni Aggiuntive */}
+                    {/* Section: Additional Information */}
                     <div className="space-y-1">
-                        {/* Contenitore centrato con righe titolo-input */}
+                        {/* Centered container with title-input rows */}
                         <div className="flex justify-center">
                             <div className="w-full max-w-4xl space-y-1">
                                 {/* Note sull'offerta */}
@@ -1643,7 +1683,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         placeholder={
                                             offer.offer_notes
                                                 ? undefined
-                                                : 'Nessuna nota'
+                                                : t('offers.show.notes_empty')
                                         }
                                         rows={3}
                                     />
@@ -1711,7 +1751,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                     </div>
                                 </div>
 
-                                {/* Approvazione */}
+                                {/* Approval */}
                                 <div className="grid grid-cols-2 items-center gap-4">
                                     <Label
                                         htmlFor="approval_status"
@@ -1733,7 +1773,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         placeholder={
                                             offer.approval_status
                                                 ? undefined
-                                                : 'Non specificato'
+                                                : t('offers.show.not_specified')
                                         }
                                     />
                                 </div>
@@ -1747,15 +1787,11 @@ export default function OffersShow({ offer }: OffersShowProps) {
                 onOpenChange={setDeleteDialogOpen}
                 onConfirm={handleDeleteConfirm}
                 isDeleting={isDeleting}
-                title="Conferma eliminazione"
-                description={
-                    <>
-                        Sei sicuro di voler eliminare questa offerta? Questa
-                        azione non può essere annullata. Tutti i dati associati
-                        a questa offerta verranno eliminati definitivamente.
-                    </>
-                }
-                itemName={`Offerta ${offer.offer_number}`}
+                title={t('offers.delete_title')}
+                description={t('offers.delete_description')}
+                itemName={t('offers.show.heading', {
+                    number: offer.offer_number,
+                })}
             />
         </AppLayout>
     );

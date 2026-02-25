@@ -40,7 +40,7 @@ class ProductionCalculationServiceTest extends TestCase
             'removed' => false,
         ]);
 
-        // Crear operación con 5 segundos por operación, 2 operaciones
+        // Create operation with 5 seconds per operation, 2 operations
         OfferOperationList::factory()->create([
             'offer_uuid' => $offer->uuid,
             'offeroperation_uuid' => $operation->uuid,
@@ -58,11 +58,11 @@ class ProductionCalculationServiceTest extends TestCase
         $this->assertArrayHasKey('production_average_cfz', $result);
         $this->assertArrayHasKey('production_average_pz', $result);
 
-        // Verificar cálculos: 5 segundos * 2 operaciones = 10 segundos
+        // Verify calculations: 5 seconds * 2 operations = 10 seconds
         $this->assertEquals(10.0, $result['total_seconds']);
-        // Imprevistos: 10 * 0.05 = 0.5
+        // Unexpected: 10 * 0.05 = 0.5
         $this->assertEquals(0.5, $result['unexpected_seconds']);
-        // Tiempo teórico: 10 + 0.5 = 10.5
+        // Theoretical time: 10 + 0.5 = 10.5
         $this->assertEquals(10.5, $result['theoretical_time']);
     }
 
@@ -75,7 +75,7 @@ class ProductionCalculationServiceTest extends TestCase
         ]);
 
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('no tiene operaciones asignadas');
+        $this->expectExceptionMessage(__('services.production_calculation.offer_no_operations'));
 
         $this->service->calculateProductionTime($offer->uuid);
     }

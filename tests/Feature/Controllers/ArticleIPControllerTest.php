@@ -319,7 +319,7 @@ class ArticleIPControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // Crear algunas instrucciones con code IP
+        // Create some instructions with code IP
         ArticleIP::factory()->create([
             'code' => 'IP',
             'number' => '0001',
@@ -358,7 +358,7 @@ class ArticleIPControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // Crear más de 15 instrucciones para probar paginación
+        // Create more than 15 instructions to test pagination
         ArticleIP::factory()->count(20)->create(['removed' => false]);
 
         $response = $this->get(route('articles.palletization-instructions.index'));

@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::prefix('production')->group(function () {
-    // Autenticación
+    // Authentication
     Route::post('/authenticate', [ProductionPortalController::class, 'authenticate'])
         ->name('api.production.authenticate');
 
@@ -26,8 +26,8 @@ Route::prefix('production')->group(function () {
     Route::post('/check-token', [ProductionPortalController::class, 'checkToken'])
         ->name('api.production.check-token');
 
-    // Procesamiento de órdenes (requieren token - validación en controller)
-    // Nota: La validación de token se hace directamente en los controllers
+    // Order processing (requires token - validation in controller)
+    // Note: Token validation is done directly in controllers
     Route::post('/add-pallet-quantity', [ProductionPortalController::class, 'addPalletQuantity'])
         ->name('api.production.add-pallet-quantity');
 
@@ -47,9 +47,9 @@ Route::prefix('production')->group(function () {
         ->name('api.production.get-info');
 });
 
-// Pianificazione produzione (API usata dalla pagina /planning, stesso dominio).
-// La pagina GET /planning è già protetta da auth web; le chiamate API da Inertia sono same-origin.
-// Per richiedere auth anche sull'API: configurare SANCTUM_STATEFUL_DOMAINS (es. localhost:8000) in .env
+// Production planning (API used by /planning page, same domain).
+// GET /planning page is already protected by web auth; Inertia API calls are same-origin.
+// To require auth on API too: configure SANCTUM_STATEFUL_DOMAINS (e.g. localhost:8000) in .env
 // e sostituire il gruppo con: ->middleware('auth:sanctum')->group(function () {
 Route::prefix('planning')->group(function () {
     Route::post('/data', [PlanningController::class, 'data'])->name('api.planning.data');
@@ -60,8 +60,8 @@ Route::prefix('planning')->group(function () {
     Route::post('/force-reschedule', [PlanningController::class, 'forceReschedule'])->name('api.planning.force-reschedule');
 });
 
-// Ruta para imprimir foglio pallet (si se implementa)
+// Route for pallet sheet printing (if implemented)
 Route::get('/production/foglio-pallet/{uuid}/print', function ($uuid) {
-    // TODO: Implementar generación de PDF o impresión
+    // TODO: Implement PDF generation or printing
     return response()->json(['message' => 'Print functionality not yet implemented']);
 })->name('api.production.foglio-pallet.print');

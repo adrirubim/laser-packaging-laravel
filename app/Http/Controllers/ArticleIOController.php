@@ -24,7 +24,7 @@ class ArticleIOController extends Controller
     {
         $query = ArticleIO::active();
 
-        // Ricerca
+        // Search
         if ($request->has('search')) {
             $search = $request->get('search');
             $query->where(function ($q) use ($search) {
@@ -69,18 +69,18 @@ class ArticleIOController extends Controller
         $validated = $request->validate([
             'code' => 'required|string|max:255|unique:articlesio,code',
             'number' => 'nullable|string|max:255',
-            // Consentire nome file semplice (tests)
+            // Allow simple filename (tests)
             'filename' => 'nullable|string|max:255',
         ]);
 
-        // Verificare e processare file se incluso
+        // Verify and process file if included
         if ($request->hasFile('filename')) {
             $request->validate([
                 'filename' => 'file|mimes:pdf|max:10240',
             ], [
-                'filename.file' => 'Il file caricato non è valido.',
+                'filename.file' => __('validation.file_invalid'),
                 'filename.mimes' => 'Il file deve essere un PDF.',
-                'filename.max' => 'Il file non può superare 10MB.',
+                'filename.max' => __('validation.file_max_10mb'),
             ]);
 
             $file = $request->file('filename');
@@ -92,7 +92,7 @@ class ArticleIOController extends Controller
         ArticleIO::create($validated);
 
         return redirect()->route('articles.operational-instructions.index')
-            ->with('success', 'Istruzione operativa creata con successo.');
+            ->with('success', __('flash.article_io.created'));
     }
 
     /**
@@ -133,7 +133,7 @@ class ArticleIOController extends Controller
                         ->where('removed', false)
                         ->exists();
                     if ($exists) {
-                        $fail('Il codice esiste già.');
+                        $fail(__('validation.code_exists'));
                     }
                 },
             ],
@@ -141,17 +141,17 @@ class ArticleIOController extends Controller
             'filename' => 'nullable|string|max:255',
         ]);
 
-        // Verificare e processare file se incluso
+        // Verify and process file if included
         if ($request->hasFile('filename')) {
             $request->validate([
                 'filename' => 'file|mimes:pdf|max:10240',
             ], [
-                'filename.file' => 'Il file caricato non è valido.',
+                'filename.file' => __('validation.file_invalid'),
                 'filename.mimes' => 'Il file deve essere un PDF.',
-                'filename.max' => 'Il file non può superare 10MB.',
+                'filename.max' => __('validation.file_max_10mb'),
             ]);
 
-            // Rimuovere il file precedente se esiste
+            // Remove previous file if exists
             if ($operationalInstruction->filename) {
                 $oldPath = storage_path('app/operational-instructions/'.$operationalInstruction->filename);
                 if (file_exists($oldPath)) {
@@ -168,7 +168,7 @@ class ArticleIOController extends Controller
         $operationalInstruction->update($validated);
 
         return redirect()->route('articles.operational-instructions.index')
-            ->with('success', 'Istruzione operativa aggiornata con successo.');
+            ->with('success', __('flash.article_io.updated'));
     }
 
     /**
@@ -178,11 +178,11 @@ class ArticleIOController extends Controller
     {
         $operationalInstruction->update(['removed' => true]);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->articleRepository->clearFormOptionsCache();
 
         return redirect()->route('articles.operational-instructions.index')
-            ->with('success', 'Istruzione operativa eliminata con successo.');
+            ->with('success', __('flash.article_io.deleted'));
     }
 
     /**
@@ -191,13 +191,13 @@ class ArticleIOController extends Controller
     public function download(ArticleIO $operationalInstruction)
     {
         if (! $operationalInstruction->filename) {
-            return redirect()->back()->with('error', 'Nessun file disponibile per questa istruzione operativa.');
+            return redirect()->back()->with('error', __('flash.article_io.no_file'));
         }
 
         $path = storage_path('app/operational-instructions/'.$operationalInstruction->filename);
 
         if (! file_exists($path)) {
-            return redirect()->back()->with('error', 'File non trovato sul server.');
+            return redirect()->back()->with('error', __('flash.article_io.file_not_found'));
         }
 
         return response()->download($path, $operationalInstruction->filename);

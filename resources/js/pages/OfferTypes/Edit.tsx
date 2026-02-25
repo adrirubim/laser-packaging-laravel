@@ -9,6 +9,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import offerTypes from '@/routes/offer-types/index';
 import { type BreadcrumbItem } from '@/types';
@@ -29,38 +30,38 @@ export default function OfferTypesEdit({
     offerType,
     errors: serverErrors,
 }: OfferTypesEditProps) {
+    const { t } = useTranslations();
     const breadcrumbs: BreadcrumbItem[] = [
-        {
-            title: 'Offerte',
-            href: '/offers',
-        },
-        {
-            title: 'Tipi',
-            href: offerTypes.index().url,
-        },
+        { title: t('nav.offers'), href: '/offers' },
+        { title: t('nav.offer_types'), href: offerTypes.index().url },
         {
             title: offerType.name,
             href: offerTypes.show({ offerType: offerType.uuid }).url,
         },
         {
-            title: 'Modifica',
+            title: t('offer_types.edit.breadcrumb'),
             href: offerTypes.edit({ offerType: offerType.uuid }).url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Modifica Tipo di Offerta ${offerType.name}`} />
+            <Head
+                title={t('offer_types.edit.page_title', {
+                    name: offerType.name,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Modifica Tipo di Offerta</CardTitle>
+                                <CardTitle>
+                                    {t('offer_types.edit.card_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Aggiorna le informazioni del tipo di
-                                    offerta.
+                                    {t('offer_types.edit.card_description')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -83,7 +84,7 @@ export default function OfferTypesEdit({
                                             <>
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="uuid">
-                                                        UUID
+                                                        {t('common.uuid')}
                                                     </FormLabel>
                                                     <Input
                                                         id="uuid"
@@ -101,7 +102,9 @@ export default function OfferTypesEdit({
                                                         htmlFor="name"
                                                         required
                                                     >
-                                                        Nome
+                                                        {t(
+                                                            'offer_types.form.name_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="name"
@@ -110,7 +113,9 @@ export default function OfferTypesEdit({
                                                             offerType.name
                                                         }
                                                         required
-                                                        placeholder="Nome Tipo di Offerta"
+                                                        placeholder={t(
+                                                            'offer_types.form.name_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={allErrors.name}
@@ -123,8 +128,12 @@ export default function OfferTypesEdit({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Aggiornando...'
-                                                            : 'Aggiorna Tipo di Offerta'}
+                                                            ? t(
+                                                                  'offer_types.edit.submitting',
+                                                              )
+                                                            : t(
+                                                                  'offer_types.edit.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -140,7 +149,7 @@ export default function OfferTypesEdit({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

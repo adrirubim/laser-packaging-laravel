@@ -8,6 +8,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import valueTypes from '@/routes/value-types/index';
 import { type BreadcrumbItem } from '@/types';
@@ -25,18 +26,13 @@ type ValueTypesShowProps = {
 };
 
 export default function ValueTypesShow({ valueType }: ValueTypesShowProps) {
+    const { t } = useTranslations();
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
-        {
-            title: 'Configurazione',
-            href: '#',
-        },
-        {
-            title: 'Tipi di Valore',
-            href: valueTypes.index().url,
-        },
+        { title: t('nav.configuration'), href: '#' },
+        { title: t('value_types.page_title'), href: valueTypes.index().url },
         {
             title: valueType.uuid.substring(0, 8) + '...',
             href: valueTypes.show({ valueType: valueType.uuid }).url,
@@ -59,7 +55,7 @@ export default function ValueTypesShow({ valueType }: ValueTypesShowProps) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head
-                title={`Tipo di Valore ${valueType.uuid.substring(0, 8)}...`}
+                title={`${t('value_types.show.page_title')} ${valueType.uuid.substring(0, 8)}...`}
             />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
@@ -69,7 +65,7 @@ export default function ValueTypesShow({ valueType }: ValueTypesShowProps) {
                             {valueType.uuid}
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Tipo di Valore
+                            {t('value_types.show.subtitle')}
                         </p>
                     </div>
                     <div className="flex gap-2">
@@ -82,7 +78,7 @@ export default function ValueTypesShow({ valueType }: ValueTypesShowProps) {
                                 }
                             >
                                 <Edit className="mr-2 h-4 w-4" />
-                                Modifica
+                                {t('common.edit')}
                             </Link>
                         </Button>
                         <Button
@@ -91,22 +87,24 @@ export default function ValueTypesShow({ valueType }: ValueTypesShowProps) {
                             disabled={isDeleting}
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Elimina
+                            {t('common.delete')}
                         </Button>
                     </div>
                 </div>
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Dettagli Tipo di Valore</CardTitle>
+                        <CardTitle>
+                            {t('value_types.show.details_title')}
+                        </CardTitle>
                         <CardDescription>
-                            Informazioni su questo tipo di valore
+                            {t('value_types.show.details_subtitle')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div>
                             <Label className="text-sm font-medium text-muted-foreground">
-                                UUID
+                                {t('common.uuid')}
                             </Label>
                             <p className="font-mono text-sm">
                                 {valueType.uuid}
@@ -115,7 +113,7 @@ export default function ValueTypesShow({ valueType }: ValueTypesShowProps) {
 
                         <div>
                             <Label className="text-sm font-medium text-muted-foreground">
-                                ID
+                                {t('common.id')}
                             </Label>
                             <p className="text-sm">{valueType.id}</p>
                         </div>
@@ -126,8 +124,8 @@ export default function ValueTypesShow({ valueType }: ValueTypesShowProps) {
                     open={deleteDialogOpen}
                     onOpenChange={setDeleteDialogOpen}
                     onConfirm={handleDelete}
-                    title="Elimina Tipo di Valore"
-                    description="Sei sicuro di voler eliminare questo tipo di valore? Questa azione non può essere annullata."
+                    title={t('value_types.delete.title')}
+                    description={t('value_types.delete.description')}
                     itemName={valueType.uuid}
                     isLoading={isDeleting}
                 />

@@ -18,12 +18,13 @@ import {
 import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import offerOperations from '@/routes/offer-operations';
+import offers from '@/routes/offers/index';
 import { type BreadcrumbItem } from '@/types';
 import { Head, router, usePage } from '@inertiajs/react';
 import { Download } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-// Formattare interi (senza decimali)
+// Format integers (no decimals)
 const formatInteger = (value: number | null | undefined): string => {
     if (value === null || value === undefined || isNaN(value)) {
         return '—';
@@ -151,20 +152,23 @@ export default function OfferOperationsIndex() {
     };
 
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Offerte', href: '/offers' },
-        { title: 'Operazioni', href: offerOperations.index().url },
+        { title: t('nav.offers'), href: offers.index().url },
+        {
+            title: t('offer_operations.page_title'),
+            href: offerOperations.index().url,
+        },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Operazioni" />
+            <Head title={t('offer_operations.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="Operazioni"
-                    subtitle="Elenco delle operazioni attive con Cerca e filtri."
+                    title={t('offer_operations.page_title')}
+                    subtitle={t('offer_operations.index.subtitle')}
                     createHref={offerOperations.create().url}
-                    createLabel="Nuova Operazione"
+                    createLabel={t('offer_operations.create')}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -173,12 +177,14 @@ export default function OfferOperationsIndex() {
                     <div className="grid gap-3 md:grid-cols-2">
                         <div className="space-y-1">
                             <label className="text-xs font-medium text-muted-foreground">
-                                Cerca
+                                {t('common.search')}
                             </label>
                             <SearchInput
                                 value={searchValue}
                                 onChange={handleSearchChange}
-                                placeholder="Codice, descrizione..."
+                                placeholder={t(
+                                    'offer_operations.search_placeholder',
+                                )}
                                 isLoading={isSearching}
                                 onClear={clearSearch}
                             />
@@ -187,7 +193,7 @@ export default function OfferOperationsIndex() {
                         {categories.length > 0 && (
                             <div className="space-y-1">
                                 <label className="text-xs font-medium text-muted-foreground">
-                                    Categoria
+                                    {t('common.category')}
                                 </label>
                                 <Select
                                     value={
@@ -212,7 +218,9 @@ export default function OfferOperationsIndex() {
                                 >
                                     <SelectTrigger
                                         className="w-full"
-                                        aria-label="Categoria"
+                                        aria-label={t(
+                                            'offer_operations.table.category',
+                                        )}
                                     >
                                         <SelectValue
                                             placeholder={t(
@@ -245,31 +253,37 @@ export default function OfferOperationsIndex() {
                             <thead className="sticky top-0 z-10 bg-muted/80 backdrop-blur">
                                 <tr className="text-xs tracking-wide text-muted-foreground uppercase">
                                     <th className="border-b px-3 py-2 font-medium">
-                                        ID
+                                        {t('offer_operations.table.id')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        UUID
+                                        {t('offer_operations.table.uuid')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Categoria
+                                        {t('offer_operations.table.category')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Codice univoco
+                                        {t(
+                                            'offer_operations.table.unique_code',
+                                        )}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Codice operazione
+                                        {t(
+                                            'offer_operations.table.operation_code',
+                                        )}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Descrizione Operazione
+                                        {t(
+                                            'offer_operations.table.operation_description',
+                                        )}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        sec/op.
+                                        {t('offer_operations.table.sec_op')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Allegato operazione
+                                        {t('offer_operations.table.attachment')}
                                     </th>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t('offer_operations.table.actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -280,8 +294,7 @@ export default function OfferOperationsIndex() {
                                             colSpan={9}
                                             className="px-3 py-6 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessuna operazione trovata per i
-                                            filtri attuali.
+                                            {t('offer_operations.index.empty')}
                                         </td>
                                     </tr>
                                 )}
@@ -383,8 +396,8 @@ export default function OfferOperationsIndex() {
                         })
                     }
                     onConfirm={handleDeleteConfirm}
-                    title="Elimina Operazione"
-                    description="Sei sicuro di voler eliminare questa operazione? Questa azione non può essere annullata."
+                    title={t('offer_operations.delete_title')}
+                    description={t('offer_operations.delete_description')}
                     itemName={
                         deleteDialog.operation?.codice ||
                         deleteDialog.operation?.descrizione

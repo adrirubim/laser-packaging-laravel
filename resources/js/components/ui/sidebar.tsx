@@ -3,6 +3,7 @@ import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
 import { PanelLeftCloseIcon, PanelLeftOpenIcon } from "lucide-react"
 
+import { useTranslations } from "@/hooks/use-translations"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -161,6 +162,7 @@ function Sidebar({
   variant?: "sidebar" | "floating" | "inset"
   collapsible?: "offcanvas" | "icon" | "none"
 }) {
+  const { t } = useTranslations()
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
 
   if (collapsible === "none") {
@@ -182,8 +184,8 @@ function Sidebar({
     return (
       <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
         <SheetHeader className="sr-only">
-          <SheetTitle>Sidebar</SheetTitle>
-          <SheetDescription>Displays the mobile sidebar.</SheetDescription>
+          <SheetTitle>{t("ui.sidebar_title")}</SheetTitle>
+          <SheetDescription>{t("ui.sidebar_mobile_description")}</SheetDescription>
         </SheetHeader>
         <SheetContent
           data-sidebar="sidebar"
@@ -253,6 +255,7 @@ function SidebarTrigger({
   onClick,
   ...props
 }: React.ComponentProps<typeof Button>) {
+  const { t } = useTranslations()
   const { toggleSidebar, isMobile, state } = useSidebar()
 
   return (
@@ -269,22 +272,23 @@ function SidebarTrigger({
       {...props}
     >
       {isMobile || state === "collapsed" ? <PanelLeftOpenIcon /> : <PanelLeftCloseIcon />}
-      <span className="sr-only">Toggle Sidebar</span>
+      <span className="sr-only">{t("ui.sidebar_toggle")}</span>
     </Button>
   )
 }
 
 function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
+  const { t } = useTranslations()
   const { toggleSidebar } = useSidebar()
 
   return (
     <button
       data-sidebar="rail"
       data-slot="sidebar-rail"
-      aria-label="Comprimi o espandi barra laterale"
+      aria-label={t("ui.sidebar_toggle_aria")}
       tabIndex={-1}
       onClick={toggleSidebar}
-      title="Comprimi o espandi barra laterale"
+      title={t("ui.sidebar_toggle_aria")}
       className={cn(
         "hover:after:bg-sidebar-border absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] sm:flex",
         "in-data-[side=left]:cursor-w-resize in-data-[side=right]:cursor-e-resize",

@@ -315,7 +315,7 @@ class OfferOperationControllerTest extends TestCase
         $category = OfferOperationCategory::factory()->create();
         $uuid = \Illuminate\Support\Str::uuid()->toString();
 
-        // Crear un archivo mayor a 10MB
+        // Create a file larger than 10MB
         $file = \Illuminate\Http\UploadedFile::fake()->create('large.pdf', 11000); // 11MB
 
         $response = $this->post(route('offer-operations.store'), [

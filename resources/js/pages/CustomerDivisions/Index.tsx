@@ -80,7 +80,7 @@ export default function CustomerDivisionsIndex() {
         setDeleteDialog({ open: true, division });
     };
 
-    // Sincronizzare stato iniziale con i filtri del server
+    // Sync initial state with server filters
     useEffect(() => {
         queueMicrotask(() => {
             setSearchValue(filters.search ?? '');
@@ -182,21 +182,21 @@ export default function CustomerDivisionsIndex() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Divisioni Clienti',
+            title: t('customer_divisions.index.title'),
             href: customerDivisions.index().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Divisioni Clienti" />
+            <Head title={t('customer_divisions.index.title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="Divisioni Clienti"
-                    subtitle="Elenco delle divisioni clienti attive con Cerca e filtri."
+                    title={t('customer_divisions.index.title')}
+                    subtitle={t('customer_divisions.index.subtitle')}
                     createHref={customerDivisions.create().url}
-                    createLabel="Nuova Divisione"
+                    createLabel={t('customer_divisions.index.create')}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -205,12 +205,14 @@ export default function CustomerDivisionsIndex() {
                     <div className="grid gap-3 md:grid-cols-2">
                         <div className="space-y-1">
                             <label className="text-xs font-medium text-muted-foreground">
-                                Cerca
+                                {t('common.search')}
                             </label>
                             <SearchInput
                                 value={searchValue}
                                 onChange={handleSearchChange}
-                                placeholder="Nome o codice..."
+                                placeholder={t(
+                                    'customer_divisions.index.search_placeholder',
+                                )}
                                 isLoading={isSearching}
                                 onClear={clearSearch}
                             />
@@ -218,7 +220,7 @@ export default function CustomerDivisionsIndex() {
 
                         <div className="space-y-1">
                             <label className="text-xs font-medium text-muted-foreground">
-                                Cliente
+                                {t('customer_divisions.index.customer_label')}
                             </label>
                             <Select
                                 value={customerFilter || 'all'}
@@ -230,7 +232,9 @@ export default function CustomerDivisionsIndex() {
                             >
                                 <SelectTrigger
                                     className="w-full"
-                                    aria-label="Cliente"
+                                    aria-label={t(
+                                        'customer_divisions.index.customer_label',
+                                    )}
                                 >
                                     <SelectValue
                                         placeholder={t('filter.all_customers')}
@@ -259,8 +263,7 @@ export default function CustomerDivisionsIndex() {
                         <div className="block space-y-3 p-4 md:hidden">
                             {divisionsPaginated.data.length === 0 ? (
                                 <div className="py-8 text-center text-sm text-muted-foreground">
-                                    Nessuna divisione trovata per i filtri
-                                    attuali.
+                                    {t('customer_divisions.index.empty')}
                                 </div>
                             ) : (
                                 divisionsPaginated.data.map((division) => (
@@ -300,7 +303,9 @@ export default function CustomerDivisionsIndex() {
                                             {division.email && (
                                                 <div>
                                                     <span className="text-muted-foreground">
-                                                        Email:{' '}
+                                                        {t(
+                                                            'customer_divisions.index.mobile_email_label',
+                                                        )}{' '}
                                                     </span>
                                                     <span>
                                                         {division.email}
@@ -310,7 +315,9 @@ export default function CustomerDivisionsIndex() {
                                             {division.contacts && (
                                                 <div>
                                                     <span className="text-muted-foreground">
-                                                        Contatti:{' '}
+                                                        {t(
+                                                            'customer_divisions.index.mobile_contacts_label',
+                                                        )}{' '}
                                                     </span>
                                                     <span>
                                                         {division.contacts}
@@ -332,7 +339,7 @@ export default function CustomerDivisionsIndex() {
                                         UUID
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Cliente
+                                        {t('customer_divisions.table.customer')}
                                     </th>
                                     <SortableTableHeader
                                         column="name"
@@ -340,7 +347,7 @@ export default function CustomerDivisionsIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Nome
+                                        {t('customer_divisions.table.name')}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="email"
@@ -348,13 +355,13 @@ export default function CustomerDivisionsIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Email
+                                        {t('customer_divisions.table.email')}
                                     </SortableTableHeader>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Contatti
+                                        {t('customer_divisions.table.contacts')}
                                     </th>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t('customer_divisions.table.actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -365,8 +372,9 @@ export default function CustomerDivisionsIndex() {
                                             colSpan={7}
                                             className="px-3 py-6 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessuna divisione trovata per i
-                                            filtri attuali.
+                                            {t(
+                                                'customer_divisions.index.empty',
+                                            )}
                                         </td>
                                     </tr>
                                 )}
@@ -436,8 +444,8 @@ export default function CustomerDivisionsIndex() {
                         })
                     }
                     onConfirm={handleDeleteConfirm}
-                    title="Elimina Divisione Cliente"
-                    description="Sei sicuro di voler eliminare questa divisione cliente? Questa azione non può essere annullata."
+                    title={t('customer_divisions.delete_title')}
+                    description={t('customer_divisions.delete_description')}
                     itemName={deleteDialog.division?.name}
                     isLoading={isDeleting}
                 />

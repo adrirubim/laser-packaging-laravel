@@ -17,6 +17,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import { generateUUID } from '@/lib/utils/uuid';
 import offerOperations from '@/routes/offer-operations/index';
@@ -45,33 +46,38 @@ export default function OfferOperationsCreate({
         category_uuid ?? '',
     );
 
+    const { t } = useTranslations();
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: '/offers',
         },
         {
-            title: 'Operazioni',
+            title: t('offer_operations.page_title'),
             href: offerOperations.index().url,
         },
         {
-            title: 'Nuova Operazione',
+            title: t('offer_operations.create'),
             href: offerOperations.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Nuova Operazione" />
+            <Head title={t('offer_operations.create.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Nuova Operazione</CardTitle>
+                                <CardTitle>
+                                    {t('offer_operations.create.card_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Compila i campi per creare un'operazione.
+                                    {t(
+                                        'offer_operations.create.card_description',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -94,7 +100,7 @@ export default function OfferOperationsCreate({
                                                         htmlFor="uuid"
                                                         required
                                                     >
-                                                        UUID
+                                                        {t('common.uuid')}
                                                     </FormLabel>
                                                     <Input
                                                         id="uuid"
@@ -106,7 +112,9 @@ export default function OfferOperationsCreate({
                                                             )
                                                         }
                                                         required
-                                                        placeholder="UUID (es. ab7c1687-f611-8372-cef8-47ae6bdf1f65)"
+                                                        placeholder={t(
+                                                            'common.uuid_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={allErrors.uuid}
@@ -115,7 +123,9 @@ export default function OfferOperationsCreate({
 
                                                 <div className="mt-4 grid gap-2">
                                                     <FormLabel htmlFor="category_uuid">
-                                                        Categoria
+                                                        {t(
+                                                            'offer_operations.table.category',
+                                                        )}
                                                     </FormLabel>
                                                     <input
                                                         type="hidden"
@@ -139,7 +149,11 @@ export default function OfferOperationsCreate({
                                                         }
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona la categoria..." />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'filter.all_categories',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {categories.map(
@@ -169,7 +183,7 @@ export default function OfferOperationsCreate({
 
                                                 <div className="mt-4 grid gap-2">
                                                     <FormLabel htmlFor="codice">
-                                                        Codice
+                                                        {t('common.code')}
                                                     </FormLabel>
                                                     <Input
                                                         id="codice"
@@ -184,8 +198,12 @@ export default function OfferOperationsCreate({
                                                         }
                                                         placeholder={
                                                             selectedCategory
-                                                                ? 'Codice Operazione'
-                                                                : 'Seleziona prima una categoria'
+                                                                ? t(
+                                                                      'offer_operations.create.code_placeholder',
+                                                                  )
+                                                                : t(
+                                                                      'filter.all_categories',
+                                                                  )
                                                         }
                                                         maxLength={255}
                                                         aria-describedby="codice-help"
@@ -195,8 +213,12 @@ export default function OfferOperationsCreate({
                                                         className="text-xs text-muted-foreground"
                                                     >
                                                         {!selectedCategory
-                                                            ? 'Seleziona una categoria per abilitare questo campo (massimo 255 caratteri).'
-                                                            : "Inserisci il codice dell'operazione (massimo 255 caratteri)."}
+                                                            ? t(
+                                                                  'offer_operations.create.help_code',
+                                                              )
+                                                            : t(
+                                                                  'offer_operations.create.help_code_selected',
+                                                              )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -207,12 +229,16 @@ export default function OfferOperationsCreate({
 
                                                 <div className="mt-4 grid gap-2">
                                                     <FormLabel htmlFor="descrizione">
-                                                        Descrizione
+                                                        {t(
+                                                            'common.description',
+                                                        )}
                                                     </FormLabel>
                                                     <Textarea
                                                         id="descrizione"
                                                         name="descrizione"
-                                                        placeholder="Descrizione Operazione"
+                                                        placeholder={t(
+                                                            'offer_operations.create.description_placeholder',
+                                                        )}
                                                         rows={3}
                                                         aria-describedby="descrizione-help"
                                                     />
@@ -220,9 +246,9 @@ export default function OfferOperationsCreate({
                                                         id="descrizione-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci una
-                                                        descrizione dettagliata
-                                                        dell'operazione.
+                                                        {t(
+                                                            'offer_operations.create.help_description',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -233,7 +259,9 @@ export default function OfferOperationsCreate({
 
                                                 <div className="mt-4 grid gap-2">
                                                     <FormLabel htmlFor="secondi_operazione">
-                                                        Secondi operazione
+                                                        {t(
+                                                            'offer_operations.create.seconds_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="secondi_operazione"
@@ -248,10 +276,9 @@ export default function OfferOperationsCreate({
                                                         id="secondi-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci la durata
-                                                        dell'operazione in
-                                                        secondi (può includere
-                                                        decimali, es. 12.5).
+                                                        {t(
+                                                            'offer_operations.create.help_seconds',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -262,7 +289,9 @@ export default function OfferOperationsCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="filename">
-                                                        Allegato
+                                                        {t(
+                                                            'offer_operations.create.attachment_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="filename"
@@ -272,9 +301,9 @@ export default function OfferOperationsCreate({
                                                         className="cursor-pointer"
                                                     />
                                                     <p className="text-xs text-muted-foreground">
-                                                        Seleziona un allegato da
-                                                        caricare per questa
-                                                        operazione
+                                                        {t(
+                                                            'offer_operations.create.help_attachment',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -289,8 +318,10 @@ export default function OfferOperationsCreate({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Creando...'
-                                                            : 'Crea Operazione'}
+                                                            ? t('common.saving')
+                                                            : t(
+                                                                  'offer_operations.create.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -302,7 +333,7 @@ export default function OfferOperationsCreate({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

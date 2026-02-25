@@ -9,6 +9,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import articleCategories from '@/routes/article-categories/index';
 import { type BreadcrumbItem } from '@/types';
@@ -29,9 +30,11 @@ export default function ArticleCategoriesEdit({
     category,
     errors: serverErrors,
 }: ArticleCategoriesEditProps) {
+    const { t } = useTranslations();
+
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Categorie Articoli',
+            title: t('article_categories.breadcrumb'),
             href: articleCategories.index().url,
         },
         {
@@ -40,7 +43,7 @@ export default function ArticleCategoriesEdit({
                 .url,
         },
         {
-            title: 'Modifica',
+            title: t('article_categories.edit.breadcrumb'),
             href: articleCategories.edit({ articleCategory: category.uuid })
                 .url,
         },
@@ -48,7 +51,11 @@ export default function ArticleCategoriesEdit({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Modifica Categoria ${category.name}`} />
+            <Head
+                title={t('article_categories.edit.page_title', {
+                    name: category.name,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
@@ -56,10 +63,12 @@ export default function ArticleCategoriesEdit({
                         <Card>
                             <CardHeader>
                                 <CardTitle>
-                                    Modifica Categoria Articolo
+                                    {t('article_categories.edit.card_title')}
                                 </CardTitle>
                                 <CardDescription>
-                                    Aggiorna le informazioni della categoria.
+                                    {t(
+                                        'article_categories.edit.card_description',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -100,7 +109,9 @@ export default function ArticleCategoriesEdit({
                                                         htmlFor="name"
                                                         required
                                                     >
-                                                        Nome Categoria
+                                                        {t(
+                                                            'article_categories.form.name_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="name"
@@ -109,7 +120,9 @@ export default function ArticleCategoriesEdit({
                                                         defaultValue={
                                                             category.name
                                                         }
-                                                        placeholder="Nome Categoria"
+                                                        placeholder={t(
+                                                            'article_categories.form.name_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="name-help"
                                                     />
@@ -117,9 +130,9 @@ export default function ArticleCategoriesEdit({
                                                         id="name-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci il nome della
-                                                        categoria di articolo
-                                                        (massimo 255 caratteri).
+                                                        {t(
+                                                            'article_categories.form.name_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.name}
@@ -142,15 +155,19 @@ export default function ArticleCategoriesEdit({
                                                         }
                                                         disabled={processing}
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                     <Button
                                                         type="submit"
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Aggiornando...'
-                                                            : 'Aggiorna Categoria'}
+                                                            ? t(
+                                                                  'article_categories.edit.submitting',
+                                                              )
+                                                            : t(
+                                                                  'article_categories.edit.submit',
+                                                              )}
                                                     </Button>
                                                 </div>
                                             </>

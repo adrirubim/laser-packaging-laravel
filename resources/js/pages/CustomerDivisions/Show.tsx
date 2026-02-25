@@ -8,6 +8,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import customerDivisions from '@/routes/customer-divisions/index';
 import customerShippingAddresses from '@/routes/customer-shipping-addresses/index';
@@ -47,12 +48,13 @@ type CustomerDivisionsShowProps = {
 export default function CustomerDivisionsShow({
     division,
 }: CustomerDivisionsShowProps) {
+    const { t } = useTranslations();
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Divisioni Clienti',
+            title: t('customer_divisions.index.title'),
             href: customerDivisions.index().url,
         },
         {
@@ -80,7 +82,11 @@ export default function CustomerDivisionsShow({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Divisione Cliente ${division.name}`} />
+            <Head
+                title={t('customer_divisions.show.page_title', {
+                    name: division.name,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
@@ -88,7 +94,8 @@ export default function CustomerDivisionsShow({
                         <h1 className="text-2xl font-bold">{division.name}</h1>
                         {division.code && (
                             <p className="mt-1 text-sm text-muted-foreground">
-                                Codice: {division.code}
+                                {t('customer_divisions.show.code_label')}{' '}
+                                {division.code}
                             </p>
                         )}
                     </div>
@@ -101,7 +108,7 @@ export default function CustomerDivisionsShow({
                                     }).url
                                 }
                             >
-                                Modifica
+                                {t('common.edit')}
                             </Link>
                         </Button>
                         <Button
@@ -109,7 +116,7 @@ export default function CustomerDivisionsShow({
                             onClick={() => setDeleteDialogOpen(true)}
                             disabled={isDeleting}
                         >
-                            Elimina
+                            {t('common.delete')}
                         </Button>
                     </div>
                 </div>
@@ -117,15 +124,17 @@ export default function CustomerDivisionsShow({
                 <div className="grid gap-4 md:grid-cols-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Dettagli Divisione</CardTitle>
+                            <CardTitle>
+                                {t('customer_divisions.show.details_title')}
+                            </CardTitle>
                             <CardDescription>
-                                Informazioni di base su questa divisione
+                                {t('customer_divisions.show.details_subtitle')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    Nome
+                                    {t('customer_divisions.show.name_label')}
                                 </Label>
                                 <p className="text-lg font-semibold">
                                     {division.name}
@@ -135,7 +144,7 @@ export default function CustomerDivisionsShow({
                             {division.code && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Codice
+                                        {t('common.code')}
                                     </Label>
                                     <p className="font-mono">{division.code}</p>
                                 </div>
@@ -145,16 +154,20 @@ export default function CustomerDivisionsShow({
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>Informazioni Cliente</CardTitle>
+                            <CardTitle>
+                                {t('customer_divisions.show.customer_title')}
+                            </CardTitle>
                             <CardDescription>
-                                Dettagli del cliente di appartenenza
+                                {t('customer_divisions.show.customer_subtitle')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {division.customer && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Cliente
+                                        {t(
+                                            'customer_divisions.show.customer_label',
+                                        )}
                                     </Label>
                                     <p className="text-lg font-semibold">
                                         {division.customer.company_name}
@@ -173,9 +186,15 @@ export default function CustomerDivisionsShow({
                     return addresses.length > 0 ? (
                         <Card>
                             <CardHeader>
-                                <CardTitle>Indirizzi di Spedizione</CardTitle>
+                                <CardTitle>
+                                    {t(
+                                        'customer_divisions.show.shipping_title',
+                                    )}
+                                </CardTitle>
                                 <CardDescription>
-                                    Indirizzi associati a questa divisione
+                                    {t(
+                                        'customer_divisions.show.shipping_subtitle',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -217,8 +236,9 @@ export default function CustomerDivisionsShow({
                         <Card>
                             <CardContent className="py-8 text-center text-muted-foreground">
                                 <p>
-                                    Nessun indirizzo di spedizione associato a
-                                    questa divisione.
+                                    {t(
+                                        'customer_divisions.show.shipping_empty',
+                                    )}
                                 </p>
                             </CardContent>
                         </Card>
@@ -231,14 +251,8 @@ export default function CustomerDivisionsShow({
                 onOpenChange={setDeleteDialogOpen}
                 onConfirm={handleDeleteConfirm}
                 isDeleting={isDeleting}
-                title="Conferma eliminazione"
-                description={
-                    <>
-                        Sei sicuro di voler eliminare questa divisione? Questa
-                        azione non può essere annullata e i dati associati
-                        verranno rimossi definitivamente.
-                    </>
-                }
+                title={t('customer_divisions.delete_confirm_title')}
+                description={t('customer_divisions.delete_confirm_description')}
                 itemName={division.name}
             />
         </AppLayout>

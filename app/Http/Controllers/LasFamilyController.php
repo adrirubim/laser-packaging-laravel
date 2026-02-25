@@ -50,21 +50,21 @@ class LasFamilyController extends Controller
             'code' => 'required|string|max:255|unique:offerlasfamily,code',
             'name' => 'required|string|max:255',
         ], [
-            'uuid.required' => 'L\'UUID è obbligatorio.',
+            'uuid.required' => __('validation.uuid_required'),
             'uuid.uuid' => 'L\'UUID deve essere un formato UUID valido.',
-            'uuid.unique' => 'Questo UUID è già utilizzato.',
-            'code.required' => 'Il Codice è obbligatorio.',
-            'code.unique' => 'Questo Codice è già utilizzato.',
-            'name.required' => 'Il Nome è obbligatorio.',
+            'uuid.unique' => __('validation.uuid_unique'),
+            'code.required' => __('validation.code_required'),
+            'code.unique' => __('validation.code_unique'),
+            'name.required' => __('validation.name_required'),
         ]);
 
         LasFamily::create($validated);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->offerRepository->clearFormOptionsCache();
 
         return redirect()->route('las-families.index')
-            ->with('success', 'Famiglia LAS creata con successo.');
+            ->with('success', __('flash.las_family.created'));
     }
 
     public function show(LasFamily $lasFamily): Response
@@ -89,26 +89,26 @@ class LasFamilyController extends Controller
             'name' => 'required|string|max:255',
         ], [
             'uuid.uuid' => 'L\'UUID deve essere un formato UUID valido.',
-            'uuid.unique' => 'Questo UUID è già utilizzato.',
-            'code.required' => 'Il Codice è obbligatorio.',
-            'code.unique' => 'Questo Codice è già utilizzato.',
-            'name.required' => 'Il Nome è obbligatorio.',
+            'uuid.unique' => __('validation.uuid_unique'),
+            'code.required' => __('validation.code_required'),
+            'code.unique' => __('validation.code_unique'),
+            'name.required' => __('validation.name_required'),
         ]);
 
         $lasFamily->update($validated);
 
         return redirect()->route('las-families.index')
-            ->with('success', 'Famiglia LAS aggiornata con successo.');
+            ->with('success', __('flash.las_family.updated'));
     }
 
     public function destroy(LasFamily $lasFamily)
     {
         $lasFamily->update(['removed' => true]);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->offerRepository->clearFormOptionsCache();
 
         return redirect()->route('las-families.index')
-            ->with('success', 'Famiglia LAS eliminata con successo.');
+            ->with('success', __('flash.las_family.deleted'));
     }
 }

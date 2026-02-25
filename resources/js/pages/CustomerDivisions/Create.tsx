@@ -69,14 +69,16 @@ export default function CustomerDivisionsCreate({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Crea Divisione Cliente" />
+            <Head title={t('customer_divisions.create.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Inserimento</CardTitle>
+                                <CardTitle>
+                                    {t('customer_divisions.create.card_title')}
+                                </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <Form
@@ -98,7 +100,9 @@ export default function CustomerDivisionsCreate({
                                                             htmlFor="uuid"
                                                             required
                                                         >
-                                                            UUID
+                                                            {t(
+                                                                'customer_divisions.form.uuid_label',
+                                                            )}
                                                         </FormLabel>
                                                         <Button
                                                             type="button"
@@ -109,7 +113,9 @@ export default function CustomerDivisionsCreate({
                                                             }
                                                             className="h-7 text-xs"
                                                         >
-                                                            Rigenera
+                                                            {t(
+                                                                'customer_divisions.form.uuid_regenerate',
+                                                            )}
                                                         </Button>
                                                     </div>
                                                     <Input
@@ -122,7 +128,9 @@ export default function CustomerDivisionsCreate({
                                                             )
                                                         }
                                                         required
-                                                        placeholder="UUID (es. 550e8400-e29b-41d4-a716-446655440000)"
+                                                        placeholder={t(
+                                                            'customer_divisions.form.uuid_placeholder',
+                                                        )}
                                                         maxLength={36}
                                                         aria-describedby="uuid-help"
                                                     />
@@ -130,10 +138,9 @@ export default function CustomerDivisionsCreate({
                                                         id="uuid-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        UUID generato
-                                                        automaticamente. Puoi
-                                                        modificarlo manualmente
-                                                        se necessario.
+                                                        {t(
+                                                            'customer_divisions.form.uuid_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.uuid}
@@ -145,7 +152,9 @@ export default function CustomerDivisionsCreate({
                                                         htmlFor="customer_uuid"
                                                         required
                                                     >
-                                                        Cliente
+                                                        {t(
+                                                            'customer_divisions.form.customer_label',
+                                                        )}
                                                     </FormLabel>
                                                     <input
                                                         type="hidden"
@@ -163,7 +172,11 @@ export default function CustomerDivisionsCreate({
                                                         required
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona il cliente..." />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'customer_divisions.form.customer_placeholder',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {customers.map(
@@ -196,13 +209,17 @@ export default function CustomerDivisionsCreate({
                                                         htmlFor="name"
                                                         required
                                                     >
-                                                        Nome
+                                                        {t(
+                                                            'customer_divisions.form.name_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="name"
                                                         name="name"
                                                         required
-                                                        placeholder="Nome"
+                                                        placeholder={t(
+                                                            'customer_divisions.form.name_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="name-help"
                                                     />
@@ -210,9 +227,9 @@ export default function CustomerDivisionsCreate({
                                                         id="name-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci il nome della
-                                                        divisione (massimo 255
-                                                        caratteri).
+                                                        {t(
+                                                            'customer_divisions.form.name_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.name}
@@ -221,12 +238,16 @@ export default function CustomerDivisionsCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="code">
-                                                        Codice
+                                                        {t(
+                                                            'customer_divisions.form.code_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="code"
                                                         name="code"
-                                                        placeholder="Codice"
+                                                        placeholder={t(
+                                                            'customer_divisions.form.code_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="code-help"
                                                     />
@@ -234,10 +255,9 @@ export default function CustomerDivisionsCreate({
                                                         id="code-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci un codice
-                                                        opzionale per la
-                                                        divisione (massimo 255
-                                                        caratteri).
+                                                        {t(
+                                                            'customer_divisions.form.code_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.code}
@@ -246,7 +266,9 @@ export default function CustomerDivisionsCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="email">
-                                                        Email
+                                                        {t(
+                                                            'customer_divisions.form.email_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="email"
@@ -261,7 +283,9 @@ export default function CustomerDivisionsCreate({
                                                         onBlur={
                                                             emailValidation.onBlur
                                                         }
-                                                        placeholder="Email"
+                                                        placeholder={t(
+                                                            'customer_divisions.form.email_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="email-help"
                                                         aria-invalid={
@@ -281,9 +305,9 @@ export default function CustomerDivisionsCreate({
                                                         id="email-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci l'indirizzo
-                                                        email della divisione
-                                                        (massimo 255 caratteri).
+                                                        {t(
+                                                            'customer_divisions.form.email_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -294,12 +318,16 @@ export default function CustomerDivisionsCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="contacts">
-                                                        Contatti
+                                                        {t(
+                                                            'customer_divisions.form.contacts_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="contacts"
                                                         name="contacts"
-                                                        placeholder="Contatti"
+                                                        placeholder={t(
+                                                            'customer_divisions.form.contacts_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="contacts-help"
                                                     />
@@ -307,9 +335,9 @@ export default function CustomerDivisionsCreate({
                                                         id="contacts-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci informazioni
-                                                        di contatto opzionali
-                                                        (massimo 255 caratteri).
+                                                        {t(
+                                                            'customer_divisions.form.contacts_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -324,8 +352,8 @@ export default function CustomerDivisionsCreate({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Salvando...'
-                                                            : 'Salva'}
+                                                            ? t('common.saving')
+                                                            : t('common.save')}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -337,7 +365,7 @@ export default function CustomerDivisionsCreate({
                                                             )
                                                         }
                                                     >
-                                                        Chiudi
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

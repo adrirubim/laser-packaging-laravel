@@ -87,7 +87,7 @@ class OfferController extends Controller
 
         $offers = $query->paginate($request->get('per_page', 15));
 
-        // Assicurare che sia incluso l'accessor approval_status_label
+        // Ensure approval_status_label accessor is included
         $offers->getCollection()->transform(function ($offer) {
             $offer->append('approval_status_label');
 
@@ -111,10 +111,10 @@ class OfferController extends Controller
         $customers = Customer::active()->orderBy('company_name')->get(['uuid', 'code', 'company_name']);
         $divisions = [];
 
-        // Ottenere opzioni formulario dal repository (con cache)
+        // Get form options from repository (cached)
         $formOptions = $this->offerRepository->getFormOptions();
 
-        // Se c'è duplicate_from, caricare dati dell'offerta originale
+        // If duplicate_from exists, load data from original offer
         $sourceOffer = null;
         if ($request->has('duplicate_from')) {
             try {
@@ -134,7 +134,7 @@ class OfferController extends Controller
                     ])
                     ->firstOrFail();
 
-                // Caricare divisioni del cliente dell'offerta originale
+                // Load divisions of the original offer's customer
                 if ($sourceOffer->customer_uuid) {
                     $divisions = CustomerDivision::where('customer_uuid', $sourceOffer->customer_uuid)
                         ->where('removed', false)
@@ -146,7 +146,7 @@ class OfferController extends Controller
                 // Continuare senza dati di duplicazione in caso di errore
             }
         } else {
-            // Se non è duplicazione, caricare divisioni in base a customer_uuid se presente
+            // If not duplication, load divisions based on customer_uuid if present
             if ($request->has('customer_uuid')) {
                 $divisions = CustomerDivision::where('customer_uuid', $request->get('customer_uuid'))
                     ->where('removed', false)
@@ -155,10 +155,10 @@ class OfferController extends Controller
             }
         }
 
-        // Genera il numero di offerta automaticamente (solo se non è duplicazione)
+        // Generate offer number automatically (only if not duplication)
         $offerNumber = $sourceOffer ? $sourceOffer->offer_number : $this->offerNumberService->generateNext();
 
-        // Nuova offerta da cliente: precompilare cliente quando customer_uuid è nell'URL
+        // New offer from customer: prefill customer when customer_uuid is in URL
         $initialCustomerUuid = ! $sourceOffer && $request->has('customer_uuid') ? $request->get('customer_uuid') : null;
 
         return Inertia::render('Offers/Create', [
@@ -243,18 +243,18 @@ class OfferController extends Controller
     {
         $result = $this->createOfferAction->execute($request->validated());
 
-        // Se l'action restituisce un errore, reindirizzare con errori
+        // If the action returns an error, redirect with errors
         if (is_array($result) && isset($result['error']) && $result['error']) {
             return back()->withErrors([
                 $result['field'] => $result['message'],
             ])->withInput();
         }
 
-        // Invalidare cache opzioni formulari (le offerte sono in cache)
+        // Invalidate form options cache (offers are cached)
         $this->articleRepository->clearFormOptionsCache();
 
         return redirect()->route('offers.index')
-            ->with('success', 'Offerta creata con successo.');
+            ->with('success', __('flash.offer.created'));
     }
 
     /**
@@ -262,7 +262,7 @@ class OfferController extends Controller
      */
     public function show(Offer $offer): Response
     {
-        // Caricare tutte le relazioni necessarie
+        // Load all necessary relations
         $offer->load([
             'customer',
             'customerDivision',
@@ -273,8 +273,8 @@ class OfferController extends Controller
             'articlesDirect',
         ]);
 
-        // Caricare relazioni manualmente senza applicare scope che filtrino per removed
-        // Così si caricano anche se marcate come removed
+        // Load relations manually without applying scope that filters by removed
+        // So they load even when marked as removed
         if ($offer->order_type_uuid) {
             $typeOrder = \App\Models\OfferTypeOrder::withoutGlobalScopes()
                 ->where('uuid', $offer->order_type_uuid)
@@ -317,7 +317,7 @@ class OfferController extends Controller
         $operationsList = [];
         $totalSec = 0;
 
-        // Caricare operationList senza applicare scope che filtrino per removed
+        // Load operationList without applying scope that filters by removed
         $operationLists = \App\Models\OfferOperationList::withoutGlobalScopes()
             ->where('offer_uuid', $offer->uuid)
             ->where('removed', false)
@@ -342,8 +342,8 @@ class OfferController extends Controller
                     'uuid' => $category?->uuid,
                     'name' => $categoryName,
                 ],
-                'codice_univoco' => $operation->codice_univoco ?? 'N/A',
-                'descrizione' => $operation->descrizione ?? 'N/A',
+                'codice_univoco' => $operation->codice_univoco ?? __('common.not_available'),
+                'descrizione' => $operation->descrizione ?? __('common.not_available'),
                 'secondi_operazione' => $operation->secondi_operazione ?? 0,
                 'num_op' => $operationList->num_op,
                 'total_sec' => $opTotalSec,
@@ -351,7 +351,7 @@ class OfferController extends Controller
             ];
         }
 
-        // Calcolare campi come nel legacy
+        // Calculate fields as in legacy
         $unexpected = $totalSec * 0.05;
         $totalTheoreticalTime = $totalSec + $unexpected;
 
@@ -374,7 +374,7 @@ class OfferController extends Controller
 
         $productionAveragePz = $productionAverageCfz * $offer->piece;
 
-        // Calcolare rate_cfz e rate_pz (come in Create.tsx)
+        // Calculate rate_cfz and rate_pz (as in Create.tsx)
         $rateCfz = 0;
         if ($productionAverageCfz > 0 && $offer->expected_revenue) {
             $rateCfz = $offer->expected_revenue / $productionAverageCfz;
@@ -404,7 +404,7 @@ class OfferController extends Controller
             $totalRatePz = $totalRateCfz / $offer->piece;
         }
 
-        // Aggiungere campi calcolati al modello
+        // Add calculated fields to model
         $offer->setAttribute('operations', $operationsList);
         $offer->setAttribute('theoretical_time_cfz', $totalSec);
         $offer->setAttribute('unexpected', $unexpected);
@@ -423,11 +423,11 @@ class OfferController extends Controller
         $offer->setAttribute('total_rate_pz', $totalRatePz);
         $offer->setAttribute('approval_status', $offer->approval_status_label);
 
-        // Assicurare che le relazioni siano incluse nella serializzazione
+        // Ensure relations are included in serialization
         $offer->setRelation('articles', $allArticles);
 
-        // Assicurare che le relazioni si carichino correttamente (non usare loadMissing perché può sovrascrivere)
-        // Verificare e caricare relazioni che potrebbero non essere state caricate
+        // Ensure relations load correctly (do not use loadMissing as it can overwrite)
+        // Verify and load relations that might not have been loaded
         if ($offer->activity_uuid && ! $offer->activity) {
             $activity = \App\Models\OfferActivity::withoutGlobalScopes()
                 ->where('uuid', $offer->activity_uuid)
@@ -449,9 +449,9 @@ class OfferController extends Controller
             $offer->setRelation('seasonality', $seasonality);
         }
 
-        // Assicurare che gli UUID siano inclusi esplicitamente nella serializzazione
+        // Ensure UUIDs are explicitly included in serialization
         $offerArray = $offer->toArray();
-        // Assicurare che i campi UUID e le relazioni siano presenti
+        // Ensure UUID fields and relations are present
         $offerArray['activity_uuid'] = $offer->activity_uuid;
         $offerArray['sector_uuid'] = $offer->sector_uuid;
         $offerArray['seasonality_uuid'] = $offer->seasonality_uuid;
@@ -461,7 +461,7 @@ class OfferController extends Controller
         $offerArray['lsresource_uuid'] = $offer->lsresource_uuid;
         $offerArray['customerdivision_uuid'] = $offer->customerdivision_uuid;
 
-        // Assicurare che le relazioni siano incluse nell'array
+        // Ensure relations are included in the array
         if ($offer->typeOrder) {
             $offerArray['typeOrder'] = [
                 'uuid' => $offer->typeOrder->uuid,
@@ -511,13 +511,13 @@ class OfferController extends Controller
      */
     public function downloadPdf(Offer $offer)
     {
-        // Creare directory temporanea se non esiste (come nel legacy)
+        // Create temp directory if it doesn't exist (as in legacy)
         $tmpDir = storage_path('app/tmp/offers');
         if (! is_dir($tmpDir)) {
             mkdir($tmpDir, 0755, true);
         }
 
-        // Caricare la risorsa L&S se non è caricata
+        // Load L&S resource if not loaded
         if ($offer->lsresource_uuid && ! $offer->lsResource) {
             $lsResource = \App\Models\OfferLsResource::withoutGlobalScopes()
                 ->where('uuid', $offer->lsresource_uuid)
@@ -525,14 +525,14 @@ class OfferController extends Controller
             $offer->setRelation('lsResource', $lsResource);
         }
 
-        // Caricare operationList senza applicare scope che filtrino per removed
+        // Load operationList without applying scope that filters by removed
         $operationLists = \App\Models\OfferOperationList::withoutGlobalScopes()
             ->where('offer_uuid', $offer->uuid)
             ->where('removed', false)
             ->with('operation')
             ->get();
 
-        // Calcolare totale secondi operazioni (come nel legacy)
+        // Calculate total operation seconds (as in legacy)
         $totalSec = 0;
         foreach ($operationLists as $operationList) {
             $operation = $operationList->operation;
@@ -586,14 +586,14 @@ class OfferController extends Controller
             'ls_other_costs' => (float) ($offer->ls_other_costs ?? 0),
         ];
 
-        // Renderizzare la vista Blade in HTML (equivalente a render2string del legacy)
+        // Render Blade view to HTML (equivalent to legacy render2string)
         $html = view('offers.pdf', $data)->render();
 
-        // Salvare HTML in file temporaneo
+        // Save HTML to temporary file
         $tmpFile = $tmpDir.'/'.$offer->uuid.'.html';
         file_put_contents($tmpFile, $html);
 
-        // Ottenere percorso wkhtmltopdf da config o usare comando di default
+        // Get wkhtmltopdf path from config or use default command
         $wkhtmltopdfPath = config('app.wkhtmltopdf_path', 'wkhtmltopdf');
 
         // Titolo del PDF
@@ -603,8 +603,8 @@ class OfferController extends Controller
             optional($offer->offer_date)->format('d.m.Y') ?? date('d.m.Y')
         );
 
-        // Eseguire wkhtmltopdf (come nel legacy)
-        // Il comando genera il PDF su stdout (-)
+        // Execute wkhtmltopdf (as in legacy)
+        // Command outputs PDF to stdout (-)
         $command = sprintf(
             'ulimit -n 4096; %s --title "%s" %s -',
             escapeshellarg($wkhtmltopdfPath),
@@ -616,18 +616,18 @@ class OfferController extends Controller
 
         $pdf = shell_exec($command);
 
-        // Rimuovere file temporaneo
+        // Remove temporary file
         if (file_exists($tmpFile)) {
             @unlink($tmpFile);
         }
 
         if ($pdf === null || empty($pdf)) {
-            abort(500, 'Errore nella generazione del PDF. Verifica che wkhtmltopdf sia installato e configurato correttamente.');
+            abort(500, __('flash.wkhtmltopdf_error'));
         }
 
         $fileName = sprintf('offerta_%s.pdf', $offer->offer_number);
 
-        // Usare Content-Disposition: attachment per forzare sempre il dialogo di download
+        // Use Content-Disposition: attachment to always force download dialog
         // e evitare che il browser apra il PDF automaticamente
         return response($pdf, 200, [
             'Content-Type' => 'application/pdf',
@@ -645,7 +645,7 @@ class OfferController extends Controller
      */
     public function edit(Offer $offer): Response
     {
-        // Caricare tutte le relazioni necessarie per il modulo di modifica
+        // Load all relationships required for the edit form
         $offer->load([
             'customer',
             'customerDivision',
@@ -654,8 +654,8 @@ class OfferController extends Controller
             'seasonality',
         ]);
 
-        // Caricare relazioni manualmente senza applicare scope che filtrino per removed
-        // Così si caricano anche se marcate come removed
+        // Load relations manually without applying scope that filters by removed
+        // So they load even when marked as removed
         if ($offer->order_type_uuid) {
             $typeOrder = \App\Models\OfferTypeOrder::withoutGlobalScopes()
                 ->where('uuid', $offer->order_type_uuid)
@@ -718,11 +718,11 @@ class OfferController extends Controller
             ->orderBy('name')
             ->get(['uuid', 'name']);
 
-        // Ottenere opzioni formulario dal repository (con cache)
+        // Get form options from repository (cached)
         $formOptions = $this->offerRepository->getFormOptions();
 
-        // Se l'offerta ha UUID non presenti nelle opzioni (perché rimossi),
-        // aggiungerli alle opzioni per mostrarli nel dropdown
+        // If offer has UUIDs not in options (because removed),
+        // add them to options to display in dropdown
         if ($offer->activity_uuid) {
             $activityInOptions = collect($formOptions['activities'])->pluck('uuid')->contains($offer->activity_uuid);
             if (! $activityInOptions) {
@@ -808,7 +808,7 @@ class OfferController extends Controller
         }
 
         // Preparare operazioni esistenti per il modulo
-        // Caricare operationList senza applicare scope che filtrino per removed
+        // Load operationList without applying scope that filters by removed
         $operationLists = \App\Models\OfferOperationList::withoutGlobalScopes()
             ->where('offer_uuid', $offer->uuid)
             ->where('removed', false)
@@ -833,9 +833,9 @@ class OfferController extends Controller
             ];
         }
 
-        // Assicurare che gli UUID siano inclusi esplicitamente nella serializzazione
+        // Ensure UUIDs are explicitly included in serialization
         $offerArray = $offer->toArray();
-        // Assicurare che i campi UUID siano presenti (nel caso non siano serializzati)
+        // Ensure UUID fields are present (in case they're not serialized)
         $offerArray['activity_uuid'] = $offer->activity_uuid;
         $offerArray['sector_uuid'] = $offer->sector_uuid;
         $offerArray['seasonality_uuid'] = $offer->seasonality_uuid;
@@ -868,18 +868,18 @@ class OfferController extends Controller
         try {
             $result = $this->updateOfferAction->execute($offer, $request->validated());
 
-            // Se l'action restituisce un errore, reindirizzare con errori
+            // If the action returns an error, redirect with errors
             if (is_array($result) && isset($result['error']) && $result['error']) {
                 return back()->withErrors([
                     $result['field'] => $result['message'],
                 ])->withInput();
             }
 
-            // Ricaricare l'offerta per assicurare che i dati siano aggiornati
+            // Reload offer to ensure data is up to date
             $offer->refresh();
 
             return redirect()->route('offers.show', $offer->uuid)
-                ->with('success', 'Offerta aggiornata con successo.');
+                ->with('success', __('flash.offer.updated'));
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->errors())->withInput();
         }
@@ -892,28 +892,28 @@ class OfferController extends Controller
      */
     public function destroy(Offer $offer)
     {
-        // Validare che non abbia articoli associati (cercare sia in pivot che in relazione diretta)
+        // Validate it has no associated articles (search both pivot and direct relation)
         $hasArticlesInPivot = $offer->articles()->exists();
         $hasArticlesDirect = $offer->articlesDirect()->exists();
 
         if ($hasArticlesInPivot || $hasArticlesDirect) {
             return redirect()->route('offers.index')
-                ->with('error', 'Non è possibile eliminare l\'offerta. Ha articoli associati.');
+                ->with('error', __('flash.offer.cannot_delete'));
         }
 
         $offer->update(['removed' => true]);
 
-        // Invalidare cache opzioni formulari (le offerte sono in cache)
+        // Invalidate form options cache (offers are cached)
         $this->articleRepository->clearFormOptionsCache();
-        // Invalidare cache ordini (gli articoli sono in cache ordini)
+        // Invalidate orders cache (articles are in orders cache)
         $this->orderRepository->clearFormOptionsCache();
-        // Invalidare cache indirizzi di spedizione per tutti gli articoli di questa offerta
+        // Invalidate shipping addresses cache for all articles in this offer
         $offer->articles()->each(function ($article) {
             $this->orderRepository->clearShippingAddressesCache($article->uuid);
         });
 
         return redirect()->route('offers.index')
-            ->with('success', 'Offerta eliminata con successo.');
+            ->with('success', __('flash.offer.deleted'));
     }
 
     /**

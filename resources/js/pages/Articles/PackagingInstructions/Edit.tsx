@@ -16,6 +16,7 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import articles from '@/routes/articles/index';
 import { type BreadcrumbItem } from '@/types';
@@ -38,36 +39,44 @@ type PackagingInstructionsEditProps = {
 export default function PackagingInstructionsEdit({
     errors: serverErrors,
 }: PackagingInstructionsEditProps) {
+    const { t } = useTranslations();
     const { props } = usePage<PackagingInstructionsEditProps>();
     const { instruction } = props;
     const [selectedFileName, setSelectedFileName] = useState<string | null>(
         null,
     );
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
+    const instructionCode = instruction.code + (instruction.number || '');
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Articoli',
+            title: t('nav.articles'),
             href: articles.index().url,
         },
         {
-            title: 'Istruzioni di Confezionamento',
-            href: '/articles/packaging-instructions',
+            title: t('articles.packaging_instructions.index.title'),
+            href: articles.packagingInstructions.index().url,
         },
         {
-            title: instruction.code + (instruction.number || ''),
-            href: `/articles/packaging-instructions/${instruction.uuid}`,
+            title: instructionCode,
+            href: articles.packagingInstructions.show({
+                packagingInstruction: instruction.uuid,
+            }).url,
         },
         {
-            title: 'Modifica',
-            href: `/articles/packaging-instructions/${instruction.uuid}/edit`,
+            title: t('articles.packaging_instructions.edit.breadcrumb'),
+            href: articles.packagingInstructions.edit({
+                packagingInstruction: instruction.uuid,
+            }).url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head
-                title={`Modifica Istruzione ${instruction.code}${instruction.number || ''}`}
+                title={t('articles.packaging_instructions.edit.page_title', {
+                    code: instructionCode,
+                })}
             />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
@@ -76,10 +85,14 @@ export default function PackagingInstructionsEdit({
                         <Card>
                             <CardHeader>
                                 <CardTitle>
-                                    Modifica Istruzione di Confezionamento
+                                    {t(
+                                        'articles.packaging_instructions.edit.card_title',
+                                    )}
                                 </CardTitle>
                                 <CardDescription>
-                                    Modifica i dettagli dell'istruzione
+                                    {t(
+                                        'articles.packaging_instructions.edit.card_description',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -115,7 +128,9 @@ export default function PackagingInstructionsEdit({
                                                             htmlFor="code"
                                                             required
                                                         >
-                                                            Codice
+                                                            {t(
+                                                                'articles.packaging_instructions.form.code_label',
+                                                            )}
                                                         </FormLabel>
                                                         <Tooltip>
                                                             <TooltipTrigger
@@ -125,9 +140,9 @@ export default function PackagingInstructionsEdit({
                                                             </TooltipTrigger>
                                                             <TooltipContent>
                                                                 <p>
-                                                                    Il codice
-                                                                    deve essere
-                                                                    univoco
+                                                                    {t(
+                                                                        'articles.packaging_instructions.form.code_tooltip',
+                                                                    )}
                                                                 </p>
                                                             </TooltipContent>
                                                         </Tooltip>
@@ -149,7 +164,9 @@ export default function PackagingInstructionsEdit({
                                                 <div className="grid gap-2">
                                                     <div className="flex items-center gap-2">
                                                         <FormLabel htmlFor="number">
-                                                            Numero
+                                                            {t(
+                                                                'articles.packaging_instructions.form.number_label',
+                                                            )}
                                                         </FormLabel>
                                                     </div>
                                                     <Input
@@ -170,13 +187,16 @@ export default function PackagingInstructionsEdit({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="filename">
-                                                        Allegato
+                                                        {t(
+                                                            'articles.packaging_instructions.form.attachment_label',
+                                                        )}
                                                     </FormLabel>
                                                     {instruction.filename && (
                                                         <div className="mb-2 rounded-md bg-muted p-2">
                                                             <p className="mb-1 text-xs text-muted-foreground">
-                                                                Allegato
-                                                                attuale:
+                                                                {t(
+                                                                    'articles.packaging_instructions.edit.current_attachment',
+                                                                )}
                                                             </p>
                                                             <p className="font-mono text-sm">
                                                                 {
@@ -208,13 +228,18 @@ export default function PackagingInstructionsEdit({
                                                         className="text-xs text-muted-foreground"
                                                     >
                                                         {instruction.filename
-                                                            ? 'Carica un nuovo allegato PDF per sostituire quello esistente (opzionale).'
-                                                            : "Seleziona un allegato PDF da associare all'istruzione (opzionale)."}
+                                                            ? t(
+                                                                  'articles.packaging_instructions.edit.attachment_replace_help',
+                                                              )
+                                                            : t(
+                                                                  'articles.packaging_instructions.edit.attachment_help',
+                                                              )}
                                                     </p>
                                                     {selectedFileName && (
                                                         <p className="text-xs text-muted-foreground">
-                                                            Nuovo allegato
-                                                            selezionato:{' '}
+                                                            {t(
+                                                                'articles.packaging_instructions.edit.new_attachment_selected',
+                                                            )}{' '}
                                                             <span className="font-mono">
                                                                 {
                                                                     selectedFileName
@@ -235,8 +260,12 @@ export default function PackagingInstructionsEdit({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Aggiornando...'
-                                                            : 'Aggiorna Istruzione'}
+                                                            ? t(
+                                                                  'articles.packaging_instructions.edit.submitting',
+                                                              )
+                                                            : t(
+                                                                  'articles.packaging_instructions.edit.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -247,7 +276,7 @@ export default function PackagingInstructionsEdit({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

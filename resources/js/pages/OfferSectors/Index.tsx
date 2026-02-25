@@ -8,6 +8,7 @@ import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { SortableTableHeader } from '@/components/SortableTableHeader';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import offerSectors from '@/routes/offer-sectors';
 import { type BreadcrumbItem } from '@/types';
@@ -39,6 +40,7 @@ type OfferSectorsIndexProps = {
 };
 
 export default function OfferSectorsIndex() {
+    const { t } = useTranslations();
     const { props } = usePage<OfferSectorsIndexProps>();
     const { sectors: sectorsPaginated, filters } = props;
     const { flash } = useFlashNotifications();
@@ -54,7 +56,7 @@ export default function OfferSectorsIndex() {
     });
     const [isDeleting, setIsDeleting] = useState(false);
 
-    // Sincronizzare stato iniziale con i filtri del server
+    // Sync initial state with server filters
     useEffect(() => {
         queueMicrotask(() => setSearchValue(filters.search ?? ''));
     }, [filters.search]);
@@ -135,20 +137,23 @@ export default function OfferSectorsIndex() {
     };
 
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Offerte', href: '/offers' },
-        { title: 'Settori', href: offerSectors.index().url },
+        { title: t('nav.offers'), href: '/offers' },
+        {
+            title: t('offer_sectors.page_title'),
+            href: offerSectors.index().url,
+        },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Settori" />
+            <Head title={t('offer_sectors.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="Settori"
-                    subtitle="Elenco dei settori attivi con Cerca."
+                    title={t('offer_sectors.page_title')}
+                    subtitle={t('offer_sectors.index.subtitle')}
                     createHref={offerSectors.create().url}
-                    createLabel="Nuovo Settore"
+                    createLabel={t('offer_sectors.index.create')}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -156,12 +161,12 @@ export default function OfferSectorsIndex() {
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="space-y-1">
                         <label className="text-xs font-medium text-muted-foreground">
-                            Cerca
+                            {t('common.search')}
                         </label>
                         <SearchInput
                             value={searchValue}
                             onChange={handleSearchChange}
-                            placeholder="Nome settore..."
+                            placeholder={t('offer_sectors.search_placeholder')}
                             isLoading={isSearching}
                             onClear={clearSearch}
                         />
@@ -172,7 +177,7 @@ export default function OfferSectorsIndex() {
                 <div className="block space-y-3 p-4 md:hidden">
                     {sectorsPaginated.data.length === 0 ? (
                         <div className="py-8 text-center text-sm text-muted-foreground">
-                            Nessun settore trovato per i filtri attuali.
+                            {t('offer_sectors.index.empty')}
                         </div>
                     ) : (
                         sectorsPaginated.data.map((sector) => (
@@ -228,10 +233,10 @@ export default function OfferSectorsIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Nome
+                                        {t('offer_sectors.form.name_label')}
                                     </SortableTableHeader>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t('common.actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -242,8 +247,7 @@ export default function OfferSectorsIndex() {
                                             colSpan={4}
                                             className="px-3 py-6 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessun settore trovato per i filtri
-                                            attuali.
+                                            {t('offer_sectors.index.empty')}
                                         </td>
                                     </tr>
                                 )}
@@ -299,8 +303,8 @@ export default function OfferSectorsIndex() {
                         setDeleteDialog({ open, sector: deleteDialog.sector })
                     }
                     onConfirm={handleDeleteConfirm}
-                    title="Elimina Settore"
-                    description="Sei sicuro di voler eliminare questo settore? Questa azione non può essere annullata."
+                    title={t('offer_sectors.delete.title')}
+                    description={t('offer_sectors.delete.description')}
                     itemName={deleteDialog.sector?.name}
                     isLoading={isDeleting}
                 />

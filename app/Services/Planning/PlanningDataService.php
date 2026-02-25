@@ -44,7 +44,7 @@ class PlanningDataService
             ->orderBy('code')
             ->get();
 
-        // Eager load órdenes y artículos para minimizar N+1 (mirror legacy: status NOT IN 4,5,6, ORDER BY delivery_requested_date)
+        // Eager load orders and articles to minimize N+1 (mirror legacy: status NOT IN 4,5,6, ORDER BY delivery_requested_date)
         $ordersByLine = Order::query()
             ->active()
             ->whereNotIn('status', [4, 5, 6])

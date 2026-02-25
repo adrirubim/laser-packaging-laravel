@@ -8,6 +8,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { useTranslations } from '@/hooks/use-translations';
 
 type ConfirmDeleteDialogProps = {
     open: boolean;
@@ -30,6 +31,7 @@ export default function ConfirmDeleteDialog({
     isLoading = false,
     isDeleting,
 }: ConfirmDeleteDialogProps) {
+    const { t } = useTranslations();
     const loading = isDeleting ?? isLoading;
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -47,14 +49,14 @@ export default function ConfirmDeleteDialog({
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel disabled={loading}>
-                        Annulla
+                        {t('common.cancel')}
                     </AlertDialogCancel>
                     <AlertDialogAction
                         onClick={onConfirm}
                         disabled={loading}
                         className="bg-destructive text-white hover:bg-destructive/90"
                     >
-                        {loading ? 'Eliminando...' : 'Elimina'}
+                        {loading ? t('common.deleting') : t('common.delete')}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

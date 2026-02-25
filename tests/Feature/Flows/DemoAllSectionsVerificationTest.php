@@ -18,11 +18,11 @@ use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 /**
- * Verifica que todas las secciones con registro "Demo All" carguen correctamente
- * (Show y Edit) y que los datos se pasen al frontend de forma consistente.
+ * Verifies that all sections with "Demo All" records load correctly
+ * (Show and Edit) and that data is passed to the frontend consistently.
  *
- * Códigos DEMO-ALL: CLI-DEMO-ALL, FORN-DEMO-ALL, EMP-DEMO-ALL, 2026_999_01_A,
- * LAS-DEMO-ALL, y una orden que usa el artículo LAS-DEMO-ALL.
+ * DEMO-ALL codes: CLI-DEMO-ALL, FORN-DEMO-ALL, EMP-DEMO-ALL, 2026_999_01_A,
+ * LAS-DEMO-ALL, and an order using article LAS-DEMO-ALL.
  */
 class DemoAllSectionsVerificationTest extends TestCase
 {
@@ -50,7 +50,7 @@ class DemoAllSectionsVerificationTest extends TestCase
 
         $this->user = User::factory()->create();
 
-        // Cliente DEMO-ALL
+        // DEMO-ALL Customer
         $this->demoCustomer = Customer::factory()->create([
             'code' => 'CLI-DEMO-ALL',
             'company_name' => 'Demo All - Tutti i campi clienti',
@@ -66,14 +66,14 @@ class DemoAllSectionsVerificationTest extends TestCase
             'removed' => false,
         ]);
 
-        // Fornitore DEMO-ALL
+        // DEMO-ALL Supplier
         $this->demoSupplier = Supplier::factory()->create([
             'code' => 'FORN-DEMO-ALL',
             'company_name' => 'Demo All Fornitori',
             'removed' => false,
         ]);
 
-        // Dipendente DEMO-ALL
+        // DEMO-ALL Employee
         $this->demoEmployee = Employee::factory()->create([
             'matriculation_number' => 'EMP-DEMO-ALL',
             'name' => 'Demo',
@@ -81,7 +81,7 @@ class DemoAllSectionsVerificationTest extends TestCase
             'removed' => false,
         ]);
 
-        // Offerta DEMO-ALL → Articolo LAS-DEMO-ALL
+        // DEMO-ALL Offer → Article LAS-DEMO-ALL
         $lasFamily = OfferLasFamily::factory()->create(['code' => '31', 'removed' => false]);
         $this->demoOffer = Offer::factory()->create([
             'customer_uuid' => $this->demoCustomer->uuid,
@@ -99,7 +99,7 @@ class DemoAllSectionsVerificationTest extends TestCase
             'pallet_uuid' => $palletType->uuid,
         ]);
 
-        // Ordine DEMO-ALL (usa articolo LAS-DEMO-ALL)
+        // DEMO-ALL Order (uses article LAS-DEMO-ALL)
         $shippingAddress = CustomerShippingAddress::factory()->create([
             'customerdivision_uuid' => $this->demoDivision->uuid,
             'removed' => false,

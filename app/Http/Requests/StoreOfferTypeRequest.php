@@ -31,10 +31,10 @@ class StoreOfferTypeRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'uuid.required' => 'L\'UUID è obbligatorio.',
+            'uuid.required' => __('validation.uuid_required'),
             'uuid.uuid' => 'L\'UUID deve essere un formato UUID valido.',
-            'uuid.unique' => 'Questo UUID è già utilizzato.',
-            'name.required' => 'Il Nome è obbligatorio.',
+            'uuid.unique' => __('validation.uuid_unique'),
+            'name.required' => __('validation.name_required'),
         ];
     }
 }

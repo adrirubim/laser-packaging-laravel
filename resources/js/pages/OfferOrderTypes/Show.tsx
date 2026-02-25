@@ -8,6 +8,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import offerOrderTypes from '@/routes/offer-order-types/index';
 import { type BreadcrumbItem } from '@/types';
@@ -29,16 +30,17 @@ type OfferOrderTypesShowProps = {
 export default function OfferOrderTypesShow({
     orderType,
 }: OfferOrderTypesShowProps) {
+    const { t } = useTranslations();
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: '/offers',
         },
         {
-            title: 'Tipi ordini',
+            title: t('offer_order_types.page_title'),
             href: offerOrderTypes.index().url,
         },
         {
@@ -61,18 +63,22 @@ export default function OfferOrderTypesShow({
         );
     };
 
-    const itemName = `${orderType.name} (Codice: ${orderType.code})`;
+    const itemName = `${orderType.name} (${t('offer_order_types.form.code_label')}: ${orderType.code})`;
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Tipo Ordine ${orderType.name}`} />
+            <Head
+                title={t('offer_order_types.show.page_title', {
+                    name: orderType.name,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
                     <div className="flex-1">
                         <h1 className="text-2xl font-bold">{orderType.name}</h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Codice:{' '}
+                            {t('offer_order_types.form.code_label')}:{' '}
                             <span className="font-mono">{orderType.code}</span>{' '}
                             | UUID:{' '}
                             <span className="font-mono">{orderType.uuid}</span>
@@ -88,7 +94,7 @@ export default function OfferOrderTypesShow({
                                 }
                             >
                                 <Edit className="mr-2 h-4 w-4" />
-                                Modifica
+                                {t('common.edit')}
                             </Link>
                         </Button>
                         <Button
@@ -97,22 +103,24 @@ export default function OfferOrderTypesShow({
                             onClick={() => setDeleteDialogOpen(true)}
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Elimina
+                            {t('common.delete')}
                         </Button>
                     </div>
                 </div>
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Dettagli Tipo Ordine</CardTitle>
+                        <CardTitle>
+                            {t('offer_order_types.show.details_title')}
+                        </CardTitle>
                         <CardDescription>
-                            Informazioni su questo tipo ordine
+                            {t('offer_order_types.show.details_subtitle')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div>
                             <Label className="text-sm font-medium text-muted-foreground">
-                                Codice
+                                {t('offer_order_types.form.code_label')}
                             </Label>
                             <p className="font-mono text-lg font-semibold">
                                 {orderType.code}
@@ -121,7 +129,7 @@ export default function OfferOrderTypesShow({
 
                         <div>
                             <Label className="text-sm font-medium text-muted-foreground">
-                                Nome
+                                {t('offer_order_types.form.name_label')}
                             </Label>
                             <p className="text-lg font-semibold">
                                 {orderType.name}
@@ -150,8 +158,11 @@ export default function OfferOrderTypesShow({
                     open={deleteDialogOpen}
                     onOpenChange={setDeleteDialogOpen}
                     onConfirm={handleDeleteConfirm}
-                    title="Elimina Tipo Ordine"
-                    description="Sei sicuro di voler eliminare questo tipo ordine? Questa azione non può essere annullata."
+                    title={t('offer_order_types.delete.title')}
+                    description={t('offer_order_types.delete.description', {
+                        name: orderType.name,
+                        code: orderType.code ?? '',
+                    })}
                     itemName={itemName}
                     isLoading={isDeleting}
                 />

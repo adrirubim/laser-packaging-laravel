@@ -23,6 +23,7 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useTranslations } from '@/hooks/use-translations';
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
@@ -58,6 +59,7 @@ export default function CustomerShippingAddressesCreate({
     customerdivision_uuid,
     errors: serverErrors,
 }: CustomerShippingAddressesCreateProps) {
+    const { t } = useTranslations();
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
     const [selectedCustomer, setSelectedCustomer] = useState<string>(
         initialCustomerUuid ?? '',
@@ -86,7 +88,7 @@ export default function CustomerShippingAddressesCreate({
 
         if (customerUuid) {
             setLoadingDivisions(true);
-            // Usare fetch per richiesta AJAX semplice
+            // Use fetch for simple AJAX request
             fetch(
                 `/customer-shipping-addresses/load-divisions?customer_uuid=${customerUuid}`,
                 {
@@ -110,7 +112,7 @@ export default function CustomerShippingAddressesCreate({
         }
     };
 
-    // Caricare divisioni se c'è un cliente iniziale ma non ci sono divisioni caricate
+    // Load divisions if there's an initial customer but no divisions loaded
     useEffect(() => {
         if (initialCustomerUuid && initialDivisions.length === 0) {
             queueMicrotask(() => handleCustomerChange(initialCustomerUuid));
@@ -119,18 +121,23 @@ export default function CustomerShippingAddressesCreate({
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Indirizzi di Consegna Clienti',
+            title: t('customer_shipping_addresses.index.title'),
             href: customerShippingAddresses.index().url,
         },
         {
-            title: 'Crea',
+            title: t('common.new'),
             href: customerShippingAddresses.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Crea Indirizzo di Consegna" />
+            <Head
+                title={t(
+                    'customer_shipping_addresses.create.page_title',
+                    // fallback handled by hook
+                )}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
@@ -138,11 +145,14 @@ export default function CustomerShippingAddressesCreate({
                         <Card>
                             <CardHeader>
                                 <CardTitle>
-                                    Crea Nuovo Indirizzo di Consegna
+                                    {t(
+                                        'customer_shipping_addresses.create.card_title',
+                                    )}
                                 </CardTitle>
                                 <CardDescription>
-                                    Compila i dettagli per creare un nuovo
-                                    indirizzo di consegna
+                                    {t(
+                                        'customer_shipping_addresses.create.card_description',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -174,7 +184,9 @@ export default function CustomerShippingAddressesCreate({
                                                         htmlFor="customer_uuid"
                                                         required
                                                     >
-                                                        Cliente
+                                                        {t(
+                                                            'customer_shipping_addresses.form.customer_label',
+                                                        )}
                                                     </FormLabel>
                                                     <input
                                                         type="hidden"
@@ -192,7 +204,11 @@ export default function CustomerShippingAddressesCreate({
                                                         required
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona il cliente..." />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'customer_shipping_addresses.form.customer_placeholder',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {customers.map(
@@ -229,7 +245,9 @@ export default function CustomerShippingAddressesCreate({
                                                         htmlFor="customerdivision_uuid"
                                                         required
                                                     >
-                                                        Divisione
+                                                        {t(
+                                                            'customer_shipping_addresses.form.division_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         value={
@@ -249,13 +267,21 @@ export default function CustomerShippingAddressesCreate({
                                                             <SelectValue
                                                                 placeholder={
                                                                     !selectedCustomer
-                                                                        ? 'Seleziona prima il cliente...'
+                                                                        ? t(
+                                                                              'customer_shipping_addresses.form.division_placeholder_select_customer',
+                                                                          )
                                                                         : loadingDivisions
-                                                                          ? 'Caricamento divisioni...'
+                                                                          ? t(
+                                                                                'customer_shipping_addresses.form.division_loading',
+                                                                            )
                                                                           : divisions.length ===
                                                                               0
-                                                                            ? 'Nessuna divisione disponibile'
-                                                                            : 'Seleziona la divisione...'
+                                                                            ? t(
+                                                                                  'customer_shipping_addresses.form.division_none',
+                                                                              )
+                                                                            : t(
+                                                                                  'customer_shipping_addresses.form.division_placeholder',
+                                                                              )
                                                                 }
                                                             />
                                                         </SelectTrigger>
@@ -264,18 +290,18 @@ export default function CustomerShippingAddressesCreate({
                                                                 <div className="flex items-center justify-center p-4">
                                                                     <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                                                                     <span className="ml-2 text-sm text-muted-foreground">
-                                                                        Caricamento...
+                                                                        {t(
+                                                                            'common.loading',
+                                                                        )}
                                                                     </span>
                                                                 </div>
                                                             ) : divisions.length ===
                                                                   0 &&
                                                               selectedCustomer ? (
                                                                 <div className="p-4 text-center text-sm text-muted-foreground">
-                                                                    Nessuna
-                                                                    divisione
-                                                                    disponibile
-                                                                    per questo
-                                                                    cliente
+                                                                    {t(
+                                                                        'customer_shipping_addresses.form.division_none_for_customer',
+                                                                    )}
                                                                 </div>
                                                             ) : (
                                                                 divisions.map(
@@ -302,8 +328,9 @@ export default function CustomerShippingAddressesCreate({
                                                     {loadingDivisions && (
                                                         <p className="flex items-center gap-1 text-xs text-muted-foreground">
                                                             <Loader2 className="h-3 w-3 animate-spin" />
-                                                            Caricamento
-                                                            divisioni...
+                                                            {t(
+                                                                'customer_shipping_addresses.form.division_loading',
+                                                            )}
                                                         </p>
                                                     )}
                                                     <input
@@ -320,12 +347,16 @@ export default function CustomerShippingAddressesCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="co">
-                                                        C/O
+                                                        {t(
+                                                            'customer_shipping_addresses.form.co_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="co"
                                                         name="co"
-                                                        placeholder="C/O"
+                                                        placeholder={t(
+                                                            'customer_shipping_addresses.form.co_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="co-help"
                                                     />
@@ -333,9 +364,9 @@ export default function CustomerShippingAddressesCreate({
                                                         id="co-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci il c/o
-                                                        opzionale (massimo 255
-                                                        caratteri).
+                                                        {t(
+                                                            'customer_shipping_addresses.form.co_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.co}
@@ -347,13 +378,17 @@ export default function CustomerShippingAddressesCreate({
                                                         htmlFor="street"
                                                         required
                                                     >
-                                                        Via
+                                                        {t(
+                                                            'customer_shipping_addresses.form.street_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="street"
                                                         name="street"
                                                         required
-                                                        placeholder="Via Roma 1"
+                                                        placeholder={t(
+                                                            'customer_shipping_addresses.form.street_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="street-help"
                                                     />
@@ -361,9 +396,9 @@ export default function CustomerShippingAddressesCreate({
                                                         id="street-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci l'indirizzo
-                                                        completo della via
-                                                        (massimo 255 caratteri).
+                                                        {t(
+                                                            'customer_shipping_addresses.form.street_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -376,7 +411,9 @@ export default function CustomerShippingAddressesCreate({
                                                     <div>
                                                         <div className="flex items-center gap-2">
                                                             <FormLabel htmlFor="postal_code">
-                                                                CAP
+                                                                {t(
+                                                                    'customer_shipping_addresses.form.postal_code_label',
+                                                                )}
                                                             </FormLabel>
                                                             <Tooltip>
                                                                 <TooltipTrigger
@@ -386,12 +423,9 @@ export default function CustomerShippingAddressesCreate({
                                                                 </TooltipTrigger>
                                                                 <TooltipContent>
                                                                     <p>
-                                                                        Codice
-                                                                        di
-                                                                        Avviamento
-                                                                        Postale
-                                                                        (5
-                                                                        cifre)
+                                                                        {t(
+                                                                            'customer_shipping_addresses.form.postal_code_tooltip',
+                                                                        )}
                                                                     </p>
                                                                 </TooltipContent>
                                                             </Tooltip>
@@ -413,7 +447,9 @@ export default function CustomerShippingAddressesCreate({
                                                             pattern="[0-9]{5}"
                                                             maxLength={5}
                                                             inputMode="numeric"
-                                                            aria-label="CAP (Codice di Avviamento Postale - 5 cifre)"
+                                                            aria-label={t(
+                                                                'customer_shipping_addresses.form.postal_code_aria',
+                                                            )}
                                                             aria-invalid={
                                                                 postalCodeValidation.error
                                                                     ? 'true'
@@ -436,13 +472,17 @@ export default function CustomerShippingAddressesCreate({
                                                     <div>
                                                         <div className="flex items-center gap-2">
                                                             <FormLabel htmlFor="city">
-                                                                Città
+                                                                {t(
+                                                                    'customer_shipping_addresses.form.city_label',
+                                                                )}
                                                             </FormLabel>
                                                         </div>
                                                         <Input
                                                             id="city"
                                                             name="city"
-                                                            placeholder="Roma"
+                                                            placeholder={t(
+                                                                'customer_shipping_addresses.form.city_placeholder',
+                                                            )}
                                                             maxLength={255}
                                                             aria-describedby="city-help"
                                                         />
@@ -450,9 +490,9 @@ export default function CustomerShippingAddressesCreate({
                                                             id="city-help"
                                                             className="text-xs text-muted-foreground"
                                                         >
-                                                            Inserisci la città
-                                                            (massimo 255
-                                                            caratteri).
+                                                            {t(
+                                                                'customer_shipping_addresses.form.city_help',
+                                                            )}
                                                         </p>
                                                         <InputError
                                                             message={
@@ -466,7 +506,9 @@ export default function CustomerShippingAddressesCreate({
                                                     <div>
                                                         <div className="flex items-center gap-2">
                                                             <FormLabel htmlFor="province">
-                                                                Provincia
+                                                                {t(
+                                                                    'customer_shipping_addresses.form.province_label',
+                                                                )}
                                                             </FormLabel>
                                                             <Tooltip>
                                                                 <TooltipTrigger
@@ -476,12 +518,9 @@ export default function CustomerShippingAddressesCreate({
                                                                 </TooltipTrigger>
                                                                 <TooltipContent>
                                                                     <p>
-                                                                        Codice
-                                                                        provincia
-                                                                        di 2
-                                                                        lettere
-                                                                        (es: RM,
-                                                                        MI, TO)
+                                                                        {t(
+                                                                            'customer_shipping_addresses.form.province_tooltip',
+                                                                        )}
                                                                     </p>
                                                                 </TooltipContent>
                                                             </Tooltip>
@@ -505,7 +544,9 @@ export default function CustomerShippingAddressesCreate({
                                                                 textTransform:
                                                                     'uppercase',
                                                             }}
-                                                            aria-label="Provincia (codice di 2 lettere maiuscole)"
+                                                            aria-label={t(
+                                                                'customer_shipping_addresses.form.province_aria',
+                                                            )}
                                                             aria-invalid={
                                                                 provinceValidation.error
                                                                     ? 'true'
@@ -528,13 +569,17 @@ export default function CustomerShippingAddressesCreate({
                                                     <div>
                                                         <div className="flex items-center gap-2">
                                                             <FormLabel htmlFor="country">
-                                                                Nazione
+                                                                {t(
+                                                                    'customer_shipping_addresses.form.country_label',
+                                                                )}
                                                             </FormLabel>
                                                         </div>
                                                         <Input
                                                             id="country"
                                                             name="country"
-                                                            placeholder="Italia"
+                                                            placeholder={t(
+                                                                'customer_shipping_addresses.form.country_placeholder',
+                                                            )}
                                                             maxLength={255}
                                                             aria-describedby="country-help"
                                                         />
@@ -542,9 +587,9 @@ export default function CustomerShippingAddressesCreate({
                                                             id="country-help"
                                                             className="text-xs text-muted-foreground"
                                                         >
-                                                            Inserisci la nazione
-                                                            (massimo 255
-                                                            caratteri).
+                                                            {t(
+                                                                'customer_shipping_addresses.form.country_help',
+                                                            )}
                                                         </p>
                                                         <InputError
                                                             message={
@@ -556,12 +601,16 @@ export default function CustomerShippingAddressesCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="contacts">
-                                                        Contatti
+                                                        {t(
+                                                            'customer_shipping_addresses.form.contacts_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="contacts"
                                                         name="contacts"
-                                                        placeholder="Contatti"
+                                                        placeholder={t(
+                                                            'customer_shipping_addresses.form.contacts_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="contacts-help"
                                                     />
@@ -569,9 +618,9 @@ export default function CustomerShippingAddressesCreate({
                                                         id="contacts-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci informazioni
-                                                        di contatto opzionali
-                                                        (massimo 255 caratteri).
+                                                        {t(
+                                                            'customer_shipping_addresses.form.contacts_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -586,8 +635,8 @@ export default function CustomerShippingAddressesCreate({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Salvando...'
-                                                            : 'Salva'}
+                                                            ? t('common.saving')
+                                                            : t('common.save')}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -599,7 +648,7 @@ export default function CustomerShippingAddressesCreate({
                                                             )
                                                         }
                                                     >
-                                                        Chiudi
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

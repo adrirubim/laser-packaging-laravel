@@ -20,6 +20,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { useTranslations } from '@/hooks/use-translations';
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
@@ -255,6 +256,7 @@ export default function ArticlesEdit({
     mediaRealePzHPs = 0,
     errors: serverErrors,
 }: ArticlesEditProps) {
+    const { t } = useTranslations();
     const { props } = usePage<ArticlesEditProps>();
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
     const actualUm = um || props.um;
@@ -425,7 +427,7 @@ export default function ArticlesEdit({
         article.client_approval_notes || '',
     );
 
-    // Stato per righe dinamiche
+    // State for dynamic rows
     const [machineryRows] = useState<MachineryRow[]>(() => {
         if (article.machinery && article.machinery.length > 0) {
             return article.machinery.map(
@@ -523,31 +525,33 @@ export default function ArticlesEdit({
 
     const codArticleLasValidation = useFieldValidation(codArticleLas, [
         (value) => {
-            if (!value) return null; // Opzionale
+            if (!value) return null;
             if (value.length > 255) {
-                return 'Il codice LAS non può superare i 255 caratteri';
+                return t('articles.edit.validation_cod_las_max');
             }
             return null;
         },
     ]);
 
     const articleDescrValidation = useFieldValidation(articleDescr, [
-        validationRules.required('La descrizione è obbligatoria'),
+        validationRules.required(
+            t('articles.edit.validation_description_required'),
+        ),
         validationRules.maxLength(
             255,
-            'La descrizione non può superare i 255 caratteri',
+            t('articles.edit.validation_description_max'),
         ),
     ]);
 
     const planPackagingValidation = useFieldValidation(planPackaging, [
         (value) => {
-            if (!value) return null; // Opzionale
+            if (!value) return null;
             const num = parseFloat(value);
             if (isNaN(num)) {
-                return 'Il valore deve essere un numero';
+                return t('articles.edit.validation_must_be_number');
             }
             if (num < 0) {
-                return 'Il valore deve essere positivo o zero';
+                return t('articles.edit.validation_positive_or_zero');
             }
             return null;
         },
@@ -555,13 +559,13 @@ export default function ArticlesEdit({
 
     const palletPlansValidation = useFieldValidation(palletPlans, [
         (value) => {
-            if (!value) return null; // Opzionale
+            if (!value) return null;
             const num = parseFloat(value);
             if (isNaN(num)) {
-                return 'Il valore deve essere un numero';
+                return t('articles.edit.validation_must_be_number');
             }
             if (num < 0) {
-                return 'Il valore deve essere positivo o zero';
+                return t('articles.edit.validation_positive_or_zero');
             }
             return null;
         },
@@ -569,7 +573,7 @@ export default function ArticlesEdit({
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Articoli',
+            title: t('nav.articles'),
             href: articles.index().url,
         },
         {
@@ -577,7 +581,7 @@ export default function ArticlesEdit({
             href: articles.show({ article: article.uuid }).url,
         },
         {
-            title: 'Modifica',
+            title: t('articles.edit.breadcrumb'),
             href: articles.edit({ article: article.uuid }).url,
         },
     ];
@@ -588,16 +592,22 @@ export default function ArticlesEdit({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Modifica Articolo ${article.cod_article_las}`} />
+            <Head
+                title={t('articles.edit.head_title', {
+                    code: article.cod_article_las,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Modifica Articolo</CardTitle>
+                                <CardTitle>
+                                    {t('articles.edit.card_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Modifica i dettagli dell'articolo
+                                    {t('articles.edit.card_description')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -632,7 +642,9 @@ export default function ArticlesEdit({
                                                         htmlFor="offer_uuid"
                                                         required
                                                     >
-                                                        Offerta
+                                                        {t(
+                                                            'articles.edit.offer',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="offer_uuid"
@@ -643,7 +655,11 @@ export default function ArticlesEdit({
                                                         required
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona un'offerta" />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'articles.edit.placeholder_offer',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {offers.map(
@@ -661,7 +677,9 @@ export default function ArticlesEdit({
                                                                         }{' '}
                                                                         -{' '}
                                                                         {offer.description ||
-                                                                            'Senza descrizione'}
+                                                                            t(
+                                                                                'articles.edit.placeholder_no_description',
+                                                                            )}
                                                                     </SelectItem>
                                                                 ),
                                                             )}
@@ -676,7 +694,9 @@ export default function ArticlesEdit({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="cod_article_las">
-                                                        Codice LAS
+                                                        {t(
+                                                            'articles.edit.cod_las',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="cod_article_las"
@@ -690,7 +710,9 @@ export default function ArticlesEdit({
                                                         onBlur={
                                                             codArticleLasValidation.onBlur
                                                         }
-                                                        placeholder="Codice LAS"
+                                                        placeholder={t(
+                                                            'articles.edit.placeholder_cod_las',
+                                                        )}
                                                         maxLength={255}
                                                         aria-invalid={
                                                             codArticleLasValidation.error
@@ -711,8 +733,9 @@ export default function ArticlesEdit({
                                                         </p>
                                                     )}
                                                     <p className="text-xs text-muted-foreground">
-                                                        Codice LAS dell'articolo
-                                                        (massimo 255 caratteri).
+                                                        {t(
+                                                            'articles.edit.cod_las_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -726,7 +749,9 @@ export default function ArticlesEdit({
                                                         htmlFor="article_descr"
                                                         required
                                                     >
-                                                        Descrizione
+                                                        {t(
+                                                            'articles.edit.description',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="article_descr"
@@ -741,7 +766,9 @@ export default function ArticlesEdit({
                                                             articleDescrValidation.onBlur
                                                         }
                                                         required
-                                                        placeholder="Descrizione articolo"
+                                                        placeholder={t(
+                                                            'articles.edit.placeholder_description',
+                                                        )}
                                                         maxLength={255}
                                                         aria-invalid={
                                                             articleDescrValidation.error
@@ -762,9 +789,9 @@ export default function ArticlesEdit({
                                                         </p>
                                                     )}
                                                     <p className="text-xs text-muted-foreground">
-                                                        Descrizione principale
-                                                        dell'articolo (massimo
-                                                        255 caratteri).
+                                                        {t(
+                                                            'articles.edit.description_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -775,7 +802,9 @@ export default function ArticlesEdit({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="cod_article_client">
-                                                        Codice Cliente
+                                                        {t(
+                                                            'articles.edit.cod_client',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="cod_article_client"
@@ -784,7 +813,9 @@ export default function ArticlesEdit({
                                                             article.cod_article_client ||
                                                             ''
                                                         }
-                                                        placeholder="Codice cliente"
+                                                        placeholder={t(
+                                                            'articles.edit.placeholder_cod_client',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="cod_article_client-help"
                                                     />
@@ -792,9 +823,9 @@ export default function ArticlesEdit({
                                                         id="cod_article_client-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Codice articolo del
-                                                        cliente (massimo 255
-                                                        caratteri).
+                                                        {t(
+                                                            'articles.edit.cod_client_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -805,7 +836,9 @@ export default function ArticlesEdit({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="additional_descr">
-                                                        Descrizione Aggiuntiva
+                                                        {t(
+                                                            'articles.edit.additional_descr',
+                                                        )}
                                                     </FormLabel>
                                                     <Textarea
                                                         id="additional_descr"
@@ -814,7 +847,9 @@ export default function ArticlesEdit({
                                                             article.additional_descr ||
                                                             ''
                                                         }
-                                                        placeholder="Descrizione aggiuntiva dell'articolo"
+                                                        placeholder={t(
+                                                            'articles.edit.placeholder_additional',
+                                                        )}
                                                         rows={3}
                                                         aria-describedby="additional_descr-help"
                                                     />
@@ -822,8 +857,9 @@ export default function ArticlesEdit({
                                                         id="additional_descr-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Descrizione aggiuntiva
-                                                        opzionale dell'articolo.
+                                                        {t(
+                                                            'articles.edit.additional_descr_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -850,8 +886,9 @@ export default function ArticlesEdit({
                                                         htmlFor="visibility_cod"
                                                         className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                                     >
-                                                        Visibilità codice LAS su
-                                                        ordine
+                                                        {t(
+                                                            'articles.edit.visibility_cod',
+                                                        )}
                                                     </label>
                                                 </div>
 
@@ -873,15 +910,18 @@ export default function ArticlesEdit({
                                                         htmlFor="stock_managed"
                                                         className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                                     >
-                                                        Articolo gestito a
-                                                        magazzino
+                                                        {t(
+                                                            'articles.edit.stock_managed',
+                                                        )}
                                                     </label>
                                                 </div>
 
                                                 {actualUm && (
                                                     <div className="grid gap-2">
                                                         <FormLabel htmlFor="um">
-                                                            U.m.
+                                                            {t(
+                                                                'articles.edit.um',
+                                                            )}
                                                         </FormLabel>
                                                         <Input
                                                             id="um"
@@ -898,7 +938,9 @@ export default function ArticlesEdit({
                                                         htmlFor="lot_attribution"
                                                         required
                                                     >
-                                                        Attribuzione lotto
+                                                        {t(
+                                                            'articles.edit.lot_attribution',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="lot_attribution"
@@ -909,7 +951,11 @@ export default function ArticlesEdit({
                                                         required
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona attribuzione lotto" />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'articles.edit.placeholder_lot',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {actualLotAttributionList.map(
@@ -937,7 +983,9 @@ export default function ArticlesEdit({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="expiration_attribution">
-                                                        Attribuzione scadenza
+                                                        {t(
+                                                            'articles.edit.expiration_attribution',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="expiration_attribution"
@@ -949,7 +997,11 @@ export default function ArticlesEdit({
                                                         }
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona attribuzione scadenza" />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'articles.edit.placeholder_expiration',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {actualExpirationAttributionList.map(
@@ -988,7 +1040,9 @@ export default function ArticlesEdit({
                                                                 e.target.value,
                                                             )
                                                         }
-                                                        placeholder="EAN"
+                                                        placeholder={t(
+                                                            'articles.edit.placeholder_ean',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={allErrors.ean}
@@ -1005,7 +1059,11 @@ export default function ArticlesEdit({
                                                         onValueChange={setDb}
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona DB" />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'articles.edit.placeholder_db',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {actualDbList.map(
@@ -1031,7 +1089,9 @@ export default function ArticlesEdit({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="article_category">
-                                                        Categoria
+                                                        {t(
+                                                            'articles.edit.category',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="article_category"
@@ -1041,7 +1101,11 @@ export default function ArticlesEdit({
                                                         }
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona una categoria" />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'articles.edit.placeholder_category',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {categories.map(
@@ -1071,7 +1135,9 @@ export default function ArticlesEdit({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="pallet_uuid">
-                                                        Tipo di Pallet
+                                                        {t(
+                                                            'articles.edit.pallet_type',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="pallet_uuid"
@@ -1081,7 +1147,11 @@ export default function ArticlesEdit({
                                                         }
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona un tipo di pallet" />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'articles.edit.placeholder_pallet_type',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {palletTypes.map(
@@ -1099,7 +1169,9 @@ export default function ArticlesEdit({
                                                                         }{' '}
                                                                         -{' '}
                                                                         {pallet.description ||
-                                                                            'Senza descrizione'}
+                                                                            t(
+                                                                                'articles.edit.placeholder_no_description',
+                                                                            )}
                                                                     </SelectItem>
                                                                 ),
                                                             )}
@@ -1114,7 +1186,9 @@ export default function ArticlesEdit({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="plan_packaging">
-                                                        Piano Imballaggio
+                                                        {t(
+                                                            'articles.edit.plan_packaging',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="plan_packaging"
@@ -1131,7 +1205,9 @@ export default function ArticlesEdit({
                                                         onBlur={
                                                             planPackagingValidation.onBlur
                                                         }
-                                                        placeholder="0"
+                                                        placeholder={t(
+                                                            'articles.edit.placeholder_plan',
+                                                        )}
                                                         aria-invalid={
                                                             planPackagingValidation.error
                                                                 ? 'true'
@@ -1151,8 +1227,9 @@ export default function ArticlesEdit({
                                                         </p>
                                                     )}
                                                     <p className="text-xs text-muted-foreground">
-                                                        Numero di pezzi per
-                                                        confezione.
+                                                        {t(
+                                                            'articles.edit.plan_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -1163,7 +1240,9 @@ export default function ArticlesEdit({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="pallet_plans">
-                                                        Piani Pallet
+                                                        {t(
+                                                            'articles.edit.pallet_plans',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="pallet_plans"
@@ -1180,7 +1259,9 @@ export default function ArticlesEdit({
                                                         onBlur={
                                                             palletPlansValidation.onBlur
                                                         }
-                                                        placeholder="0"
+                                                        placeholder={t(
+                                                            'articles.edit.placeholder_plan',
+                                                        )}
                                                         aria-invalid={
                                                             palletPlansValidation.error
                                                                 ? 'true'
@@ -1200,8 +1281,9 @@ export default function ArticlesEdit({
                                                         </p>
                                                     )}
                                                     <p className="text-xs text-muted-foreground">
-                                                        Numero di piani per
-                                                        pallet.
+                                                        {t(
+                                                            'articles.edit.pallet_plans_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -1212,7 +1294,9 @@ export default function ArticlesEdit({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="line_layout_file">
-                                                        Allegato Layout Linea
+                                                        {t(
+                                                            'articles.edit.line_layout',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="line_layout_file"
@@ -1233,8 +1317,9 @@ export default function ArticlesEdit({
                                                     {article.line_layout && (
                                                         <div className="flex items-center gap-2">
                                                             <span className="text-xs text-muted-foreground">
-                                                                Allegato
-                                                                attuale:{' '}
+                                                                {t(
+                                                                    'articles.edit.current_attachment',
+                                                                )}{' '}
                                                                 {
                                                                     article.line_layout
                                                                 }
@@ -1252,16 +1337,22 @@ export default function ArticlesEdit({
                                                                             },
                                                                         ).url;
                                                                 }}
+                                                                aria-label={t(
+                                                                    'articles.edit.download',
+                                                                )}
                                                             >
                                                                 <Download className="mr-1 h-3 w-3" />
-                                                                Scarica
+                                                                {t(
+                                                                    'articles.edit.download',
+                                                                )}
                                                             </Button>
                                                         </div>
                                                     )}
                                                     {lineLayoutFileName && (
                                                         <span className="text-xs text-muted-foreground">
-                                                            Nuovo allegato
-                                                            selezionato:{' '}
+                                                            {t(
+                                                                'articles.edit.new_attachment_selected',
+                                                            )}{' '}
                                                             <span className="font-mono">
                                                                 {
                                                                     lineLayoutFileName
@@ -1480,18 +1571,20 @@ export default function ArticlesEdit({
                                                         </>
                                                     ))}
 
-                                                {/* Sezione Etichette */}
                                                 <Card>
                                                     <CardHeader>
                                                         <CardTitle className="text-lg">
-                                                            Etichette
+                                                            {t(
+                                                                'articles.edit.section_labels',
+                                                            )}
                                                         </CardTitle>
                                                     </CardHeader>
                                                     <CardContent className="space-y-4">
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="labels_external">
-                                                                Etichette
-                                                                esterne
+                                                                {t(
+                                                                    'articles.edit.labels_external',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="labels_external"
@@ -1503,7 +1596,11 @@ export default function ArticlesEdit({
                                                                 }
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona etichette esterne" />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'articles.edit.placeholder_labels_external',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {actualLabelsExternalList.map(
@@ -1528,7 +1625,9 @@ export default function ArticlesEdit({
 
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="labels_pvp">
-                                                                Etichette pvp
+                                                                {t(
+                                                                    'articles.edit.labels_pvp',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="labels_pvp"
@@ -1540,7 +1639,11 @@ export default function ArticlesEdit({
                                                                 }
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona etichetta pvp" />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'articles.edit.placeholder_labels_pvp',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {actualLabelsPvpList.map(
@@ -1565,7 +1668,9 @@ export default function ArticlesEdit({
 
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="value_pvp">
-                                                                Valore pvp
+                                                                {t(
+                                                                    'articles.edit.value_pvp',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex items-center gap-2">
                                                                 <Input
@@ -1585,7 +1690,9 @@ export default function ArticlesEdit({
                                                                                 .value,
                                                                         )
                                                                     }
-                                                                    placeholder="0.00"
+                                                                    placeholder={t(
+                                                                        'articles.edit.placeholder_value',
+                                                                    )}
                                                                     className="text-right"
                                                                 />
                                                                 <span className="text-sm text-muted-foreground">
@@ -1596,8 +1703,9 @@ export default function ArticlesEdit({
 
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="labels_ingredient">
-                                                                Etichette
-                                                                ingredienti
+                                                                {t(
+                                                                    'articles.edit.labels_ingredient',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="labels_ingredient"
@@ -1609,7 +1717,11 @@ export default function ArticlesEdit({
                                                                 }
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona etichetta ingrediente" />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'articles.edit.placeholder_labels_ingredient',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {actualLabelsIngredientList.map(
@@ -1634,8 +1746,9 @@ export default function ArticlesEdit({
 
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="labels_data_variable">
-                                                                Etichette dati
-                                                                variabili
+                                                                {t(
+                                                                    'articles.edit.labels_data_variable',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="labels_data_variable"
@@ -1647,7 +1760,11 @@ export default function ArticlesEdit({
                                                                 }
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona etichetta dati variabili" />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'articles.edit.placeholder_labels_data',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {actualLabelsDataVariableList.map(
@@ -1672,8 +1789,9 @@ export default function ArticlesEdit({
 
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="label_of_jumpers">
-                                                                Etichetta
-                                                                cavallotti
+                                                                {t(
+                                                                    'articles.edit.label_jumpers',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="label_of_jumpers"
@@ -1685,7 +1803,11 @@ export default function ArticlesEdit({
                                                                 }
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona etichetta cavallotto" />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'articles.edit.placeholder_label_jumpers',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {actualLabelOfJumpersList.map(
@@ -1710,17 +1832,20 @@ export default function ArticlesEdit({
                                                     </CardContent>
                                                 </Card>
 
-                                                {/* Sezione Peso e Controllo */}
                                                 <Card>
                                                     <CardHeader>
                                                         <CardTitle className="text-lg">
-                                                            Peso e Controllo
+                                                            {t(
+                                                                'articles.edit.section_weight',
+                                                            )}
                                                         </CardTitle>
                                                     </CardHeader>
                                                     <CardContent className="space-y-4">
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="weight_kg">
-                                                                Peso collo
+                                                                {t(
+                                                                    'articles.edit.weight_kg',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex items-center gap-2">
                                                                 <Input
@@ -1740,7 +1865,9 @@ export default function ArticlesEdit({
                                                                                 .value,
                                                                         )
                                                                     }
-                                                                    placeholder="0.000"
+                                                                    placeholder={t(
+                                                                        'articles.edit.placeholder_weight',
+                                                                    )}
                                                                     className="text-right"
                                                                 />
                                                                 <span className="text-sm text-muted-foreground">
@@ -1751,7 +1878,9 @@ export default function ArticlesEdit({
 
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="nominal_weight_control">
-                                                                Controllo peso
+                                                                {t(
+                                                                    'articles.edit.nominal_weight_control',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="nominal_weight_control"
@@ -1763,7 +1892,11 @@ export default function ArticlesEdit({
                                                                 }
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona controllo peso" />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'articles.edit.placeholder_weight_control',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {actualNominalWeightControlList.map(
@@ -1788,7 +1921,9 @@ export default function ArticlesEdit({
 
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="weight_unit_of_measur">
-                                                                Unità di misura
+                                                                {t(
+                                                                    'articles.edit.unit_of_measure',
+                                                                )}
                                                             </FormLabel>
                                                             <Input
                                                                 id="weight_unit_of_measur"
@@ -1802,13 +1937,17 @@ export default function ArticlesEdit({
                                                                             .value,
                                                                     )
                                                                 }
-                                                                placeholder="Unità di misura"
+                                                                placeholder={t(
+                                                                    'articles.edit.unit_of_measure',
+                                                                )}
                                                             />
                                                         </div>
 
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="weight_value">
-                                                                Valore
+                                                                {t(
+                                                                    'articles.edit.value_label',
+                                                                )}
                                                             </FormLabel>
                                                             <Input
                                                                 id="weight_value"
@@ -1824,15 +1963,18 @@ export default function ArticlesEdit({
                                                                             .value,
                                                                     )
                                                                 }
-                                                                placeholder="0.000"
+                                                                placeholder={t(
+                                                                    'articles.edit.placeholder_weight',
+                                                                )}
                                                                 className="text-right"
                                                             />
                                                         </div>
 
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="object_control_weight">
-                                                                Oggetto del
-                                                                controllo
+                                                                {t(
+                                                                    'articles.edit.object_control',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="object_control_weight"
@@ -1844,7 +1986,11 @@ export default function ArticlesEdit({
                                                                 }
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona oggetto del controllo" />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'articles.edit.placeholder_object_control',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {actualObjectControlWeightList.map(
@@ -1869,11 +2015,12 @@ export default function ArticlesEdit({
                                                     </CardContent>
                                                 </Card>
 
-                                                {/* Sezione Campi Aggiuntivi */}
                                                 <Card>
                                                     <CardHeader>
                                                         <CardTitle className="text-lg">
-                                                            Altri Campi
+                                                            {t(
+                                                                'articles.edit.section_other',
+                                                            )}
                                                         </CardTitle>
                                                     </CardHeader>
                                                     <CardContent className="space-y-4">
@@ -1897,15 +2044,17 @@ export default function ArticlesEdit({
                                                                 htmlFor="allergens"
                                                                 className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                                             >
-                                                                Allergeni
+                                                                {t(
+                                                                    'articles.edit.allergens',
+                                                                )}
                                                             </label>
                                                         </div>
 
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="pallet_sheet">
-                                                                Foglio pallet
-                                                                richiesto da
-                                                                cliente
+                                                                {t(
+                                                                    'articles.edit.pallet_sheet',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="pallet_sheet"
@@ -1917,7 +2066,11 @@ export default function ArticlesEdit({
                                                                 }
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona foglio pallet" />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'articles.edit.placeholder_pallet_sheet',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {actualPalletSheets.map(
@@ -1937,7 +2090,9 @@ export default function ArticlesEdit({
                                                                                 }{' '}
                                                                                 -{' '}
                                                                                 {sheet.description ||
-                                                                                    'Senza descrizione'}
+                                                                                    t(
+                                                                                        'articles.edit.placeholder_no_description',
+                                                                                    )}
                                                                             </SelectItem>
                                                                         ),
                                                                     )}
@@ -1950,7 +2105,9 @@ export default function ArticlesEdit({
                                                                 htmlFor="model_uuid"
                                                                 required
                                                             >
-                                                                Modello CQ
+                                                                {t(
+                                                                    'articles.edit.model_cq',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="model_uuid"
@@ -1963,7 +2120,11 @@ export default function ArticlesEdit({
                                                                 required
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona modello CQ" />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'articles.edit.placeholder_model_cq',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {actualCqModels.map(
@@ -1983,7 +2144,9 @@ export default function ArticlesEdit({
                                                                                 }{' '}
                                                                                 -{' '}
                                                                                 {model.description_model ||
-                                                                                    'Senza descrizione'}
+                                                                                    t(
+                                                                                        'articles.edit.placeholder_no_description',
+                                                                                    )}
                                                                             </SelectItem>
                                                                         ),
                                                                     )}
@@ -1998,7 +2161,9 @@ export default function ArticlesEdit({
 
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="customer_samples_list">
-                                                                Campioni cliente
+                                                                {t(
+                                                                    'articles.edit.customer_samples',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="customer_samples_list"
@@ -2010,7 +2175,11 @@ export default function ArticlesEdit({
                                                                 }
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona campione cliente" />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'articles.edit.placeholder_customer_samples',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {actualCustomerSamplesList.map(
@@ -2035,22 +2204,22 @@ export default function ArticlesEdit({
                                                     </CardContent>
                                                 </Card>
 
-                                                {/* Sezione Media Produttività */}
                                                 {actualMediaValues && (
                                                     <Card>
                                                         <CardHeader>
                                                             <CardTitle className="text-lg">
-                                                                Media
-                                                                Produttività
+                                                                {t(
+                                                                    'articles.edit.section_media',
+                                                                )}
                                                             </CardTitle>
                                                         </CardHeader>
                                                         <CardContent className="space-y-4">
                                                             <div className="grid grid-cols-2 gap-4">
                                                                 <div className="grid gap-2">
                                                                     <FormLabel htmlFor="media_prevista_cfz_h_pz">
-                                                                        Media
-                                                                        prevista
-                                                                        cfz/h/pz
+                                                                        {t(
+                                                                            'articles.edit.media_prevista_cfz',
+                                                                        )}
                                                                     </FormLabel>
                                                                     <div className="flex items-center gap-2">
                                                                         <Input
@@ -2070,9 +2239,9 @@ export default function ArticlesEdit({
 
                                                                 <div className="grid gap-2">
                                                                     <FormLabel htmlFor="media_reale_cfz_h_pz">
-                                                                        Media
-                                                                        reale
-                                                                        cfz/h/pz
+                                                                        {t(
+                                                                            'articles.edit.media_reale_cfz',
+                                                                        )}
                                                                     </FormLabel>
                                                                     <div className="flex items-center gap-2">
                                                                         <Input
@@ -2103,9 +2272,9 @@ export default function ArticlesEdit({
 
                                                                 <div className="grid gap-2">
                                                                     <FormLabel htmlFor="media_prevista_pz_h_ps">
-                                                                        Media
-                                                                        prevista
-                                                                        pz/h/ps
+                                                                        {t(
+                                                                            'articles.edit.media_prevista_pz',
+                                                                        )}
                                                                     </FormLabel>
                                                                     <div className="flex items-center gap-2">
                                                                         <Input
@@ -2125,9 +2294,9 @@ export default function ArticlesEdit({
 
                                                                 <div className="grid gap-2">
                                                                     <FormLabel htmlFor="media_reale_pz_h_ps">
-                                                                        Media
-                                                                        reale
-                                                                        pz/h/ps
+                                                                        {t(
+                                                                            'articles.edit.media_reale_pz',
+                                                                        )}
                                                                     </FormLabel>
                                                                     <div className="flex items-center gap-2">
                                                                         <Input
@@ -2161,19 +2330,20 @@ export default function ArticlesEdit({
                                                     </Card>
                                                 )}
 
-                                                {/* Sezione Approvazioni */}
                                                 <Card>
                                                     <CardHeader>
                                                         <CardTitle className="text-lg">
-                                                            Approvazioni
+                                                            {t(
+                                                                'articles.edit.section_approvals',
+                                                            )}
                                                         </CardTitle>
                                                     </CardHeader>
                                                     <CardContent className="space-y-6">
-                                                        {/* Approvazione Produzione */}
                                                         <div className="space-y-3 border-b pb-4">
                                                             <FormLabel htmlFor="production_approval_checkbox">
-                                                                Approvazione
-                                                                Produzione
+                                                                {t(
+                                                                    'articles.edit.approval_production',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex items-center space-x-2">
                                                                 <Checkbox
@@ -2195,12 +2365,16 @@ export default function ArticlesEdit({
                                                                     htmlFor="production_approval_checkbox"
                                                                     className="text-sm font-medium"
                                                                 >
-                                                                    Approvato
+                                                                    {t(
+                                                                        'articles.edit.approved',
+                                                                    )}
                                                                 </label>
                                                             </div>
                                                             <div className="grid gap-2">
                                                                 <FormLabel htmlFor="production_approval_employee">
-                                                                    Addetto
+                                                                    {t(
+                                                                        'articles.edit.employee',
+                                                                    )}
                                                                 </FormLabel>
                                                                 <Input
                                                                     id="production_approval_employee"
@@ -2217,12 +2391,16 @@ export default function ArticlesEdit({
                                                                                 .value,
                                                                         )
                                                                     }
-                                                                    placeholder="Addetto"
+                                                                    placeholder={t(
+                                                                        'articles.edit.placeholder_employee',
+                                                                    )}
                                                                 />
                                                             </div>
                                                             <div className="grid gap-2">
                                                                 <FormLabel htmlFor="production_approval_date">
-                                                                    Data
+                                                                    {t(
+                                                                        'articles.edit.date',
+                                                                    )}
                                                                 </FormLabel>
                                                                 <Input
                                                                     id="production_approval_date"
@@ -2246,7 +2424,9 @@ export default function ArticlesEdit({
                                                             </div>
                                                             <div className="grid gap-2">
                                                                 <FormLabel htmlFor="production_approval_notes">
-                                                                    Note
+                                                                    {t(
+                                                                        'articles.edit.notes',
+                                                                    )}
                                                                 </FormLabel>
                                                                 <Textarea
                                                                     id="production_approval_notes"
@@ -2268,11 +2448,11 @@ export default function ArticlesEdit({
                                                             </div>
                                                         </div>
 
-                                                        {/* Approvazione Qualità */}
                                                         <div className="space-y-3 border-b pb-4">
                                                             <FormLabel htmlFor="approv_quality_checkbox">
-                                                                Approvazione
-                                                                Qualità
+                                                                {t(
+                                                                    'articles.edit.approval_quality',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex items-center space-x-2">
                                                                 <Checkbox
@@ -2294,12 +2474,16 @@ export default function ArticlesEdit({
                                                                     htmlFor="approv_quality_checkbox"
                                                                     className="text-sm font-medium"
                                                                 >
-                                                                    Approvato
+                                                                    {t(
+                                                                        'articles.edit.approved',
+                                                                    )}
                                                                 </label>
                                                             </div>
                                                             <div className="grid gap-2">
                                                                 <FormLabel htmlFor="approv_quality_employee">
-                                                                    Addetto
+                                                                    {t(
+                                                                        'articles.edit.employee',
+                                                                    )}
                                                                 </FormLabel>
                                                                 <Input
                                                                     id="approv_quality_employee"
@@ -2316,12 +2500,16 @@ export default function ArticlesEdit({
                                                                                 .value,
                                                                         )
                                                                     }
-                                                                    placeholder="Addetto"
+                                                                    placeholder={t(
+                                                                        'articles.edit.placeholder_employee',
+                                                                    )}
                                                                 />
                                                             </div>
                                                             <div className="grid gap-2">
                                                                 <FormLabel htmlFor="approv_quality_date">
-                                                                    Data
+                                                                    {t(
+                                                                        'articles.edit.date',
+                                                                    )}
                                                                 </FormLabel>
                                                                 <Input
                                                                     id="approv_quality_date"
@@ -2345,7 +2533,9 @@ export default function ArticlesEdit({
                                                             </div>
                                                             <div className="grid gap-2">
                                                                 <FormLabel htmlFor="approv_quality_notes">
-                                                                    Note
+                                                                    {t(
+                                                                        'articles.edit.notes',
+                                                                    )}
                                                                 </FormLabel>
                                                                 <Textarea
                                                                     id="approv_quality_notes"
@@ -2367,11 +2557,11 @@ export default function ArticlesEdit({
                                                             </div>
                                                         </div>
 
-                                                        {/* Approvazione Commerciale */}
                                                         <div className="space-y-3 border-b pb-4">
                                                             <FormLabel htmlFor="commercial_approval_checkbox">
-                                                                Approvazione
-                                                                Commerciale
+                                                                {t(
+                                                                    'articles.edit.approval_commercial',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex items-center space-x-2">
                                                                 <Checkbox
@@ -2393,12 +2583,16 @@ export default function ArticlesEdit({
                                                                     htmlFor="commercial_approval_checkbox"
                                                                     className="text-sm font-medium"
                                                                 >
-                                                                    Approvato
+                                                                    {t(
+                                                                        'articles.edit.approved',
+                                                                    )}
                                                                 </label>
                                                             </div>
                                                             <div className="grid gap-2">
                                                                 <FormLabel htmlFor="commercial_approval_employee">
-                                                                    Addetto
+                                                                    {t(
+                                                                        'articles.edit.employee',
+                                                                    )}
                                                                 </FormLabel>
                                                                 <Input
                                                                     id="commercial_approval_employee"
@@ -2415,12 +2609,16 @@ export default function ArticlesEdit({
                                                                                 .value,
                                                                         )
                                                                     }
-                                                                    placeholder="Addetto"
+                                                                    placeholder={t(
+                                                                        'articles.edit.placeholder_employee',
+                                                                    )}
                                                                 />
                                                             </div>
                                                             <div className="grid gap-2">
                                                                 <FormLabel htmlFor="commercial_approval_date">
-                                                                    Data
+                                                                    {t(
+                                                                        'articles.edit.date',
+                                                                    )}
                                                                 </FormLabel>
                                                                 <Input
                                                                     id="commercial_approval_date"
@@ -2444,7 +2642,9 @@ export default function ArticlesEdit({
                                                             </div>
                                                             <div className="grid gap-2">
                                                                 <FormLabel htmlFor="commercial_approval_notes">
-                                                                    Note
+                                                                    {t(
+                                                                        'articles.edit.notes',
+                                                                    )}
                                                                 </FormLabel>
                                                                 <Textarea
                                                                     id="commercial_approval_notes"
@@ -2466,11 +2666,11 @@ export default function ArticlesEdit({
                                                             </div>
                                                         </div>
 
-                                                        {/* Approvazione Cliente */}
                                                         <div className="space-y-3">
                                                             <FormLabel htmlFor="client_approval_checkbox">
-                                                                Approvazione
-                                                                Cliente
+                                                                {t(
+                                                                    'articles.edit.approval_client',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex items-center space-x-2">
                                                                 <Checkbox
@@ -2486,19 +2686,22 @@ export default function ArticlesEdit({
                                                                             checked ===
                                                                                 true,
                                                                         );
-                                                                        // Sincronizzare check_approval (anche in backend)
                                                                     }}
                                                                 />
                                                                 <label
                                                                     htmlFor="client_approval_checkbox"
                                                                     className="text-sm font-medium"
                                                                 >
-                                                                    Approvato
+                                                                    {t(
+                                                                        'articles.edit.approved',
+                                                                    )}
                                                                 </label>
                                                             </div>
                                                             <div className="grid gap-2">
                                                                 <FormLabel htmlFor="client_approval_employee">
-                                                                    Addetto
+                                                                    {t(
+                                                                        'articles.edit.employee',
+                                                                    )}
                                                                 </FormLabel>
                                                                 <Input
                                                                     id="client_approval_employee"
@@ -2515,12 +2718,16 @@ export default function ArticlesEdit({
                                                                                 .value,
                                                                         )
                                                                     }
-                                                                    placeholder="Addetto"
+                                                                    placeholder={t(
+                                                                        'articles.edit.placeholder_employee',
+                                                                    )}
                                                                 />
                                                             </div>
                                                             <div className="grid gap-2">
                                                                 <FormLabel htmlFor="client_approval_date">
-                                                                    Data
+                                                                    {t(
+                                                                        'articles.edit.date',
+                                                                    )}
                                                                 </FormLabel>
                                                                 <Input
                                                                     id="client_approval_date"
@@ -2544,7 +2751,9 @@ export default function ArticlesEdit({
                                                             </div>
                                                             <div className="grid gap-2">
                                                                 <FormLabel htmlFor="client_approval_notes">
-                                                                    Note
+                                                                    {t(
+                                                                        'articles.edit.notes',
+                                                                    )}
                                                                 </FormLabel>
                                                                 <Textarea
                                                                     id="client_approval_notes"
@@ -2574,8 +2783,10 @@ export default function ArticlesEdit({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Salvando...'
-                                                            : 'Salva Modifiche'}
+                                                            ? t('common.saving')
+                                                            : t(
+                                                                  'articles.edit.save_button',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -2586,7 +2797,7 @@ export default function ArticlesEdit({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

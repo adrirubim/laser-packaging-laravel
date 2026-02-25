@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import productionPortal from '@/routes/production-portal/index';
 import { Head, useForm } from '@inertiajs/react';
 import { LogIn, ScanLine } from 'lucide-react';
@@ -26,6 +27,7 @@ export default function ProductionPortalLogin({
     errors: serverErrors,
     flash,
 }: LoginProps) {
+    const { t } = useTranslations();
     const [loginMethod, setLoginMethod] = useState<'credentials' | 'ean'>(
         'credentials',
     );
@@ -59,7 +61,7 @@ export default function ProductionPortalLogin({
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4 dark:from-slate-900 dark:to-slate-800">
-            <Head title="Portale di Produzione - Login" />
+            <Head title={t('production_portal.login.page_title')} />
 
             <Card className="w-full max-w-md">
                 <CardHeader className="text-center">
@@ -67,10 +69,10 @@ export default function ProductionPortalLogin({
                         <LogIn className="h-8 w-8 text-primary" />
                     </div>
                     <CardTitle className="text-2xl">
-                        Portale di Produzione
+                        {t('production_portal.login.title')}
                     </CardTitle>
                     <CardDescription>
-                        Accedi per entrare nel portale
+                        {t('production_portal.login.subtitle')}
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -85,7 +87,7 @@ export default function ProductionPortalLogin({
                                     : 'text-muted-foreground hover:text-foreground'
                             }`}
                         >
-                            Utente e Password
+                            {t('production_portal.login.tab_credentials')}
                         </button>
                         <button
                             type="button"
@@ -97,7 +99,7 @@ export default function ProductionPortalLogin({
                             }`}
                         >
                             <ScanLine className="mr-1 inline h-4 w-4" />
-                            Codice EAN
+                            {t('production_portal.login.tab_ean')}
                         </button>
                     </div>
 
@@ -121,7 +123,9 @@ export default function ProductionPortalLogin({
                         >
                             <div className="space-y-2">
                                 <Label htmlFor="matriculation_number">
-                                    Numero di Matricola
+                                    {t(
+                                        'production_portal.login.matriculation_label',
+                                    )}
                                 </Label>
                                 <Input
                                     id="matriculation_number"
@@ -138,7 +142,9 @@ export default function ProductionPortalLogin({
                                     }
                                     required
                                     autoFocus
-                                    placeholder="Es: EMP001"
+                                    placeholder={t(
+                                        'production_portal.login.matriculation_placeholder',
+                                    )}
                                 />
                                 <InputError
                                     message={
@@ -150,7 +156,11 @@ export default function ProductionPortalLogin({
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="password">Password</Label>
+                                <Label htmlFor="password">
+                                    {t(
+                                        'production_portal.login.password_label',
+                                    )}
+                                </Label>
                                 <Input
                                     id="password"
                                     type="password"
@@ -180,8 +190,10 @@ export default function ProductionPortalLogin({
                                 }
                             >
                                 {isSubmitting || credentialsForm.processing
-                                    ? 'Accesso in corso...'
-                                    : 'Accedi'}
+                                    ? t('production_portal.login.submitting')
+                                    : t(
+                                          'production_portal.login.submit_credentials',
+                                      )}
                             </Button>
                         </form>
                     )}
@@ -191,7 +203,9 @@ export default function ProductionPortalLogin({
                         <form onSubmit={handleEanSubmit} className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="employee_number">
-                                    Codice EAN Dipendente
+                                    {t(
+                                        'production_portal.login.employee_ean_label',
+                                    )}
                                 </Label>
                                 <Input
                                     id="employee_number"
@@ -205,7 +219,9 @@ export default function ProductionPortalLogin({
                                     }
                                     required
                                     autoFocus
-                                    placeholder="Scansiona codice EAN del dipendente"
+                                    placeholder={t(
+                                        'production_portal.login.employee_ean_placeholder',
+                                    )}
                                 />
                                 <InputError
                                     message={
@@ -217,7 +233,9 @@ export default function ProductionPortalLogin({
 
                             <div className="space-y-2">
                                 <Label htmlFor="order_number">
-                                    Codice EAN Ordine
+                                    {t(
+                                        'production_portal.login.order_ean_label',
+                                    )}
                                 </Label>
                                 <Input
                                     id="order_number"
@@ -230,7 +248,9 @@ export default function ProductionPortalLogin({
                                         )
                                     }
                                     required
-                                    placeholder="Scansiona codice EAN dell'ordine"
+                                    placeholder={t(
+                                        'production_portal.login.order_ean_placeholder',
+                                    )}
                                 />
                                 <InputError
                                     message={
@@ -246,8 +266,10 @@ export default function ProductionPortalLogin({
                                 disabled={isSubmitting || eanForm.processing}
                             >
                                 {isSubmitting || eanForm.processing
-                                    ? 'Autenticazione...'
-                                    : 'Autentica con EAN'}
+                                    ? t(
+                                          'production_portal.login.authenticating',
+                                      )
+                                    : t('production_portal.login.submit_ean')}
                             </Button>
                         </form>
                     )}

@@ -16,6 +16,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import machineryRoutes from '@/routes/machinery/index';
 import { type BreadcrumbItem } from '@/types';
@@ -43,6 +44,7 @@ type MachineryEditProps = {
 };
 
 export default function MachineryEdit() {
+    const { t } = useTranslations();
     const { props } = usePage<MachineryEditProps>();
     const { machinery, valueTypes = [], errors: serverErrors } = props;
     const form = useForm<{
@@ -59,7 +61,7 @@ export default function MachineryEdit() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Macchinari',
+            title: t('nav.macchinari'),
             href: machineryRoutes.index().url,
         },
         {
@@ -67,14 +69,19 @@ export default function MachineryEdit() {
             href: machineryRoutes.show({ machinery: machinery.uuid }).url,
         },
         {
-            title: 'Modifica',
+            title: t('machinery.edit.breadcrumb'),
             href: machineryRoutes.edit({ machinery: machinery.uuid }).url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head key="head" title={`Modifica Macchinario ${machinery.cod}`} />
+            <Head
+                key="head"
+                title={t('machinery.edit.page_title', {
+                    code: machinery.cod,
+                })}
+            />
 
             <div
                 key="main"
@@ -84,9 +91,11 @@ export default function MachineryEdit() {
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Modifica Macchinario</CardTitle>
+                                <CardTitle>
+                                    {t('machinery.edit.card_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Aggiorna le informazioni del macchinario
+                                    {t('machinery.edit.card_description')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -118,7 +127,7 @@ export default function MachineryEdit() {
                                                         htmlFor="cod"
                                                         required
                                                     >
-                                                        Codice
+                                                        {t('common.code')}
                                                     </FormLabel>
                                                     <Input
                                                         id="cod"
@@ -145,7 +154,9 @@ export default function MachineryEdit() {
                                                         htmlFor="description"
                                                         required
                                                     >
-                                                        Descrizione
+                                                        {t(
+                                                            'common.description',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="description"
@@ -173,7 +184,9 @@ export default function MachineryEdit() {
                                                     className="grid gap-2"
                                                 >
                                                     <FormLabel htmlFor="parameter">
-                                                        Parametro
+                                                        {t(
+                                                            'machinery.form.parameter_placeholder',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="parameter"
@@ -187,7 +200,9 @@ export default function MachineryEdit() {
                                                                 e.target.value,
                                                             )
                                                         }
-                                                        placeholder="Parametro"
+                                                        placeholder={t(
+                                                            'machinery.form.parameter_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={
@@ -201,7 +216,9 @@ export default function MachineryEdit() {
                                                     className="grid gap-2"
                                                 >
                                                     <FormLabel htmlFor="value_type_uuid">
-                                                        Tipo Valore
+                                                        {t(
+                                                            'machinery.form.value_type_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="value_type_uuid"
@@ -222,7 +239,11 @@ export default function MachineryEdit() {
                                                         }
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona tipo valore" />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'machinery.select_value_type',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {[
@@ -230,7 +251,9 @@ export default function MachineryEdit() {
                                                                     key="__none"
                                                                     value="__none"
                                                                 >
-                                                                    Nessuno
+                                                                    {t(
+                                                                        'machinery.form.none',
+                                                                    )}
                                                                 </SelectItem>,
                                                                 ...(
                                                                     valueTypes ??
@@ -268,8 +291,12 @@ export default function MachineryEdit() {
                                                         }
                                                     >
                                                         {form.processing
-                                                            ? 'Aggiornamento...'
-                                                            : 'Aggiorna Macchinario'}
+                                                            ? t(
+                                                                  'machinery.edit.submitting',
+                                                              )
+                                                            : t(
+                                                                  'machinery.edit.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -285,7 +312,7 @@ export default function MachineryEdit() {
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

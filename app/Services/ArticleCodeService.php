@@ -27,14 +27,14 @@ class ArticleCodeService
     public function generateNextLAS(string $offerUuid): string
     {
         return DB::transaction(function () use ($offerUuid) {
-            // Ottenere offerta e famiglia LAS
+            // Get offer and LAS family
             $offer = Offer::where('uuid', $offerUuid)
                 ->where('removed', false)
                 ->lockForUpdate()
                 ->firstOrFail();
 
             if (empty($offer->lasfamily_uuid)) {
-                throw new \Exception('La oferta no tiene una familia LAS asignada');
+                throw new \Exception(__('services.article_code.offer_no_las_family'));
             }
 
             $lasFamily = OfferLasFamily::where('uuid', $offer->lasfamily_uuid)
@@ -44,24 +44,24 @@ class ArticleCodeService
             $codFamiglia = $lasFamily->code;
 
             if (empty($codFamiglia)) {
-                throw new \Exception('La famiglia LAS non ha codice assegnato');
+                throw new \Exception(__('services.article_code.las_family_no_code'));
             }
 
-            // Cercare tutti gli articoli con codice che inizia con LAS + CF
-            // Usare get() e ordinare in PHP per compatibilità con SQLite
+            // Search all articles with code starting with LAS + CF
+            // Use get() and sort in PHP for SQLite compatibility
             $articles = Article::where('cod_article_las', 'like', "LAS{$codFamiglia}%")
                 ->where('removed', false)
                 ->lockForUpdate()
                 ->get();
 
-            // Calcolare prossimo numero progressivo
+            // Calculate next progressive number
             $progressive = 1;
             if ($articles->isNotEmpty()) {
                 $progressives = [];
                 foreach ($articles as $article) {
                     if (! empty($article->cod_article_las)) {
                         $lastLASCode = $article->cod_article_las;
-                        // Extraer últimos 4 dígitos (progresivo)
+                        // Extract last 4 digits (progressive)
                         $prog = (int) substr($lastLASCode, -4);
                         if ($prog > 0) {
                             $progressives[] = $prog;

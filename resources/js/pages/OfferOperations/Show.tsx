@@ -8,6 +8,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import offerOperations from '@/routes/offer-operations/index';
 import { type BreadcrumbItem } from '@/types';
@@ -45,18 +46,22 @@ export default function OfferOperationsShow({
 }: OfferOperationsShowProps) {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const { t } = useTranslations();
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: '/offers',
         },
         {
-            title: 'Operazioni',
+            title: t('offer_operations.page_title'),
             href: offerOperations.index().url,
         },
         {
-            title: operation.codice ?? operation.descrizione ?? 'Operazione',
+            title:
+                operation.codice ??
+                operation.descrizione ??
+                t('offer_operations.fallback_name'),
             href: offerOperations.show({ offerOperation: operation.uuid }).url,
         },
     ];
@@ -75,12 +80,17 @@ export default function OfferOperationsShow({
         );
     };
 
-    const itemName = operation.descrizione ?? operation.codice ?? 'Operazione';
+    const itemName =
+        operation.descrizione ??
+        operation.codice ??
+        t('offer_operations.fallback_name');
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head
-                title={`Operazione ${operation.codice ?? operation.descrizione ?? ''}`}
+                title={t('offer_operations.show.page_title', {
+                    code: operation.codice ?? operation.descrizione ?? '',
+                })}
             />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
@@ -89,12 +99,12 @@ export default function OfferOperationsShow({
                         <h1 className="text-2xl font-bold">
                             {operation.descrizione ??
                                 operation.codice ??
-                                'Operazione'}
+                                t('offer_operations.fallback_name')}
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
                             {operation.codice && (
                                 <>
-                                    Codice:{' '}
+                                    {t('offer_operations.show.code_label')}{' '}
                                     <span className="font-mono">
                                         {operation.codice}
                                     </span>{' '}
@@ -115,7 +125,7 @@ export default function OfferOperationsShow({
                                 }
                             >
                                 <Edit className="mr-2 h-4 w-4" />
-                                Modifica
+                                {t('common.edit')}
                             </Link>
                         </Button>
                         <Button
@@ -124,7 +134,7 @@ export default function OfferOperationsShow({
                             disabled={isDeleting}
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Elimina
+                            {t('common.delete')}
                         </Button>
                     </div>
                 </div>
@@ -132,16 +142,18 @@ export default function OfferOperationsShow({
                 <div className="grid gap-4 md:grid-cols-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Dettagli Operazione</CardTitle>
+                            <CardTitle>
+                                {t('offer_operations.show.details_title')}
+                            </CardTitle>
                             <CardDescription>
-                                Informazioni su questa operazione
+                                {t('offer_operations.show.details_subtitle')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {operation.category && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Categoria
+                                        {t('offer_operations.table.category')}
                                     </Label>
                                     <p className="text-lg font-semibold">
                                         {operation.category.name}
@@ -152,7 +164,7 @@ export default function OfferOperationsShow({
                             {operation.codice && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Codice
+                                        {t('offer_operations.show.code_label')}
                                     </Label>
                                     <p className="font-mono text-lg font-semibold">
                                         {operation.codice}
@@ -163,7 +175,7 @@ export default function OfferOperationsShow({
                             {operation.descrizione && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Descrizione
+                                        {t('common.description')}
                                     </Label>
                                     <p className="text-lg font-semibold">
                                         {operation.descrizione}
@@ -175,19 +187,20 @@ export default function OfferOperationsShow({
                                 operation.secondi_operazione !== null && (
                                     <div>
                                         <Label className="text-sm font-medium text-muted-foreground">
-                                            Secondi Operazione
+                                            {t(
+                                                'offer_operations.show.seconds_label',
+                                            )}
                                         </Label>
-                                        <p>
-                                            {operation.secondi_operazione}{' '}
-                                            secondi
-                                        </p>
+                                        <p>{operation.secondi_operazione}</p>
                                     </div>
                                 )}
 
                             {operation.filename && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Nome allegato
+                                        {t(
+                                            'offer_operations.show.attachment_name',
+                                        )}
                                     </Label>
                                     <p className="font-mono">
                                         {getFileDisplayName(operation.filename)}
@@ -199,8 +212,12 @@ export default function OfferOperationsShow({
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>Informazioni Sistema</CardTitle>
-                            <CardDescription>Dati tecnici</CardDescription>
+                            <CardTitle>
+                                {t('offer_operations.show.system_title')}
+                            </CardTitle>
+                            <CardDescription>
+                                {t('offer_operations.show.system_description')}
+                            </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
@@ -226,8 +243,8 @@ export default function OfferOperationsShow({
                     open={deleteDialogOpen}
                     onOpenChange={setDeleteDialogOpen}
                     onConfirm={handleDeleteConfirm}
-                    title="Elimina Operazione"
-                    description="Sei sicuro di voler eliminare questa operazione? Questa azione non può essere annullata."
+                    title={t('offer_operations.delete_title')}
+                    description={t('offer_operations.delete_description')}
                     itemName={itemName}
                     isLoading={isDeleting}
                 />

@@ -20,10 +20,12 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import {
     addManualQuantity,
     addPalletQuantity,
     confirmAutocontrollo,
+    ProductionPortalError,
     suspendOrder,
 } from '@/lib/api/production-portal';
 import productionPortal from '@/routes/production-portal/index';
@@ -111,6 +113,7 @@ export default function ProductionPortalOrderDetail({
     employee,
     flash,
 }: OrderDetailProps) {
+    const { t } = useTranslations();
     const [manualQuantity, setManualQuantity] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
     const [actionMessage, setActionMessage] = useState<{
@@ -142,7 +145,7 @@ export default function ProductionPortalOrderDetail({
             if (result.ok === 1) {
                 setActionMessage({
                     type: 'success',
-                    message: 'Quantità di pallet aggiunta correttamente',
+                    message: t('production_portal.order.pallet_added'),
                 });
                 if (result.print_url) {
                     // Open print URL in new window
@@ -157,9 +160,11 @@ export default function ProductionPortalOrderDetail({
             setActionMessage({
                 type: 'error',
                 message:
-                    error instanceof Error
-                        ? error.message
-                        : "Errore nell'aggiungere la quantità di pallet",
+                    error instanceof ProductionPortalError
+                        ? t(error.translationKey)
+                        : error instanceof Error
+                          ? error.message
+                          : t('production_portal.order.pallet_error'),
             });
         } finally {
             setIsProcessing(false);
@@ -171,7 +176,7 @@ export default function ProductionPortalOrderDetail({
         if (isNaN(quantity) || quantity <= 0) {
             setActionMessage({
                 type: 'error',
-                message: 'Inserisci una quantità valida',
+                message: t('production_portal.order.valid_quantity'),
             });
             return;
         }
@@ -188,7 +193,9 @@ export default function ProductionPortalOrderDetail({
             if (result.ok === 1) {
                 setActionMessage({
                     type: 'success',
-                    message: `Quantità manuale di ${quantity} aggiunta correttamente`,
+                    message: t('production_portal.order.manual_added', {
+                        qty: quantity,
+                    }),
                 });
                 setManualQuantity('');
                 if (result.print_url) {
@@ -202,9 +209,11 @@ export default function ProductionPortalOrderDetail({
             setActionMessage({
                 type: 'error',
                 message:
-                    error instanceof Error
-                        ? error.message
-                        : "Errore nell'aggiungere quantità manuale",
+                    error instanceof ProductionPortalError
+                        ? t(error.translationKey)
+                        : error instanceof Error
+                          ? error.message
+                          : t('production_portal.order.manual_error'),
             });
         } finally {
             setIsProcessing(false);
@@ -223,7 +232,7 @@ export default function ProductionPortalOrderDetail({
             if (result.ok === 1) {
                 setActionMessage({
                     type: 'success',
-                    message: 'Ordine sospeso correttamente',
+                    message: t('production_portal.order.suspended'),
                 });
                 setTimeout(() => {
                     router.visit(productionPortal.dashboard.url());
@@ -233,9 +242,11 @@ export default function ProductionPortalOrderDetail({
             setActionMessage({
                 type: 'error',
                 message:
-                    error instanceof Error
-                        ? error.message
-                        : "Errore nella sospensione dell'ordine",
+                    error instanceof ProductionPortalError
+                        ? t(error.translationKey)
+                        : error instanceof Error
+                          ? error.message
+                          : t('production_portal.order.suspend_error'),
             });
         } finally {
             setIsProcessing(false);
@@ -254,7 +265,9 @@ export default function ProductionPortalOrderDetail({
             if (result.ok === 1) {
                 setActionMessage({
                     type: 'success',
-                    message: 'Autocontrollo confermato correttamente',
+                    message: t(
+                        'production_portal.order.autocontrollo_confirmed',
+                    ),
                 });
                 setTimeout(() => {
                     router.reload();
@@ -264,9 +277,11 @@ export default function ProductionPortalOrderDetail({
             setActionMessage({
                 type: 'error',
                 message:
-                    error instanceof Error
-                        ? error.message
-                        : 'Errore nella conferma autocontrollo',
+                    error instanceof ProductionPortalError
+                        ? t(error.translationKey)
+                        : error instanceof Error
+                          ? error.message
+                          : t('production_portal.order.autocontrollo_error'),
             });
         } finally {
             setIsProcessing(false);
@@ -280,7 +295,9 @@ export default function ProductionPortalOrderDetail({
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
             <Head
-                title={`Ordine ${order.order_production_number} - Portale di Produzione`}
+                title={t('production_portal.order.page_title', {
+                    number: order.order_production_number,
+                })}
             />
 
             {/* Header */}
@@ -290,12 +307,13 @@ export default function ProductionPortalOrderDetail({
                         <Link href={productionPortal.dashboard.url()}>
                             <Button variant="ghost" size="sm">
                                 <ArrowLeft className="mr-2 h-4 w-4" />
-                                Indietro
+                                {t('production_portal.order.back')}
                             </Button>
                         </Link>
                         <div>
                             <h1 className="text-2xl font-bold">
-                                Ordine {order.order_production_number}
+                                {t('production_portal.order.order_heading')}{' '}
+                                {order.order_production_number}
                             </h1>
                             <p className="text-sm text-muted-foreground">
                                 {employee.name} {employee.surname}
@@ -310,7 +328,7 @@ export default function ProductionPortalOrderDetail({
                             disabled={isProcessing}
                         >
                             <RefreshCw className="mr-2 h-4 w-4" />
-                            Aggiorna
+                            {t('production_portal.order.refresh')}
                         </Button>
                         <Button
                             variant="outline"
@@ -320,7 +338,7 @@ export default function ProductionPortalOrderDetail({
                             }
                         >
                             <LogOut className="mr-2 h-4 w-4" />
-                            Esci
+                            {t('production_portal.order.logout')}
                         </Button>
                     </div>
                 </div>
@@ -358,7 +376,11 @@ export default function ProductionPortalOrderDetail({
                         <Card>
                             <CardHeader>
                                 <div className="flex items-center justify-between">
-                                    <CardTitle>Informazioni ordine</CardTitle>
+                                    <CardTitle>
+                                        {t(
+                                            'production_portal.order.info_title',
+                                        )}
+                                    </CardTitle>
                                     <Badge
                                         className={
                                             order.status === 2
@@ -376,7 +398,9 @@ export default function ProductionPortalOrderDetail({
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <Label className="text-xs text-muted-foreground">
-                                            Numero ordine
+                                            {t(
+                                                'production_portal.order.order_number',
+                                            )}
                                         </Label>
                                         <p className="font-semibold">
                                             {order.order_production_number}
@@ -385,7 +409,9 @@ export default function ProductionPortalOrderDetail({
                                     {order.number_customer_reference_order && (
                                         <div>
                                             <Label className="text-xs text-muted-foreground">
-                                                Riferimento cliente
+                                                {t(
+                                                    'production_portal.order.customer_reference',
+                                                )}
                                             </Label>
                                             <p className="font-semibold">
                                                 {
@@ -399,7 +425,9 @@ export default function ProductionPortalOrderDetail({
                                 {order.article && (
                                     <div>
                                         <Label className="text-xs text-muted-foreground">
-                                            Articolo
+                                            {t(
+                                                'production_portal.order.article_label',
+                                            )}
                                         </Label>
                                         <p className="font-semibold">
                                             {order.article.cod_article_las}
@@ -415,7 +443,9 @@ export default function ProductionPortalOrderDetail({
                                 {order.customer && (
                                     <div>
                                         <Label className="text-xs text-muted-foreground">
-                                            Cliente
+                                            {t(
+                                                'production_portal.order.customer_label',
+                                            )}
                                         </Label>
                                         <p className="font-semibold">
                                             {order.customer.company_name}
@@ -431,7 +461,9 @@ export default function ProductionPortalOrderDetail({
                                 {order.shipping_address && (
                                     <div>
                                         <Label className="text-xs text-muted-foreground">
-                                            Indirizzo di consegna
+                                            {t(
+                                                'production_portal.order.shipping_address',
+                                            )}
                                         </Label>
                                         <p className="font-semibold">
                                             {order.shipping_address.street}
@@ -446,7 +478,9 @@ export default function ProductionPortalOrderDetail({
                                 {order.las_work_line && (
                                     <div>
                                         <Label className="text-xs text-muted-foreground">
-                                            Linea di lavoro LAS
+                                            {t(
+                                                'production_portal.order.work_line',
+                                            )}
                                         </Label>
                                         <p className="font-semibold">
                                             {order.las_work_line.code} -{' '}
@@ -458,7 +492,9 @@ export default function ProductionPortalOrderDetail({
                                 {order.pallet_type && (
                                     <div>
                                         <Label className="text-xs text-muted-foreground">
-                                            Tipo pallet
+                                            {t(
+                                                'production_portal.order.pallet_type',
+                                            )}
                                         </Label>
                                         <p className="font-semibold">
                                             {order.pallet_type.cod} -{' '}
@@ -472,13 +508,19 @@ export default function ProductionPortalOrderDetail({
                         {/* Progress Card */}
                         <Card>
                             <CardHeader>
-                                <CardTitle>Progresso di produzione</CardTitle>
+                                <CardTitle>
+                                    {t(
+                                        'production_portal.order.progress_title',
+                                    )}
+                                </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between text-sm">
                                         <span className="text-muted-foreground">
-                                            Quantità totale
+                                            {t(
+                                                'production_portal.order.total_quantity',
+                                            )}
                                         </span>
                                         <span className="font-semibold">
                                             {order.quantity}
@@ -486,7 +528,9 @@ export default function ProductionPortalOrderDetail({
                                     </div>
                                     <div className="flex items-center justify-between text-sm">
                                         <span className="text-muted-foreground">
-                                            Quantità Processata
+                                            {t(
+                                                'production_portal.order.processed_quantity',
+                                            )}
                                         </span>
                                         <span className="font-semibold text-primary">
                                             {order.worked_quantity}
@@ -494,7 +538,9 @@ export default function ProductionPortalOrderDetail({
                                     </div>
                                     <div className="flex items-center justify-between text-sm">
                                         <span className="text-muted-foreground">
-                                            Quantità Rimanente
+                                            {t(
+                                                'production_portal.order.remaining_quantity',
+                                            )}
                                         </span>
                                         <span className="font-semibold">
                                             {order.remain_quantity}
@@ -517,16 +563,19 @@ export default function ProductionPortalOrderDetail({
 
                     {/* Right Column - Actions */}
                     <div className="space-y-6">
-                        {/* Aggiungi pallet */}
+                        {/* Add pallet */}
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
                                     <Package className="h-5 w-5" />
-                                    Aggiungi pallet completo
+                                    {t(
+                                        'production_portal.order.add_pallet_title',
+                                    )}
                                 </CardTitle>
                                 <CardDescription>
-                                    Aggiungi la quantità necessaria per
-                                    completare un pallet
+                                    {t(
+                                        'production_portal.order.add_pallet_desc',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -539,28 +588,37 @@ export default function ProductionPortalOrderDetail({
                                 >
                                     <Plus className="mr-2 h-4 w-4" />
                                     {isProcessing
-                                        ? 'Elaborazione...'
-                                        : 'Aggiungi pallet'}
+                                        ? t(
+                                              'production_portal.order.processing',
+                                          )
+                                        : t(
+                                              'production_portal.order.add_pallet_btn',
+                                          )}
                                 </Button>
                             </CardContent>
                         </Card>
 
-                        {/* Aggiungi quantità manuale */}
+                        {/* Add manual quantity */}
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
                                     <Calculator className="h-5 w-5" />
-                                    Aggiungi quantità manuale
+                                    {t(
+                                        'production_portal.order.add_manual_title',
+                                    )}
                                 </CardTitle>
                                 <CardDescription>
-                                    Inserisci una quantità specifica da
-                                    elaborare
+                                    {t(
+                                        'production_portal.order.add_manual_desc',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div>
                                     <Label htmlFor="manual_quantity">
-                                        Quantità
+                                        {t(
+                                            'production_portal.order.quantity_label',
+                                        )}
                                     </Label>
                                     <Input
                                         id="manual_quantity"
@@ -588,8 +646,12 @@ export default function ProductionPortalOrderDetail({
                                 >
                                     <Plus className="mr-2 h-4 w-4" />
                                     {isProcessing
-                                        ? 'Elaborazione...'
-                                        : 'Aggiungi quantità'}
+                                        ? t(
+                                              'production_portal.order.processing',
+                                          )
+                                        : t(
+                                              'production_portal.order.add_quantity_btn',
+                                          )}
                                 </Button>
                             </CardContent>
                         </Card>
@@ -600,11 +662,14 @@ export default function ProductionPortalOrderDetail({
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
                                         <CheckCircle className="h-5 w-5" />
-                                        Conferma autocontrollo
+                                        {t(
+                                            'production_portal.order.confirm_autocontrollo_title',
+                                        )}
                                     </CardTitle>
                                     <CardDescription>
-                                        Conferma che l'autocontrollo è stato
-                                        superato
+                                        {t(
+                                            'production_portal.order.confirm_autocontrollo_desc',
+                                        )}
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
@@ -616,8 +681,12 @@ export default function ProductionPortalOrderDetail({
                                     >
                                         <CheckCircle className="mr-2 h-4 w-4" />
                                         {isProcessing
-                                            ? 'Elaborazione...'
-                                            : 'Conferma Autocontrollo'}
+                                            ? t(
+                                                  'production_portal.order.processing',
+                                              )
+                                            : t(
+                                                  'production_portal.order.confirm_autocontrollo_btn',
+                                              )}
                                     </Button>
                                 </CardContent>
                             </Card>
@@ -628,11 +697,10 @@ export default function ProductionPortalOrderDetail({
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2 text-destructive">
                                     <AlertTriangle className="h-5 w-5" />
-                                    Sospendi Ordine
+                                    {t('production_portal.order.suspend_title')}
                                 </CardTitle>
                                 <CardDescription>
-                                    Sospende l'ordine per autocontrollo non
-                                    superato
+                                    {t('production_portal.order.suspend_desc')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -647,28 +715,32 @@ export default function ProductionPortalOrderDetail({
                                             }
                                         >
                                             <AlertTriangle className="mr-2 h-4 w-4" />
-                                            Sospendi ordine
+                                            {t(
+                                                'production_portal.order.suspend_btn',
+                                            )}
                                         </Button>
                                     </AlertDialogTrigger>
                                     <AlertDialogContent>
                                         <AlertDialogHeader>
                                             <AlertDialogTitle>
-                                                Confermare sospensione?
+                                                {t(
+                                                    'production_portal.order.suspend_confirm_title',
+                                                )}
                                             </AlertDialogTitle>
                                             <AlertDialogDescription>
-                                                Questa azione sospenderà
-                                                l'ordine{' '}
-                                                {order.order_production_number}{' '}
-                                                per "Autocontrollo Non
-                                                Superato". Questa azione non può
-                                                essere annullata facilmente.
+                                                {t(
+                                                    'production_portal.order.suspend_confirm_desc',
+                                                    {
+                                                        number: order.order_production_number,
+                                                    },
+                                                )}
                                             </AlertDialogDescription>
                                         </AlertDialogHeader>
                                         <AlertDialogFooter>
                                             <AlertDialogCancel
                                                 disabled={isProcessing}
                                             >
-                                                Annulla
+                                                {t('common.cancel')}
                                             </AlertDialogCancel>
                                             <AlertDialogAction
                                                 onClick={handleSuspend}
@@ -676,8 +748,12 @@ export default function ProductionPortalOrderDetail({
                                                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                             >
                                                 {isProcessing
-                                                    ? 'Elaborazione...'
-                                                    : 'Conferma sospensione'}
+                                                    ? t(
+                                                          'production_portal.order.processing',
+                                                      )
+                                                    : t(
+                                                          'production_portal.order.suspend_confirm_btn',
+                                                      )}
                                             </AlertDialogAction>
                                         </AlertDialogFooter>
                                     </AlertDialogContent>

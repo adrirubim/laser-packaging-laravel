@@ -57,7 +57,7 @@ class OrderStateController extends Controller
         OfferOrderState::create($validated);
 
         return redirect()->route('order-states.index')
-            ->with('success', 'Stato ordine creato con successo.');
+            ->with('success', __('flash.order_state.created'));
     }
 
     /**
@@ -96,7 +96,7 @@ class OrderStateController extends Controller
         $orderState->update($validated);
 
         return redirect()->route('order-states.index')
-            ->with('success', 'Stato ordine aggiornato con successo.');
+            ->with('success', __('flash.order_state.updated'));
     }
 
     /**
@@ -107,6 +107,6 @@ class OrderStateController extends Controller
         $orderState->update(['removed' => true]);
 
         return redirect()->route('order-states.index')
-            ->with('success', 'Stato ordine eliminato con successo.');
+            ->with('success', __('flash.order_state.deleted'));
     }
 }

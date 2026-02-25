@@ -24,7 +24,7 @@ class CriticalIssueController extends Controller
     {
         $query = CriticalIssue::active();
 
-        // Ricerca
+        // Search
         if ($request->has('search')) {
             $search = $request->get('search');
             $query->where(function ($q) use ($search) {
@@ -60,11 +60,11 @@ class CriticalIssueController extends Controller
 
         $criticalIssue = CriticalIssue::create($validated);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->articleRepository->clearFormOptionsCache();
 
         return redirect()->route('critical-issues.index')
-            ->with('success', 'Problema critico creato con successo.');
+            ->with('success', __('flash.critical_issue.created'));
     }
 
     /**
@@ -101,7 +101,7 @@ class CriticalIssueController extends Controller
         $criticalIssue->update($validated);
 
         return redirect()->route('critical-issues.index')
-            ->with('success', 'Problema critico aggiornato con successo.');
+            ->with('success', __('flash.critical_issue.updated'));
     }
 
     /**
@@ -112,10 +112,10 @@ class CriticalIssueController extends Controller
         $criticalIssue->removed = true;
         $criticalIssue->save();
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->articleRepository->clearFormOptionsCache();
 
         return redirect()->route('critical-issues.index')
-            ->with('success', 'Problema critico eliminato con successo.');
+            ->with('success', __('flash.critical_issue.deleted'));
     }
 }

@@ -46,15 +46,15 @@ class CustomerShippingAddressFactory extends Factory
                 'Ufficio Commerciale',
                 'Ricevimento Merci',
             ]),
-            // Generare sempre indirizzo completo
+            // Always generate full address
             'street' => $this->faker->streetAddress(),
             // CAP: 5 cifre numeriche (formato italiano corretto)
             'postal_code' => $this->faker->numerify('#####'), // 5 cifre
             'city' => $this->faker->city(),
-            // Provincia: codice di 2 lettere (formato italiano corretto)
+            // Province: 2-letter code (correct Italian format)
             'province' => $this->faker->randomElement($italianProvinces),
             'country' => $this->faker->country(),
-            // Generare sempre contatti con formati diversi
+            // Always generate contacts with different formats
             'contacts' => $this->faker->randomElement([
                 $this->faker->phoneNumber(),
                 $this->faker->phoneNumber().' / '.$this->faker->phoneNumber(),

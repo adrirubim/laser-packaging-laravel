@@ -7,6 +7,7 @@ import {
 import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import valueTypes from '@/routes/value-types/index';
 import { type BreadcrumbItem } from '@/types';
@@ -35,6 +36,7 @@ type ValueTypesIndexProps = {
 };
 
 export default function ValueTypesIndex() {
+    const { t } = useTranslations();
     const { props } = usePage<ValueTypesIndexProps>();
     const { valueTypes: valueTypesPaginated, filters } = props;
     const { flash } = useFlashNotifications();
@@ -88,20 +90,20 @@ export default function ValueTypesIndex() {
     };
 
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Configurazione', href: '#' },
-        { title: 'Tipi di Valore', href: valueTypes.index().url },
+        { title: t('nav.configuration'), href: '#' },
+        { title: t('value_types.page_title'), href: valueTypes.index().url },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Tipi di Valore" />
+            <Head title={t('value_types.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="Tipi di Valore"
-                    subtitle="Elenco dei tipi di valore attivi con Cerca."
+                    title={t('value_types.page_title')}
+                    subtitle={t('value_types.index.subtitle')}
                     createHref={valueTypes.create().url}
-                    createLabel="Nuovo Tipo"
+                    createLabel={t('value_types.index.create')}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -109,13 +111,15 @@ export default function ValueTypesIndex() {
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="space-y-1">
                         <label className="text-xs font-medium text-muted-foreground">
-                            Cerca
+                            {t('common.search')}
                         </label>
                         <SearchInput
                             value={filters.search ?? ''}
                             onChange={handleSearchChange}
                             onClear={clearSearch}
-                            placeholder="UUID..."
+                            placeholder={t(
+                                'value_types.index.search_placeholder',
+                            )}
                             debounceMs={500}
                         />
                     </div>
@@ -127,13 +131,13 @@ export default function ValueTypesIndex() {
                             <thead className="sticky top-0 z-10 bg-muted/80 backdrop-blur">
                                 <tr className="text-xs tracking-wide text-muted-foreground uppercase">
                                     <th className="border-b px-3 py-2 font-medium">
-                                        ID
+                                        {t('common.id')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        UUID
+                                        {t('common.uuid')}
                                     </th>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t('common.actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -144,8 +148,7 @@ export default function ValueTypesIndex() {
                                             colSpan={3}
                                             className="px-3 py-6 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessun tipo di valore trovato per i
-                                            filtri attuali.
+                                            {t('value_types.index.empty')}
                                         </td>
                                     </tr>
                                 )}
@@ -201,8 +204,8 @@ export default function ValueTypesIndex() {
                         })
                     }
                     onConfirm={handleDeleteConfirm}
-                    title="Elimina Tipo di Valore"
-                    description="Sei sicuro di voler eliminare questo tipo di valore? Questa azione non può essere annullata."
+                    title={t('value_types.delete.title')}
+                    description={t('value_types.delete.description')}
                     itemName={deleteDialog.valueType?.uuid}
                     isLoading={isDeleting}
                 />

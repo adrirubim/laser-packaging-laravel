@@ -95,16 +95,16 @@ type ContractsIndexProps = {
     };
 };
 
-const PAY_LEVEL_LABELS: Record<number, string> = {
-    0: 'D1 (ex 2a)',
-    1: 'D2 (ex 3a)',
-    2: 'C1 (ex 3a Super)',
-    3: 'C2 (ex 4a)',
-    4: 'C3 (ex 5a)',
-    5: 'B1 (ex 5a Super)',
-    6: 'B2 (ex 6a)',
-    7: 'B3 (ex 7a)',
-    8: 'A1 (ex 8a Quadri)',
+const PAY_LEVEL_KEYS: Record<number, string> = {
+    0: 'employees.contracts.pay_level_0',
+    1: 'employees.contracts.pay_level_1',
+    2: 'employees.contracts.pay_level_2',
+    3: 'employees.contracts.pay_level_3',
+    4: 'employees.contracts.pay_level_4',
+    5: 'employees.contracts.pay_level_5',
+    6: 'employees.contracts.pay_level_6',
+    7: 'employees.contracts.pay_level_7',
+    8: 'employees.contracts.pay_level_8',
 };
 
 export default function ContractsIndex() {
@@ -274,18 +274,18 @@ export default function ContractsIndex() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Personale',
+            title: t('nav.personale'),
             href: '/employees',
         },
         {
-            title: 'Contratti',
+            title: t('employees.contracts.breadcrumb_contracts'),
             href: contractsRoutes.index().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Gestione Contratti Personale" />
+            <Head title={t('employees.contracts.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <FlashNotifications flash={flash} />
@@ -293,14 +293,14 @@ export default function ContractsIndex() {
                 {contractsPaginated.total === 0 && (
                     <div className="flex flex-col items-center justify-center gap-4 rounded-xl border border-sidebar-border/70 bg-card p-8 text-center dark:border-sidebar-border">
                         <p className="text-muted-foreground">
-                            Nessun contratto presente.
+                            {t('employees.contracts.empty_state')}
                         </p>
                         <Link
                             href={contractsRoutes.create().url}
                             className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
                         >
                             <Plus className="mr-2 h-4 w-4" />
-                            Crea il primo contratto
+                            {t('employees.contracts.create_first')}
                         </Link>
                     </div>
                 )}
@@ -308,7 +308,7 @@ export default function ContractsIndex() {
                 <div className="flex items-center justify-between gap-3">
                     <div>
                         <h1 className="text-2xl font-semibold tracking-tight">
-                            Gestione Contratti Personale
+                            {t('employees.contracts.page_title')}
                         </h1>
                     </div>
                     <Link
@@ -316,7 +316,7 @@ export default function ContractsIndex() {
                         className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
                     >
                         <Plus className="mr-2 h-4 w-4" />
-                        Aggiungi Contratto
+                        {t('employees.contracts.add_contract')}
                     </Link>
                 </div>
 
@@ -324,7 +324,7 @@ export default function ContractsIndex() {
                     <div className="flex flex-wrap items-center justify-between gap-3">
                         <div className="flex items-center gap-2">
                             <label className="text-xs font-medium text-muted-foreground">
-                                Mostra
+                                {t('employees.contracts.show_label')}
                             </label>
                             <Select
                                 value={String(
@@ -346,7 +346,9 @@ export default function ContractsIndex() {
                             >
                                 <SelectTrigger
                                     className="h-8 w-[92px]"
-                                    aria-label="Elementi per pagina"
+                                    aria-label={t(
+                                        'employees.contracts.aria_items_per_page',
+                                    )}
                                 >
                                     <SelectValue />
                                 </SelectTrigger>
@@ -358,7 +360,7 @@ export default function ContractsIndex() {
                                 </SelectContent>
                             </Select>
                             <label className="text-xs font-medium text-muted-foreground">
-                                elementi
+                                {t('employees.contracts.items_label')}
                             </label>
                         </div>
                         <div className="flex flex-wrap items-center gap-2">
@@ -366,11 +368,14 @@ export default function ContractsIndex() {
                                 value={filters.search || ''}
                                 onChange={handleSearchChange}
                                 onClear={clearSearch}
-                                placeholder="Cerca per dipendente..."
+                                placeholder={t(
+                                    'employees.contracts.search_placeholder',
+                                )}
                                 className="w-48"
                             />
                             <label className="text-xs font-medium text-muted-foreground">
-                                Personale:
+                                {t('employees.contracts.employee_filter_label')}
+                                :
                             </label>
                             <Select
                                 value={filters.employee_uuid || 'all'}
@@ -399,7 +404,8 @@ export default function ContractsIndex() {
                                 </SelectContent>
                             </Select>
                             <label className="text-xs font-medium text-muted-foreground">
-                                Datore:
+                                {t('employees.contracts.supplier_filter_label')}
+                                :
                             </label>
                             <Select
                                 value={filters.supplier_uuid || 'all'}
@@ -448,7 +454,9 @@ export default function ContractsIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Personale
+                                        {t(
+                                            'employees.contracts.columns.employee',
+                                        )}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="supplier"
@@ -456,7 +464,9 @@ export default function ContractsIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Datore
+                                        {t(
+                                            'employees.contracts.columns.supplier',
+                                        )}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="pay_level"
@@ -464,7 +474,9 @@ export default function ContractsIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Livello Retribuzione
+                                        {t(
+                                            'employees.contracts.columns.pay_level',
+                                        )}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="start_date"
@@ -472,7 +484,9 @@ export default function ContractsIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Data d'Inizio
+                                        {t(
+                                            'employees.contracts.columns.start_date',
+                                        )}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="end_date"
@@ -480,10 +494,14 @@ export default function ContractsIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Data di Fine
+                                        {t(
+                                            'employees.contracts.columns.end_date',
+                                        )}
                                     </SortableTableHeader>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t(
+                                            'employees.contracts.columns.actions',
+                                        )}
                                     </th>
                                 </tr>
                             </thead>
@@ -494,7 +512,9 @@ export default function ContractsIndex() {
                                             colSpan={8}
                                             className="px-3 py-8 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessun contratto trovato
+                                            {t(
+                                                'employees.contracts.empty_table',
+                                            )}
                                         </td>
                                     </tr>
                                 )}
@@ -554,10 +574,12 @@ export default function ContractsIndex() {
                                         <td className="px-3 py-2">
                                             <span className="inline-flex items-center rounded-full bg-muted px-2 py-1 text-xs font-medium">
                                                 {contract.pay_level_label ||
-                                                    PAY_LEVEL_LABELS[
-                                                        contract.pay_level
-                                                    ] ||
-                                                    'N/D'}
+                                                    t(
+                                                        PAY_LEVEL_KEYS[
+                                                            contract.pay_level
+                                                        ] ??
+                                                            'common.not_available',
+                                                    )}
                                             </span>
                                         </td>
                                         <td className="px-3 py-2 text-xs">
@@ -566,7 +588,9 @@ export default function ContractsIndex() {
                                         <td className="px-3 py-2 text-xs">
                                             {formatDate(
                                                 contract.end_date,
-                                                'Indeterminato',
+                                                t(
+                                                    'employees.contracts.indeterminate',
+                                                ),
                                             )}
                                         </td>
                                         <td className="px-3 py-2 text-right text-xs">
@@ -576,7 +600,9 @@ export default function ContractsIndex() {
                                                         variant="ghost"
                                                         size="icon"
                                                         className="h-8 w-8"
-                                                        aria-label="Apri menu azioni"
+                                                        aria-label={t(
+                                                            'employees.contracts.aria_open_menu',
+                                                        )}
                                                     >
                                                         <MoreHorizontal className="h-4 w-4" />
                                                     </Button>
@@ -591,7 +617,9 @@ export default function ContractsIndex() {
                                                         }}
                                                     >
                                                         <Eye className="mr-2 h-4 w-4" />
-                                                        Visualizza
+                                                        {t(
+                                                            'employees.contracts.view',
+                                                        )}
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
                                                         onSelect={(e) => {
@@ -602,7 +630,9 @@ export default function ContractsIndex() {
                                                         }}
                                                     >
                                                         <Edit className="mr-2 h-4 w-4" />
-                                                        Modifica
+                                                        {t(
+                                                            'employees.contracts.edit',
+                                                        )}
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem asChild>
                                                         <Link
@@ -613,7 +643,9 @@ export default function ContractsIndex() {
                                                             }
                                                         >
                                                             <CalendarPlus className="mr-2 h-4 w-4" />
-                                                            Proroga
+                                                            {t(
+                                                                'employees.contracts.extend',
+                                                            )}
                                                         </Link>
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
@@ -626,7 +658,9 @@ export default function ContractsIndex() {
                                                         }}
                                                     >
                                                         <Trash2 className="mr-2 h-4 w-4" />
-                                                        Elimina
+                                                        {t(
+                                                            'employees.contracts.delete',
+                                                        )}
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
@@ -642,7 +676,7 @@ export default function ContractsIndex() {
                 <div className="space-y-3 md:hidden">
                     {contractsPaginated.data.length === 0 ? (
                         <div className="py-8 text-center text-sm text-muted-foreground">
-                            Nessun contratto trovato
+                            {t('employees.contracts.empty_table')}
                         </div>
                     ) : (
                         contractsPaginated.data.map((contract) => (
@@ -666,7 +700,10 @@ export default function ContractsIndex() {
                                         </div>
                                         {contract.employee && (
                                             <div className="mt-1 font-mono text-xs text-muted-foreground">
-                                                Matricola:{' '}
+                                                {t(
+                                                    'employees.contracts.matriculation_mobile',
+                                                )}
+                                                :{' '}
                                                 {
                                                     contract.employee
                                                         .matriculation_number
@@ -675,7 +712,10 @@ export default function ContractsIndex() {
                                         )}
                                         <div className="mt-2 text-sm">
                                             <span className="text-muted-foreground">
-                                                Datore:{' '}
+                                                {t(
+                                                    'employees.contracts.supplier_mobile',
+                                                )}
+                                                :{' '}
                                             </span>
                                             {contract.supplier ? (
                                                 <span className="font-medium">
@@ -697,7 +737,9 @@ export default function ContractsIndex() {
                                                 variant="ghost"
                                                 size="icon"
                                                 className="h-8 w-8"
-                                                aria-label="Apri menu azioni"
+                                                aria-label={t(
+                                                    'employees.contracts.aria_open_menu',
+                                                )}
                                             >
                                                 <MoreHorizontal className="h-4 w-4" />
                                             </Button>
@@ -710,7 +752,7 @@ export default function ContractsIndex() {
                                                 }}
                                             >
                                                 <Eye className="mr-2 h-4 w-4" />
-                                                Visualizza
+                                                {t('employees.contracts.view')}
                                             </DropdownMenuItem>
                                             <DropdownMenuItem
                                                 onSelect={(e) => {
@@ -719,7 +761,7 @@ export default function ContractsIndex() {
                                                 }}
                                             >
                                                 <Edit className="mr-2 h-4 w-4" />
-                                                Modifica
+                                                {t('employees.contracts.edit')}
                                             </DropdownMenuItem>
                                             <DropdownMenuItem asChild>
                                                 <Link
@@ -730,7 +772,9 @@ export default function ContractsIndex() {
                                                     }
                                                 >
                                                     <CalendarPlus className="mr-2 h-4 w-4" />
-                                                    Proroga
+                                                    {t(
+                                                        'employees.contracts.extend',
+                                                    )}
                                                 </Link>
                                             </DropdownMenuItem>
                                             <DropdownMenuItem
@@ -741,7 +785,9 @@ export default function ContractsIndex() {
                                                 }}
                                             >
                                                 <Trash2 className="mr-2 h-4 w-4" />
-                                                Elimina
+                                                {t(
+                                                    'employees.contracts.delete',
+                                                )}
                                             </DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
@@ -749,19 +795,26 @@ export default function ContractsIndex() {
                                 <div className="grid grid-cols-2 gap-2 border-t pt-2 text-xs">
                                     <div>
                                         <span className="text-muted-foreground">
-                                            Livello:{' '}
+                                            {t(
+                                                'employees.contracts.level_mobile',
+                                            )}
+                                            :{' '}
                                         </span>
                                         <span className="inline-flex items-center rounded-full bg-muted px-2 py-1 text-xs font-medium">
                                             {contract.pay_level_label ||
-                                                PAY_LEVEL_LABELS[
-                                                    contract.pay_level
-                                                ] ||
-                                                'N/D'}
+                                                t(
+                                                    PAY_LEVEL_KEYS[
+                                                        contract.pay_level
+                                                    ] ?? 'common.not_available',
+                                                )}
                                         </span>
                                     </div>
                                     <div>
                                         <span className="text-muted-foreground">
-                                            Inizio:{' '}
+                                            {t(
+                                                'employees.contracts.start_mobile',
+                                            )}
+                                            :{' '}
                                         </span>
                                         <span>
                                             {formatDate(contract.start_date)}
@@ -770,7 +823,10 @@ export default function ContractsIndex() {
                                     {contract.end_date && (
                                         <div className="col-span-2">
                                             <span className="text-muted-foreground">
-                                                Fine:{' '}
+                                                {t(
+                                                    'employees.contracts.end_mobile',
+                                                )}
+                                                :{' '}
                                             </span>
                                             <span>
                                                 {formatDate(contract.end_date)}
@@ -798,9 +854,15 @@ export default function ContractsIndex() {
             >
                 <DialogContent className="max-w-2xl">
                     <DialogHeader>
-                        <DialogTitle>Dettagli Contratto</DialogTitle>
+                        <DialogTitle>
+                            {t('employees.contracts.view_dialog_title')}
+                        </DialogTitle>
                         <DialogDescription asChild>
-                            <span>Informazioni complete del contratto</span>
+                            <span>
+                                {t(
+                                    'employees.contracts.view_dialog_description',
+                                )}
+                            </span>
                         </DialogDescription>
                     </DialogHeader>
                     {viewDialog.contract && (
@@ -808,7 +870,9 @@ export default function ContractsIndex() {
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <Label className="text-xs text-muted-foreground">
-                                        Dipendente
+                                        {t(
+                                            'employees.contracts.view_label_employee',
+                                        )}
                                     </Label>
                                     <p className="text-sm font-medium">
                                         {viewDialog.contract.employee
@@ -817,7 +881,10 @@ export default function ContractsIndex() {
                                     </p>
                                     {viewDialog.contract.employee && (
                                         <p className="mt-1 font-mono text-xs text-muted-foreground">
-                                            Matricola:{' '}
+                                            {t(
+                                                'employees.contracts.matriculation_mobile',
+                                            )}
+                                            :{' '}
                                             {
                                                 viewDialog.contract.employee
                                                     .matriculation_number
@@ -827,7 +894,9 @@ export default function ContractsIndex() {
                                 </div>
                                 <div>
                                     <Label className="text-xs text-muted-foreground">
-                                        Datore di Lavoro
+                                        {t(
+                                            'employees.contracts.view_label_employer',
+                                        )}
                                     </Label>
                                     <p className="text-sm font-medium">
                                         {viewDialog.contract.supplier
@@ -835,30 +904,38 @@ export default function ContractsIndex() {
                                     </p>
                                     {viewDialog.contract.supplier && (
                                         <p className="mt-1 font-mono text-xs text-muted-foreground">
-                                            Codice:{' '}
+                                            {t(
+                                                'employees.contracts.view_label_code',
+                                            )}
+                                            :{' '}
                                             {viewDialog.contract.supplier.code}
                                         </p>
                                     )}
                                 </div>
                                 <div>
                                     <Label className="text-xs text-muted-foreground">
-                                        Livello Retributivo
+                                        {t(
+                                            'employees.contracts.view_label_pay_level',
+                                        )}
                                     </Label>
                                     <p className="text-sm">
                                         <span className="inline-flex items-center rounded-full bg-muted px-2 py-1 text-xs font-medium">
                                             {viewDialog.contract
                                                 .pay_level_label ||
-                                                PAY_LEVEL_LABELS[
-                                                    viewDialog.contract
-                                                        .pay_level
-                                                ] ||
-                                                'N/D'}
+                                                t(
+                                                    PAY_LEVEL_KEYS[
+                                                        viewDialog.contract
+                                                            .pay_level
+                                                    ] ?? 'common.not_available',
+                                                )}
                                         </span>
                                     </p>
                                 </div>
                                 <div>
                                     <Label className="text-xs text-muted-foreground">
-                                        Data Inizio
+                                        {t(
+                                            'employees.contracts.view_label_start_date',
+                                        )}
                                     </Label>
                                     <p className="text-sm">
                                         {formatDate(
@@ -868,13 +945,17 @@ export default function ContractsIndex() {
                                 </div>
                                 <div>
                                     <Label className="text-xs text-muted-foreground">
-                                        Data Fine
+                                        {t(
+                                            'employees.contracts.view_label_end_date',
+                                        )}
                                     </Label>
                                     <p className="text-sm">
                                         {formatDate(
                                             viewDialog.contract.end_date ??
                                                 null,
-                                            'Indeterminato',
+                                            t(
+                                                'employees.contracts.indeterminate',
+                                            ),
                                         )}
                                     </p>
                                 </div>
@@ -901,8 +982,8 @@ export default function ContractsIndex() {
                 }
                 onConfirm={handleDeleteConfirm}
                 isLoading={isDeleting}
-                title="Conferma eliminazione contratto"
-                description="Sei sicuro di voler eliminare questo contratto? L'azione non può essere annullata."
+                title={t('employees.contracts.delete_title')}
+                description={t('employees.contracts.delete_description')}
                 itemName={
                     deleteDialog.contract?.employee
                         ? `${deleteDialog.contract.employee.surname} ${deleteDialog.contract.employee.name}`
@@ -927,6 +1008,7 @@ function EditContractDialog({
     suppliers: Supplier[];
     onClose: () => void;
 }) {
+    const { t } = useTranslations();
     const { data, setData, put, processing, errors } = useForm<{
         employee_uuid: string;
         supplier_uuid: string;
@@ -973,14 +1055,20 @@ function EditContractDialog({
         <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
             <DialogContent className="max-w-md">
                 <DialogHeader>
-                    <DialogTitle>Modifica Contratto</DialogTitle>
+                    <DialogTitle>
+                        {t('employees.contracts.edit_dialog_title')}
+                    </DialogTitle>
                     <DialogDescription asChild>
-                        <span>Modifica le informazioni del contratto</span>
+                        <span>
+                            {t('employees.contracts.edit_dialog_description')}
+                        </span>
                     </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-2">
-                        <Label htmlFor="employee_uuid">Dipendente *</Label>
+                        <Label htmlFor="employee_uuid">
+                            {t('employees.contracts.edit_employee_label')}
+                        </Label>
                         <Select
                             value={data.employee_uuid}
                             onValueChange={(value) =>
@@ -995,7 +1083,11 @@ function EditContractDialog({
                                         : ''
                                 }
                             >
-                                <SelectValue placeholder="Seleziona un dipendente" />
+                                <SelectValue
+                                    placeholder={t(
+                                        'employees.contracts.edit_employee_placeholder',
+                                    )}
+                                />
                             </SelectTrigger>
                             <SelectContent>
                                 {employees
@@ -1019,7 +1111,7 @@ function EditContractDialog({
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="supplier_uuid">
-                            Datore di Lavoro *
+                            {t('employees.contracts.edit_employer_label')}
                         </Label>
                         <Select
                             value={data.supplier_uuid}
@@ -1035,7 +1127,11 @@ function EditContractDialog({
                                         : ''
                                 }
                             >
-                                <SelectValue placeholder="Seleziona un datore di lavoro" />
+                                <SelectValue
+                                    placeholder={t(
+                                        'employees.contracts.edit_employer_placeholder',
+                                    )}
+                                />
                             </SelectTrigger>
                             <SelectContent>
                                 {suppliers
@@ -1057,7 +1153,9 @@ function EditContractDialog({
                         )}
                     </div>
                     <div className="space-y-2">
-                        <Label htmlFor="start_date">Data Inizio *</Label>
+                        <Label htmlFor="start_date">
+                            {t('employees.contracts.edit_start_date_label')}
+                        </Label>
                         <Input
                             id="start_date"
                             type="date"
@@ -1077,7 +1175,9 @@ function EditContractDialog({
                         )}
                     </div>
                     <div className="space-y-2">
-                        <Label htmlFor="end_date">Data Fine</Label>
+                        <Label htmlFor="end_date">
+                            {t('employees.contracts.edit_end_date_label')}
+                        </Label>
                         <Input
                             id="end_date"
                             type="date"
@@ -1096,7 +1196,9 @@ function EditContractDialog({
                         )}
                     </div>
                     <div className="space-y-2">
-                        <Label htmlFor="pay_level">Livello Retributivo</Label>
+                        <Label htmlFor="pay_level">
+                            {t('employees.contracts.edit_pay_level_label')}
+                        </Label>
                         <Select
                             value={data.pay_level}
                             onValueChange={(value) =>
@@ -1107,14 +1209,20 @@ function EditContractDialog({
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="0">C3 (ex 5a)</SelectItem>
-                                <SelectItem value="1">
-                                    B1 (ex 5a Super)
+                                <SelectItem value="0">
+                                    {t('employees.contracts.pay_level_4')}
                                 </SelectItem>
-                                <SelectItem value="2">B2 (ex 6a)</SelectItem>
-                                <SelectItem value="3">B3 (ex 7a)</SelectItem>
+                                <SelectItem value="1">
+                                    {t('employees.contracts.pay_level_5')}
+                                </SelectItem>
+                                <SelectItem value="2">
+                                    {t('employees.contracts.pay_level_6')}
+                                </SelectItem>
+                                <SelectItem value="3">
+                                    {t('employees.contracts.pay_level_7')}
+                                </SelectItem>
                                 <SelectItem value="4">
-                                    A1 (ex 8a Quadri)
+                                    {t('employees.contracts.pay_level_8')}
                                 </SelectItem>
                             </SelectContent>
                         </Select>
@@ -1131,10 +1239,12 @@ function EditContractDialog({
                             onClick={onClose}
                             disabled={processing}
                         >
-                            Annulla
+                            {t('common.cancel')}
                         </Button>
                         <Button type="submit" disabled={processing}>
-                            {processing ? 'Salvando...' : 'Salva'}
+                            {processing
+                                ? t('employees.create.saving')
+                                : t('common.save')}
                         </Button>
                     </div>
                 </form>

@@ -8,6 +8,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import articles from '@/routes/articles/index';
 import { type BreadcrumbItem } from '@/types';
@@ -45,20 +46,22 @@ type PalletizationInstructionsShowProps = {
 export default function PalletizationInstructionsShow({
     instruction,
 }: PalletizationInstructionsShowProps) {
+    const { t } = useTranslations();
     const [isDeleting, setIsDeleting] = useState(false);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const instructionCode = instruction.code + (instruction.number || '');
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Articoli',
+            title: t('nav.articles'),
             href: articles.index().url,
         },
         {
-            title: 'Istruzioni di Pallettizzazione',
+            title: t('articles.palletization_instructions.index.title'),
             href: articles.palletizationInstructions.index().url,
         },
         {
-            title: instruction.code + (instruction.number || ''),
+            title: instructionCode,
             href: articles.palletizationInstructions.show({
                 palletizationInstruction: instruction.uuid,
             }).url,
@@ -88,7 +91,12 @@ export default function PalletizationInstructionsShow({
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head
-                title={`Istruzione ${instruction.code}${instruction.number || ''}`}
+                title={t(
+                    'articles.palletization_instructions.show.page_title',
+                    {
+                        code: instructionCode,
+                    },
+                )}
             />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
@@ -99,7 +107,9 @@ export default function PalletizationInstructionsShow({
                             {instruction.number || ''}
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Dettagli dell'istruzione di pallettizzazione
+                            {t(
+                                'articles.palletization_instructions.show.subtitle',
+                            )}
                         </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -112,16 +122,19 @@ export default function PalletizationInstructionsShow({
                         >
                             <Button variant="outline" size="sm">
                                 <Edit className="mr-2 h-4 w-4" />
-                                Modifica
+                                {t('common.edit')}
                             </Button>
                         </Link>
                         <Button
                             variant="destructive"
                             size="sm"
                             onClick={() => setShowDeleteDialog(true)}
+                            disabled={isDeleting}
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Elimina
+                            {isDeleting
+                                ? t('common.deleting')
+                                : t('common.delete')}
                         </Button>
                         <Link
                             href={
@@ -130,7 +143,9 @@ export default function PalletizationInstructionsShow({
                         >
                             <Button variant="ghost" size="sm">
                                 <ArrowLeft className="mr-2 h-4 w-4" />
-                                Indietro
+                                {t(
+                                    'articles.palletization_instructions.show.back',
+                                )}
                             </Button>
                         </Link>
                     </div>
@@ -139,12 +154,18 @@ export default function PalletizationInstructionsShow({
                 <div className="grid gap-4 md:grid-cols-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Informazioni Generali</CardTitle>
+                            <CardTitle>
+                                {t(
+                                    'articles.palletization_instructions.show.general_info',
+                                )}
+                            </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    Codice
+                                    {t(
+                                        'articles.palletization_instructions.show.fields.code',
+                                    )}
                                 </Label>
                                 <p className="mt-1 text-sm font-medium">
                                     {instruction.code}
@@ -153,7 +174,9 @@ export default function PalletizationInstructionsShow({
                             {instruction.number && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Numero
+                                        {t(
+                                            'articles.palletization_instructions.show.fields.number',
+                                        )}
                                     </Label>
                                     <p className="mt-1 text-sm font-medium">
                                         {instruction.number}
@@ -163,7 +186,9 @@ export default function PalletizationInstructionsShow({
                             {instruction.filename && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Filename
+                                        {t(
+                                            'articles.palletization_instructions.show.fields.filename',
+                                        )}
                                     </Label>
                                     <div className="mt-1 flex items-center gap-2">
                                         <p className="text-sm font-medium">
@@ -192,13 +217,19 @@ export default function PalletizationInstructionsShow({
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>Dimensioni Collo</CardTitle>
+                            <CardTitle>
+                                {t(
+                                    'articles.palletization_instructions.show.dimensions_title',
+                                )}
+                            </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {instruction.length_cm && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Larghezza
+                                        {t(
+                                            'articles.palletization_instructions.show.fields.length',
+                                        )}
                                     </Label>
                                     <p className="mt-1 text-sm font-medium">
                                         {instruction.length_cm} cm
@@ -208,7 +239,9 @@ export default function PalletizationInstructionsShow({
                             {instruction.depth_cm && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Profondità
+                                        {t(
+                                            'articles.palletization_instructions.show.fields.depth',
+                                        )}
                                     </Label>
                                     <p className="mt-1 text-sm font-medium">
                                         {instruction.depth_cm} cm
@@ -218,7 +251,9 @@ export default function PalletizationInstructionsShow({
                             {instruction.height_cm && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Altezza
+                                        {t(
+                                            'articles.palletization_instructions.show.fields.height',
+                                        )}
                                     </Label>
                                     <p className="mt-1 text-sm font-medium">
                                         {instruction.height_cm} cm
@@ -228,7 +263,9 @@ export default function PalletizationInstructionsShow({
                             {instruction.volume_dmc && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Volume
+                                        {t(
+                                            'articles.palletization_instructions.show.fields.volume',
+                                        )}
                                     </Label>
                                     <p className="mt-1 text-sm font-medium">
                                         {instruction.volume_dmc} dm³
@@ -240,13 +277,19 @@ export default function PalletizationInstructionsShow({
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>Configurazione Pallet</CardTitle>
+                            <CardTitle>
+                                {t(
+                                    'articles.palletization_instructions.show.config_title',
+                                )}
+                            </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {instruction.plan_packaging && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Colli per piano
+                                        {t(
+                                            'articles.palletization_instructions.show.fields.plan_packaging',
+                                        )}
                                     </Label>
                                     <p className="mt-1 text-sm font-medium">
                                         {instruction.plan_packaging}
@@ -256,7 +299,9 @@ export default function PalletizationInstructionsShow({
                             {instruction.pallet_plans && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Piani per pallet
+                                        {t(
+                                            'articles.palletization_instructions.show.fields.pallet_plans',
+                                        )}
                                     </Label>
                                     <p className="mt-1 text-sm font-medium">
                                         {instruction.pallet_plans}
@@ -266,7 +311,9 @@ export default function PalletizationInstructionsShow({
                             {instruction.qty_pallet && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Colli per pallet
+                                        {t(
+                                            'articles.palletization_instructions.show.fields.qty_pallet',
+                                        )}
                                     </Label>
                                     <p className="mt-1 text-sm font-medium">
                                         {instruction.qty_pallet}
@@ -276,7 +323,9 @@ export default function PalletizationInstructionsShow({
                             {instruction.units_per_neck && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Unità per collo
+                                        {t(
+                                            'articles.palletization_instructions.show.fields.units_per_neck',
+                                        )}
                                     </Label>
                                     <p className="mt-1 text-sm font-medium">
                                         {instruction.units_per_neck}
@@ -286,7 +335,9 @@ export default function PalletizationInstructionsShow({
                             {instruction.units_pallet && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Unità per pallet
+                                        {t(
+                                            'articles.palletization_instructions.show.fields.units_pallet',
+                                        )}
                                     </Label>
                                     <p className="mt-1 text-sm font-medium">
                                         {instruction.units_pallet}
@@ -298,13 +349,17 @@ export default function PalletizationInstructionsShow({
                                     undefined && (
                                     <div>
                                         <Label className="text-sm font-medium text-muted-foreground">
-                                            Interfalda ogni
+                                            {t(
+                                                'articles.palletization_instructions.show.fields.interlayer_every',
+                                            )}
                                         </Label>
                                         <p className="mt-1 text-sm font-medium">
                                             {
                                                 instruction.interlayer_every_floors
                                             }{' '}
-                                            piani
+                                            {t(
+                                                'articles.palletization_instructions.show.fields.floors_suffix',
+                                            )}
                                         </p>
                                     </div>
                                 )}
@@ -315,10 +370,15 @@ export default function PalletizationInstructionsShow({
                         instruction.articles.length > 0 && (
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Articoli Associati</CardTitle>
+                                    <CardTitle>
+                                        {t(
+                                            'articles.palletization_instructions.show.articles_title',
+                                        )}
+                                    </CardTitle>
                                     <CardDescription>
-                                        Articoli che utilizzano questa
-                                        istruzione
+                                        {t(
+                                            'articles.palletization_instructions.show.articles_subtitle',
+                                        )}
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
@@ -349,21 +409,13 @@ export default function PalletizationInstructionsShow({
                     onOpenChange={setShowDeleteDialog}
                     onConfirm={handleDelete}
                     isDeleting={isDeleting}
-                    title="Conferma eliminazione"
-                    description={
-                        <>
-                            Sei sicuro di voler eliminare l'istruzione{' '}
-                            <strong>
-                                {instruction.code}
-                                {instruction.number || ''}
-                            </strong>
-                            ?
-                            <br />
-                            <br />
-                            Questa azione non può essere annullata. L'istruzione
-                            verrà eliminata definitivamente.
-                        </>
-                    }
+                    title={t(
+                        'articles.palletization_instructions.delete.title',
+                    )}
+                    description={t(
+                        'articles.palletization_instructions.delete.description',
+                    )}
+                    itemName={instructionCode}
                 />
             </div>
         </AppLayout>

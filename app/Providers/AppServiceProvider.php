@@ -41,7 +41,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Route::bind('cqModel', function ($value) {
-            // Verificare che il valore sia un UUID valido prima di interrogare il database
+            // Verify value is valid UUID before querying database
             if (! \Illuminate\Support\Str::isUuid($value)) {
                 abort(404);
             }

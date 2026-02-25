@@ -127,7 +127,7 @@ class OfferControllerTest extends TestCase
 
         $offerNumber = date('Y').'_001_01_A';
 
-        // Crear primera oferta
+        // Create first offer
         Offer::factory()->create([
             'customer_uuid' => $this->customer->uuid,
             'customerdivision_uuid' => $this->division->uuid,
@@ -135,7 +135,7 @@ class OfferControllerTest extends TestCase
             'removed' => false,
         ]);
 
-        // Tentare di creare seconda offerta con lo stesso numero
+        // Try to create second offer with same number
         $response = $this->post(route('offers.store'), [
             'customer_uuid' => $this->customer->uuid,
             'customerdivision_uuid' => $this->division->uuid,
@@ -167,7 +167,7 @@ class OfferControllerTest extends TestCase
             'removed' => false,
         ]);
 
-        // Creare articolo associato
+        // Create associated article
         Article::factory()->create([
             'offer_uuid' => $offer->uuid,
             'removed' => false,
@@ -178,7 +178,7 @@ class OfferControllerTest extends TestCase
         $response->assertRedirect(route('offers.index'));
         $response->assertSessionHas('error');
 
-        // Verificar que la oferta no fue eliminada
+        // Verify offer was not deleted
         $offer->refresh();
         $this->assertFalse($offer->removed);
     }
@@ -199,7 +199,7 @@ class OfferControllerTest extends TestCase
         $response->assertRedirect(route('offers.index'));
         $response->assertSessionHas('success');
 
-        // Verificar que la oferta fue marcada como eliminada
+        // Verify offer was marked as deleted
         $offer->refresh();
         $this->assertTrue($offer->removed);
     }
@@ -471,7 +471,7 @@ class OfferControllerTest extends TestCase
             'removed' => false,
         ]);
 
-        // Tentare di aggiornare offer2 con il numero di offer1
+        // Try to update offer2 with offer1's number
         $response = $this->put(route('offers.update', $offer2), [
             'customer_uuid' => $this->customer->uuid,
             'customerdivision_uuid' => $this->division->uuid,
@@ -513,7 +513,7 @@ class OfferControllerTest extends TestCase
         $response = $this->put(route('offers.update', $offer), [
             'customer_uuid' => $this->customer->uuid,
             'customerdivision_uuid' => $this->division->uuid,
-            'offer_number' => '2025_001_01_A', // Stesso numero
+            'offer_number' => '2025_001_01_A', // Same number
             'offer_date' => now()->format('Y-m-d'),
             'validity_date' => $offer->validity_date->format('Y-m-d'),
             'activity_uuid' => $this->activity->uuid,
@@ -732,7 +732,7 @@ class OfferControllerTest extends TestCase
         $response = $this->post(route('offers.store'), [
             'customer_uuid' => $this->customer->uuid,
             'customerdivision_uuid' => $this->division->uuid,
-            'offer_number' => str_repeat('a', 256), // Più di 255 caratteri
+            'offer_number' => str_repeat('a', 256), // More than 255 characters
             'activity_uuid' => $this->activity->uuid,
             'sector_uuid' => $this->sector->uuid,
             'seasonality_uuid' => $this->seasonality->uuid,
@@ -788,7 +788,7 @@ class OfferControllerTest extends TestCase
             ->has('offers.data')
         );
 
-        // Verificar que no hay resultados
+        // Verify there are no results
         $response->assertInertia(fn ($page) => $page->has('offers.data')
             ->where('offers.data', [])
         );
@@ -799,7 +799,7 @@ class OfferControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // Creare più di 15 offerte (default per_page)
+        // Create more than 15 offers (default per_page)
         Offer::factory()->count(20)->create([
             'customer_uuid' => $this->customer->uuid,
             'customerdivision_uuid' => $this->division->uuid,

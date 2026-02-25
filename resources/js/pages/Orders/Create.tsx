@@ -19,8 +19,8 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { LOT_TYPE_OPTIONS } from '@/constants/lotTypes';
-import { LABEL_OPTIONS } from '@/constants/orderLabels';
+import { LOT_TYPE_OPTION_KEYS } from '@/constants/lotTypes';
+import { LABEL_OPTION_KEYS } from '@/constants/orderLabels';
 import { useTranslations } from '@/hooks/use-translations';
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
@@ -60,16 +60,6 @@ type ShippingAddress = {
     postal_code?: string | null;
 };
 
-type LabelOption = {
-    value: number;
-    label: string;
-};
-
-type LotTypeOption = {
-    value: number;
-    label: string;
-};
-
 type OrdersCreateProps = {
     articles: Article[];
     shippingAddresses: ShippingAddress[];
@@ -77,8 +67,6 @@ type OrdersCreateProps = {
     productionNumber: string;
     /** Precompilazione quando c'è un solo indirizzo (Crea Ordine da Articoli) */
     initialShippingAddressUuid?: string | null;
-    labelOptions?: LabelOption[];
-    lotTypeOptions?: LotTypeOption[];
     errors?: Record<string, string>;
 };
 
@@ -88,8 +76,6 @@ export default function OrdersCreate({
     article: initialArticle,
     productionNumber,
     initialShippingAddressUuid,
-    labelOptions = [...LABEL_OPTIONS],
-    lotTypeOptions = [...LOT_TYPE_OPTIONS],
     errors: serverErrors,
 }: OrdersCreateProps) {
     const { t } = useTranslations();
@@ -122,24 +108,24 @@ export default function OrdersCreate({
     const [indicationsForDelivery, setIndicationsForDelivery] = useState('');
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
 
-    // Calcolare remain_quantity
+    // Calculate remain_quantity
     const workedQuantity = 0;
     const remainQuantity = quantity
         ? (parseFloat(quantity) - workedQuantity).toFixed(5)
         : '0';
 
     const quantityValidation = useFieldValidation(quantity, [
-        validationRules.required('La quantità è obbligatoria'),
+        validationRules.required(t('orders.validation.quantity_required')),
         validationRules.pattern(
             /^\d+([.,]\d+)?$/,
-            'La quantità deve essere un numero valido',
+            t('orders.validation.quantity_valid_number'),
         ),
         (val: string) => {
             if (!val || val.trim() === '') return null;
             const n = Number(val.replace(',', '.'));
             if (!Number.isFinite(n))
-                return 'La quantità deve essere un numero valido';
-            if (n < 0) return 'La quantità deve essere maggiore o uguale a 0';
+                return t('orders.validation.quantity_valid_number');
+            if (n < 0) return t('orders.validation.quantity_min_zero');
             return null;
         },
     ]);
@@ -151,7 +137,7 @@ export default function OrdersCreate({
             const today = new Date();
             today.setHours(0, 0, 0, 0);
             if (date < today) {
-                return 'La data non può essere nel passato';
+                return t('orders.validation.date_not_past');
             }
             return null;
         },
@@ -223,17 +209,18 @@ export default function OrdersCreate({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Crea ordine" />
+            <Head title={t('orders.create.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Crea nuovo ordine</CardTitle>
+                                <CardTitle>
+                                    {t('orders.create.card_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Compila i campi per creare un nuovo ordine
-                                    di produzione
+                                    {t('orders.create.card_description')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -264,8 +251,9 @@ export default function OrdersCreate({
                                                     <>
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="cod_article_las">
-                                                                Codice articolo
-                                                                LAS
+                                                                {t(
+                                                                    'orders.labels.article_code_las',
+                                                                )}
                                                             </FormLabel>
                                                             <Input
                                                                 id="cod_article_las"
@@ -281,7 +269,9 @@ export default function OrdersCreate({
                                                         {currentArticle.um && (
                                                             <div className="grid gap-2">
                                                                 <FormLabel htmlFor="um">
-                                                                    U.m.
+                                                                    {t(
+                                                                        'orders.labels.um',
+                                                                    )}
                                                                 </FormLabel>
                                                                 <Input
                                                                     id="um"
@@ -299,7 +289,9 @@ export default function OrdersCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="order_production_number">
-                                                        N. Ordine di produzione
+                                                        {t(
+                                                            'orders.labels.production_number',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="order_production_number"
@@ -307,7 +299,9 @@ export default function OrdersCreate({
                                                         defaultValue={
                                                             productionNumber
                                                         }
-                                                        placeholder="Lasciare vuoto per generazione automatica"
+                                                        placeholder={t(
+                                                            'orders.create.production_number_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={
@@ -321,7 +315,9 @@ export default function OrdersCreate({
                                                         htmlFor="article_uuid"
                                                         required
                                                     >
-                                                        Articolo
+                                                        {t(
+                                                            'orders.labels.article',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="article_uuid"
@@ -335,7 +331,11 @@ export default function OrdersCreate({
                                                         required
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona un articolo" />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'orders.select_article',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {articles.map(
@@ -353,7 +353,9 @@ export default function OrdersCreate({
                                                                         }{' '}
                                                                         -{' '}
                                                                         {article.article_descr ||
-                                                                            'Senza descrizione'}
+                                                                            t(
+                                                                                'common.no_description',
+                                                                            )}
                                                                     </SelectItem>
                                                                 ),
                                                             )}
@@ -368,13 +370,16 @@ export default function OrdersCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="number_customer_reference_order">
-                                                        N. Ordine di riferimento
-                                                        cliente
+                                                        {t(
+                                                            'orders.labels.client_ref_order',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="number_customer_reference_order"
                                                         name="number_customer_reference_order"
-                                                        placeholder="Numero di riferimento cliente"
+                                                        placeholder={t(
+                                                            'orders.create.client_ref_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                     />
                                                     <InputError
@@ -386,7 +391,9 @@ export default function OrdersCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="line">
-                                                        Riga
+                                                        {t(
+                                                            'orders.labels.line',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="line"
@@ -398,7 +405,9 @@ export default function OrdersCreate({
                                                                 e.target.value,
                                                             )
                                                         }
-                                                        placeholder="Numero di riga"
+                                                        placeholder={t(
+                                                            'orders.create.line_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={allErrors.line}
@@ -410,7 +419,9 @@ export default function OrdersCreate({
                                                         htmlFor="quantity"
                                                         required
                                                     >
-                                                        Q.tà ordine
+                                                        {t(
+                                                            'orders.labels.quantity_order',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="quantity"
@@ -455,7 +466,9 @@ export default function OrdersCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="worked_quantity">
-                                                        Qtà lavorata
+                                                        {t(
+                                                            'orders.labels.quantity_worked',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="worked_quantity"
@@ -470,7 +483,9 @@ export default function OrdersCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="remain_quantity">
-                                                        Q.tà saldo
+                                                        {t(
+                                                            'orders.labels.quantity_remain',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="remain_quantity"
@@ -483,8 +498,9 @@ export default function OrdersCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="delivery_requested_date">
-                                                        Data di consegna
-                                                        richiesta
+                                                        {t(
+                                                            'orders.labels.delivery_date_requested',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="delivery_requested_date"
@@ -528,8 +544,9 @@ export default function OrdersCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="customershippingaddress_uuid">
-                                                        Luogo di consegna
-                                                        richiesto
+                                                        {t(
+                                                            'orders.labels.delivery_place',
+                                                        )}
                                                     </FormLabel>
                                                     <input
                                                         type="hidden"
@@ -556,11 +573,17 @@ export default function OrdersCreate({
                                                             <SelectValue
                                                                 placeholder={
                                                                     !selectedArticle
-                                                                        ? 'Seleziona prima un articolo'
+                                                                        ? t(
+                                                                              'orders.create.select_article_first',
+                                                                          )
                                                                         : shippingAddresses.length ===
                                                                             0
-                                                                          ? 'Nessun indirizzo disponibile'
-                                                                          : 'Seleziona luogo di consegna'
+                                                                          ? t(
+                                                                                'orders.create.no_address_available',
+                                                                            )
+                                                                          : t(
+                                                                                'orders.create.select_delivery_place',
+                                                                            )
                                                                 }
                                                             />
                                                         </SelectTrigger>
@@ -600,8 +623,9 @@ export default function OrdersCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="expected_production_start_date">
-                                                        Data prevista inizio
-                                                        produzione
+                                                        {t(
+                                                            'orders.labels.expected_production_start',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="expected_production_start_date"
@@ -627,7 +651,9 @@ export default function OrdersCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="type_lot">
-                                                        Tipo Lotto
+                                                        {t(
+                                                            'orders.labels.lot_type',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="type_lot"
@@ -644,10 +670,14 @@ export default function OrdersCreate({
                                                         }}
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona tipo lotto..." />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'orders.create.select_lot_type',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
-                                                            {lotTypeOptions.map(
+                                                            {LOT_TYPE_OPTION_KEYS.map(
                                                                 (option) => (
                                                                     <SelectItem
                                                                         key={
@@ -657,9 +687,9 @@ export default function OrdersCreate({
                                                                             option.value,
                                                                         )}
                                                                     >
-                                                                        {
-                                                                            option.label
-                                                                        }
+                                                                        {t(
+                                                                            option.labelKey,
+                                                                        )}
                                                                     </SelectItem>
                                                                 ),
                                                             )}
@@ -674,7 +704,7 @@ export default function OrdersCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="lot">
-                                                        Lotto
+                                                        {t('orders.labels.lot')}
                                                     </FormLabel>
                                                     <Input
                                                         id="lot"
@@ -693,8 +723,12 @@ export default function OrdersCreate({
                                                         }
                                                         placeholder={
                                                             isLotReadonly
-                                                                ? 'Generato automaticamente'
-                                                                : 'Inserisci il lotto'
+                                                                ? t(
+                                                                      'orders.create.lot_auto_generated',
+                                                                  )
+                                                                : t(
+                                                                      'orders.create.lot_placeholder',
+                                                                  )
                                                         }
                                                     />
                                                     <InputError
@@ -704,7 +738,9 @@ export default function OrdersCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="expiration_date">
-                                                        Scadenza
+                                                        {t(
+                                                            'orders.labels.expiration',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="expiration_date"
@@ -729,12 +765,16 @@ export default function OrdersCreate({
                                                 {/* Campos de Etichette */}
                                                 <div className="space-y-4">
                                                     <h3 className="text-lg font-semibold">
-                                                        Etichette
+                                                        {t(
+                                                            'orders.labels.labels_section',
+                                                        )}
                                                     </h3>
 
                                                     <div className="grid gap-2">
                                                         <FormLabel htmlFor="external_labels">
-                                                            Etichette esterne
+                                                            {t(
+                                                                'orders.labels.labels_external',
+                                                            )}
                                                         </FormLabel>
                                                         <Select
                                                             name="external_labels"
@@ -746,10 +786,14 @@ export default function OrdersCreate({
                                                             }
                                                         >
                                                             <SelectTrigger>
-                                                                <SelectValue placeholder="Seleziona etichette esterne..." />
+                                                                <SelectValue
+                                                                    placeholder={t(
+                                                                        'orders.create.select_labels_external',
+                                                                    )}
+                                                                />
                                                             </SelectTrigger>
                                                             <SelectContent>
-                                                                {labelOptions.map(
+                                                                {LABEL_OPTION_KEYS.map(
                                                                     (
                                                                         option,
                                                                     ) => (
@@ -761,9 +805,9 @@ export default function OrdersCreate({
                                                                                 option.value,
                                                                             )}
                                                                         >
-                                                                            {
-                                                                                option.label
-                                                                            }
+                                                                            {t(
+                                                                                option.labelKey,
+                                                                            )}
                                                                         </SelectItem>
                                                                     ),
                                                                 )}
@@ -778,7 +822,9 @@ export default function OrdersCreate({
 
                                                     <div className="grid gap-2">
                                                         <FormLabel htmlFor="pvp_labels">
-                                                            Etichette pvp
+                                                            {t(
+                                                                'orders.labels.labels_pvp',
+                                                            )}
                                                         </FormLabel>
                                                         <Select
                                                             name="pvp_labels"
@@ -788,10 +834,14 @@ export default function OrdersCreate({
                                                             }
                                                         >
                                                             <SelectTrigger>
-                                                                <SelectValue placeholder="Seleziona etichette pvp..." />
+                                                                <SelectValue
+                                                                    placeholder={t(
+                                                                        'orders.create.select_labels_pvp',
+                                                                    )}
+                                                                />
                                                             </SelectTrigger>
                                                             <SelectContent>
-                                                                {labelOptions.map(
+                                                                {LABEL_OPTION_KEYS.map(
                                                                     (
                                                                         option,
                                                                     ) => (
@@ -803,9 +853,9 @@ export default function OrdersCreate({
                                                                                 option.value,
                                                                             )}
                                                                         >
-                                                                            {
-                                                                                option.label
-                                                                            }
+                                                                            {t(
+                                                                                option.labelKey,
+                                                                            )}
                                                                         </SelectItem>
                                                                     ),
                                                                 )}
@@ -820,8 +870,9 @@ export default function OrdersCreate({
 
                                                     <div className="grid gap-2">
                                                         <FormLabel htmlFor="ingredients_labels">
-                                                            Etichette
-                                                            ingredienti
+                                                            {t(
+                                                                'orders.labels.labels_ingredients',
+                                                            )}
                                                         </FormLabel>
                                                         <Select
                                                             name="ingredients_labels"
@@ -833,10 +884,14 @@ export default function OrdersCreate({
                                                             }
                                                         >
                                                             <SelectTrigger>
-                                                                <SelectValue placeholder="Seleziona etichette ingredienti..." />
+                                                                <SelectValue
+                                                                    placeholder={t(
+                                                                        'orders.create.select_labels_ingredients',
+                                                                    )}
+                                                                />
                                                             </SelectTrigger>
                                                             <SelectContent>
-                                                                {labelOptions.map(
+                                                                {LABEL_OPTION_KEYS.map(
                                                                     (
                                                                         option,
                                                                     ) => (
@@ -848,9 +903,9 @@ export default function OrdersCreate({
                                                                                 option.value,
                                                                             )}
                                                                         >
-                                                                            {
-                                                                                option.label
-                                                                            }
+                                                                            {t(
+                                                                                option.labelKey,
+                                                                            )}
                                                                         </SelectItem>
                                                                     ),
                                                                 )}
@@ -865,8 +920,9 @@ export default function OrdersCreate({
 
                                                     <div className="grid gap-2">
                                                         <FormLabel htmlFor="variable_data_labels">
-                                                            Etichette dati
-                                                            variabili
+                                                            {t(
+                                                                'orders.labels.labels_variable',
+                                                            )}
                                                         </FormLabel>
                                                         <Select
                                                             name="variable_data_labels"
@@ -878,10 +934,14 @@ export default function OrdersCreate({
                                                             }
                                                         >
                                                             <SelectTrigger>
-                                                                <SelectValue placeholder="Seleziona etichetta dati variabili..." />
+                                                                <SelectValue
+                                                                    placeholder={t(
+                                                                        'orders.create.select_labels_variable',
+                                                                    )}
+                                                                />
                                                             </SelectTrigger>
                                                             <SelectContent>
-                                                                {labelOptions.map(
+                                                                {LABEL_OPTION_KEYS.map(
                                                                     (
                                                                         option,
                                                                     ) => (
@@ -893,9 +953,9 @@ export default function OrdersCreate({
                                                                                 option.value,
                                                                             )}
                                                                         >
-                                                                            {
-                                                                                option.label
-                                                                            }
+                                                                            {t(
+                                                                                option.labelKey,
+                                                                            )}
                                                                         </SelectItem>
                                                                     ),
                                                                 )}
@@ -910,7 +970,9 @@ export default function OrdersCreate({
 
                                                     <div className="grid gap-2">
                                                         <FormLabel htmlFor="label_of_jumpers">
-                                                            Etichette cavallotti
+                                                            {t(
+                                                                'orders.labels.labels_jumper',
+                                                            )}
                                                         </FormLabel>
                                                         <Select
                                                             name="label_of_jumpers"
@@ -922,10 +984,14 @@ export default function OrdersCreate({
                                                             }
                                                         >
                                                             <SelectTrigger>
-                                                                <SelectValue placeholder="Seleziona etichetta cavallotti..." />
+                                                                <SelectValue
+                                                                    placeholder={t(
+                                                                        'orders.create.select_labels_jumpers',
+                                                                    )}
+                                                                />
                                                             </SelectTrigger>
                                                             <SelectContent>
-                                                                {labelOptions.map(
+                                                                {LABEL_OPTION_KEYS.map(
                                                                     (
                                                                         option,
                                                                     ) => (
@@ -937,9 +1003,9 @@ export default function OrdersCreate({
                                                                                 option.value,
                                                                             )}
                                                                         >
-                                                                            {
-                                                                                option.label
-                                                                            }
+                                                                            {t(
+                                                                                option.labelKey,
+                                                                            )}
                                                                         </SelectItem>
                                                                     ),
                                                                 )}
@@ -957,8 +1023,9 @@ export default function OrdersCreate({
                                                 {currentArticle?.palletSheet && (
                                                     <div className="grid gap-2">
                                                         <FormLabel htmlFor="pallet_sheet">
-                                                            Foglio Pallet
-                                                            Aggiuntivo
+                                                            {t(
+                                                                'orders.show.pallet_sheet',
+                                                            )}
                                                         </FormLabel>
                                                         <div className="flex gap-2">
                                                             <Input
@@ -977,7 +1044,9 @@ export default function OrdersCreate({
                                                                 }
                                                             >
                                                                 <Download className="mr-2 h-4 w-4" />
-                                                                Scarica allegato
+                                                                {t(
+                                                                    'orders.create.download_pallet_sheet',
+                                                                )}
                                                             </Button>
                                                         </div>
                                                     </div>
@@ -986,13 +1055,16 @@ export default function OrdersCreate({
                                                 {/* Indicaciones */}
                                                 <div className="space-y-4">
                                                     <h3 className="text-lg font-semibold">
-                                                        Indicazioni
+                                                        {t(
+                                                            'orders.labels.indications',
+                                                        )}
                                                     </h3>
 
                                                     <div className="grid gap-2">
                                                         <FormLabel htmlFor="indications_for_shop">
-                                                            Indicazioni per il
-                                                            magazzino
+                                                            {t(
+                                                                'orders.labels.indications_shop',
+                                                            )}
                                                         </FormLabel>
                                                         <Textarea
                                                             id="indications_for_shop"
@@ -1007,7 +1079,9 @@ export default function OrdersCreate({
                                                                 )
                                                             }
                                                             rows={3}
-                                                            placeholder="Inserisci indicazioni per il magazzino..."
+                                                            placeholder={t(
+                                                                'orders.create.indicazioni_magazzino',
+                                                            )}
                                                         />
                                                         <InputError
                                                             message={
@@ -1018,8 +1092,9 @@ export default function OrdersCreate({
 
                                                     <div className="grid gap-2">
                                                         <FormLabel htmlFor="indications_for_production">
-                                                            Indicazioni per la
-                                                            produzione
+                                                            {t(
+                                                                'orders.labels.indications_production',
+                                                            )}
                                                         </FormLabel>
                                                         <Textarea
                                                             id="indications_for_production"
@@ -1034,7 +1109,9 @@ export default function OrdersCreate({
                                                                 )
                                                             }
                                                             rows={3}
-                                                            placeholder="Inserisci indicazioni per la produzione..."
+                                                            placeholder={t(
+                                                                'orders.create.indicazioni_produzione',
+                                                            )}
                                                         />
                                                         <InputError
                                                             message={
@@ -1045,8 +1122,9 @@ export default function OrdersCreate({
 
                                                     <div className="grid gap-2">
                                                         <FormLabel htmlFor="indications_for_delivery">
-                                                            Indicazioni per la
-                                                            consegna
+                                                            {t(
+                                                                'orders.labels.indications_delivery',
+                                                            )}
                                                         </FormLabel>
                                                         <Textarea
                                                             id="indications_for_delivery"
@@ -1061,7 +1139,9 @@ export default function OrdersCreate({
                                                                 )
                                                             }
                                                             rows={3}
-                                                            placeholder="Inserisci indicazioni per la consegna..."
+                                                            placeholder={t(
+                                                                'orders.create.indicazioni_consegna',
+                                                            )}
                                                         />
                                                         <InputError
                                                             message={
@@ -1077,8 +1157,9 @@ export default function OrdersCreate({
                                                         .length > 0 && (
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="article-materials-list">
-                                                                Elenco
-                                                                componenti
+                                                                {t(
+                                                                    'orders.show.components_list',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="space-y-2">
                                                                 {currentArticle.materials.map(
@@ -1105,8 +1186,12 @@ export default function OrdersCreate({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Creando...'
-                                                            : 'Crea Ordine'}
+                                                            ? t(
+                                                                  'orders.create.submitting',
+                                                              )
+                                                            : t(
+                                                                  'orders.create.submit_button',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -1117,7 +1202,7 @@ export default function OrdersCreate({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

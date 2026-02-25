@@ -22,7 +22,7 @@ class MaterialFactory extends Factory
         return [
             'uuid' => \Illuminate\Support\Str::uuid()->toString(),
             'cod' => $this->faker->unique()->bothify('MAT-???'),
-            // Generare sempre descrizione
+            // Always generate description
             'description' => $this->faker->sentence(),
             'removed' => false,
         ];

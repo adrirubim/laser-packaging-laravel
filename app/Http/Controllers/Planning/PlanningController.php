@@ -73,7 +73,7 @@ class PlanningController extends Controller
                 'error_code' => -1,
                 'message' => config('app.debug')
                     ? $e->getMessage().' ('.$e->getFile().':'.$e->getLine().')'
-                    : 'Errore nel caricamento dei dati di pianificazione',
+                    : __('planning.load_error'),
             ], 500);
         }
     }
@@ -99,14 +99,14 @@ class PlanningController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'error_code' => -1,
-                'message' => 'Parametri mancanti o non validi',
+                'message' => __('planning.params_invalid'),
                 'errors' => $validator->errors()->toArray(),
             ], 422);
         }
 
         $data = $validator->validated();
 
-        // Verifica che l'ordine esista e appartenga alla linea indicata
+        // Verify order exists and belongs to the indicated line
         $order = Order::query()
             ->with(['article.offer'])
             ->where('uuid', $data['order_uuid'])
@@ -115,7 +115,7 @@ class PlanningController extends Controller
         if (! $order) {
             return response()->json([
                 'error_code' => -1,
-                'message' => 'Ordine non trovato',
+                'message' => __('planning.replan.order_not_found'),
             ], 404);
         }
 
@@ -123,8 +123,8 @@ class PlanningController extends Controller
         if ($orderLineUuid !== $data['lasworkline_uuid']) {
             return response()->json([
                 'error_code' => -1,
-                'message' => 'L\'ordine non appartiene a questa linea',
-                'errors' => ['lasworkline_uuid' => ['Ordine e linea non corrispondono']],
+                'message' => __('planning.replan.order_not_on_line'),
+                'errors' => ['lasworkline_uuid' => [__('planning.replan.order_line_mismatch')]],
             ], 422);
         }
 
@@ -139,12 +139,12 @@ class PlanningController extends Controller
         );
 
         // Dopo savePlanning, ripianifica il futuro in base a remainingQty/ore necessarie.
-        // Questo può aggiungere o rimuovere slot ulteriori rispetto alla cella appena salvata.
+        // This can add or remove slots beyond the just-saved cell.
         $replanResult = $this->replanService->replanFutureAfterManualEdit($data['order_uuid']);
 
         return response()->json([
             'error_code' => 0,
-            'message' => 'Planning salvato con successo',
+            'message' => __('planning.saved'),
             'planning_id' => $result['planning_id'],
             'replan_result' => $replanResult,
         ]);
@@ -170,7 +170,7 @@ class PlanningController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'error_code' => -1,
-                'message' => 'Parametri mancanti o non validi',
+                'message' => __('planning.params_invalid'),
                 'errors' => $validator->errors()->toArray(),
             ], 422);
         }
@@ -189,7 +189,7 @@ class PlanningController extends Controller
 
         return response()->json([
             'error_code' => 0,
-            'message' => 'Summary salvato',
+            'message' => __('planning.summary_saved'),
             'summary_id' => $result['summary_id'],
         ]);
     }
@@ -208,7 +208,7 @@ class PlanningController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'error_code' => -1,
-                'message' => 'Parametri mancanti o non validi',
+                'message' => __('planning.params_invalid'),
                 'errors' => $validator->errors()->toArray(),
             ], 422);
         }
@@ -221,7 +221,7 @@ class PlanningController extends Controller
         if (! $order) {
             return response()->json([
                 'error_code' => -1,
-                'message' => 'Ordine non trovato',
+                'message' => __('planning.replan.order_not_found'),
             ], 404);
         }
 
@@ -268,7 +268,7 @@ class PlanningController extends Controller
 
         return response()->json([
             'error_code' => 0,
-            'message' => sprintf('Verifica completata: %d ordini controllati, %d modificati', $orders->count(), $modified),
+            'message' => __('planning.check_completed', ['checked' => $orders->count(), 'modified' => $modified]),
             'date' => $today,
             'orders_checked' => $orders->count(),
             'orders_modified' => $modified,
@@ -290,7 +290,7 @@ class PlanningController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'error_code' => -1,
-                'message' => 'Parametri mancanti o non validi',
+                'message' => __('planning.params_invalid'),
                 'errors' => $validator->errors()->toArray(),
             ], 422);
         }
@@ -301,7 +301,7 @@ class PlanningController extends Controller
         if (! $order) {
             return response()->json([
                 'error_code' => -1,
-                'message' => 'Ordine non trovato',
+                'message' => __('planning.replan.order_not_found'),
             ], 404);
         }
 
@@ -310,14 +310,14 @@ class PlanningController extends Controller
         if (! empty($result['error'])) {
             return response()->json([
                 'error_code' => -1,
-                'message' => $result['message'] ?? 'Errore durante il ripianificazione',
+                'message' => $result['message'] ?? __('planning.replan.reschedule_error'),
                 'order_uuid' => $orderUuid,
             ], 422);
         }
 
         return response()->json([
             'error_code' => 0,
-            'message' => 'Ripianificazione completata',
+            'message' => __('planning.replan_completed'),
             'order_uuid' => $orderUuid,
             'result' => $result,
         ]);

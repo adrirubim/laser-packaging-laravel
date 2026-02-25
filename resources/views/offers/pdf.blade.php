@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
     <meta charset="utf-8">
-    <title>Offerta {{ $offer_number }}</title>
+    <title>{{ __('offers.pdf.title') }} {{ $offer_number }}</title>
     <style>
         @page {
             margin: 20mm;
@@ -176,77 +176,77 @@
 <body>
     <!-- Header -->
     <div class="header">
-        <div class="header-title">OFFERTA COMMERCIALE</div>
-        <div class="header-subtitle">Documento Ufficiale</div>
+        <div class="header-title">{{ __('offers.pdf.header_title') }}</div>
+        <div class="header-subtitle">{{ __('offers.pdf.header_subtitle') }}</div>
     </div>
     
     <!-- Informazioni Generali -->
     <div class="info-section">
-        <div class="section-title">Informazioni Generali</div>
+        <div class="section-title">{{ __('offers.pdf.section_general') }}</div>
         <table class="data-table">
             <tr>
-                <td class="label">Data Offerta</td>
+                <td class="label">{{ __('offers.pdf.label_offer_date') }}</td>
                 <td class="value">{{ $offer_date }}</td>
             </tr>
             <tr>
-                <td class="label">Numero Offerta</td>
+                <td class="label">{{ __('offers.pdf.label_offer_number') }}</td>
                 <td class="value-highlight">{{ $offer_number }}</td>
             </tr>
             <tr class="spacer-row">
                 <td colspan="2"></td>
             </tr>
             <tr>
-                <td class="label">Riferimento Cliente (Nr IDC)</td>
-                <td class="value">{{ $customer_ref ?: 'N/A' }}</td>
+                <td class="label">{{ __('offers.pdf.label_customer_ref') }}</td>
+                <td class="value">{{ $customer_ref ?: __('common.not_available') }}</td>
             </tr>
             <tr>
-                <td class="label">Descrizione</td>
-                <td class="value">{{ $provisional_description ?: 'N/A' }}</td>
+                <td class="label">{{ __('offers.pdf.label_description') }}</td>
+                <td class="value">{{ $provisional_description ?: __('common.not_available') }}</td>
             </tr>
         </table>
     </div>
     
     <!-- Dettagli Produzione -->
     <div class="info-section">
-        <div class="section-title">Dettagli Produzione</div>
+        <div class="section-title">{{ __('offers.pdf.section_production') }}</div>
         <table class="data-table">
             <tr>
-                <td class="label">Produttività Oraria (cfz/h)</td>
+                <td class="label">{{ __('offers.pdf.label_hourly_productivity') }}</td>
                 <td class="value-highlight">{{ number_format($hourly_productivity, 2, ',', '.') }}</td>
             </tr>
             <tr>
-                <td class="label">Nome Linea SAP</td>
-                <td class="value">{{ $ls_resource_code ?: 'N/A' }}</td>
+                <td class="label">{{ __('offers.pdf.label_ls_resource_name') }}</td>
+                <td class="value">{{ $ls_resource_code ?: __('common.not_available') }}</td>
             </tr>
             <tr>
-                <td class="label">Descrizione Linea SAP</td>
-                <td class="value">{{ $ls_resource_description ?: 'N/A' }}</td>
+                <td class="label">{{ __('offers.pdf.label_ls_resource_description') }}</td>
+                <td class="value">{{ $ls_resource_description ?: __('common.not_available') }}</td>
             </tr>
         </table>
     </div>
     
     <!-- Dettagli Economici -->
     <div class="info-section">
-        <div class="section-title">Dettagli Economici</div>
+        <div class="section-title">{{ __('offers.pdf.section_economic') }}</div>
         <table class="data-table">
             <tr>
-                <td class="label">Tariffa Euro/cfz</td>
+                <td class="label">{{ __('offers.pdf.label_rate_cfz') }}</td>
                 <td class="value-currency">{{ number_format($final_rate_cfz, 5, ',', '.') }} €</td>
             </tr>
             <tr>
-                <td class="label">Running Cost Euro/cfz</td>
+                <td class="label">{{ __('offers.pdf.label_running_cost_cfz') }}</td>
                 <td class="value">{{ number_format($running_cost_cfz, 5, ',', '.') }} €</td>
             </tr>
             <tr>
-                <td class="label">Costo Set Up</td>
+                <td class="label">{{ __('offers.pdf.label_setup_cost') }}</td>
                 <td class="value">{{ number_format($setup_cost, 5, ',', '.') }} €</td>
             </tr>
             <tr>
-                <td class="label">Costo Set Up/cfz</td>
+                <td class="label">{{ __('offers.pdf.label_setup_cost_cfz') }}</td>
                 <td class="value">{{ number_format($setup_cost_cfz, 5, ',', '.') }} €</td>
             </tr>
             <tr>
-                <td class="label">Altri Costi/cfz</td>
+                <td class="label">{{ __('offers.pdf.label_other_costs_cfz') }}</td>
                 <td class="value">{{ number_format($ls_other_costs, 5, ',', '.') }} €</td>
             </tr>
         </table>
@@ -254,10 +254,10 @@
     
     <!-- Volumi -->
     <div class="info-section">
-        <div class="section-title">Volumi</div>
+        <div class="section-title">{{ __('offers.pdf.section_volumes') }}</div>
         <table class="data-table">
             <tr>
-                <td class="label">Volumi Ipotesi (nr cfz)</td>
+                <td class="label">{{ __('offers.pdf.label_volumes') }}</td>
                 <td class="value-highlight">{{ number_format($quantity, 0, ',', '.') }}</td>
             </tr>
         </table>
@@ -265,8 +265,8 @@
     
     <!-- Footer -->
     <div class="footer">
-        <p>Documento generato automaticamente il {{ date('d/m/Y H:i') }}</p>
-        <p>Questo documento è valido solo se firmato e timbrato</p>
+        <p>{{ __('offers.pdf.footer_generated') }} {{ date('d/m/Y H:i') }}</p>
+        <p>{{ __('offers.pdf.footer_valid') }}</p>
     </div>
 </body>
 </html>

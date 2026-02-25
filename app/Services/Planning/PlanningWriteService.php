@@ -50,7 +50,7 @@ class PlanningWriteService
             }
         }
 
-        // Si no queda ninguna hora para ese día, eliminamos el registro
+        // If no hours left for that day, remove the record
         if (empty($hours)) {
             if ($planning->exists) {
                 $planning->delete();
@@ -93,7 +93,7 @@ class PlanningWriteService
         $hours = $summary->hours ?? [];
 
         if ($reset === 1) {
-            // Eliminamos el valor manual para esa hora/quarto
+            // Remove manual value for that hour/quarter
             if ($zoomLevel === 'hour') {
                 foreach ($this->hourKeys($hour) as $key) {
                     unset($hours[$key]);

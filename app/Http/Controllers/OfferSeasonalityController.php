@@ -56,11 +56,11 @@ class OfferSeasonalityController extends Controller
     {
         OfferSeasonality::create($request->validated());
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->offerRepository->clearFormOptionsCache();
 
         return redirect()->route('offer-seasonalities.index')
-            ->with('success', 'Stagionalità creata con successo.');
+            ->with('success', __('flash.offer_seasonality.created'));
     }
 
     public function show(OfferSeasonality $offerSeasonality): Response
@@ -82,24 +82,24 @@ class OfferSeasonalityController extends Controller
         $offerSeasonality->update($request->validated());
 
         return redirect()->route('offer-seasonalities.index')
-            ->with('success', 'Stagionalità aggiornata con successo.');
+            ->with('success', __('flash.offer_seasonality.updated'));
     }
 
     public function destroy(OfferSeasonality $offerSeasonality)
     {
-        // Verificar si tiene ofertas activas
+        // Verify if has active offers
         if ($offerSeasonality->offers()->where('removed', false)->exists()) {
             return back()->withErrors([
-                'error' => 'Non è possibile eliminare la stagionalità. Ha offerte associate.',
+                'error' => __('flash.cannot_delete_seasonality'),
             ]);
         }
 
         $offerSeasonality->update(['removed' => true]);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->offerRepository->clearFormOptionsCache();
 
         return redirect()->route('offer-seasonalities.index')
-            ->with('success', 'Stagionalità eliminata con successo.');
+            ->with('success', __('flash.offer_seasonality.deleted'));
     }
 }

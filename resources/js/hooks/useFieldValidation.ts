@@ -28,7 +28,7 @@ export function useFieldValidation(
             }
             queueMicrotask(() => setError(null));
         } else if (!value && touched) {
-            // Se il campo è vuoto ed è stato toccato, verificare se è obbligatorio
+            // If field is empty and has been touched, check if it's required
             const requiredRule = rules.find((rule) => {
                 const result = rule('');
                 return result !== null;

@@ -8,6 +8,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import palletTypes from '@/routes/pallet-types/index';
 import { type BreadcrumbItem } from '@/types';
@@ -33,12 +34,13 @@ type PalletTypesShowProps = {
 };
 
 export default function PalletTypesShow({ palletType }: PalletTypesShowProps) {
+    const { t } = useTranslations();
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Tipi di Pallet',
+            title: t('pallet_types.title'),
             href: palletTypes.index().url,
         },
         {
@@ -63,7 +65,11 @@ export default function PalletTypesShow({ palletType }: PalletTypesShowProps) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Tipo di Pallet ${palletType.cod}`} />
+            <Head
+                title={t('pallet_types.show.page_title', {
+                    code: palletType.cod,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
@@ -72,9 +78,9 @@ export default function PalletTypesShow({ palletType }: PalletTypesShowProps) {
                             {palletType.description}
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Codice:{' '}
+                            {t('pallet_types.show.code_label')}{' '}
                             <span className="font-mono">{palletType.cod}</span>{' '}
-                            | UUID:{' '}
+                            | {t('pallet_types.show.fields.uuid')}:{' '}
                             <span className="font-mono">{palletType.uuid}</span>
                         </p>
                     </div>
@@ -87,7 +93,7 @@ export default function PalletTypesShow({ palletType }: PalletTypesShowProps) {
                                     }).url
                                 }
                             >
-                                Modifica
+                                {t('common.edit')}
                             </Link>
                         </Button>
                         <Button
@@ -95,7 +101,9 @@ export default function PalletTypesShow({ palletType }: PalletTypesShowProps) {
                             onClick={() => setDeleteDialogOpen(true)}
                             disabled={isDeleting}
                         >
-                            Elimina
+                            {isDeleting
+                                ? t('common.deleting')
+                                : t('common.delete')}
                         </Button>
                     </div>
                 </div>
@@ -103,22 +111,24 @@ export default function PalletTypesShow({ palletType }: PalletTypesShowProps) {
                 <div className="grid gap-4 md:grid-cols-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Dettagli Tipo di Pallet</CardTitle>
+                            <CardTitle>
+                                {t('pallet_types.show.details_title')}
+                            </CardTitle>
                             <CardDescription>
-                                Informazioni su questo tipo di pallet
+                                {t('pallet_types.show.details_subtitle')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    ID
+                                    {t('pallet_types.show.fields.id')}
                                 </Label>
                                 <p className="text-sm">{palletType.id}</p>
                             </div>
 
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    UUID
+                                    {t('pallet_types.show.fields.uuid')}
                                 </Label>
                                 <p className="font-mono text-sm">
                                     {palletType.uuid}
@@ -127,7 +137,7 @@ export default function PalletTypesShow({ palletType }: PalletTypesShowProps) {
 
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    Codice
+                                    {t('pallet_types.show.fields.code')}
                                 </Label>
                                 <p className="font-mono text-lg font-semibold">
                                     {palletType.cod}
@@ -136,7 +146,7 @@ export default function PalletTypesShow({ palletType }: PalletTypesShowProps) {
 
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    Descrizione
+                                    {t('pallet_types.show.fields.description')}
                                 </Label>
                                 <p className="text-lg font-semibold">
                                     {palletType.description}
@@ -148,10 +158,11 @@ export default function PalletTypesShow({ palletType }: PalletTypesShowProps) {
                     {palletType.articles && palletType.articles.length > 0 && (
                         <Card>
                             <CardHeader>
-                                <CardTitle>Articoli Associati</CardTitle>
+                                <CardTitle>
+                                    {t('pallet_types.show.articles_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Articoli che utilizzano questo tipo di
-                                    pallet
+                                    {t('pallet_types.show.articles_subtitle')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -182,10 +193,7 @@ export default function PalletTypesShow({ palletType }: PalletTypesShowProps) {
                 {(!palletType.articles || palletType.articles.length === 0) && (
                     <Card>
                         <CardContent className="py-8 text-center text-muted-foreground">
-                            <p>
-                                Nessun articolo associato a questo tipo di
-                                pallet.
-                            </p>
+                            <p>{t('pallet_types.show.articles_empty')}</p>
                         </CardContent>
                     </Card>
                 )}
@@ -194,9 +202,12 @@ export default function PalletTypesShow({ palletType }: PalletTypesShowProps) {
                     open={deleteDialogOpen}
                     onOpenChange={setDeleteDialogOpen}
                     onConfirm={handleDeleteConfirm}
-                    title="Elimina Tipo di Pallet"
-                    description="Sei sicuro di voler eliminare questo tipo di pallet? Questa azione non può essere annullata."
-                    itemName={`${palletType.description} (${palletType.cod})`}
+                    title={t('pallet_types.show.delete_confirm_title')}
+                    description={t('pallet_types.delete.description')}
+                    itemName={t('pallet_types.show.delete_item_name', {
+                        description: palletType.description,
+                        code: palletType.cod,
+                    })}
                     isLoading={isDeleting}
                 />
             </div>

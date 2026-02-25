@@ -18,6 +18,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useTranslations } from '@/hooks/use-translations';
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
@@ -28,16 +29,16 @@ import { Form, Head, router, usePage } from '@inertiajs/react';
 import { ArrowLeft } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-const PAY_LEVEL_OPTIONS: { value: string; label: string }[] = [
-    { value: '0', label: 'D1 (ex 2a)' },
-    { value: '1', label: 'D2 (ex 3a)' },
-    { value: '2', label: 'C1 (ex 3a Super)' },
-    { value: '3', label: 'C2 (ex 4a)' },
-    { value: '4', label: 'C3 (ex 5a)' },
-    { value: '5', label: 'B1 (ex 5a Super)' },
-    { value: '6', label: 'B2 (ex 6a)' },
-    { value: '7', label: 'B3 (ex 7a)' },
-    { value: '8', label: 'A1 (ex 8a Quadri)' },
+const PAY_LEVEL_KEYS = [
+    'employees.contracts.pay_level_0',
+    'employees.contracts.pay_level_1',
+    'employees.contracts.pay_level_2',
+    'employees.contracts.pay_level_3',
+    'employees.contracts.pay_level_4',
+    'employees.contracts.pay_level_5',
+    'employees.contracts.pay_level_6',
+    'employees.contracts.pay_level_7',
+    'employees.contracts.pay_level_8',
 ];
 
 type Employee = {
@@ -72,6 +73,7 @@ type ContractsEditProps = {
 export default function ContractsEdit({
     errors: serverErrors,
 }: ContractsEditProps) {
+    const { t } = useTranslations();
     const { props } = usePage<ContractsEditProps>();
     const { contract, employees, suppliers } = props;
 
@@ -127,59 +129,61 @@ export default function ContractsEdit({
     }, [contract]);
 
     const employeeValidation = useFieldValidation(employeeUuid, [
-        validationRules.required('Il dipendente è obbligatorio'),
+        validationRules.required(t('validation.employee_required')),
     ]);
 
     const supplierValidation = useFieldValidation(supplierUuid, [
-        validationRules.required('Il datore di lavoro è obbligatorio'),
+        validationRules.required(t('validation.employer_required')),
     ]);
 
     const startDateValidation = useFieldValidation(startDate, [
-        validationRules.required('La data di inizio è obbligatoria'),
+        validationRules.required(t('validation.start_date_required')),
     ]);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Personale',
+            title: t('nav.personale'),
             href: employeesRoutes.index().url,
         },
         {
-            title: 'Contratti',
+            title: t('nav.contratti'),
             href: employeesContractsRoutes.index().url,
         },
         {
-            title: 'Modifica Contratto',
+            title: t('employees.contracts.edit_dialog_title'),
             href: `/employees/contracts/${contract.uuid}/edit`,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Modifica Contratto" />
+            <Head title={t('employees.contracts.edit_dialog_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
                     <Button
                         variant="outline"
                         onClick={() => setShowCloseConfirm(true)}
-                        aria-label="Torna indietro"
+                        aria-label={t('employees.edit.back_aria')}
                     >
                         <ArrowLeft className="mr-2 h-4 w-4" />
-                        Indietro
+                        {t('common.back')}
                     </Button>
                 </div>
 
                 <FormValidationNotification
                     errors={validationErrors}
-                    message="Correggi gli errori nel modulo prima di salvare."
+                    message={t('common.validation_fix_errors')}
                     showOnSubmit={false}
                 />
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Modifica Contratto</CardTitle>
+                        <CardTitle>
+                            {t('employees.contracts.edit_dialog_title')}
+                        </CardTitle>
                         <CardDescription>
-                            Modifica le informazioni del contratto
+                            {t('employees.contracts.edit_dialog_description')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -205,7 +209,9 @@ export default function ContractsEdit({
                                                 htmlFor="employee_uuid"
                                                 required
                                             >
-                                                Dipendente
+                                                {t(
+                                                    'employees.contracts.edit_employee_label',
+                                                )}
                                             </FormLabel>
                                             <Select
                                                 value={employeeUuid}
@@ -227,7 +233,11 @@ export default function ContractsEdit({
                                                             : 'false'
                                                     }
                                                 >
-                                                    <SelectValue placeholder="Seleziona un dipendente" />
+                                                    <SelectValue
+                                                        placeholder={t(
+                                                            'employees.contracts.edit_employee_placeholder',
+                                                        )}
+                                                    />
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     {employees
@@ -266,7 +276,9 @@ export default function ContractsEdit({
                                                 htmlFor="supplier_uuid"
                                                 required
                                             >
-                                                Datore di Lavoro
+                                                {t(
+                                                    'employees.contracts.edit_employer_label',
+                                                )}
                                             </FormLabel>
                                             <Select
                                                 value={supplierUuid}
@@ -288,7 +300,11 @@ export default function ContractsEdit({
                                                             : 'false'
                                                     }
                                                 >
-                                                    <SelectValue placeholder="Seleziona un datore di lavoro" />
+                                                    <SelectValue
+                                                        placeholder={t(
+                                                            'employees.contracts.edit_employer_placeholder',
+                                                        )}
+                                                    />
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     {suppliers
@@ -326,7 +342,9 @@ export default function ContractsEdit({
                                                     htmlFor="start_date"
                                                     required
                                                 >
-                                                    Data Inizio
+                                                    {t(
+                                                        'employees.contracts.edit_start_date_label',
+                                                    )}
                                                 </FormLabel>
                                                 <Input
                                                     id="start_date"
@@ -369,7 +387,9 @@ export default function ContractsEdit({
                                             </div>
                                             <div>
                                                 <FormLabel htmlFor="end_date">
-                                                    Data Fine
+                                                    {t(
+                                                        'employees.contracts.edit_end_date_label',
+                                                    )}
                                                 </FormLabel>
                                                 <Input
                                                     id="end_date"
@@ -391,7 +411,9 @@ export default function ContractsEdit({
 
                                         <div className="grid gap-2">
                                             <FormLabel htmlFor="pay_level">
-                                                Livello Retributivo
+                                                {t(
+                                                    'employees.contracts.edit_pay_level_label',
+                                                )}
                                             </FormLabel>
                                             <Select
                                                 value={payLevel}
@@ -401,15 +423,15 @@ export default function ContractsEdit({
                                                     <SelectValue />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    {PAY_LEVEL_OPTIONS.map(
-                                                        (opt) => (
+                                                    {PAY_LEVEL_KEYS.map(
+                                                        (key, idx) => (
                                                             <SelectItem
-                                                                key={opt.value}
-                                                                value={
-                                                                    opt.value
-                                                                }
+                                                                key={idx}
+                                                                value={String(
+                                                                    idx,
+                                                                )}
                                                             >
-                                                                {opt.label}
+                                                                {t(key)}
                                                             </SelectItem>
                                                         ),
                                                     )}
@@ -442,8 +464,12 @@ export default function ContractsEdit({
                                                 disabled={processing}
                                             >
                                                 {processing
-                                                    ? 'Aggiornando...'
-                                                    : 'Aggiorna Contratto'}
+                                                    ? t(
+                                                          'employees.contracts.updating',
+                                                      )
+                                                    : t(
+                                                          'employees.contracts.update_contract',
+                                                      )}
                                             </Button>
                                             <Button
                                                 type="button"
@@ -459,7 +485,7 @@ export default function ContractsEdit({
                                                           )
                                                 }
                                             >
-                                                Annulla
+                                                {t('common.cancel')}
                                             </Button>
                                         </div>
                                     </>
@@ -477,8 +503,8 @@ export default function ContractsEdit({
                     setShowCloseConfirm(false);
                     router.visit(employeesContractsRoutes.index().url);
                 }}
-                title="Conferma chiusura"
-                description="Sei sicuro di voler uscire? I dati non salvati andranno persi."
+                title={t('common.confirm_close.title')}
+                description={t('common.confirm_close.description')}
             />
         </AppLayout>
     );

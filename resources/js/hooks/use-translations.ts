@@ -26,7 +26,6 @@ export function useTranslations(): {
             const exists = typeof dict[key] === 'string';
 
             if (!exists && import.meta.env.DEV && !missingKeys.has(key)) {
-                // eslint-disable-next-line no-console
                 console.warn(
                     `[i18n] Missing translation key: "${key}" (current locale)`,
                 );

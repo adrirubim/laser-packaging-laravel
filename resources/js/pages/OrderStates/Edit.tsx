@@ -10,6 +10,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import orderStates from '@/routes/order-states/index';
 import { type BreadcrumbItem } from '@/types';
@@ -33,9 +34,10 @@ export default function OrderStatesEdit({
     orderState,
     errors: serverErrors,
 }: OrderStatesEditProps) {
+    const { t } = useTranslations();
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Stati Ordine',
+            title: t('order_states.page_title'),
             href: orderStates.index().url,
         },
         {
@@ -43,20 +45,28 @@ export default function OrderStatesEdit({
             href: orderStates.show({ orderState: orderState.uuid }).url,
         },
         {
-            title: 'Modifica',
+            title: t('common.edit'),
             href: orderStates.edit({ orderState: orderState.uuid }).url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Modifica Stato Ordine ${orderState.name}`} />
+            <Head
+                title={t('order_states.edit.page_title', {
+                    name: orderState.name,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Gestione Stato Ordine</CardTitle>
-                        <CardDescription>Modifica</CardDescription>
+                        <CardTitle>
+                            {t('order_states.edit.card_title')}
+                        </CardTitle>
+                        <CardDescription>
+                            {t('order_states.edit.card_description')}
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Form
@@ -77,7 +87,9 @@ export default function OrderStatesEdit({
                                 return (
                                     <>
                                         <div className="grid gap-2">
-                                            <Label htmlFor="uuid">UUID</Label>
+                                            <Label htmlFor="uuid">
+                                                {t('order_states.uuid_column')}
+                                            </Label>
                                             <Input
                                                 id="uuid"
                                                 name="uuid"
@@ -88,13 +100,17 @@ export default function OrderStatesEdit({
                                         </div>
 
                                         <div className="grid gap-2">
-                                            <Label htmlFor="name">Nome *</Label>
+                                            <Label htmlFor="name">
+                                                {t('order_states.name')} *
+                                            </Label>
                                             <Input
                                                 id="name"
                                                 name="name"
                                                 defaultValue={orderState.name}
                                                 required
-                                                placeholder="Nome Stato Ordine"
+                                                placeholder={t(
+                                                    'order_states.edit.name_placeholder',
+                                                )}
                                             />
                                             <InputError
                                                 message={allErrors.name}
@@ -103,7 +119,7 @@ export default function OrderStatesEdit({
 
                                         <div className="grid gap-2">
                                             <Label htmlFor="sorting">
-                                                Ordinamento
+                                                {t('order_states.sorting')}
                                             </Label>
                                             <Input
                                                 id="sorting"
@@ -113,7 +129,9 @@ export default function OrderStatesEdit({
                                                     orderState.sorting
                                                 }
                                                 min="0"
-                                                placeholder="0"
+                                                placeholder={t(
+                                                    'order_states.edit.sorting_placeholder',
+                                                )}
                                             />
                                             <InputError
                                                 message={allErrors.sorting}
@@ -132,7 +150,9 @@ export default function OrderStatesEdit({
                                                 htmlFor="initial"
                                                 className="cursor-pointer text-sm font-normal"
                                             >
-                                                Stato iniziale
+                                                {t(
+                                                    'order_states.initial_state_label',
+                                                )}
                                             </Label>
                                         </div>
 
@@ -148,7 +168,9 @@ export default function OrderStatesEdit({
                                                 htmlFor="production"
                                                 className="cursor-pointer text-sm font-normal"
                                             >
-                                                Stato produzione
+                                                {t(
+                                                    'order_states.production_state_label',
+                                                )}
                                             </Label>
                                         </div>
 
@@ -158,8 +180,12 @@ export default function OrderStatesEdit({
                                                 disabled={processing}
                                             >
                                                 {processing
-                                                    ? 'Aggiornando...'
-                                                    : 'Aggiorna Stato Ordine'}
+                                                    ? t(
+                                                          'order_states.edit.updating',
+                                                      )
+                                                    : t(
+                                                          'order_states.edit.submit',
+                                                      )}
                                             </Button>
                                             <Button
                                                 type="button"
@@ -173,7 +199,7 @@ export default function OrderStatesEdit({
                                                     )
                                                 }
                                             >
-                                                Annulla
+                                                {t('common.cancel')}
                                             </Button>
                                         </div>
                                     </>

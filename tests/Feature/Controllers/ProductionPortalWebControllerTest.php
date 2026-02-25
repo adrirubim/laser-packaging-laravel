@@ -118,7 +118,7 @@ class ProductionPortalWebControllerTest extends TestCase
     #[Test]
     public function it_authenticates_with_employee_number_and_order_number()
     {
-        // Assicurare che l'ordine sia in uno stato valido (STATUS_LANCIATO o STATUS_IN_AVANZAMENTO)
+        // Ensure order is in valid state (STATUS_LANCIATO or STATUS_IN_AVANZAMENTO)
         $this->order->update(['status' => Order::STATUS_LANCIATO]);
 
         $response = $this->post(route('production-portal.authenticate'), [
@@ -126,7 +126,7 @@ class ProductionPortalWebControllerTest extends TestCase
             'order_number' => (string) $this->order->id,
         ]);
 
-        // Puede redirigir a dashboard o a order detail dependiendo de si hay order_uuid
+        // May redirect to dashboard or order detail depending on whether order_uuid exists
         $response->assertRedirect();
         $this->assertNotNull(session('production_portal_token'));
     }
@@ -155,7 +155,7 @@ class ProductionPortalWebControllerTest extends TestCase
     {
         $response = $this->post(route('production-portal.authenticate'), [
             'employee_number' => (string) $this->employee->id,
-            // order_number faltante
+            // missing order_number
         ]);
 
         $response->assertSessionHasErrors(['order_number']);
@@ -191,7 +191,7 @@ class ProductionPortalWebControllerTest extends TestCase
     #[Test]
     public function it_redirects_to_login_when_not_authenticated()
     {
-        // Il controller verifica la sessione e reindirizza se non c'è token
+        // Controller verifies session and redirects if there's no token
         $response = $this->get(route('production-portal.dashboard'));
 
         $response->assertRedirect(route('production-portal.login'));

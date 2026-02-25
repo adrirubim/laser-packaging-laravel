@@ -204,7 +204,7 @@ class PalletTypeControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $response = $this->post(route('pallet-types.store'), [
-            'cod' => str_repeat('a', 256), // Más de 255 caracteres
+            'cod' => str_repeat('a', 256), // More than 255 characters
             'description' => 'Test Description',
         ]);
 
@@ -218,7 +218,7 @@ class PalletTypeControllerTest extends TestCase
 
         $response = $this->post(route('pallet-types.store'), [
             'cod' => 'PAL-001',
-            'description' => str_repeat('a', 256), // Más de 255 caracteres
+            'description' => str_repeat('a', 256), // More than 255 characters
         ]);
 
         $response->assertSessionHasErrors(['description']);

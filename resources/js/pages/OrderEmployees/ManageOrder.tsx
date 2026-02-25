@@ -17,6 +17,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import orderEmployees from '@/routes/order-employees/index';
 import orders from '@/routes/orders/index';
@@ -52,6 +53,7 @@ type OrderEmployeesManageOrderProps = {
 export default function OrderEmployeesManageOrder() {
     const { props } = usePage<OrderEmployeesManageOrderProps>();
     const { order, assignedEmployees, allEmployees } = props;
+    const { t } = useTranslations();
 
     const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
     const [processing, setProcessing] = useState(false);
@@ -96,7 +98,7 @@ export default function OrderEmployeesManageOrder() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Ordini',
+            title: t('nav.orders'),
             href: orders.index().url,
         },
         {
@@ -104,7 +106,7 @@ export default function OrderEmployeesManageOrder() {
             href: orders.show({ order: order.uuid }).url,
         },
         {
-            title: 'Gestisci dipendenti',
+            title: t('order_employees.manage_title'),
             href: `/orders/${order.uuid}/manage-employees`,
         },
     ];
@@ -171,17 +173,19 @@ export default function OrderEmployeesManageOrder() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head
-                title={`Gestisci dipendenti - Ordine ${order.order_production_number}`}
+                title={t('order_employees.manage_page_title', {
+                    order_number: order.order_production_number,
+                })}
             />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-2xl font-bold">
-                            Gestisci dipendenti
+                            {t('order_employees.manage_title')}
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Ordine: {order.order_production_number}
+                            {t('common.order')}: {order.order_production_number}
                         </p>
                     </div>
                     <div className="flex gap-2">
@@ -194,7 +198,9 @@ export default function OrderEmployeesManageOrder() {
                                         assignedEmployees.length)
                             }
                             className="gap-2"
-                            aria-label="Salva assegnazioni dipendenti"
+                            aria-label={t(
+                                'order_employees.save_assignments_aria',
+                            )}
                         >
                             {processing ? (
                                 <>
@@ -202,10 +208,10 @@ export default function OrderEmployeesManageOrder() {
                                         className="h-4 w-4 animate-spin"
                                         aria-hidden="true"
                                     />
-                                    <span>Salvando...</span>
+                                    <span>{t('common.saving')}</span>
                                 </>
                             ) : (
-                                'Salva assegnazioni'
+                                t('order_employees.save_assignments')
                             )}
                         </Button>
                         <Button
@@ -220,15 +226,15 @@ export default function OrderEmployeesManageOrder() {
                                 );
                             }}
                             disabled={processing}
-                            aria-label="Annulla e torna ai dettagli ordine"
+                            aria-label={t('order_employees.cancel_aria')}
                         >
-                            Annulla
+                            {t('common.cancel')}
                         </Button>
                     </div>
                     {hasChanges && (
                         <div className="flex items-center gap-1 text-xs text-orange-600 dark:text-orange-400">
                             <AlertCircle className="h-3 w-3" />
-                            Hai modifiche non salvate
+                            {t('order_employees.unsaved_changes')}
                         </div>
                     )}
                 </div>
@@ -237,14 +243,25 @@ export default function OrderEmployeesManageOrder() {
                     <CardHeader>
                         <div className="flex items-center justify-between">
                             <div>
-                                <CardTitle>Seleziona dipendenti</CardTitle>
+                                <CardTitle>
+                                    {t(
+                                        'order_employees.select_employees_title',
+                                    )}
+                                </CardTitle>
                                 <CardDescription>
-                                    Scegli i dipendenti da assegnare a questo
-                                    ordine
+                                    {t(
+                                        'order_employees.select_employees_description',
+                                    )}
                                     {selectedEmployees.length > 0 && (
                                         <span className="ml-2 font-semibold text-primary">
-                                            ({selectedEmployees.length}{' '}
-                                            selezionati)
+                                            (
+                                            {t(
+                                                'order_employees.selected_count',
+                                                {
+                                                    count: selectedEmployees.length,
+                                                },
+                                            )}
+                                            )
                                         </span>
                                     )}
                                 </CardDescription>
@@ -257,8 +274,12 @@ export default function OrderEmployeesManageOrder() {
                                     className="gap-2"
                                     aria-label={
                                         allFilteredSelected
-                                            ? 'Deseleziona tutti i dipendenti filtrati'
-                                            : 'Seleziona tutti i dipendenti filtrati'
+                                            ? t(
+                                                  'order_employees.deselect_all_aria',
+                                              )
+                                            : t(
+                                                  'order_employees.select_all_aria',
+                                              )
                                     }
                                 >
                                     {allFilteredSelected ? (
@@ -267,7 +288,7 @@ export default function OrderEmployeesManageOrder() {
                                                 className="h-4 w-4"
                                                 aria-hidden="true"
                                             />
-                                            Deseleziona tutti
+                                            {t('order_employees.deselect_all')}
                                         </>
                                     ) : (
                                         <>
@@ -275,7 +296,7 @@ export default function OrderEmployeesManageOrder() {
                                                 className="h-4 w-4"
                                                 aria-hidden="true"
                                             />
-                                            Seleziona tutti
+                                            {t('order_employees.select_all')}
                                         </>
                                     )}
                                 </Button>
@@ -289,13 +310,17 @@ export default function OrderEmployeesManageOrder() {
                                 <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
                                 <Input
                                     type="text"
-                                    placeholder="Cerca per nome, cognome o matricola..."
+                                    placeholder={t(
+                                        'order_employees.search_placeholder',
+                                    )}
                                     value={searchQuery}
                                     onChange={(e) =>
                                         setSearchQuery(e.target.value)
                                     }
                                     className="pl-10"
-                                    aria-label="Cerca dipendenti"
+                                    aria-label={t(
+                                        'order_employees.search_aria',
+                                    )}
                                     aria-describedby="search-help"
                                 />
                             </div>
@@ -306,8 +331,10 @@ export default function OrderEmployeesManageOrder() {
                                     role="status"
                                     aria-live="polite"
                                 >
-                                    Visualizzati {filteredEmployees.length} di{' '}
-                                    {allEmployees.length} dipendenti
+                                    {t('order_employees.search_results', {
+                                        shown: filteredEmployees.length,
+                                        total: allEmployees.length,
+                                    })}
                                 </p>
                             )}
                         </div>
@@ -317,10 +344,16 @@ export default function OrderEmployeesManageOrder() {
                             {filteredEmployees.length === 0 ? (
                                 <div className="py-8 text-center text-muted-foreground">
                                     <AlertCircle className="mx-auto mb-4 h-12 w-12 opacity-50" />
-                                    <p>Nessun dipendente trovato</p>
+                                    <p>
+                                        {t(
+                                            'order_employees.no_employees_found',
+                                        )}
+                                    </p>
                                     {searchQuery && (
                                         <p className="mt-2 text-xs">
-                                            Prova un altro termine di ricerca
+                                            {t(
+                                                'order_employees.try_another_search',
+                                            )}
                                         </p>
                                     )}
                                 </div>
@@ -348,7 +381,15 @@ export default function OrderEmployeesManageOrder() {
                                                 )
                                             }
                                             className="h-4 w-4 cursor-pointer rounded border-gray-300 focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                                            aria-label={`Seleziona ${employee.name} ${employee.surname}, matricola ${employee.matriculation_number}`}
+                                            aria-label={t(
+                                                'order_employees.select_employee_aria',
+                                                {
+                                                    name: employee.name,
+                                                    surname: employee.surname,
+                                                    matriculation:
+                                                        employee.matriculation_number,
+                                                },
+                                            )}
                                             aria-describedby={`employee-info-${employee.uuid}`}
                                         />
                                         <label
@@ -378,23 +419,23 @@ export default function OrderEmployeesManageOrder() {
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            Nessun dipendente selezionato
+                            {t('order_employees.no_employee_selected_title')}
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                            Non hai selezionato alcun dipendente per questo
-                            ordine. Vuoi comunque salvare le assegnazioni (tutti
-                            i dipendenti verranno rimossi)?
+                            {t(
+                                'order_employees.no_employee_selected_description',
+                            )}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel disabled={processing}>
-                            Annulla
+                            {t('common.cancel')}
                         </AlertDialogCancel>
                         <AlertDialogAction
                             onClick={handleConfirmNoEmployees}
                             disabled={processing}
                         >
-                            Sì, continua
+                            {t('order_employees.yes_continue')}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
@@ -407,17 +448,15 @@ export default function OrderEmployeesManageOrder() {
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            Modifiche non salvate
+                            {t('order_employees.unsaved_changes_title')}
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                            Hai modifiche non salvate alle assegnazioni dei
-                            dipendenti. Vuoi davvero annullare e tornare ai
-                            dettagli ordine senza salvare?
+                            {t('order_employees.unsaved_changes_description')}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel disabled={processing}>
-                            Continua a modificare
+                            {t('order_employees.continue_editing')}
                         </AlertDialogCancel>
                         <AlertDialogAction
                             onClick={() => {
@@ -428,7 +467,7 @@ export default function OrderEmployeesManageOrder() {
                             }}
                             disabled={processing}
                         >
-                            Sì, annulla le modifiche
+                            {t('order_employees.discard_confirm')}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

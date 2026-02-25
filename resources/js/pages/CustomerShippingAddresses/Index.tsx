@@ -87,7 +87,7 @@ export default function CustomerShippingAddressesIndex() {
     });
     const [isDeleting, setIsDeleting] = useState(false);
 
-    // Sincronizzare stato iniziale con i filtri del server
+    // Sync initial state with server filters
     useEffect(() => {
         queueMicrotask(() => {
             setSearchValue(filters.search ?? '');
@@ -193,21 +193,21 @@ export default function CustomerShippingAddressesIndex() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Indirizzi di Consegna Clienti',
+            title: t('customer_shipping_addresses.index.title'),
             href: customerShippingAddresses.index().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Indirizzi di Consegna Clienti" />
+            <Head title={t('customer_shipping_addresses.index.title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="Indirizzi di Consegna Clienti"
-                    subtitle="Elenco degli indirizzi di consegna clienti attivi con Cerca e filtri."
+                    title={t('customer_shipping_addresses.index.title')}
+                    subtitle={t('customer_shipping_addresses.index.subtitle')}
                     createHref={customerShippingAddresses.create().url}
-                    createLabel="Nuovo Indirizzo"
+                    createLabel={t('customer_shipping_addresses.index.create')}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -216,12 +216,14 @@ export default function CustomerShippingAddressesIndex() {
                     <div className="grid gap-3 md:grid-cols-2">
                         <div className="space-y-1">
                             <label className="text-xs font-medium text-muted-foreground">
-                                Cerca
+                                {t('common.search')}
                             </label>
                             <SearchInput
                                 value={searchValue}
                                 onChange={handleSearchChange}
-                                placeholder="Via, città, CAP, C/O o contatti..."
+                                placeholder={t(
+                                    'customer_shipping_addresses.index.search_placeholder',
+                                )}
                                 isLoading={isSearching}
                                 onClear={clearSearch}
                             />
@@ -229,7 +231,9 @@ export default function CustomerShippingAddressesIndex() {
 
                         <div className="space-y-1">
                             <label className="text-xs font-medium text-muted-foreground">
-                                Divisione
+                                {t(
+                                    'customer_shipping_addresses.index.division_label',
+                                )}
                             </label>
                             <Select
                                 value={divisionFilter || 'all'}
@@ -241,7 +245,9 @@ export default function CustomerShippingAddressesIndex() {
                             >
                                 <SelectTrigger
                                     className="w-full"
-                                    aria-label="Divisione"
+                                    aria-label={t(
+                                        'customer_shipping_addresses.index.division_label',
+                                    )}
                                 >
                                     <SelectValue
                                         placeholder={t('filter.all_divisions')}
@@ -272,8 +278,9 @@ export default function CustomerShippingAddressesIndex() {
                         <div className="block space-y-3 p-4 md:hidden">
                             {addressesPaginated.data.length === 0 ? (
                                 <div className="py-8 text-center text-sm text-muted-foreground">
-                                    Nessun indirizzo trovato per i filtri
-                                    attuali.
+                                    {t(
+                                        'customer_shipping_addresses.index.empty',
+                                    )}
                                 </div>
                             ) : (
                                 addressesPaginated.data.map((address) => {
@@ -326,7 +333,9 @@ export default function CustomerShippingAddressesIndex() {
                                                 {address.city && (
                                                     <div>
                                                         <span className="text-muted-foreground">
-                                                            Città:{' '}
+                                                            {t(
+                                                                'customer_shipping_addresses.index.mobile_city_label',
+                                                            )}{' '}
                                                         </span>
                                                         <span>
                                                             {address.city}
@@ -336,7 +345,9 @@ export default function CustomerShippingAddressesIndex() {
                                                 {address.postal_code && (
                                                     <div>
                                                         <span className="text-muted-foreground">
-                                                            CAP:{' '}
+                                                            {t(
+                                                                'customer_shipping_addresses.index.mobile_cap_label',
+                                                            )}{' '}
                                                         </span>
                                                         <span>
                                                             {
@@ -348,7 +359,9 @@ export default function CustomerShippingAddressesIndex() {
                                                 {address.province && (
                                                     <div>
                                                         <span className="text-muted-foreground">
-                                                            Provincia:{' '}
+                                                            {t(
+                                                                'customer_shipping_addresses.index.mobile_province_label',
+                                                            )}{' '}
                                                         </span>
                                                         <span>
                                                             {address.province}
@@ -358,7 +371,9 @@ export default function CustomerShippingAddressesIndex() {
                                                 {address.country && (
                                                     <div>
                                                         <span className="text-muted-foreground">
-                                                            Nazione:{' '}
+                                                            {t(
+                                                                'customer_shipping_addresses.index.mobile_country_label',
+                                                            )}{' '}
                                                         </span>
                                                         <span>
                                                             {address.country}
@@ -381,10 +396,14 @@ export default function CustomerShippingAddressesIndex() {
                                         UUID
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Divisione Cliente
+                                        {t(
+                                            'customer_shipping_addresses.table.division',
+                                        )}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        C/O
+                                        {t(
+                                            'customer_shipping_addresses.table.co',
+                                        )}
                                     </th>
                                     <SortableTableHeader
                                         column="street"
@@ -392,10 +411,14 @@ export default function CustomerShippingAddressesIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Via
+                                        {t(
+                                            'customer_shipping_addresses.table.street',
+                                        )}
                                     </SortableTableHeader>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        CAP
+                                        {t(
+                                            'customer_shipping_addresses.table.cap',
+                                        )}
                                     </th>
                                     <SortableTableHeader
                                         column="city"
@@ -403,7 +426,9 @@ export default function CustomerShippingAddressesIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Città
+                                        {t(
+                                            'customer_shipping_addresses.table.city',
+                                        )}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="province"
@@ -411,16 +436,24 @@ export default function CustomerShippingAddressesIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Provincia
+                                        {t(
+                                            'customer_shipping_addresses.table.province',
+                                        )}
                                     </SortableTableHeader>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Nazione
+                                        {t(
+                                            'customer_shipping_addresses.table.country',
+                                        )}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Contatti
+                                        {t(
+                                            'customer_shipping_addresses.table.contacts',
+                                        )}
                                     </th>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t(
+                                            'customer_shipping_addresses.table.actions',
+                                        )}
                                     </th>
                                 </tr>
                             </thead>
@@ -431,8 +464,9 @@ export default function CustomerShippingAddressesIndex() {
                                             colSpan={11}
                                             className="px-3 py-6 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessun indirizzo trovato per i
-                                            filtri attuali.
+                                            {t(
+                                                'customer_shipping_addresses.index.empty',
+                                            )}
                                         </td>
                                     </tr>
                                 )}
@@ -539,8 +573,10 @@ export default function CustomerShippingAddressesIndex() {
                         setDeleteDialog({ open, address: deleteDialog.address })
                     }
                     onConfirm={handleDeleteConfirm}
-                    title="Elimina Indirizzo di Consegna"
-                    description="Sei sicuro di voler eliminare questo indirizzo di consegna? Questa azione non può essere annullata."
+                    title={t('customer_shipping_addresses.delete_title')}
+                    description={t(
+                        'customer_shipping_addresses.delete_description',
+                    )}
                     itemName={deleteDialog.address?.street}
                     isLoading={isDeleting}
                 />

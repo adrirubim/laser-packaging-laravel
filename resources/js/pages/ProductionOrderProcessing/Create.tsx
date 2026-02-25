@@ -18,6 +18,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import productionOrderProcessing from '@/routes/production-order-processing/index';
 import { type BreadcrumbItem } from '@/types';
@@ -54,13 +55,14 @@ export default function ProductionOrderProcessingCreate({
     orders,
     errors: serverErrors = {},
 }: ProductionOrderProcessingCreateProps) {
+    const { t } = useTranslations();
     const [selectedEmployee, setSelectedEmployee] = useState<string>('');
     const [selectedOrder, setSelectedOrder] = useState<string>('');
     const [quantity, setQuantity] = useState<string>('');
     const [processedDatetime, setProcessedDatetime] = useState<string>('');
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
 
-    // Formattare data/ora attuale per input datetime-local
+    // Format current date/time for datetime-local input
     useEffect(() => {
         const now = new Date();
         // Allineare al fuso orario locale
@@ -90,18 +92,18 @@ export default function ProductionOrderProcessingCreate({
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Avanzamenti Di Produzione',
+            title: t('nav.avanzamenti_produzione'),
             href: productionOrderProcessing.index().url,
         },
         {
-            title: 'Crea',
+            title: t('common.create'),
             href: '#',
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Crea Lavorazione Ordine" />
+            <Head title={t('production_order_processing.create.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
@@ -109,10 +111,14 @@ export default function ProductionOrderProcessingCreate({
                         <div className="flex items-center justify-between">
                             <div>
                                 <h1 className="text-2xl font-bold">
-                                    Crea Lavorazione Ordine
+                                    {t(
+                                        'production_order_processing.create.page_title',
+                                    )}
                                 </h1>
                                 <p className="text-muted-foreground">
-                                    Registra una nuova lavorazione di ordine
+                                    {t(
+                                        'production_order_processing.create.subtitle',
+                                    )}
                                 </p>
                             </div>
                             <Button
@@ -120,21 +126,28 @@ export default function ProductionOrderProcessingCreate({
                                 onClick={() => setShowCloseConfirm(true)}
                             >
                                 <ArrowLeft className="mr-2 h-4 w-4" />
-                                Indietro
+                                {t('common.back')}
                             </Button>
                         </div>
 
                         <FormValidationNotification
                             errors={validationErrors}
-                            message="Correggi gli errori nel modulo prima di salvare."
+                            message={t(
+                                'production_order_processing.create.validation_message',
+                            )}
                         />
 
                         <Card>
                             <CardHeader>
-                                <CardTitle>Dettagli Lavorazione</CardTitle>
+                                <CardTitle>
+                                    {t(
+                                        'production_order_processing.create.card_title',
+                                    )}
+                                </CardTitle>
                                 <CardDescription>
-                                    Compila i campi per registrare una nuova
-                                    lavorazione di ordine
+                                    {t(
+                                        'production_order_processing.create.card_description',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -151,7 +164,7 @@ export default function ProductionOrderProcessingCreate({
                                             htmlFor="employee_uuid"
                                             required
                                         >
-                                            Dipendente
+                                            {t('common.personnel')}
                                         </FormLabel>
                                         <Select
                                             name="employee_uuid"
@@ -160,7 +173,11 @@ export default function ProductionOrderProcessingCreate({
                                             required
                                         >
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Seleziona il dipendente..." />
+                                                <SelectValue
+                                                    placeholder={t(
+                                                        'production_order_processing.create.select_employee',
+                                                    )}
+                                                />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {employees.map((employee) => (
@@ -189,7 +206,7 @@ export default function ProductionOrderProcessingCreate({
                                             htmlFor="order_uuid"
                                             required
                                         >
-                                            Ordine
+                                            {t('common.order')}
                                         </FormLabel>
                                         <Select
                                             name="order_uuid"
@@ -198,7 +215,11 @@ export default function ProductionOrderProcessingCreate({
                                             required
                                         >
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Seleziona l'ordine..." />
+                                                <SelectValue
+                                                    placeholder={t(
+                                                        'production_order_processing.create.select_order',
+                                                    )}
+                                                />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {orders.map((order) => (
@@ -220,10 +241,12 @@ export default function ProductionOrderProcessingCreate({
                                         />
                                     </div>
 
-                                    {/* Quantità */}
+                                    {/* Quantity */}
                                     <div className="grid gap-2">
                                         <FormLabel htmlFor="quantity" required>
-                                            Quantità
+                                            {t(
+                                                'production_order_processing.quantity_header',
+                                            )}
                                         </FormLabel>
                                         <Input
                                             id="quantity"
@@ -235,7 +258,9 @@ export default function ProductionOrderProcessingCreate({
                                             onChange={(e) =>
                                                 setQuantity(e.target.value)
                                             }
-                                            placeholder="Inserisci la quantità lavorata"
+                                            placeholder={t(
+                                                'production_order_processing.create.quantity_placeholder',
+                                            )}
                                             required
                                         />
                                         <InputError
@@ -243,13 +268,15 @@ export default function ProductionOrderProcessingCreate({
                                         />
                                     </div>
 
-                                    {/* Data e Ora Lavorazione */}
+                                    {/* Processing Date and Time */}
                                     <div className="grid gap-2">
                                         <FormLabel
                                             htmlFor="processed_datetime"
                                             required
                                         >
-                                            Data e Ora Lavorazione
+                                            {t(
+                                                'production_order_processing.date_time_header',
+                                            )}
                                         </FormLabel>
                                         <Input
                                             id="processed_datetime"
@@ -279,9 +306,11 @@ export default function ProductionOrderProcessingCreate({
                                                 setShowCloseConfirm(true)
                                             }
                                         >
-                                            Annulla
+                                            {t('common.cancel')}
                                         </Button>
-                                        <Button type="submit">Salva</Button>
+                                        <Button type="submit">
+                                            {t('common.save')}
+                                        </Button>
                                     </div>
                                 </Form>
                             </CardContent>
@@ -297,8 +326,12 @@ export default function ProductionOrderProcessingCreate({
                     setShowCloseConfirm(false);
                     router.visit(productionOrderProcessing.index().url);
                 }}
-                title="Conferma chiusura"
-                description="Sei sicuro di voler uscire? I dati non salvati andranno persi."
+                title={t(
+                    'production_order_processing.create.close_confirm_title',
+                )}
+                description={t(
+                    'production_order_processing.create.close_confirm_description',
+                )}
             />
         </AppLayout>
     );

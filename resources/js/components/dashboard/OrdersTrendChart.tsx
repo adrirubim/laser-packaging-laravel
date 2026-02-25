@@ -221,11 +221,13 @@ export function OrdersTrendChart({
     const renderChart = (height: number) => {
         if (chartData.length === 0) {
             return (
-                <DashboardEmptyState message="Nessun dato per il periodo selezionato" />
+                <DashboardEmptyState
+                    message={t('dashboard.chart_trend_no_data')}
+                />
             );
         }
 
-        // Detectar tema dark/light para ajustar los tooltips.
+        // Detect dark/light theme to adjust tooltips.
         const isDark =
             typeof document !== 'undefined'
                 ? document.documentElement.classList.contains('dark') ||
@@ -279,8 +281,8 @@ export function OrdersTrendChart({
                             >
                                 <OrdersTrendTooltipContent
                                     {...({
-                                        // Primero convertimos a unknown para
-                                        // que TypeScript acepte el cast
+                                        // First convert to unknown so
+                                        // TypeScript accepts the cast
                                         ...(props as unknown as {
                                             active?: boolean;
                                             payload?: OrdersTrendTooltipPayload[];
@@ -297,11 +299,11 @@ export function OrdersTrendChart({
                         }}
                     />
                     <Legend
-                        formatter={(value) => {
-                            return value === 'count'
-                                ? 'Periodo Corrente'
-                                : 'Periodo Precedente';
-                        }}
+                        formatter={(value) =>
+                            value === 'count'
+                                ? t('dashboard.chart_trend_period_current')
+                                : t('dashboard.chart_trend_period_previous')
+                        }
                     />
                     {/* Linea principale in blu pastello */}
                     <Line
@@ -309,7 +311,7 @@ export function OrdersTrendChart({
                         dataKey="count"
                         stroke="#60A5FA"
                         strokeWidth={2}
-                        // Evidenziare che è interattivo su punti e linea
+                        // Indicate it's interactive on points and line
                         dot={{
                             fill: '#60A5FA',
                             r: 4,

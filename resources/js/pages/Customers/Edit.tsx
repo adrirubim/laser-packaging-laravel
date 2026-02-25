@@ -16,6 +16,7 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useTranslations } from '@/hooks/use-translations';
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
@@ -48,6 +49,7 @@ export default function CustomersEdit({
     customer,
     errors: serverErrors,
 }: CustomersEditProps) {
+    const { t } = useTranslations();
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
     const [vatNumber, setVatNumber] = useState(customer.vat_number || '');
     const [postalCode, setPostalCode] = useState(customer.postal_code || '');
@@ -67,7 +69,7 @@ export default function CustomersEdit({
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Clienti',
+            title: t('nav.customers'),
             href: customers.index().url,
         },
         {
@@ -75,22 +77,30 @@ export default function CustomersEdit({
             href: customers.show({ customer: customer.uuid }).url,
         },
         {
-            title: 'Modifica',
+            title: t('customers.edit.breadcrumb'),
             href: customers.edit({ customer: customer.uuid }).url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Modifica Cliente ${customer.code}`} />
+            <Head
+                title={t('customers.edit.page_title', {
+                    code: customer.code,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Gestione Cliente</CardTitle>
-                                <CardDescription>Modifica</CardDescription>
+                                <CardTitle>
+                                    {t('customers.form.card_title')}
+                                </CardTitle>
+                                <CardDescription>
+                                    {t('customers.edit.card_description')}
+                                </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <Form
@@ -138,7 +148,9 @@ export default function CustomersEdit({
                                                         htmlFor="code"
                                                         required
                                                     >
-                                                        Codice Cliente
+                                                        {t(
+                                                            'customers.form.code_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="code"
@@ -147,7 +159,9 @@ export default function CustomersEdit({
                                                             customer.code
                                                         }
                                                         required
-                                                        placeholder="Codice Cliente"
+                                                        placeholder={t(
+                                                            'customers.form.code_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="code-help"
                                                     />
@@ -155,9 +169,9 @@ export default function CustomersEdit({
                                                         id="code-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci il codice
-                                                        univoco del cliente
-                                                        (massimo 255 caratteri).
+                                                        {t(
+                                                            'customers.form.code_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.code}
@@ -169,7 +183,9 @@ export default function CustomersEdit({
                                                         htmlFor="company_name"
                                                         required
                                                     >
-                                                        Ragione Sociale
+                                                        {t(
+                                                            'customers.form.company_name_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="company_name"
@@ -178,7 +194,9 @@ export default function CustomersEdit({
                                                             customer.company_name
                                                         }
                                                         required
-                                                        placeholder="Ragione Sociale"
+                                                        placeholder={t(
+                                                            'customers.form.company_name_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="company-name-help"
                                                     />
@@ -186,9 +204,9 @@ export default function CustomersEdit({
                                                         id="company-name-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci la ragione
-                                                        sociale del cliente
-                                                        (massimo 255 caratteri).
+                                                        {t(
+                                                            'customers.form.company_name_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -200,7 +218,9 @@ export default function CustomersEdit({
                                                 <div className="grid gap-2">
                                                     <div className="flex items-center gap-2">
                                                         <FormLabel htmlFor="vat_number">
-                                                            Partita IVA
+                                                            {t(
+                                                                'customers.form.vat_label',
+                                                            )}
                                                         </FormLabel>
                                                         <Tooltip>
                                                             <TooltipTrigger
@@ -210,9 +230,9 @@ export default function CustomersEdit({
                                                             </TooltipTrigger>
                                                             <TooltipContent>
                                                                 <p>
-                                                                    Inserire 11
-                                                                    cifre
-                                                                    numeriche
+                                                                    {t(
+                                                                        'customers.form.vat_tooltip',
+                                                                    )}
                                                                 </p>
                                                             </TooltipContent>
                                                         </Tooltip>
@@ -233,7 +253,9 @@ export default function CustomersEdit({
                                                         pattern="[0-9]{11}"
                                                         maxLength={11}
                                                         inputMode="numeric"
-                                                        aria-label="Partita IVA (11 cifre)"
+                                                        aria-label={t(
+                                                            'customers.form.vat_aria',
+                                                        )}
                                                         aria-invalid={
                                                             vatNumberValidation.error
                                                                 ? 'true'
@@ -256,7 +278,9 @@ export default function CustomersEdit({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="co">
-                                                        C/O
+                                                        {t(
+                                                            'customers.form.co_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="co"
@@ -264,7 +288,9 @@ export default function CustomersEdit({
                                                         defaultValue={
                                                             customer.co ?? ''
                                                         }
-                                                        placeholder="C/O"
+                                                        placeholder={t(
+                                                            'customers.form.co_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={allErrors.co}
@@ -276,7 +302,9 @@ export default function CustomersEdit({
                                                         htmlFor="street"
                                                         required
                                                     >
-                                                        Via
+                                                        {t(
+                                                            'customers.form.street_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="street"
@@ -286,7 +314,9 @@ export default function CustomersEdit({
                                                             ''
                                                         }
                                                         required
-                                                        placeholder="Via"
+                                                        placeholder={t(
+                                                            'customers.form.street_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={
@@ -298,7 +328,9 @@ export default function CustomersEdit({
                                                 <div className="grid gap-2">
                                                     <div className="flex items-center gap-2">
                                                         <FormLabel htmlFor="postal_code">
-                                                            CAP
+                                                            {t(
+                                                                'customers.form.postal_code_label',
+                                                            )}
                                                         </FormLabel>
                                                         <Tooltip>
                                                             <TooltipTrigger
@@ -308,10 +340,9 @@ export default function CustomersEdit({
                                                             </TooltipTrigger>
                                                             <TooltipContent>
                                                                 <p>
-                                                                    Codice di
-                                                                    Avviamento
-                                                                    Postale (5
-                                                                    cifre)
+                                                                    {t(
+                                                                        'customers.form.postal_code_tooltip',
+                                                                    )}
                                                                 </p>
                                                             </TooltipContent>
                                                         </Tooltip>
@@ -332,7 +363,9 @@ export default function CustomersEdit({
                                                         pattern="[0-9]{5}"
                                                         maxLength={5}
                                                         inputMode="numeric"
-                                                        aria-label="CAP (Codice di Avviamento Postale - 5 cifre)"
+                                                        aria-label={t(
+                                                            'customers.form.postal_code_aria',
+                                                        )}
                                                         aria-invalid={
                                                             postalCodeValidation.error
                                                                 ? 'true'
@@ -356,7 +389,9 @@ export default function CustomersEdit({
                                                 <div className="grid gap-2">
                                                     <div className="flex items-center gap-2">
                                                         <FormLabel htmlFor="city">
-                                                            Città
+                                                            {t(
+                                                                'customers.form.city_label',
+                                                            )}
                                                         </FormLabel>
                                                     </div>
                                                     <Input
@@ -365,7 +400,9 @@ export default function CustomersEdit({
                                                         defaultValue={
                                                             customer.city ?? ''
                                                         }
-                                                        placeholder="Città"
+                                                        placeholder={t(
+                                                            'customers.form.city_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="city-help"
                                                     />
@@ -373,8 +410,9 @@ export default function CustomersEdit({
                                                         id="city-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci la città
-                                                        (massimo 255 caratteri).
+                                                        {t(
+                                                            'customers.form.city_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.city}
@@ -384,7 +422,9 @@ export default function CustomersEdit({
                                                 <div className="grid gap-2">
                                                     <div className="flex items-center gap-2">
                                                         <FormLabel htmlFor="province">
-                                                            Provincia
+                                                            {t(
+                                                                'customers.form.province_label',
+                                                            )}
                                                         </FormLabel>
                                                         <Tooltip>
                                                             <TooltipTrigger
@@ -394,11 +434,9 @@ export default function CustomersEdit({
                                                             </TooltipTrigger>
                                                             <TooltipContent>
                                                                 <p>
-                                                                    Codice
-                                                                    provincia di
-                                                                    2 lettere
-                                                                    (es: RM, MI,
-                                                                    TO)
+                                                                    {t(
+                                                                        'customers.form.province_tooltip',
+                                                                    )}
                                                                 </p>
                                                             </TooltipContent>
                                                         </Tooltip>
@@ -440,10 +478,9 @@ export default function CustomersEdit({
                                                         id="province-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci il codice
-                                                        provincia di 2 lettere
-                                                        maiuscole (es: RM, MI,
-                                                        TO).
+                                                        {t(
+                                                            'customers.form.province_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -455,7 +492,9 @@ export default function CustomersEdit({
                                                 <div className="grid gap-2">
                                                     <div className="flex items-center gap-2">
                                                         <FormLabel htmlFor="country">
-                                                            Nazione
+                                                            {t(
+                                                                'customers.form.country_label',
+                                                            )}
                                                         </FormLabel>
                                                     </div>
                                                     <Input
@@ -465,7 +504,9 @@ export default function CustomersEdit({
                                                             customer.country ??
                                                             ''
                                                         }
-                                                        placeholder="Nazione"
+                                                        placeholder={t(
+                                                            'customers.form.country_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="country-help"
                                                     />
@@ -473,8 +514,9 @@ export default function CustomersEdit({
                                                         id="country-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci la nazione
-                                                        (massimo 255 caratteri).
+                                                        {t(
+                                                            'customers.form.country_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -489,8 +531,12 @@ export default function CustomersEdit({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Aggiornando...'
-                                                            : 'Aggiorna Cliente'}
+                                                            ? t(
+                                                                  'customers.edit.saving',
+                                                              )
+                                                            : t(
+                                                                  'customers.edit.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -501,7 +547,7 @@ export default function CustomersEdit({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

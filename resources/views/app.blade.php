@@ -39,14 +39,14 @@
                 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
                 const targetHref = prefersDark ? '/favicon-dark.ico' : '/favicon-light.ico';
                 
-                // Crear favicon inmediatamente con el tema correcto
+                // Create favicon immediately with correct theme
                 const favicon = document.createElement('link');
                 favicon.rel = 'icon';
                 favicon.href = targetHref;
                 favicon.type = 'image/x-icon';
                 document.head.appendChild(favicon);
                 
-                // Función para actualizar el favicon cuando cambie el tema
+                // Update favicon when theme changes
                 function updateFavicon() {
                     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
                     const targetHref = prefersDark ? '/favicon-dark.ico' : '/favicon-light.ico';

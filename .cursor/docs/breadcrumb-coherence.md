@@ -1,29 +1,29 @@
-# Coherencia de breadcrumbs
+# Breadcrumb Coherence
 
-Los breadcrumbs deben reflejar **exactamente** la jerarquía del menú lateral (`app-sidebar.tsx`).
+Breadcrumbs must **exactly** reflect the sidebar menu hierarchy (`app-sidebar.tsx`).
 
-## Reglas
+## Rules
 
-1. **Primer nivel**: siempre el grupo del sidebar (Clienti, Fornitori, Offerte, Articoli, Ordini, Personale). Usar claves `nav.*` y `t()`.
-2. **Niveles siguientes**: ítem del menú o nombre de la página. Usar `nav.*` cuando coincida con el sidebar; si no existe clave, mantener texto traducido en la página.
-3. **Rutas**: el `href` del primer nivel debe apuntar al índice de ese grupo (p. ej. `orders.index().url` para Ordini, `articles.index().url` para Articoli).
-4. **Traducciones**: todos los títulos de breadcrumb usan `t('nav.xxx')` o `t('common.xxx')`; no texto hardcodeado.
+1. **First level**: always the sidebar group (Customers, Suppliers, Offers, Articles, Orders, Personnel). Use `nav.*` keys and `t()`.
+2. **Subsequent levels**: menu item or page name. Use `nav.*` when it matches the sidebar; if no key exists, keep translated text in the page.
+3. **Routes**: the first-level `href` must point to that group's index (e.g. `orders.index().url` for Orders, `articles.index().url` for Articles).
+4. **Translations**: all breadcrumb titles use `t('nav.xxx')` or `t('common.xxx')`; no hardcoded text.
 
-## Jerarquía de referencia (sidebar)
+## Reference Hierarchy (sidebar)
 
-| Grupo (nav)   | Subsecciones (nav) / ruta típica |
-|---------------|-----------------------------------|
-| **nav.dashboard** | Pannello (solo ítem) |
-| **nav.customers** | anagrafica → customers, divisioni → customer-divisions, indirizzi → customer-shipping-addresses |
-| **nav.suppliers** | anagrafica → suppliers |
-| **nav.offers**    | lista → offers, attivita, settori, stagionalita, famiglia_las, las_linee_lavoro, ls_risorse, tipi_ordini, categorie_operazioni, operazioni |
-| **nav.articles**  | anagrafica → articles, categoria_articoli, macchinari → machinery, criticita, materiali → materials, tipo_pallet → pallet-types, modelli_cq, fogli_pallet, istruzioni_confezionamento, istruzioni_pallettizzazione, istruzioni_operative |
-| **nav.orders**    | lista → orders, in_produzione → production-advancements, avanzamenti_produzione → production-order-processing, pianificazione_produzione → planning |
-| **nav.personale** | anagrafica → employees, contratti → employees/contracts |
+| Group (nav)      | Subsections (nav) / typical route                    |
+|------------------|------------------------------------------------------|
+| **nav.dashboard**| Pannello (single item)                               |
+| **nav.customers**| anagrafica → customers, divisioni → customer-divisions, indirizzi → customer-shipping-addresses |
+| **nav.suppliers**| anagrafica → suppliers                               |
+| **nav.offers**   | lista → offers, attivita, settori, stagionalita, famiglia_las, las_linee_lavoro, ls_risorse, tipi_ordini, categorie_operazioni, operazioni |
+| **nav.articles** | anagrafica → articles, categoria_articoli, macchinari → machinery, criticita, materiali → materials, tipo_pallet → pallet-types, modelli_cq, fogli_pallet, istruzioni_confezionamento, istruzioni_pallettizzazione, istruzioni_operative |
+| **nav.orders**   | lista → orders, in_produzione → production-advancements, avanzamenti_produzione → production-order-processing, pianificazione_produzione → planning |
+| **nav.personale**| anagrafica → employees, contratti → employees/contracts |
 
-## Ejemplos correctos
+## Correct Examples
 
-- **Planning**: `Ordini` → `Pianificazione Produzione` (nav.orders, nav.pianificazione_produzione).
-- **Materiali**: `Articoli` → `Materiali` (nav.articles, nav.materiali).
-- **Gestione Lavorazione Ordini**: `Ordini` → `Avanzamenti di Produzione` (nav.orders, nav.avanzamenti_produzione).
-- **Divisioni Create**: `Clienti` → `Divisioni` → `Nuovo` (nav.customers, nav.divisioni, common.new).
+- **Planning**: `Orders` → `Production Planning` (nav.orders, nav.pianificazione_produzione).
+- **Materials**: `Articles` → `Materials` (nav.articles, nav.materiali).
+- **Order Processing Management**: `Orders` → `Production Advancements` (nav.orders, nav.avanzamenti_produzione).
+- **Create Division**: `Customers` → `Divisions` → `New` (nav.customers, nav.divisioni, common.new).

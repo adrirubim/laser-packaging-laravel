@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import lsResources from '@/routes/ls-resources/index';
 import { type BreadcrumbItem } from '@/types';
@@ -30,13 +31,14 @@ export default function LsResourcesEdit({
     resource,
     errors: serverErrors,
 }: LsResourcesEditProps) {
+    const { t } = useTranslations();
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: '/offers',
         },
         {
-            title: 'L&S Risorse',
+            title: t('offer_ls_resources.page_title'),
             href: lsResources.index().url,
         },
         {
@@ -44,22 +46,32 @@ export default function LsResourcesEdit({
             href: lsResources.show({ lsResource: resource.uuid }).url,
         },
         {
-            title: 'Modifica',
+            title: t('offer_ls_resources.edit.breadcrumb'),
             href: lsResources.edit({ lsResource: resource.uuid }).url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Modifica Risorsa L&S ${resource.name}`} />
+            <Head
+                title={t('offer_ls_resources.edit.page_title', {
+                    name: resource.name,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Gestione Risorsa L&S</CardTitle>
-                                <CardDescription>Modifica</CardDescription>
+                                <CardTitle>
+                                    {t('offer_ls_resources.form.card_title')}
+                                </CardTitle>
+                                <CardDescription>
+                                    {t(
+                                        'offer_ls_resources.edit.card_description',
+                                    )}
+                                </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <Form
@@ -96,7 +108,7 @@ export default function LsResourcesEdit({
 
                                                 <div className="grid gap-2">
                                                     <Label htmlFor="code">
-                                                        Codice *
+                                                        {t('common.code')} *
                                                     </Label>
                                                     <Input
                                                         id="code"
@@ -105,7 +117,9 @@ export default function LsResourcesEdit({
                                                             resource.code
                                                         }
                                                         required
-                                                        placeholder="Codice Risorsa"
+                                                        placeholder={t(
+                                                            'offer_ls_resources.form.code_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={allErrors.code}
@@ -114,7 +128,9 @@ export default function LsResourcesEdit({
 
                                                 <div className="grid gap-2">
                                                     <Label htmlFor="name">
-                                                        Descrizione
+                                                        {t(
+                                                            'offer_ls_resources.form.name_label',
+                                                        )}
                                                     </Label>
                                                     <Input
                                                         id="name"
@@ -122,7 +138,9 @@ export default function LsResourcesEdit({
                                                         defaultValue={
                                                             resource.name
                                                         }
-                                                        placeholder="Descrizione Risorsa"
+                                                        placeholder={t(
+                                                            'offer_ls_resources.form.name_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={allErrors.name}
@@ -135,8 +153,12 @@ export default function LsResourcesEdit({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Aggiornando...'
-                                                            : 'Aggiorna Risorsa'}
+                                                            ? t(
+                                                                  'offer_ls_resources.edit.submitting',
+                                                              )
+                                                            : t(
+                                                                  'offer_ls_resources.edit.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -152,7 +174,7 @@ export default function LsResourcesEdit({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

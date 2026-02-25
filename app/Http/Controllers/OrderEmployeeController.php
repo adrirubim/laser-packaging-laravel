@@ -78,7 +78,7 @@ class OrderEmployeeController extends Controller
 
         // Return Inertia-compatible redirect instead of JSON
         return redirect()->route('orders.show', $validated['order_uuid'])
-            ->with('success', 'Assegnazioni dipendenti salvate con successo.');
+            ->with('success', __('flash.order_employee.saved'));
     }
 
     /**
@@ -131,6 +131,6 @@ class OrderEmployeeController extends Controller
         $orderEmployee->update(['removed' => true]);
 
         return redirect()->back()
-            ->with('success', 'Assegnazione eliminata con successo.');
+            ->with('success', __('flash.order_employee.deleted'));
     }
 }

@@ -113,7 +113,7 @@ class ArticleCategoryControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // Crear más de 15 categorías para forzar paginación
+        // Create more than 15 categories to force pagination
         ArticleCategory::factory()->count(20)->create(['removed' => false]);
 
         $response = $this->get(route('article-categories.index'));

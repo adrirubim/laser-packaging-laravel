@@ -1,7 +1,7 @@
 <?php
 
 return [
-    // Messaggi di errore per validazione unicità
+    // Error messages for uniqueness validation
     'las_code_exists' => 'Il codice LAS esiste già.',
     'production_number_exists' => 'Il numero di produzione esiste già.',
     'offer_number_exists' => 'Il numero di offerta esiste già.',
@@ -16,7 +16,7 @@ return [
     'error_loading_articles' => 'Si è verificato un errore nel caricamento degli articoli. Controlla i log per maggiori dettagli.',
     'error_occurred' => 'Si è verificato un errore. Controlla i log per maggiori dettagli.',
 
-    // Messaggi di validazione per campi obbligatori
+    // Validation messages for required fields
     'code_required' => 'Il Codice è obbligatorio.',
     'customer_code_required' => 'Il Codice Cliente è obbligatorio.',
 

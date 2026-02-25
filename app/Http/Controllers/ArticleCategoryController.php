@@ -70,11 +70,11 @@ class ArticleCategoryController extends Controller
 
         $category = ArticleCategory::create($validated);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->articleRepository->clearFormOptionsCache();
 
         return redirect()->route('article-categories.index')
-            ->with('success', 'Categoria di articolo creata con successo.');
+            ->with('success', __('flash.article_category.created'));
     }
 
     /**
@@ -110,11 +110,11 @@ class ArticleCategoryController extends Controller
 
         $articleCategory->update($validated);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->articleRepository->clearFormOptionsCache();
 
         return redirect()->route('article-categories.index')
-            ->with('success', 'Categoria di articolo aggiornata con successo.');
+            ->with('success', __('flash.article_category.updated'));
     }
 
     /**
@@ -124,10 +124,10 @@ class ArticleCategoryController extends Controller
     {
         $articleCategory->update(['removed' => true]);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->articleRepository->clearFormOptionsCache();
 
         return redirect()->route('article-categories.index')
-            ->with('success', 'Categoria di articolo eliminata con successo.');
+            ->with('success', __('flash.article_category.deleted'));
     }
 }

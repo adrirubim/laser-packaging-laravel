@@ -8,6 +8,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import offerOperationLists from '@/routes/offer-operation-lists/index';
 import { type BreadcrumbItem } from '@/types';
@@ -44,15 +45,16 @@ export default function OfferOperationListsShow({
 }: OfferOperationListsShowProps) {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const { t } = useTranslations();
 
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Offerte', href: '/offers' },
+        { title: t('nav.offers'), href: '/offers' },
         {
-            title: 'Liste Operazioni Offerta',
+            title: t('offer_operation_lists.page_title'),
             href: offerOperationLists.index().url,
         },
         {
-            title: `${operationList.offer?.offer_number ?? 'N/D'} - ${operationList.operation?.code ?? 'N/D'}`,
+            title: `${operationList.offer?.offer_number ?? t('common.not_available')} - ${operationList.operation?.code ?? t('common.not_available')}`,
             href: offerOperationLists.show({
                 offerOperationList: operationList.uuid,
             }).url,
@@ -75,24 +77,26 @@ export default function OfferOperationListsShow({
         );
     };
 
-    const itemName =
-        [operationList.offer?.offer_number, operationList.operation?.code]
-            .filter(Boolean)
-            .join(' - ') || operationList.uuid;
+    const itemName = [
+        operationList.offer?.offer_number ?? t('common.not_available'),
+        operationList.operation?.code ?? t('common.not_available'),
+    ].join(' - ');
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Dettagli Lista Operazioni Offerta" />
+            <Head title={t('offer_operation_lists.show.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-2xl font-bold">
-                            Assegnazione Operazione
+                            {t('offer_operation_lists.show.heading')}
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Operazione: {operationList.operation?.code || 'N/D'}{' '}
-                            | UUID:{' '}
+                            {t('offer_operation_lists.show.operation_label')}{' '}
+                            {operationList.operation?.code ||
+                                t('common.not_available')}{' '}
+                            | {t('common.uuid')}:{' '}
                             <span className="font-mono">
                                 {operationList.uuid}
                             </span>
@@ -108,7 +112,7 @@ export default function OfferOperationListsShow({
                                 }
                             >
                                 <Edit className="mr-2 h-4 w-4" />
-                                Modifica
+                                {t('common.edit')}
                             </Link>
                         </Button>
                         <Button
@@ -117,7 +121,7 @@ export default function OfferOperationListsShow({
                             disabled={isDeleting}
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Elimina
+                            {t('common.delete')}
                         </Button>
                     </div>
                 </div>
@@ -125,22 +129,26 @@ export default function OfferOperationListsShow({
                 <div className="grid gap-4 md:grid-cols-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Dettagli Assegnazione</CardTitle>
+                            <CardTitle>
+                                {t('offer_operation_lists.show.details_title')}
+                            </CardTitle>
                             <CardDescription>
-                                Informazioni su questa assegnazione operazione
+                                {t(
+                                    'offer_operation_lists.show.details_subtitle',
+                                )}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    ID
+                                    {t('common.id')}
                                 </Label>
                                 <p className="text-sm">{operationList.id}</p>
                             </div>
 
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    UUID
+                                    {t('common.uuid')}
                                 </Label>
                                 <p className="font-mono text-sm">
                                     {operationList.uuid}
@@ -149,10 +157,11 @@ export default function OfferOperationListsShow({
 
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    Offerta
+                                    {t('offer_operation_lists.table.offer')}
                                 </Label>
                                 <p className="font-mono text-lg font-semibold">
-                                    {operationList.offer?.offer_number || 'N/D'}
+                                    {operationList.offer?.offer_number ||
+                                        t('common.not_available')}
                                 </p>
                                 {operationList.offer
                                     ?.provisional_description && (
@@ -167,10 +176,11 @@ export default function OfferOperationListsShow({
 
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    Operazione
+                                    {t('offer_operation_lists.table.operation')}
                                 </Label>
                                 <p className="font-mono text-lg font-semibold">
-                                    {operationList.operation?.code || 'N/D'}
+                                    {operationList.operation?.code ||
+                                        t('common.not_available')}
                                 </p>
                                 {operationList.operation?.description && (
                                     <p className="text-sm text-muted-foreground">
@@ -181,7 +191,9 @@ export default function OfferOperationListsShow({
 
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    Numero Operazione
+                                    {t(
+                                        'offer_operation_lists.show.num_op_label',
+                                    )}
                                 </Label>
                                 <p className="text-lg font-semibold">
                                     {operationList.num_op}
@@ -195,8 +207,8 @@ export default function OfferOperationListsShow({
                     open={deleteDialogOpen}
                     onOpenChange={setDeleteDialogOpen}
                     onConfirm={handleDeleteConfirm}
-                    title="Elimina Assegnazione Operazione"
-                    description="Sei sicuro di voler rimuovere questa operazione dall'offerta? Questa azione non può essere annullata."
+                    title={t('offer_operation_lists.delete_confirm_title')}
+                    description={t('offer_operation_lists.delete_description')}
                     itemName={itemName}
                     isLoading={isDeleting}
                 />

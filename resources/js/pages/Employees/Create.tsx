@@ -51,37 +51,31 @@ export default function EmployeesCreate({
         password !== '';
 
     const nameValidation = useFieldValidation(name, [
-        validationRules.required('Il nome è obbligatorio'),
-        validationRules.maxLength(
-            255,
-            'Il nome non può superare i 255 caratteri',
-        ),
+        validationRules.required(t('validation.name_required')),
+        validationRules.maxLength(255, t('validation.max_length_name')),
     ]);
 
     const surnameValidation = useFieldValidation(surname, [
-        validationRules.required('Il cognome è obbligatorio'),
-        validationRules.maxLength(
-            255,
-            'Il cognome non può superare i 255 caratteri',
-        ),
+        validationRules.required(t('validation.surname_required')),
+        validationRules.maxLength(255, t('validation.max_length_surname')),
     ]);
 
     const matriculationNumberValidation = useFieldValidation(
         matriculationNumber,
         [
-            validationRules.required('Il numero di matricola è obbligatorio'),
+            validationRules.required(t('validation.matriculation_required')),
             validationRules.maxLength(
                 255,
-                'Il numero di matricola non può superare i 255 caratteri',
+                t('validation.max_length_matriculation'),
             ),
         ],
     );
 
     const passwordValidation = useFieldValidation(password, [
-        validationRules.required('La password è obbligatoria'),
+        validationRules.required(t('validation.password_required')),
         validationRules.minLength(
             6,
-            'La password deve contenere almeno 6 caratteri',
+            t('validation.password_min_length', { min: 6 }),
         ),
     ]);
 
@@ -98,7 +92,7 @@ export default function EmployeesCreate({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Crea Dipendente" />
+            <Head title={t('employees.create.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
@@ -107,24 +101,26 @@ export default function EmployeesCreate({
                             <Button
                                 variant="outline"
                                 onClick={() => setShowCloseConfirm(true)}
-                                aria-label="Torna indietro"
+                                aria-label={t('employees.create.back_aria')}
                             >
                                 <ArrowLeft className="mr-2 h-4 w-4" />
-                                Indietro
+                                {t('common.back')}
                             </Button>
                         </div>
 
                         <FormValidationNotification
                             errors={validationErrors}
-                            message="Correggi gli errori nel modulo prima di salvare."
+                            message={t('employees.create.validation_message')}
                             showOnSubmit={false}
                         />
 
                         <Card>
                             <CardHeader>
-                                <CardTitle>Gestione Dipendente</CardTitle>
+                                <CardTitle>
+                                    {t('employees.create.card_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Inserimento nuovo dipendente
+                                    {t('employees.create.card_description')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -147,7 +143,9 @@ export default function EmployeesCreate({
                                                             htmlFor="name"
                                                             required
                                                         >
-                                                            Nome
+                                                            {t(
+                                                                'employees.create.name_label',
+                                                            )}
                                                         </FormLabel>
                                                         <Input
                                                             id="name"
@@ -163,7 +161,9 @@ export default function EmployeesCreate({
                                                                 nameValidation.onBlur
                                                             }
                                                             required
-                                                            placeholder="Nome"
+                                                            placeholder={t(
+                                                                'employees.create.name_placeholder',
+                                                            )}
                                                             maxLength={255}
                                                             aria-invalid={
                                                                 nameValidation.error
@@ -194,7 +194,9 @@ export default function EmployeesCreate({
                                                             htmlFor="surname"
                                                             required
                                                         >
-                                                            Cognome
+                                                            {t(
+                                                                'employees.create.surname_label',
+                                                            )}
                                                         </FormLabel>
                                                         <Input
                                                             id="surname"
@@ -210,7 +212,9 @@ export default function EmployeesCreate({
                                                                 surnameValidation.onBlur
                                                             }
                                                             required
-                                                            placeholder="Cognome"
+                                                            placeholder={t(
+                                                                'employees.create.surname_placeholder',
+                                                            )}
                                                             maxLength={255}
                                                             aria-invalid={
                                                                 surnameValidation.error
@@ -243,7 +247,9 @@ export default function EmployeesCreate({
                                                         htmlFor="matriculation_number"
                                                         required
                                                     >
-                                                        Numero di matricola
+                                                        {t(
+                                                            'employees.create.matriculation_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="matriculation_number"
@@ -260,7 +266,9 @@ export default function EmployeesCreate({
                                                             matriculationNumberValidation.onBlur
                                                         }
                                                         required
-                                                        placeholder="Numero di matricola"
+                                                        placeholder={t(
+                                                            'employees.create.matriculation_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-invalid={
                                                             matriculationNumberValidation.error
@@ -292,7 +300,9 @@ export default function EmployeesCreate({
                                                         htmlFor="password"
                                                         required
                                                     >
-                                                        Password
+                                                        {t(
+                                                            'employees.create.password_label',
+                                                        )}
                                                     </FormLabel>
                                                     <PasswordInput
                                                         id="password"
@@ -308,7 +318,9 @@ export default function EmployeesCreate({
                                                         }
                                                         required
                                                         minLength={6}
-                                                        placeholder="Almeno 6 caratteri"
+                                                        placeholder={t(
+                                                            'employees.create.password_placeholder',
+                                                        )}
                                                         aria-invalid={
                                                             passwordValidation.error
                                                                 ? 'true'
@@ -345,14 +357,15 @@ export default function EmployeesCreate({
                                                             htmlFor="portal_enabled"
                                                             className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                                         >
-                                                            Abilita accesso
-                                                            portale
+                                                            {t(
+                                                                'employees.create.portal_enable_label',
+                                                            )}
                                                         </FormLabel>
                                                     </div>
                                                     <p className="text-xs text-muted-foreground">
-                                                        Consente il login dal
-                                                        portale produzione
-                                                        (matricola + password).
+                                                        {t(
+                                                            'employees.create.portal_description',
+                                                        )}
                                                     </p>
                                                 </div>
                                                 <InputError
@@ -367,8 +380,12 @@ export default function EmployeesCreate({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Salvando...'
-                                                            : 'Crea Dipendente'}
+                                                            ? t(
+                                                                  'employees.create.saving',
+                                                              )
+                                                            : t(
+                                                                  'employees.create.submit_label',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -384,7 +401,7 @@ export default function EmployeesCreate({
                                                                   )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>
@@ -404,8 +421,8 @@ export default function EmployeesCreate({
                     setShowCloseConfirm(false);
                     router.visit(employees.index().url);
                 }}
-                title="Conferma chiusura"
-                description="Sei sicuro di voler uscire? I dati non salvati andranno persi."
+                title={t('common.confirm_close.title')}
+                description={t('common.confirm_close.description')}
             />
         </AppLayout>
     );

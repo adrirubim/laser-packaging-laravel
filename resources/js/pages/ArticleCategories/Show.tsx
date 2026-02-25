@@ -8,6 +8,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import articleCategories from '@/routes/article-categories/index';
 import { type BreadcrumbItem } from '@/types';
@@ -36,12 +37,14 @@ type ArticleCategoriesShowProps = {
 export default function ArticleCategoriesShow({
     category,
 }: ArticleCategoriesShowProps) {
+    const { t } = useTranslations();
+
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Categorie Articoli',
+            title: t('article_categories.breadcrumb'),
             href: articleCategories.index().url,
         },
         {
@@ -69,7 +72,11 @@ export default function ArticleCategoriesShow({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Categoria: ${category.name}`} />
+            <Head
+                title={t('article_categories.show.page_title', {
+                    name: category.name,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between gap-3">
@@ -79,7 +86,7 @@ export default function ArticleCategoriesShow({
                             {category.name}
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Dettagli della categoria di articolo
+                            {t('article_categories.show.subtitle')}
                         </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -92,7 +99,7 @@ export default function ArticleCategoriesShow({
                                 }
                             >
                                 <Edit className="mr-2 h-4 w-4" />
-                                Modifica
+                                {t('common.edit')}
                             </Link>
                         </Button>
                         <Button
@@ -101,7 +108,7 @@ export default function ArticleCategoriesShow({
                             disabled={isDeleting}
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Elimina
+                            {t('common.delete')}
                         </Button>
                     </div>
                 </div>
@@ -109,15 +116,17 @@ export default function ArticleCategoriesShow({
                 <div className="grid gap-4 md:grid-cols-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Dettagli Categoria</CardTitle>
+                            <CardTitle>
+                                {t('article_categories.show.details_title')}
+                            </CardTitle>
                             <CardDescription>
-                                Informazioni sulla categoria di articolo
+                                {t('article_categories.show.details_subtitle')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid gap-2">
                                 <Label className="text-xs text-muted-foreground">
-                                    ID
+                                    {t('article_categories.show.fields.id')}
                                 </Label>
                                 <div className="font-mono text-sm">
                                     {category.id}
@@ -125,7 +134,7 @@ export default function ArticleCategoriesShow({
                             </div>
                             <div className="grid gap-2">
                                 <Label className="text-xs text-muted-foreground">
-                                    UUID
+                                    {t('article_categories.show.fields.uuid')}
                                 </Label>
                                 <div className="font-mono text-sm break-all">
                                     {category.uuid}
@@ -133,7 +142,7 @@ export default function ArticleCategoriesShow({
                             </div>
                             <div className="grid gap-2">
                                 <Label className="text-xs text-muted-foreground">
-                                    Nome
+                                    {t('article_categories.show.fields.name')}
                                 </Label>
                                 <div className="text-sm font-medium">
                                     {category.name}
@@ -145,10 +154,16 @@ export default function ArticleCategoriesShow({
                     {category.articles && category.articles.length > 0 && (
                         <Card>
                             <CardHeader>
-                                <CardTitle>Articoli Associati</CardTitle>
+                                <CardTitle>
+                                    {t(
+                                        'article_categories.show.articles_title',
+                                    )}
+                                </CardTitle>
                                 <CardDescription>
-                                    {category.articles.length} articolo/i in
-                                    questa categoria
+                                    {t(
+                                        'article_categories.show.articles_count',
+                                        { count: category.articles.length },
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -187,8 +202,8 @@ export default function ArticleCategoriesShow({
                     open={deleteDialogOpen}
                     onOpenChange={setDeleteDialogOpen}
                     onConfirm={handleDelete}
-                    title="Elimina Categoria"
-                    description="Sei sicuro di voler eliminare questa categoria di articolo? Questa azione non può essere annullata."
+                    title={t('article_categories.delete.title')}
+                    description={t('article_categories.delete.description')}
                     itemName={category.name}
                     isLoading={isDeleting}
                 />

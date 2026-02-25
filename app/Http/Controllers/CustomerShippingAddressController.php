@@ -72,14 +72,14 @@ class CustomerShippingAddressController extends Controller
     {
         $address = CustomerShippingAddress::create($request->validated());
 
-        // Ottenere customer_uuid della divisione per invalidare cache
+        // Get division's customer_uuid to invalidate cache
         $division = CustomerDivision::where('uuid', $address->customerdivision_uuid)->first();
         if ($division) {
             $this->repository->clearCache($division->customer_uuid);
         }
 
         return redirect()->route('customer-shipping-addresses.index')
-            ->with('success', 'Indirizzo di spedizione creato con successo.');
+            ->with('success', __('flash.customer_shipping_address.created'));
     }
 
     /**
@@ -124,11 +124,11 @@ class CustomerShippingAddressController extends Controller
 
         $customerShippingAddress->update($request->validated());
 
-        // Ottenere nuova divisione per invalidare cache
+        // Get new division to invalidate cache
         $newDivision = CustomerDivision::where('uuid', $customerShippingAddress->customerdivision_uuid)->first();
         $newCustomerUuid = $newDivision ? $newDivision->customer_uuid : null;
 
-        // Invalidare cache (sia del cliente precedente che del nuovo se è cambiato)
+        // Invalidate cache (both previous and new customer if changed)
         if ($oldCustomerUuid) {
             $this->repository->clearCache($oldCustomerUuid);
         }
@@ -137,7 +137,7 @@ class CustomerShippingAddressController extends Controller
         }
 
         return redirect()->route('customer-shipping-addresses.index')
-            ->with('success', 'Indirizzo di spedizione aggiornato con successo.');
+            ->with('success', __('flash.customer_shipping_address.updated'));
     }
 
     /**
@@ -145,10 +145,10 @@ class CustomerShippingAddressController extends Controller
      */
     public function destroy(CustomerShippingAddress $customerShippingAddress)
     {
-        // Verificare se ha ordini associati
+        // Check if it has associated orders
         if ($customerShippingAddress->orders()->where('removed', false)->exists()) {
             return back()->withErrors([
-                'error' => 'Non è possibile eliminare l\'indirizzo. Ha ordini associati.',
+                'error' => __('flash.cannot_delete_address'),
             ]);
         }
 
@@ -157,16 +157,16 @@ class CustomerShippingAddressController extends Controller
 
         $customerShippingAddress->update(['removed' => true]);
 
-        // Invalidare cache indirizzi di spedizione (pulire tutte perché non sappiamo quali articoli le usano)
+        // Invalidate shipping address cache (clear all since we do not know which articles use them)
         $this->orderRepository->clearShippingAddressesCache();
 
-        // Invalidare cache del repository
+        // Invalidate repository cache
         if ($customerUuid) {
             $this->repository->clearCache($customerUuid);
         }
 
         return redirect()->route('customer-shipping-addresses.index')
-            ->with('success', 'Indirizzo di spedizione eliminato con successo.');
+            ->with('success', __('flash.customer_shipping_address.deleted'));
     }
 
     /**
@@ -180,14 +180,14 @@ class CustomerShippingAddressController extends Controller
 
         $divisions = $this->repository->getByCustomerUuid($request->get('customer_uuid'));
 
-        // Se è una richiesta AJAX/Inertia, restituire JSON
+        // If it's an AJAX/Inertia request, return JSON
         if ($request->wantsJson() || $request->header('X-Inertia')) {
             return response()->json([
                 'customer_divisions' => $divisions,
             ]);
         }
 
-        // Retornar como Inertia props para consistencia
+        // Return as Inertia props for consistency
         return Inertia::render('CustomerShippingAddresses/Create', [
             'customers' => $this->customerRepository->getForSelect(),
             'divisions' => $divisions,

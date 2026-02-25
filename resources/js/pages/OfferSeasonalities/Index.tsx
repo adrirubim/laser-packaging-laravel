@@ -8,6 +8,7 @@ import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { SortableTableHeader } from '@/components/SortableTableHeader';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import offerSeasonalities from '@/routes/offer-seasonalities/index';
 import { type BreadcrumbItem } from '@/types';
@@ -39,6 +40,7 @@ type OfferSeasonalitiesIndexProps = {
 };
 
 export default function OfferSeasonalitiesIndex() {
+    const { t } = useTranslations();
     const { props } = usePage<OfferSeasonalitiesIndexProps>();
     const { seasonalities: seasonalitiesPaginated, filters } = props;
     const { flash } = useFlashNotifications();
@@ -54,7 +56,7 @@ export default function OfferSeasonalitiesIndex() {
     });
     const [isDeleting, setIsDeleting] = useState(false);
 
-    // Sincronizzare stato iniziale con i filtri del server
+    // Sync initial state with server filters
     useEffect(() => {
         queueMicrotask(() => setSearchValue(filters.search ?? ''));
     }, [filters.search]);
@@ -137,20 +139,23 @@ export default function OfferSeasonalitiesIndex() {
     };
 
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Offerte', href: '/offers' },
-        { title: 'Stagionalità', href: offerSeasonalities.index().url },
+        { title: t('nav.offers'), href: '/offers' },
+        {
+            title: t('offer_seasonalities.page_title'),
+            href: offerSeasonalities.index().url,
+        },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Stagionalità" />
+            <Head title={t('offer_seasonalities.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="Stagionalità"
-                    subtitle="Elenco delle stagionalità attive con Cerca."
+                    title={t('offer_seasonalities.page_title')}
+                    subtitle={t('offer_seasonalities.index.subtitle')}
                     createHref={offerSeasonalities.create().url}
-                    createLabel="Nuova Stagionalità"
+                    createLabel={t('offer_seasonalities.index.create')}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -158,12 +163,14 @@ export default function OfferSeasonalitiesIndex() {
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="space-y-1">
                         <label className="text-xs font-medium text-muted-foreground">
-                            Cerca
+                            {t('common.search')}
                         </label>
                         <SearchInput
                             value={searchValue}
                             onChange={handleSearchChange}
-                            placeholder="Nome stagionalità..."
+                            placeholder={t(
+                                'offer_seasonalities.search_placeholder',
+                            )}
                             isLoading={isSearching}
                             onClear={clearSearch}
                         />
@@ -174,7 +181,7 @@ export default function OfferSeasonalitiesIndex() {
                 <div className="block space-y-3 p-4 md:hidden">
                     {seasonalitiesPaginated.data.length === 0 ? (
                         <div className="py-8 text-center text-sm text-muted-foreground">
-                            Nessuna stagionalità trovata per i filtri attuali.
+                            {t('offer_seasonalities.index.empty')}
                         </div>
                     ) : (
                         seasonalitiesPaginated.data.map((seasonality) => (
@@ -232,10 +239,12 @@ export default function OfferSeasonalitiesIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Nome
+                                        {t(
+                                            'offer_seasonalities.form.name_label',
+                                        )}
                                     </SortableTableHeader>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t('common.actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -246,8 +255,9 @@ export default function OfferSeasonalitiesIndex() {
                                             colSpan={4}
                                             className="px-3 py-6 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessuna stagionalità trovata per i
-                                            filtri attuali.
+                                            {t(
+                                                'offer_seasonalities.index.empty',
+                                            )}
                                         </td>
                                     </tr>
                                 )}
@@ -314,8 +324,8 @@ export default function OfferSeasonalitiesIndex() {
                         })
                     }
                     onConfirm={handleDeleteConfirm}
-                    title="Elimina Stagionalità"
-                    description="Sei sicuro di voler eliminare questa stagionalità? Questa azione non può essere annullata."
+                    title={t('offer_seasonalities.delete.title')}
+                    description={t('offer_seasonalities.delete.description')}
                     itemName={deleteDialog.seasonality?.name}
                     isLoading={isDeleting}
                 />

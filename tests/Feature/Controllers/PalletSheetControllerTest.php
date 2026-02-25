@@ -307,7 +307,7 @@ class PalletSheetControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // Crear más de 15 hojas para probar paginación
+        // Create more than 15 sheets to test pagination
         PalletSheet::factory()->count(20)->create(['removed' => false]);
 
         $response = $this->get(route('articles.pallet-sheets.index'));
@@ -334,7 +334,7 @@ class PalletSheetControllerTest extends TestCase
             'filename' => 'test-sheet.pdf',
         ]);
 
-        // Crear archivo de prueba
+        // Create test file
         $filePath = storage_path('app/foglioPallet/'.$sheet->uuid.'/');
         if (! file_exists($filePath)) {
             mkdir($filePath, 0755, true);
@@ -346,7 +346,7 @@ class PalletSheetControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertDownload('test-sheet.pdf');
 
-        // Limpiar
+        // Cleanup
         if (file_exists($filePath.'test-sheet.pdf')) {
             unlink($filePath.'test-sheet.pdf');
             rmdir($filePath);

@@ -9,6 +9,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useTranslations } from '@/hooks/use-translations';
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
@@ -72,13 +73,14 @@ function generateUUID(): string {
         );
     }
 
-    // Come ultima risorsa, ritorna una stringa vuota (evita uso di Math.random)
+    // As last resort, return empty string (avoids Math.random usage)
     return '';
 }
 
 export default function OfferTypesCreate({
     errors: serverErrors,
 }: OfferTypesCreateProps) {
+    const { t } = useTranslations();
     const [uuid, setUuid] = useState<string>(generateUUID());
     const [nameValue, setNameValue] = useState<string>('');
 
@@ -90,40 +92,32 @@ export default function OfferTypesCreate({
 
     // Validazione in tempo reale per name
     const nameValidation = useFieldValidation(nameValue, [
-        validationRules.required('Il nome è obbligatorio'),
-        validationRules.maxLength(
-            255,
-            'Il nome non può superare 255 caratteri',
-        ),
+        validationRules.required(t('validation.required_name')),
+        validationRules.maxLength(255, t('validation.max_length_name')),
     ]);
     const breadcrumbs: BreadcrumbItem[] = [
+        { title: t('nav.offers'), href: '/offers' },
+        { title: t('nav.offer_types'), href: offerTypes.index().url },
         {
-            title: 'Offerte',
-            href: '/offers',
-        },
-        {
-            title: 'Tipi',
-            href: offerTypes.index().url,
-        },
-        {
-            title: 'Nuovo Tipo di Offerta',
+            title: t('offer_types.create.breadcrumb'),
             href: offerTypes.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Nuovo Tipo di Offerta" />
+            <Head title={t('offer_types.create.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Nuovo Tipo di Offerta</CardTitle>
+                                <CardTitle>
+                                    {t('offer_types.create.card_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Compila i campi per creare un tipo di
-                                    offerta.
+                                    {t('offer_types.create.card_description')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -145,7 +139,7 @@ export default function OfferTypesCreate({
                                                         htmlFor="uuid"
                                                         required
                                                     >
-                                                        UUID
+                                                        {t('common.uuid')}
                                                     </FormLabel>
                                                     <Input
                                                         id="uuid"
@@ -157,7 +151,9 @@ export default function OfferTypesCreate({
                                                             )
                                                         }
                                                         required
-                                                        placeholder="UUID (es. 550e8400-e29b-41d4-a716-446655440000)"
+                                                        placeholder={t(
+                                                            'common.uuid_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={allErrors.uuid}
@@ -169,7 +165,9 @@ export default function OfferTypesCreate({
                                                         htmlFor="name"
                                                         required
                                                     >
-                                                        Nome
+                                                        {t(
+                                                            'offer_types.form.name_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="name"
@@ -187,7 +185,9 @@ export default function OfferTypesCreate({
                                                             nameValidation.onFocus
                                                         }
                                                         required
-                                                        placeholder="Nome Tipo di Offerta"
+                                                        placeholder={t(
+                                                            'offer_types.form.name_placeholder',
+                                                        )}
                                                         className={
                                                             nameValidation.error
                                                                 ? 'border-destructive'
@@ -212,8 +212,12 @@ export default function OfferTypesCreate({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Creando...'
-                                                            : 'Crea Tipo di Offerta'}
+                                                            ? t(
+                                                                  'offer_types.create.submitting',
+                                                              )
+                                                            : t(
+                                                                  'offer_types.create.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -225,7 +229,7 @@ export default function OfferTypesCreate({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

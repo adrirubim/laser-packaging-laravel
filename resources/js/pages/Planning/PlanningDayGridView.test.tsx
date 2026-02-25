@@ -1,5 +1,5 @@
 import { renderToString } from 'react-dom/server';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import PlanningDayGridView from './PlanningDayGridView';
 import type {
     PlanningContract,
@@ -7,6 +7,27 @@ import type {
     SlotColumn,
     ZoomLevel,
 } from './types';
+
+vi.mock('@/hooks/use-translations', () => {
+    const itTranslations: Record<string, string> = {
+        'planning.no_columns':
+            'Nessuna colonna disponibile per il periodo selezionato.',
+        'planning.column_line': 'Linea',
+        'common.order': 'Ordine',
+        'planning.zoom_quarters': 'Zoom quarti',
+        'planning.grid_caption': 'Griglia pianificazione',
+        'planning.scroll_hint': 'Scroll orizzontale',
+        'planning.no_lines_period': 'Nessuna linea nel periodo.',
+        'planning.go_today': 'Vai a oggi',
+        'planning.change_period': 'Cambia periodo',
+        'common.empty_value': '—',
+    };
+    return {
+        useTranslations: () => ({
+            t: (key: string) => itTranslations[key] ?? key,
+        }),
+    };
+});
 
 describe('PlanningDayGridView', () => {
     const slotColumns: SlotColumn[] = [];
@@ -43,7 +64,7 @@ describe('PlanningDayGridView', () => {
             />,
         );
 
-        // Con slotColumns vacío el componente muestra mensaje de estado vacío, no tabla
+        // With empty slotColumns the component shows empty state message, not table
         expect(html).toContain('Nessuna colonna disponibile');
     });
 });

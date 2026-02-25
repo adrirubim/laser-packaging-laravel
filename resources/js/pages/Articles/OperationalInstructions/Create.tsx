@@ -14,6 +14,7 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import articles from '@/routes/articles/index';
 import { type BreadcrumbItem } from '@/types';
@@ -28,6 +29,7 @@ type OperationalInstructionsCreateProps = {
 export default function OperationalInstructionsCreate({
     errors: serverErrors,
 }: OperationalInstructionsCreateProps) {
+    const { t } = useTranslations();
     const [ioNumber, setIoNumber] = useState<string>('');
     const [isLoadingNumber, setIsLoadingNumber] = useState(false);
 
@@ -46,22 +48,22 @@ export default function OperationalInstructionsCreate({
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Articoli',
+            title: t('nav.articles'),
             href: articles.index().url,
         },
         {
-            title: 'Istruzioni Operative',
-            href: '/articles/operational-instructions',
+            title: t('nav.istruzioni_operative'),
+            href: articles.operationalInstructions.index().url,
         },
         {
-            title: 'Crea',
-            href: '/articles/operational-instructions/create',
+            title: t('operational_instructions.create.breadcrumb'),
+            href: articles.operationalInstructions.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Crea Istruzione Operativa" />
+            <Head title={t('operational_instructions.create.head_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
@@ -69,11 +71,12 @@ export default function OperationalInstructionsCreate({
                         <Card>
                             <CardHeader>
                                 <CardTitle>
-                                    Nuova Istruzione Operativa
+                                    {t('operational_instructions.create.title')}
                                 </CardTitle>
                                 <CardDescription>
-                                    Inserisci i dettagli per creare una nuova
-                                    istruzione
+                                    {t(
+                                        'operational_instructions.create.description',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -99,7 +102,9 @@ export default function OperationalInstructionsCreate({
                                                             htmlFor="code"
                                                             required
                                                         >
-                                                            Codice
+                                                            {t(
+                                                                'operational_instructions.form.code',
+                                                            )}
                                                         </FormLabel>
                                                         <Tooltip>
                                                             <TooltipTrigger
@@ -109,9 +114,9 @@ export default function OperationalInstructionsCreate({
                                                             </TooltipTrigger>
                                                             <TooltipContent>
                                                                 <p>
-                                                                    Il codice
-                                                                    deve essere
-                                                                    univoco
+                                                                    {t(
+                                                                        'operational_instructions.form.code_tooltip',
+                                                                    )}
                                                                 </p>
                                                             </TooltipContent>
                                                         </Tooltip>
@@ -123,6 +128,9 @@ export default function OperationalInstructionsCreate({
                                                         placeholder="IO"
                                                         defaultValue="IO"
                                                         maxLength={255}
+                                                        aria-label={t(
+                                                            'operational_instructions.form.code',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={allErrors.code}
@@ -135,7 +143,9 @@ export default function OperationalInstructionsCreate({
                                                             htmlFor="number"
                                                             required
                                                         >
-                                                            Numero
+                                                            {t(
+                                                                'operational_instructions.form.number',
+                                                            )}
                                                         </FormLabel>
                                                         <Tooltip>
                                                             <TooltipTrigger
@@ -145,10 +155,9 @@ export default function OperationalInstructionsCreate({
                                                             </TooltipTrigger>
                                                             <TooltipContent>
                                                                 <p>
-                                                                    Numero
-                                                                    progressivo
-                                                                    generato
-                                                                    automaticamente
+                                                                    {t(
+                                                                        'operational_instructions.form.number_tooltip',
+                                                                    )}
                                                                 </p>
                                                             </TooltipContent>
                                                         </Tooltip>
@@ -168,11 +177,15 @@ export default function OperationalInstructionsCreate({
                                                         disabled={
                                                             isLoadingNumber
                                                         }
+                                                        aria-label={t(
+                                                            'operational_instructions.form.number',
+                                                        )}
                                                     />
                                                     {isLoadingNumber && (
                                                         <p className="text-xs text-muted-foreground">
-                                                            Generazione
-                                                            numero...
+                                                            {t(
+                                                                'operational_instructions.form.generating_number',
+                                                            )}
                                                         </p>
                                                     )}
                                                     <InputError
@@ -184,7 +197,9 @@ export default function OperationalInstructionsCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="filename">
-                                                        Allegato
+                                                        {t(
+                                                            'operational_instructions.form.attachment',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="filename"
@@ -193,15 +208,17 @@ export default function OperationalInstructionsCreate({
                                                         accept="application/pdf"
                                                         className="cursor-pointer"
                                                         aria-describedby="filename-help"
+                                                        aria-label={t(
+                                                            'operational_instructions.form.attachment',
+                                                        )}
                                                     />
                                                     <p
                                                         id="filename-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Seleziona un allegato
-                                                        PDF da associare
-                                                        all'istruzione
-                                                        (opzionale).
+                                                        {t(
+                                                            'operational_instructions.form.attachment_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -216,8 +233,12 @@ export default function OperationalInstructionsCreate({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Creando...'
-                                                            : 'Crea Istruzione'}
+                                                            ? t(
+                                                                  'operational_instructions.create.submitting',
+                                                              )
+                                                            : t(
+                                                                  'operational_instructions.create.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -229,7 +250,9 @@ export default function OperationalInstructionsCreate({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t(
+                                                            'operational_instructions.cancel',
+                                                        )}
                                                     </Button>
                                                 </div>
                                             </>

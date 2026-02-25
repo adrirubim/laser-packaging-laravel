@@ -1,5 +1,6 @@
 import { FlashNotifications } from '@/components/flash-notifications';
 import { Pagination } from '@/components/Pagination';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import orderEmployees from '@/routes/order-employees/index';
 import orders from '@/routes/orders/index';
@@ -45,27 +46,27 @@ type OrderEmployeesIndexProps = {
 export default function OrderEmployeesIndex() {
     const { props } = usePage<OrderEmployeesIndexProps>();
     const { assignments: assignmentsPaginated, flash } = props;
+    const { t } = useTranslations();
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Dipendenti Ordine',
+            title: t('order_employees.page_title'),
             href: orderEmployees.index().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Dipendenti Ordine" />
+            <Head title={t('order_employees.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between gap-3">
                     <div>
                         <h1 className="text-2xl font-semibold tracking-tight">
-                            Dipendenti Ordine
+                            {t('order_employees.page_title')}
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Elenco delle assegnazioni dei dipendenti agli
-                            ordini.
+                            {t('order_employees.subtitle')}
                         </p>
                     </div>
                 </div>
@@ -78,16 +79,16 @@ export default function OrderEmployeesIndex() {
                             <thead className="sticky top-0 z-10 bg-muted/80 backdrop-blur">
                                 <tr className="text-xs tracking-wide text-muted-foreground uppercase">
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Ordine
+                                        {t('common.order')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Dipendente
+                                        {t('order_employees.employee')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Matricola
+                                        {t('order_employees.matriculation')}
                                     </th>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t('common.actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -98,7 +99,7 @@ export default function OrderEmployeesIndex() {
                                             colSpan={4}
                                             className="px-3 py-6 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessuna assegnazione trovata.
+                                            {t('order_employees.empty_state')}
                                         </td>
                                     </tr>
                                 )}
@@ -110,16 +111,23 @@ export default function OrderEmployeesIndex() {
                                         <td className="px-3 py-2 align-middle font-mono text-xs">
                                             {assignment.order
                                                 ?.order_production_number ||
-                                                'N/D'}
+                                                t(
+                                                    'order_employees.not_available',
+                                                )}
                                         </td>
                                         <td className="px-3 py-2 align-middle font-medium">
                                             {assignment.employee
                                                 ? `${assignment.employee.name} ${assignment.employee.surname}`
-                                                : 'N/D'}
+                                                : t(
+                                                      'order_employees.not_available',
+                                                  )}
                                         </td>
                                         <td className="px-3 py-2 align-middle font-mono text-xs">
                                             {assignment.employee
-                                                ?.matriculation_number || 'N/D'}
+                                                ?.matriculation_number ||
+                                                t(
+                                                    'order_employees.not_available',
+                                                )}
                                         </td>
                                         <td className="px-3 py-2 text-right align-middle text-xs">
                                             {assignment.order && (
@@ -132,7 +140,9 @@ export default function OrderEmployeesIndex() {
                                                     }
                                                     className="text-primary hover:underline"
                                                 >
-                                                    Visualizza Ordine
+                                                    {t(
+                                                        'order_employees.view_order',
+                                                    )}
                                                 </Link>
                                             )}
                                         </td>

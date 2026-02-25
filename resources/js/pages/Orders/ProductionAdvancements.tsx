@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/select';
 import {
     getOrderStatusColor,
-    getOrderStatusLabel,
+    getOrderStatusLabelKey,
 } from '@/constants/orderStatus';
 import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
@@ -93,15 +93,16 @@ export default function ProductionAdvancements() {
     });
     const [isDeleting, setIsDeleting] = useState(false);
 
+    const emptyVal = t('common.empty_value');
     const formatQuantity = (
         value: number | string | null | undefined,
     ): string => {
         if (value === null || value === undefined) {
-            return '—';
+            return emptyVal;
         }
         const num = typeof value === 'string' ? parseFloat(value) : value;
         if (Number.isNaN(num)) {
-            return '—';
+            return emptyVal;
         }
         return num.toFixed(2);
     };
@@ -114,8 +115,8 @@ export default function ProductionAdvancements() {
             worked === null || worked === undefined ? 0 : worked,
         );
         const totalStr = formatQuantity(total);
-        if (totalStr === '—') {
-            return '—';
+        if (totalStr === emptyVal) {
+            return emptyVal;
         }
         return `${workedStr} / ${totalStr}`;
     };
@@ -232,8 +233,7 @@ export default function ProductionAdvancements() {
                             {t('nav.in_produzione')}
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Ordini lanciati e in avanzamento di produzione con
-                            Cerca e filtri.
+                            {t('orders.production_advancements.subtitle')}
                         </p>
                     </div>
                 </div>
@@ -244,7 +244,9 @@ export default function ProductionAdvancements() {
                     <div className="grid gap-3 md:grid-cols-2">
                         <div className="space-y-1">
                             <label className="text-xs font-medium text-muted-foreground">
-                                Cerca
+                                {t(
+                                    'orders.production_advancements.search_label',
+                                )}
                             </label>
                             <SearchInput
                                 value={searchValue}
@@ -256,7 +258,7 @@ export default function ProductionAdvancements() {
                         </div>
                         <div className="space-y-1">
                             <label className="text-xs font-medium text-muted-foreground">
-                                Articolo
+                                {t('common.article')}
                             </label>
                             <Select
                                 value={articleFilter || 'all'}
@@ -268,7 +270,9 @@ export default function ProductionAdvancements() {
                             >
                                 <SelectTrigger
                                     className="w-full"
-                                    aria-label="Articolo"
+                                    aria-label={t(
+                                        'orders.production_advancements.aria_article',
+                                    )}
                                 >
                                     <SelectValue
                                         placeholder={t('filter.all_articles')}
@@ -285,7 +289,7 @@ export default function ProductionAdvancements() {
                                         >
                                             {article.cod_article_las} -{' '}
                                             {article.article_descr ||
-                                                'Senza descrizione'}
+                                                t('common.no_description')}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -299,7 +303,7 @@ export default function ProductionAdvancements() {
                         <div className="block space-y-3 p-4 md:hidden">
                             {ordersPaginated.data.length === 0 ? (
                                 <div className="py-8 text-center text-sm text-muted-foreground">
-                                    Nessun ordine in produzione disponibile.
+                                    {t('orders.production_advancements.empty')}
                                 </div>
                             ) : (
                                 ordersPaginated.data.map((order) => (
@@ -338,15 +342,23 @@ export default function ProductionAdvancements() {
                                             <span
                                                 className={`inline-flex items-center rounded-full border px-2 py-1 text-xs font-medium ${getOrderStatusColor(order.status)}`}
                                             >
-                                                {getOrderStatusLabel(
-                                                    order.status,
+                                                {t(
+                                                    getOrderStatusLabelKey(
+                                                        order.status,
+                                                    ),
+                                                    {
+                                                        status: String(
+                                                            order.status,
+                                                        ),
+                                                    },
                                                 )}
                                             </span>
                                         </div>
                                         <div className="grid grid-cols-2 gap-2 text-xs">
                                             <div>
                                                 <span className="text-muted-foreground">
-                                                    Quantità:{' '}
+                                                    {t('orders.show.quantity')}
+                                                    :{' '}
                                                 </span>
                                                 <span>
                                                     {formatWorkedOverTotal(
@@ -363,7 +375,9 @@ export default function ProductionAdvancements() {
                                                         variant="ghost"
                                                         size="icon"
                                                         className="h-8 w-8"
-                                                        aria-label="Apri menu azioni"
+                                                        aria-label={t(
+                                                            'orders.production_advancements.aria_open_actions',
+                                                        )}
                                                     >
                                                         <MoreHorizontal className="h-4 w-4" />
                                                     </Button>
@@ -380,7 +394,7 @@ export default function ProductionAdvancements() {
                                                         }}
                                                     >
                                                         <Eye className="mr-2 h-4 w-4" />
-                                                        Visualizza
+                                                        {t('common.view')}
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
                                                         onSelect={(e) => {
@@ -393,7 +407,7 @@ export default function ProductionAdvancements() {
                                                         }}
                                                     >
                                                         <Edit className="mr-2 h-4 w-4" />
-                                                        Modifica
+                                                        {t('common.edit')}
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
                                                         variant="destructive"
@@ -405,7 +419,7 @@ export default function ProductionAdvancements() {
                                                         }}
                                                     >
                                                         <Trash2 className="mr-2 h-4 w-4" />
-                                                        Elimina
+                                                        {t('common.delete')}
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
@@ -423,10 +437,12 @@ export default function ProductionAdvancements() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Numero Produzione
+                                        {t(
+                                            'orders.production_advancements.production_number',
+                                        )}
                                     </SortableTableHeader>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Articolo
+                                        {t('common.article')}
                                     </th>
                                     <SortableTableHeader
                                         column="quantity"
@@ -434,7 +450,7 @@ export default function ProductionAdvancements() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Quantità
+                                        {t('orders.show.quantity')}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="status"
@@ -442,10 +458,12 @@ export default function ProductionAdvancements() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Stato
+                                        {t('common.status')}
                                     </SortableTableHeader>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t(
+                                            'orders.production_advancements.actions',
+                                        )}
                                     </th>
                                 </tr>
                             </thead>
@@ -456,8 +474,9 @@ export default function ProductionAdvancements() {
                                             colSpan={5}
                                             className="px-3 py-8 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessun ordine in produzione
-                                            disponibile.
+                                            {t(
+                                                'orders.production_advancements.no_orders',
+                                            )}
                                         </td>
                                     </tr>
                                 )}
@@ -490,7 +509,7 @@ export default function ProductionAdvancements() {
                                                 </div>
                                             ) : (
                                                 <span className="text-muted-foreground">
-                                                    —
+                                                    {emptyVal}
                                                 </span>
                                             )}
                                         </td>
@@ -498,9 +517,9 @@ export default function ProductionAdvancements() {
                                             {formatWorkedOverTotal(
                                                 order.worked_quantity,
                                                 order.quantity,
-                                            ) === '—' ? (
+                                            ) === emptyVal ? (
                                                 <span className="text-muted-foreground">
-                                                    —
+                                                    {emptyVal}
                                                 </span>
                                             ) : (
                                                 formatWorkedOverTotal(
@@ -513,8 +532,15 @@ export default function ProductionAdvancements() {
                                             <span
                                                 className={`inline-flex items-center rounded-full border px-2 py-1 text-xs font-medium ${getOrderStatusColor(order.status)}`}
                                             >
-                                                {getOrderStatusLabel(
-                                                    order.status,
+                                                {t(
+                                                    getOrderStatusLabelKey(
+                                                        order.status,
+                                                    ),
+                                                    {
+                                                        status: String(
+                                                            order.status,
+                                                        ),
+                                                    },
                                                 )}
                                             </span>
                                         </td>
@@ -525,7 +551,9 @@ export default function ProductionAdvancements() {
                                                         variant="ghost"
                                                         size="icon"
                                                         className="h-8 w-8"
-                                                        aria-label="Apri menu azioni"
+                                                        aria-label={t(
+                                                            'orders.production_advancements.aria_open_actions',
+                                                        )}
                                                     >
                                                         <MoreHorizontal className="h-4 w-4" />
                                                     </Button>
@@ -542,7 +570,7 @@ export default function ProductionAdvancements() {
                                                         }}
                                                     >
                                                         <Eye className="mr-2 h-4 w-4" />
-                                                        Visualizza
+                                                        {t('common.view')}
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
                                                         onSelect={(e) => {
@@ -555,7 +583,7 @@ export default function ProductionAdvancements() {
                                                         }}
                                                     >
                                                         <Edit className="mr-2 h-4 w-4" />
-                                                        Modifica
+                                                        {t('common.edit')}
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
                                                         variant="destructive"
@@ -567,7 +595,7 @@ export default function ProductionAdvancements() {
                                                         }}
                                                     >
                                                         <Trash2 className="mr-2 h-4 w-4" />
-                                                        Elimina
+                                                        {t('common.delete')}
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
@@ -593,8 +621,12 @@ export default function ProductionAdvancements() {
                     }
                     onConfirm={handleDeleteConfirm}
                     isLoading={isDeleting}
-                    title="Conferma eliminazione"
-                    description="Sei sicuro di voler eliminare questo ordine? Questa azione non può essere annullata. L'ordine verrà eliminato definitivamente."
+                    title={t(
+                        'orders.production_advancements.dialog_confirm_delete',
+                    )}
+                    description={t(
+                        'orders.production_advancements.dialog_confirm_description',
+                    )}
                     itemName={deleteDialog.order?.order_production_number}
                 />
             </div>

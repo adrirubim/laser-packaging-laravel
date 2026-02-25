@@ -23,7 +23,7 @@ return new class extends Migration
             $table->timestamp('delivery_requested_date')->nullable();
             $table->uuid('customershippingaddress_uuid')->nullable();
             $table->timestamp('expected_production_start_date')->nullable();
-            $table->integer('type_lot')->nullable(); // 0: Manual, 1: 6 cifre, 2: 4 cifre
+            $table->integer('type_lot')->nullable(); // 0: Manual, 1: 6 digits, 2: 4 digits
             $table->string('lot')->nullable();
             $table->timestamp('expiration_date')->nullable();
             $table->integer('external_labels')->nullable(); // 0: Non presenti, 1: Da stampare, 2: Da ricevere

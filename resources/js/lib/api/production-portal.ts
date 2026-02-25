@@ -1,5 +1,17 @@
 const API_BASE_URL = '/api/production';
 
+/** Error with translation key for i18n */
+export class ProductionPortalError extends Error {
+    constructor(
+        message: string,
+        public readonly translationKey: string,
+        options?: ErrorOptions,
+    ) {
+        super(message, options);
+        this.name = 'ProductionPortalError';
+    }
+}
+
 declare global {
     interface Window {
         __PRODUCTION_PORTAL_TOKEN__?: string | null;
@@ -44,15 +56,25 @@ export async function callProductionApi(
         const result = await response.json();
 
         if (!response.ok) {
-            throw new Error(result.error || 'Error en la petición');
+            throw new ProductionPortalError(
+                result.error || 'production_portal.error_request',
+                'production_portal.error_request',
+            );
         }
 
         return result;
     } catch (error: unknown) {
+        if (error instanceof ProductionPortalError) {
+            throw error;
+        }
         if (error instanceof Error && error.message) {
             throw error;
         }
-        throw new Error('Error de conexión', { cause: error });
+        throw new ProductionPortalError(
+            'production_portal.error_connection',
+            'production_portal.error_connection',
+            { cause: error },
+        );
     }
 }
 

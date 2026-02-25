@@ -28,7 +28,7 @@ trait SyncsArticleRelationships
                             'removed' => false,
                         ];
                     } elseif (is_string($machineryData)) {
-                        // Fallback: se arriva come UUID semplice (senza valore)
+                        // Fallback: if it comes as plain UUID (without value)
                         $pivotData[$machineryData] = [
                             'uuid' => (string) Str::uuid(),
                             'value' => '',
@@ -44,7 +44,7 @@ trait SyncsArticleRelationships
         foreach (['materials', 'criticalIssues'] as $relation) {
             if (isset($relationships[$relation])) {
                 if (empty($relationships[$relation])) {
-                    // Se è vuoto, desincronizzare tutte
+                    // If empty, unsync all
                     $article->$relation()->sync([]);
                 } else {
                     $pivotData = [];
@@ -83,24 +83,24 @@ trait SyncsArticleRelationships
      */
     protected function saveLineLayoutFile(Article $article, $file): void
     {
-        // Mantenere compatibilità con filesystem diretto (per test e file esistenti)
+        // Maintain direct filesystem compatibility (for tests and existing files)
         $legacyPath = storage_path('app/line_layout/'.$article->uuid.'/');
         if (! file_exists($legacyPath)) {
             mkdir($legacyPath, 0755, true);
         }
 
-        // Spostare file in percorso legacy
+        // Move file to legacy path
         $file->move($legacyPath, $article->line_layout);
 
-        // Salvare anche con Storage facade (disk line_layout)
+        // Save also with Storage facade (disk line_layout)
         try {
             $path = "{$article->uuid}/{$article->line_layout}";
             Storage::disk('line_layout')->put($path, file_get_contents($legacyPath.$article->line_layout));
         } catch (\Exception $e) {
-            // Se Storage fallisce, continuare con filesystem diretto
+            // If Storage fails, continue with direct filesystem
         }
 
-        // Salvare anche in Storage::disk('local') per consistenza
+        // Save also in Storage::disk('local') for consistency
         try {
             $directory = "line_layout/{$article->uuid}";
             if (! Storage::disk('local')->exists($directory)) {
@@ -109,7 +109,7 @@ trait SyncsArticleRelationships
             $localPath = "{$directory}/{$article->line_layout}";
             Storage::disk('local')->put($localPath, file_get_contents($legacyPath.$article->line_layout));
         } catch (\Exception $e) {
-            // Se fallisce, continuare con filesystem diretto
+            // If it fails, continue with direct filesystem
         }
     }
 
@@ -128,21 +128,21 @@ trait SyncsArticleRelationships
             return;
         }
 
-        // Fallback: provare con percorso legacy (compatibilità con file esistenti)
+        // Fallback: try with legacy path (compatibility with existing files)
         $legacySourcePath = storage_path("app/line_layout/{$sourceArticle->uuid}/{$sourceArticle->line_layout}");
         $legacyDestinationPath = storage_path("app/line_layout/{$newArticle->uuid}/{$newArticle->line_layout}");
 
         if (file_exists($legacySourcePath)) {
-            // Creare directory di destinazione se non esiste
+            // Create destination directory if it doesn't exist
             $legacyDestinationDir = dirname($legacyDestinationPath);
             if (! file_exists($legacyDestinationDir)) {
                 mkdir($legacyDestinationDir, 0755, true);
             }
 
-            // Copiare file
+            // Copy file
             copy($legacySourcePath, $legacyDestinationPath);
 
-            // Salvare anche in Storage per consistenza futura
+            // Save also in Storage for future consistency
             if (Storage::disk('local')->exists($sourcePath) === false) {
                 Storage::disk('local')->put($destinationPath, file_get_contents($legacySourcePath));
             }

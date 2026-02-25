@@ -1,3 +1,4 @@
+import { useTranslations } from '@/hooks/use-translations';
 import { cn } from '@/lib/utils';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 
@@ -23,6 +24,7 @@ export function SortableHeader({
     className,
     title,
 }: SortableHeaderProps) {
+    const { t } = useTranslations();
     const getSortIcon = () => {
         if (currentSort !== column) {
             return <ArrowUpDown className="ml-1 h-3 w-3 opacity-50" />;
@@ -41,7 +43,7 @@ export function SortableHeader({
                 className,
             )}
             onClick={() => onSort(column)}
-            title={title || `Clicca per ordinare per ${children}`}
+            title={title || t('common.click_to_sort')}
         >
             <div className="flex items-center">
                 {children}

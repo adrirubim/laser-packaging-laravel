@@ -98,7 +98,7 @@ class OrderControllerTest extends TestCase
 
         $productionNumber = '2025.0001';
 
-        // Crear primera orden
+        // Create first order
         Order::factory()->create([
             'article_uuid' => $this->article->uuid,
             'order_production_number' => $productionNumber,
@@ -107,7 +107,7 @@ class OrderControllerTest extends TestCase
             'removed' => false,
         ]);
 
-        // Tentare di creare secondo ordine con lo stesso numero
+        // Try to create second order with same number
         $response = $this->post(route('orders.store'), [
             'article_uuid' => $this->article->uuid,
             'order_production_number' => $productionNumber,
@@ -179,7 +179,7 @@ class OrderControllerTest extends TestCase
 
         $order->refresh();
 
-        // Se worked_quantity > 0 e status <= 2, dovrebbe passare a STATUS_IN_AVANZAMENTO (3)
+        // If worked_quantity > 0 and status <= 2, should transition to STATUS_IN_AVANZAMENTO (3)
         $this->assertEquals(Order::STATUS_IN_AVANZAMENTO, $order->status);
         $this->assertEquals(50, $order->worked_quantity);
     }
@@ -358,7 +358,7 @@ class OrderControllerTest extends TestCase
             ->where('order.order_production_number', '2025.0001')
         );
 
-        // Verificar remain_quantity calculado
+        // Verify remain_quantity calculated
         $order->refresh();
         $this->assertEquals(50.0, $order->quantity - $order->worked_quantity);
     }
@@ -407,13 +407,13 @@ class OrderControllerTest extends TestCase
         $response->assertRedirect(route('orders.index'));
         $response->assertSessionHas('success');
 
-        // Verificar en la base de datos directamente
+        // Verify in database directly
         $this->assertDatabaseHas('orderorder', [
             'id' => $orderId,
             'removed' => true,
         ]);
 
-        // Verificare anche ricaricando il modello
+        // Verify also by reloading the model
         $order->refresh();
         $this->assertTrue((bool) $order->removed);
     }
@@ -652,7 +652,7 @@ class OrderControllerTest extends TestCase
             'article_uuid' => $this->article->uuid,
             'quantity' => 100,
             'customershippingaddress_uuid' => $this->shippingAddress->uuid,
-            'order_production_number' => str_repeat('a', 256), // Più di 255 caratteri
+            'order_production_number' => str_repeat('a', 256), // More than 255 characters
         ]);
 
         $response->assertSessionHasErrors(['order_production_number']);
@@ -714,7 +714,7 @@ class OrderControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // Creare più di 15 ordini (default per_page)
+        // Create more than 15 orders (default per_page)
         Order::factory()->count(20)->create([
             'article_uuid' => $this->article->uuid,
             'removed' => false,
@@ -734,19 +734,19 @@ class OrderControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // Crear una orden para asegurar que hay datos
+        // Create an order to ensure there's data
         Order::factory()->create([
             'article_uuid' => $this->article->uuid,
             'removed' => false,
         ]);
 
-        // Usare un UUID valido ma non presente nel database
+        // Use a valid UUID not present in database
         $nonExistentUuid = \Illuminate\Support\Str::uuid()->toString();
 
         $response = $this->get(route('orders.index', ['article_uuid' => $nonExistentUuid]));
 
         $response->assertStatus(200);
-        // Il filtro dovrebbe restituire risultati vuoti se l'UUID non esiste
+        // Filter should return empty results if UUID doesn't exist
         $response->assertInertia(fn ($page) => $page->has('orders')
             ->has('orders.data')
             ->where('orders.data', [])
@@ -774,7 +774,7 @@ class OrderControllerTest extends TestCase
             ->has('order')
         );
 
-        // Verificar remain_quantity usando assertInertia
+        // Verify remain_quantity using assertInertia
         $response->assertInertia(fn ($page) => $page->where('order.remain_quantity', 70)
         );
     }
@@ -800,7 +800,7 @@ class OrderControllerTest extends TestCase
             ->has('order')
         );
 
-        // Verificar remain_quantity
+        // Verify remain_quantity
         $response->assertInertia(fn ($page) => $page->where('order.remain_quantity', 100)
         );
     }
@@ -826,7 +826,7 @@ class OrderControllerTest extends TestCase
             ->has('order')
         );
 
-        // Verificar remain_quantity
+        // Verify remain_quantity
         $response->assertInertia(fn ($page) => $page->where('order.remain_quantity', 0)
         );
     }

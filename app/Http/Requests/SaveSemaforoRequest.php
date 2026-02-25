@@ -33,12 +33,12 @@ class SaveSemaforoRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'etichette.required' => 'Lo stato del semaforo etichette è obbligatorio.',
-            'etichette.in' => 'Lo stato del semaforo etichette deve essere 0, 1 o 2.',
-            'packaging.required' => 'Lo stato del semaforo packaging è obbligatorio.',
-            'packaging.in' => 'Lo stato del semaforo packaging deve essere 0, 1 o 2.',
-            'prodotto.required' => 'Lo stato del semaforo prodotto è obbligatorio.',
-            'prodotto.in' => 'Lo stato del semaforo prodotto deve essere 0, 1 o 2.',
+            'etichette.required' => __('validation.semaforo_etichette_required'),
+            'etichette.in' => __('validation.semaforo_etichette_in'),
+            'packaging.required' => __('validation.semaforo_packaging_required'),
+            'packaging.in' => __('validation.semaforo_packaging_in'),
+            'prodotto.required' => __('validation.semaforo_prodotto_required'),
+            'prodotto.in' => __('validation.semaforo_prodotto_in'),
         ];
     }
 }

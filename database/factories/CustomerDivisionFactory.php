@@ -23,9 +23,9 @@ class CustomerDivisionFactory extends Factory
         return [
             'uuid' => \Illuminate\Support\Str::uuid()->toString(),
             'customer_uuid' => fn () => Customer::factory()->create()->uuid,
-            // Generare sempre codice divisione
+            // Always generate division code
             'code' => $this->faker->unique()->bothify('DIV-???'),
-            // Generare sempre nome divisione
+            // Always generate division name
             'name' => $this->faker->randomElement([
                 $this->faker->company().' - Sede Centrale',
                 $this->faker->company().' - Filiale',

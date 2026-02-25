@@ -27,7 +27,7 @@ class CreateOfferAction
      */
     public function execute(array $validated)
     {
-        // Verificare unicità numero offerta se fornito manualmente (prima della transazione)
+        // Verify offer number uniqueness if provided manually (before transaction)
         if (! empty($validated['offer_number'])) {
             if ($this->offerNumberService->exists($validated['offer_number'])) {
                 $this->logWarning('CreateOfferAction::execute', 'Offer number already exists', [
@@ -43,7 +43,7 @@ class CreateOfferAction
         }
 
         return DB::transaction(function () use ($validated) {
-            // Convertire stringhe vuote in null per campi nullable
+            // Convert empty strings to null for nullable fields
             $nullableFields = [
                 'customerdivision_uuid',
                 'validity_date',
@@ -72,24 +72,24 @@ class CreateOfferAction
                 }
             }
 
-            // Se non si fornisce offer_number, generarlo automaticamente
+            // If offer_number not provided, generate automatically
             if (empty($validated['offer_number'])) {
                 $validated['offer_number'] = $this->offerNumberService->generateNext();
             }
 
-            // Si no se proporciona la fecha de la oferta, usar la fecha actual
+            // If offer_date is not provided, use current date
             if (empty($validated['offer_date'])) {
                 $validated['offer_date'] = now();
             }
 
-            // Extraer operaciones del array validado
+            // Extract operations from validated array
             $operations = $validated['operations'] ?? [];
             unset($validated['operations']);
 
-            // Creare l'offerta
+            // Create the offer
             $offer = Offer::create($validated);
 
-            // Salvare le operazioni associate
+            // Save associated operations
             if (! empty($operations) && is_array($operations)) {
                 foreach ($operations as $operation) {
                     if (! empty($operation['offeroperation_uuid']) && ! empty($operation['num_op'])) {
@@ -97,7 +97,7 @@ class CreateOfferAction
                             'uuid' => \Illuminate\Support\Str::uuid()->toString(),
                             'offer_uuid' => $offer->uuid,
                             'offeroperation_uuid' => $operation['offeroperation_uuid'],
-                            'num_op' => (float) $operation['num_op'], // El modelo espera decimal:5
+                            'num_op' => (float) $operation['num_op'], // Model expects decimal:5
                             'removed' => false,
                         ]);
                     }

@@ -24,8 +24,8 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // Ejecutar seeder de datos de prueba si se solicita
-        if ($this->command->option('test-data') || env('SEED_TEST_DATA', false)) {
+        // Ejecutar seeder de datos de prueba si se solicita (SEED_TEST_DATA=true en .env)
+        if (env('SEED_TEST_DATA', false)) {
             $this->call(TestDataSeeder::class);
         }
     }

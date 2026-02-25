@@ -297,7 +297,7 @@ class ArticleICControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // Crear algunas instrucciones con code IC
+        // Create some instructions with code IC
         ArticleIC::factory()->create([
             'code' => 'IC',
             'number' => '0001',
@@ -336,7 +336,7 @@ class ArticleICControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // Crear más de 15 instrucciones para probar paginación
+        // Create more than 15 instructions to test pagination
         ArticleIC::factory()->count(20)->create(['removed' => false]);
 
         $response = $this->get(route('articles.packaging-instructions.index'));

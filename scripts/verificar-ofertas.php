@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Script de verificación rápida para el formulario de ofertas
+ * Quick verification script for offers form
  *
- * Uso: php artisan tinker < scripts/verificar-ofertas.php
- * O: php scripts/verificar-ofertas.php (desde la raíz del proyecto)
+ * Usage: php artisan tinker < scripts/verificar-ofertas.php
+ * Or: php scripts/verificar-ofertas.php (from project root)
  */
 
 require __DIR__.'/../vendor/autoload.php';
@@ -14,7 +14,7 @@ $app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
 echo "=== VERIFICACIÓN DEL FORMULARIO DE OFERTAS ===\n\n";
 
-// 1. Verificar última oferta creada
+// 1. Verify last offer created
 echo "1. Verificando última oferta creada...\n";
 $offer = \App\Models\Offer::latest()->first();
 
@@ -46,7 +46,7 @@ $fields = [
 $errors = [];
 foreach ($fields as $field => $label) {
     if (! isset($offer->$field) || $offer->$field === null) {
-        // Algunos campos son nullable, verificar cuáles son requeridos
+        // Some fields are nullable, verify which are required
         if (in_array($field, ['customer_uuid', 'activity_uuid', 'sector_uuid', 'seasonality_uuid', 'order_type_uuid', 'lasfamily_uuid', 'lasworkline_uuid'])) {
             $errors[] = "   ✗ {$label} ({$field}) está vacío pero debería estar presente";
         } else {
@@ -77,7 +77,7 @@ if ($offer->customer) {
     echo "   ✗ Cliente: No se encontró la relación\n";
 }
 
-// División
+// Division
 if ($offer->customerDivision) {
     echo "   ✓ División: {$offer->customerDivision->name}\n";
 } else {
@@ -119,7 +119,7 @@ if ($offer->lasFamily) {
     echo "   ✗ Familia LAS: No se encontró la relación\n";
 }
 
-// Línea de Trabajo LAS
+// LAS Work Line
 if ($offer->lasWorkLine) {
     echo "   ✓ Línea de Trabajo LAS: {$offer->lasWorkLine->name}\n";
 } else {
@@ -152,7 +152,7 @@ if ($operations->count() > 0) {
 }
 echo "\n";
 
-// 5. Verificar artículos
+// 5. Verify articles
 echo "5. Verificando artículos...\n";
 $articlesDirect = $offer->articlesDirect;
 $articlesPivot = $offer->articles;
@@ -177,7 +177,7 @@ if ($allArticles->count() > 0) {
 }
 echo "\n";
 
-// 6. Verificar campos numéricos
+// 6. Verify numeric fields
 echo "6. Verificando campos numéricos...\n";
 $numericFields = [
     'quantity' => 'Cantidad',

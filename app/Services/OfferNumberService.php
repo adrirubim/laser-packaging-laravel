@@ -27,14 +27,14 @@ class OfferNumberService
 
             // Cercare tutte le offerte dell'anno corrente e ordinarle in PHP
             // (compatible con SQLite y MySQL)
-            // Usare whereRaw con escape corretto per il trattino basso in SQLite
+            // Use whereRaw with correct escape for underscore in SQLite
             $pattern = str_replace('_', '\\_', "{$year}_%");
             $offers = Offer::whereRaw("offer_number LIKE ? ESCAPE '\\'", [$pattern])
                 ->where('removed', false)
                 ->lockForUpdate()
                 ->get();
 
-            // Calcolare prossimo numero progressivo
+            // Calculate next progressive number
             $progressive = 1; // Prima offerta dell'anno
             if ($offers->isNotEmpty()) {
                 $progressives = [];

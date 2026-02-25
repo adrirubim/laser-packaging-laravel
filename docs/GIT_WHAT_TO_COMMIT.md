@@ -1,5 +1,7 @@
 # What to Commit to Git (and What Not To)
 
+**Repository:** [github.com/adrirubim/laser-packaging-laravel](https://github.com/adrirubim/laser-packaging-laravel)
+
 **Policy:** Commit source code, lock files, config templates, and documentation. Never commit secrets (`.env`, keys, tokens), build artifacts (`vendor/`, `node_modules/`, `public/build/`), or IDE-specific files. This keeps the repository secure, reproducible, and audit-friendly.
 
 This document is the single reference for commit policy. It complements `.gitignore` and [CONTRIBUTING.md](../CONTRIBUTING.md). **All documentation committed to the repository must be in English, professional in tone, and aligned with current best practices.**
@@ -34,9 +36,9 @@ This document is the single reference for commit policy. It complements `.gitign
 | **`.DS_Store`** | macOS metadata; useless for others and can cause noise in diffs. |
 | **`.idea/`**, **`.vscode/`**, **`.fleet/`**, **`.nova/`**, **`.zed/`** | IDE/editor config. Often personal or machine-specific. Some teams **do** commit `.vscode/` for shared settings; this project does not. |
 | **`.github/copilot/`**, **`.github/copilot-instructions.md`** | Copilot-specific; optional and can be personal. Kept out so the repo stays agent-agnostic. |
-| **Internal documentation** | Certain paths are excluded via `.gitignore` and must not be committed or pushed. See `.gitignore` for the list. |
+| **`docs/planning/`** | Internal planning docs (not for GitHub). Excluded via `.gitignore`. |
 
-**Why it matters:** Internal or legacy documentation stays out of the repository; the exact path is not referenced here so it is not named outside its own location.
+**Why it matters:** Internal planning stays out of the repository. Public docs live in `docs/` (see [docs/README.md](README.md)). `docs/planning/` and `.github/copilot-instructions.md` are in `.gitignore` and are not committed.
 
 ---
 
@@ -64,7 +66,7 @@ This document is the single reference for commit policy. It complements `.gitign
 |------|--------------|-------------|
 | **`.cursor/`** | Committed (skills, rules, docs). | Ignore if you want agent config to be personal only. |
 | **`.vscode/`** | Ignored. | Some teams commit recommended extensions and settings. |
-| **`docs/planning/`** | Ignored (internal). | Commit if you want planning docs in the repo. |
+| **`docs/planning/`** | Ignored (internal). | Commit if you want planning docs public. |
 | **`.env.testing`** | Ignored (`.env.*`). | Can commit a **template** `.env.testing.example` with no secrets if you want to document test DB config. |
 
 ---
@@ -73,7 +75,21 @@ This document is the single reference for commit policy. It complements `.gitign
 
 - No `.env` or secrets; no `node_modules/` or `vendor/` in the commit.
 - Commit `composer.lock` and `package-lock.json` when dependencies change.
-- Run: `vendor/bin/pint`, `npm run format`, `npm run lint`, `npm run build`, `php artisan test` (so CI stays green).
+- Run the full pipeline (matches CI):
+  ```bash
+  php scripts/i18n-check.php && ./vendor/bin/pint && npm run format && npm run format:check && npm run lint && npm run types && php artisan config:clear && php artisan test && npm run test -- --run && npm run build
+  ```
 - Documentation committed to the repository is in English and follows project standards.
 
 See: [CONTRIBUTING.md](../CONTRIBUTING.md), [SECURITY.md](../SECURITY.md).
+
+---
+
+## 6. Preparing for initial push (adrirubim)
+
+Before the first `git push` to `origin`:
+
+1. **Remote:** `git remote add origin https://github.com/adrirubim/laser-packaging-laravel.git` (or update if already set).
+2. **Verify:** `.env` is in `.gitignore`; run `git status` to ensure no secrets or `node_modules`/`vendor` are staged.
+3. **CI compatibility:** Run the full pipeline (i18n-check, pint, format, format:check, lint, types, config:clear, php artisan test, npm run test -- --run, npm run build).
+4. **Documentation:** Ensure `docs/` and root `README.md` reflect the current state; all links point to `adrirubim/laser-packaging-laravel`.

@@ -1,51 +1,53 @@
 # Documentation Index
 
-Single entry point for repository documentation. All docs are in **English** and aligned with current practices.
+Single entry point for repository documentation. All docs are in **English** and reflect the current project state.
+
+**Last updated:** February 2026
 
 ---
 
-## Overview & stack
+## Overview
 
 | Document | Description |
 |----------|-------------|
-| [../README.md](../README.md) | Project overview, features, tech stack, installation, commands |
-| [VERSION_STACK.md](VERSION_STACK.md) | Exact versions (PHP, Laravel, Node, React, Vite, Tailwind) from lock files |
-| [PROJECT_STATUS.md](PROJECT_STATUS.md) | Completed modules, i18n scope, testing, next steps |
+| [../README.md](../README.md) | Project overview, features, stack, installation, commands |
+| [VERSION_STACK.md](VERSION_STACK.md) | Exact versions from lock files |
+| [PROJECT_STATUS.md](PROJECT_STATUS.md) | Quick status and links to full details |
 
 ---
 
-## Getting started
+## Getting Started
 
 | Document | Description |
 |----------|-------------|
-| [../README_TEST_DATABASE.md](../README_TEST_DATABASE.md) | Test database (PostgreSQL, `phpunit.xml`) |
-| [../README_SEED_TEST_DATA.md](../README_SEED_TEST_DATA.md) | Demo data (`TestDataSeeder`) |
+| [DATABASE.md](DATABASE.md) | Test database setup and demo data seeding |
 
 ---
 
-## Development guides
+## Development
 
 | Document | Description |
 |----------|-------------|
-| [BACKEND_GUIDE.md](BACKEND_GUIDE.md) | Backend: controllers, services, actions, repositories, models, validation, API |
-| [FRONTEND_GUIDE.md](FRONTEND_GUIDE.md) | Frontend: Inertia, React 19, Wayfinder, components, patterns, i18n usage |
-| [I18N.md](I18N.md) | Internationalization: IT/ES/EN, session, selectors (Welcome + Settings), keys, best practices |
+| [BACKEND_GUIDE.md](BACKEND_GUIDE.md) | Controllers, services, actions, repositories, validation |
+| [FRONTEND_GUIDE.md](FRONTEND_GUIDE.md) | Inertia, React, Wayfinder, components, patterns |
+| [I18N.md](I18N.md) | Internationalization (IT/ES/EN), keys, best practices |
 
 ---
 
-## Testing
+## Testing & CI
 
 | Document | Description |
 |----------|-------------|
-| [TEST_COVERAGE.md](TEST_COVERAGE.md) | Test suites, coverage by component, how to run |
-| [../tests/Performance/README.md](../tests/Performance/README.md) | Performance tests: Concurrency, Load, API response time; targets and baselines |
+| [TEST_COVERAGE.md](TEST_COVERAGE.md) | Test suites, coverage, and full pre-push pipeline |
+| [../tests/Performance/README.md](../tests/Performance/README.md) | Performance tests (LoadTest, Concurrency, ApiResponseTime) |
+| [GIT_WHAT_TO_COMMIT.md](GIT_WHAT_TO_COMMIT.md) | Pre-push checklist and commit policy |
 
 ---
 
-## Policy & contributing
+## Policy
 
 | Document | Description |
 |----------|-------------|
-| [GIT_WHAT_TO_COMMIT.md](GIT_WHAT_TO_COMMIT.md) | What to commit and what not; complements `.gitignore` |
-| [../SECURITY.md](../SECURITY.md) | Security policy and reporting vulnerabilities |
-| [../CONTRIBUTING.md](../CONTRIBUTING.md) | Checks before submit, conventions, PRs |
+| [GIT_WHAT_TO_COMMIT.md](GIT_WHAT_TO_COMMIT.md) | Commit policy; complements `.gitignore` |
+| [../SECURITY.md](../SECURITY.md) | Security policy and vulnerability reporting |
+| [../CONTRIBUTING.md](../CONTRIBUTING.md) | Contributing guidelines |

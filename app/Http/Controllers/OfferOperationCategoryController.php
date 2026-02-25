@@ -50,21 +50,21 @@ class OfferOperationCategoryController extends Controller
             'code' => 'required|string|max:255|unique:offeroperationcategory,code',
             'name' => 'required|string|max:255',
         ], [
-            'uuid.required' => 'L\'UUID è obbligatorio.',
-            'uuid.uuid' => 'L\'UUID deve essere un formato UUID valido.',
-            'uuid.unique' => 'Questo UUID è già utilizzato.',
-            'code.required' => 'Il Codice è obbligatorio.',
-            'code.unique' => 'Questo Codice è già utilizzato.',
-            'name.required' => 'Il Nome è obbligatorio.',
+            'uuid.required' => __('validation.uuid_required'),
+            'uuid.uuid' => __('validation.uuid_format'),
+            'uuid.unique' => __('validation.uuid_unique'),
+            'code.required' => __('validation.code_required'),
+            'code.unique' => __('validation.code_unique'),
+            'name.required' => __('validation.name_required'),
         ]);
 
         OfferOperationCategory::create($validated);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->offerRepository->clearFormOptionsCache();
 
         return redirect()->route('offer-operation-categories.index')
-            ->with('success', 'Categoria operazione creata con successo.');
+            ->with('success', __('flash.offer_operation_category.created'));
     }
 
     public function show(OfferOperationCategory $offerOperationCategory): Response
@@ -90,31 +90,31 @@ class OfferOperationCategoryController extends Controller
             'code' => 'required|string|max:255|unique:offeroperationcategory,code,'.$offerOperationCategory->id,
             'name' => 'required|string|max:255',
         ], [
-            'uuid.uuid' => 'L\'UUID deve essere un formato UUID valido.',
-            'uuid.unique' => 'Questo UUID è già utilizzato.',
-            'code.required' => 'Il Codice è obbligatorio.',
-            'code.unique' => 'Questo Codice è già utilizzato.',
-            'name.required' => 'Il Nome è obbligatorio.',
+            'uuid.uuid' => __('validation.uuid_format'),
+            'uuid.unique' => __('validation.uuid_unique'),
+            'code.required' => __('validation.code_required'),
+            'code.unique' => __('validation.code_unique'),
+            'name.required' => __('validation.name_required'),
         ]);
 
         $offerOperationCategory->update($validated);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->offerRepository->clearFormOptionsCache();
 
         return redirect()->route('offer-operation-categories.index')
-            ->with('success', 'Categoria operazione aggiornata con successo.');
+            ->with('success', __('flash.offer_operation_category.updated'));
     }
 
     public function destroy(OfferOperationCategory $offerOperationCategory)
     {
         $offerOperationCategory->update(['removed' => true]);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->offerRepository->clearFormOptionsCache();
 
         return redirect()->route('offer-operation-categories.index')
-            ->with('success', 'Categoria operazione eliminata con successo.');
+            ->with('success', __('flash.offer_operation_category.deleted'));
     }
 
     /**

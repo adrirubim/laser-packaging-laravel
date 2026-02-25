@@ -103,14 +103,14 @@ class ArticleControllerTest extends TestCase
 
         $lasCode = 'LAS310001';
 
-        // Creare primo articolo
+        // Create first article
         Article::factory()->create([
             'offer_uuid' => $this->offer->uuid,
             'cod_article_las' => $lasCode,
             'removed' => false,
         ]);
 
-        // Tentare di creare secondo articolo con lo stesso codice
+        // Try to create second article with same code
         $response = $this->post(route('articles.store'), [
             'offer_uuid' => $this->offer->uuid,
             'cod_article_las' => $lasCode,
@@ -148,7 +148,7 @@ class ArticleControllerTest extends TestCase
 
         $article = Article::latest()->first();
 
-        // Verificar relaciones
+        // Verify relationships
         $this->assertCount(2, $article->materials);
         $this->assertCount(1, $article->machinery);
         $this->assertCount(1, $article->criticalIssues);
@@ -183,7 +183,7 @@ class ArticleControllerTest extends TestCase
 
         $article = Article::latest()->first();
 
-        // Verificar relaciones de instrucciones
+        // Verify instruction relationships
         $this->assertCount(1, $article->packagingInstructions);
         $this->assertCount(1, $article->operatingInstructions);
         $this->assertCount(1, $article->palletizingInstructions);
@@ -194,7 +194,7 @@ class ArticleControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // Creare primo articolo
+        // Create first article
         $response1 = $this->post(route('articles.store'), [
             'offer_uuid' => $this->offer->uuid,
             'article_descr' => 'First Article',
@@ -206,7 +206,7 @@ class ArticleControllerTest extends TestCase
         $article1 = Article::latest()->first();
         $firstCode = $article1->cod_article_las;
 
-        // Creare secondo articolo
+        // Create second article
         $response2 = $this->post(route('articles.store'), [
             'offer_uuid' => $this->offer->uuid,
             'article_descr' => 'Second Article',
@@ -218,7 +218,7 @@ class ArticleControllerTest extends TestCase
         $article2 = Article::where('id', '>', $article1->id)->first();
         $secondCode = $article2->cod_article_las;
 
-        // Verificare che i codici siano sequenziali
+        // Verify codes are sequential
         $this->assertStringStartsWith('LAS31', $firstCode);
         $this->assertStringStartsWith('LAS31', $secondCode);
 
@@ -233,7 +233,7 @@ class ArticleControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // Crear oferta sin familia LAS
+        // Create offer without LAS family
         $offerWithoutFamily = Offer::factory()->create([
             'lasfamily_uuid' => null,
             'removed' => false,
@@ -246,7 +246,7 @@ class ArticleControllerTest extends TestCase
             'pallet_plans' => 1,
         ]);
 
-        // Dovrebbe fallire perché non può generare codice senza famiglia LAS
+        // Should fail because it cannot generate code without LAS family
         $response->assertSessionHasErrors();
     }
 
@@ -544,16 +544,16 @@ class ArticleControllerTest extends TestCase
         $response->assertRedirect(route('articles.index'));
         $response->assertSessionHas('success');
 
-        // Verificar directamente en la base de datos sin usar el modelo (que puede tener scopes)
+        // Verify directly in database without using model (which may have scopes)
         $this->assertDatabaseHas('articles', [
             'id' => $articleId,
             'removed' => 1,
         ]);
 
-        // Verificare che l'articolo non compaia più nello scope active
+        // Verify article no longer appears in active scope
         $this->assertNull(Article::active()->find($articleId));
 
-        // Verificare che l'articolo esista senza lo scope
+        // Verify article exists without scope
         $deletedArticle = Article::withoutGlobalScopes()->find($articleId);
         $this->assertNotNull($deletedArticle);
         $this->assertTrue($deletedArticle->removed);
@@ -570,7 +570,7 @@ class ArticleControllerTest extends TestCase
             'cod_article_las' => 'LAS310001',
         ]);
 
-        // Crear orden asociada
+        // Create associated order
         $order = \App\Models\Order::factory()->create([
             'article_uuid' => $article->uuid,
             'removed' => false,
@@ -624,7 +624,7 @@ class ArticleControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // Creare articolo sorgente con relazioni
+        // Create source article with relationships
         $material1 = Material::factory()->create(['removed' => false]);
         $material2 = Material::factory()->create(['removed' => false]);
         $machinery1 = Machinery::factory()->create(['removed' => false]);
@@ -640,7 +640,7 @@ class ArticleControllerTest extends TestCase
             'removed' => false,
         ]);
 
-        // Assegnare relazioni all'articolo sorgente
+        // Assign relationships to source article
         $sourceArticle->materials()->attach($material1->uuid, ['uuid' => \Illuminate\Support\Str::uuid(), 'removed' => false]);
         $sourceArticle->materials()->attach($material2->uuid, ['uuid' => \Illuminate\Support\Str::uuid(), 'removed' => false]);
         $sourceArticle->machinery()->attach($machinery1->uuid, ['uuid' => \Illuminate\Support\Str::uuid(), 'removed' => false]);
@@ -659,7 +659,7 @@ class ArticleControllerTest extends TestCase
         $response->assertRedirect(route('articles.index'));
         $response->assertSessionHas('success');
 
-        // Verificare che sia stato creato il nuovo articolo
+        // Verify new article was created
         $this->assertDatabaseHas('articles', [
             'article_descr' => 'Articolo duplicato',
             'offer_uuid' => $this->offer->uuid,
@@ -670,7 +670,7 @@ class ArticleControllerTest extends TestCase
         $this->assertNotNull($duplicatedArticle);
         $this->assertNotEquals($sourceArticle->uuid, $duplicatedArticle->uuid);
 
-        // Verificar que se copiaron las relaciones
+        // Verify relationships were copied
         $this->assertEquals(2, $duplicatedArticle->materials()->count());
         $this->assertEquals(1, $duplicatedArticle->machinery()->count());
         $this->assertEquals(1, $duplicatedArticle->criticalIssues()->count());
@@ -684,14 +684,14 @@ class ArticleControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // Creare articolo sorgente con line_layout
+        // Create source article with line_layout
         $sourceArticle = Article::factory()->create([
             'offer_uuid' => $this->offer->uuid,
             'line_layout' => 'test-layout.pdf',
             'removed' => false,
         ]);
 
-        // Crear directorio y archivo de prueba
+        // Create test directory and file
         $sourcePath = storage_path('app/line_layout/'.$sourceArticle->uuid.'/');
         if (! file_exists($sourcePath)) {
             mkdir($sourcePath, 0755, true);
@@ -711,12 +711,12 @@ class ArticleControllerTest extends TestCase
         $this->assertNotNull($duplicatedArticle);
         $this->assertEquals('test-layout.pdf', $duplicatedArticle->line_layout);
 
-        // Verificar que el archivo fue copiado
+        // Verify file was copied
         $targetPath = storage_path('app/line_layout/'.$duplicatedArticle->uuid.'/');
         $this->assertTrue(file_exists($targetPath.'test-layout.pdf'));
         $this->assertEquals('test content', file_get_contents($targetPath.'test-layout.pdf'));
 
-        // Limpiar
+        // Cleanup
         if (file_exists($targetPath.'test-layout.pdf')) {
             unlink($targetPath.'test-layout.pdf');
             rmdir($targetPath);
@@ -747,11 +747,11 @@ class ArticleControllerTest extends TestCase
         $this->assertNotNull($article);
         $this->assertEquals('test-layout.pdf', $article->line_layout);
 
-        // Verificar que el archivo fue guardado
+        // Verify file was saved
         $filePath = storage_path('app/line_layout/'.$article->uuid.'/test-layout.pdf');
         $this->assertTrue(file_exists($filePath));
 
-        // Limpiar
+        // Cleanup
         if (file_exists($filePath)) {
             unlink($filePath);
             rmdir(dirname($filePath));
@@ -782,11 +782,11 @@ class ArticleControllerTest extends TestCase
         $article->refresh();
         $this->assertEquals('new-layout.pdf', $article->line_layout);
 
-        // Verificar que el archivo fue guardado
+        // Verify file was saved
         $filePath = storage_path('app/line_layout/'.$article->uuid.'/new-layout.pdf');
         $this->assertTrue(file_exists($filePath));
 
-        // Limpiar
+        // Cleanup
         if (file_exists($filePath)) {
             unlink($filePath);
             rmdir(dirname($filePath));
@@ -804,7 +804,7 @@ class ArticleControllerTest extends TestCase
             'removed' => false,
         ]);
 
-        // Crear archivo de prueba
+        // Create test file
         $filePath = storage_path('app/line_layout/'.$article->uuid.'/');
         if (! file_exists($filePath)) {
             mkdir($filePath, 0755, true);
@@ -816,7 +816,7 @@ class ArticleControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertDownload('test-download.pdf');
 
-        // Limpiar
+        // Cleanup
         if (file_exists($filePath.'test-download.pdf')) {
             unlink($filePath.'test-download.pdf');
             rmdir($filePath);

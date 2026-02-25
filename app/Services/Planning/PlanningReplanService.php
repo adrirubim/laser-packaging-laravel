@@ -173,12 +173,12 @@ class PlanningReplanService
     protected function addQuartersCount(string $orderUuid, int $quartersToAdd, array $orderData): array
     {
         if ($quartersToAdd <= 0) {
-            return ['error' => false, 'message' => 'Nessun quarto da aggiungere', 'quarters_added' => 0, 'quarters_removed' => 0];
+            return ['error' => false, 'message' => __('planning.replan.no_quarters_to_add'), 'quarters_added' => 0, 'quarters_removed' => 0];
         }
 
         $lineUuid = $orderData['lasworkline_uuid'] ?? null;
         if (empty($lineUuid)) {
-            return ['error' => false, 'message' => 'Nessuna linea LAS associata', 'quarters_added' => 0, 'quarters_removed' => 0];
+            return ['error' => false, 'message' => __('planning.replan.no_las_line'), 'quarters_added' => 0, 'quarters_removed' => 0];
         }
         $expectedWorkers = (int) $orderData['expected_workers'];
         $workingHours = $this->getWorkingHoursForOrder($orderData);
@@ -255,7 +255,7 @@ class PlanningReplanService
 
         return [
             'error' => false,
-            'message' => "Aggiunti {$quartersAdded} quarti",
+            'message' => __('planning.replan.quarters_added', ['count' => $quartersAdded]),
             'quarters_added' => $quartersAdded,
             'quarters_removed' => 0,
             'workers_per_slot' => $expectedWorkers,
@@ -265,11 +265,11 @@ class PlanningReplanService
     protected function removeQuartersCount(string $orderUuid, int $quartersToRemove, array $orderData): array
     {
         if ($quartersToRemove <= 0) {
-            return ['error' => false, 'message' => 'Nessun quarto da rimuovere', 'quarters_added' => 0, 'quarters_removed' => 0];
+            return ['error' => false, 'message' => __('planning.replan.no_quarters_to_remove'), 'quarters_added' => 0, 'quarters_removed' => 0];
         }
         $futureSlots = $this->getFutureSlots($orderUuid);
         if (empty($futureSlots)) {
-            return ['error' => false, 'message' => 'Nessuno slot futuro da rimuovere', 'quarters_added' => 0, 'quarters_removed' => 0];
+            return ['error' => false, 'message' => __('planning.replan.no_future_slots'), 'quarters_added' => 0, 'quarters_removed' => 0];
         }
         usort($futureSlots, fn ($a, $b) => strcmp($a['date'], $b['date']) ?: (int) $a['slot'] <=> (int) $b['slot']);
         $quartersToRemove = min($quartersToRemove, count($futureSlots));
@@ -307,7 +307,7 @@ class PlanningReplanService
 
         return [
             'error' => false,
-            'message' => "Rimossi {$quartersRemoved} quarti",
+            'message' => __('planning.replan.quarters_removed', ['count' => $quartersRemoved]),
             'quarters_added' => 0,
             'quarters_removed' => $quartersRemoved,
         ];
@@ -317,11 +317,11 @@ class PlanningReplanService
     {
         $order = Order::query()->where('uuid', $orderUuid)->first();
         if (! $order) {
-            return ['error' => true, 'message' => 'Ordine non trovato'];
+            return ['error' => true, 'message' => __('planning.replan.order_not_found')];
         }
         $orderData = $this->getOrderFormulaData($orderUuid);
         if (! $orderData) {
-            return ['error' => false, 'message' => 'Dati insufficienti per il ricalcolo', 'quarters_added' => 0, 'quarters_removed' => 0];
+            return ['error' => false, 'message' => __('planning.replan.insufficient_data_recalc'), 'quarters_added' => 0, 'quarters_removed' => 0];
         }
         $quantity = (float) $orderData['quantity'];
         $workedQuantity = (float) $orderData['worked_quantity'];
@@ -331,7 +331,7 @@ class PlanningReplanService
         if ($mediaReale <= 0 || $expectedWorkers <= 0) {
             return [
                 'error' => true,
-                'message' => 'Dati insufficienti per il ricalcolo automatico',
+                'message' => __('planning.replan.insufficient_data_auto'),
                 'quantity' => $quantity,
                 'worked_quantity' => $workedQuantity,
                 'media_reale_pz_h_ps' => $mediaReale,
@@ -343,7 +343,7 @@ class PlanningReplanService
         if ($remainingQty <= 0) {
             $this->removeFuturePlanning($orderUuid);
 
-            return ['error' => false, 'message' => 'Ordine completato, planning futuro rimosso', 'saldo' => 0, 'quarters_added' => 0, 'quarters_removed' => 0];
+            return ['error' => false, 'message' => __('planning.replan.order_completed_removed'), 'saldo' => 0, 'quarters_added' => 0, 'quarters_removed' => 0];
         }
 
         $hoursNeeded = $remainingQty / ($mediaReale * $expectedWorkers);
@@ -355,7 +355,7 @@ class PlanningReplanService
         if ($diff === 0) {
             return [
                 'error' => false,
-                'message' => 'Planning allineato',
+                'message' => __('planning.replan.planning_aligned'),
                 'quarters_needed' => $quartersNeeded,
                 'quarters_planned' => $quartersPlanned,
                 'quarters_added' => 0,
@@ -373,11 +373,11 @@ class PlanningReplanService
     {
         $order = Order::query()->with(['article.offer'])->where('uuid', $orderUuid)->first();
         if (! $order) {
-            return ['error' => true, 'message' => 'Ordine non trovato'];
+            return ['error' => true, 'message' => __('planning.replan.order_not_found')];
         }
         $calc = $this->calculationService->calculateForOrder($order);
         if (($calc['error_code'] ?? 0) !== 0) {
-            return ['error' => false, 'message' => $calc['message'] ?? 'Dati insufficienti', 'quarters_removed' => 0];
+            return ['error' => false, 'message' => $calc['message'] ?? __('planning.replan.insufficient_data'), 'quarters_removed' => 0];
         }
 
         $hoursNeeded = (float) ($calc['hours_needed'] ?? 0);
@@ -385,17 +385,17 @@ class PlanningReplanService
         $expectedWorkers = (int) $calc['expected_workers'];
         $lineUuid = $calc['lasworkline_uuid'] ?? null;
         if (empty($lineUuid)) {
-            return ['error' => false, 'message' => 'Nessuna linea LAS associata all\'ordine', 'quarters_removed' => 0];
+            return ['error' => false, 'message' => __('planning.replan.no_las_line_order'), 'quarters_removed' => 0];
         }
         $orderData = $this->getOrderFormulaData($orderUuid);
         if (! $orderData) {
-            return ['error' => true, 'message' => 'Ordine non trovato'];
+            return ['error' => true, 'message' => __('planning.replan.order_not_found')];
         }
 
         if ($totalQuartersNeeded <= 0) {
             ProductionPlanning::query()->where('order_uuid', $orderUuid)->delete();
 
-            return ['error' => false, 'message' => 'Ordine completato, planning rimosso', 'quarters_removed' => 0];
+            return ['error' => false, 'message' => __('planning.replan.order_completed_planning_removed'), 'quarters_removed' => 0];
         }
 
         $workingHours = $this->getWorkingHoursForOrder($orderData);
@@ -419,7 +419,7 @@ class PlanningReplanService
         $diff = $totalQuartersNeeded - $totalQuartersPlanned;
 
         if ($diff === 0) {
-            return ['error' => false, 'message' => 'Planning allineato', 'quarters_removed' => 0];
+            return ['error' => false, 'message' => __('planning.replan.planning_aligned'), 'quarters_removed' => 0];
         }
 
         if ($diff < 0) {
@@ -446,7 +446,7 @@ class PlanningReplanService
                 }
             }
 
-            return ['error' => false, 'message' => "Planning aggiustato: diff={$diff} quarti", 'quarters_removed' => $toRemove];
+            return ['error' => false, 'message' => __('planning.replan.planning_adjusted', ['diff' => $diff]), 'quarters_removed' => $toRemove];
         }
 
         $toAdd = $diff;
@@ -516,18 +516,18 @@ class PlanningReplanService
             $slotMinute = 0;
         }
 
-        return ['error' => false, 'message' => "Planning aggiustato: diff={$diff} quarti", 'quarters_removed' => 0];
+        return ['error' => false, 'message' => __('planning.replan.planning_adjusted', ['diff' => $diff]), 'quarters_removed' => 0];
     }
 
     public function autoScheduleOrder(string $orderUuid, bool $isNew = true): array
     {
         $order = Order::query()->with(['article.offer'])->where('uuid', $orderUuid)->first();
         if (! $order) {
-            return ['error' => true, 'message' => 'Ordine non trovato'];
+            return ['error' => true, 'message' => __('planning.replan.order_not_found')];
         }
         $calc = $this->calculationService->calculateForOrder($order);
         if (($calc['error_code'] ?? 0) !== 0) {
-            return ['error' => false, 'message' => $calc['message'] ?? 'Dati insufficienti', 'order_uuid' => $orderUuid, 'quarters_added' => 0, 'quarters_removed' => 0];
+            return ['error' => false, 'message' => $calc['message'] ?? __('planning.replan.insufficient_data'), 'order_uuid' => $orderUuid, 'quarters_added' => 0, 'quarters_removed' => 0];
         }
 
         $hoursNeeded = (float) ($calc['hours_needed'] ?? 0);
@@ -535,20 +535,20 @@ class PlanningReplanService
         $expectedWorkers = (int) $calc['expected_workers'];
         $lineUuid = $calc['lasworkline_uuid'] ?? null;
         if (empty($lineUuid)) {
-            return ['error' => false, 'message' => 'Nessuna linea LAS associata all\'ordine', 'order_uuid' => $orderUuid, 'quarters_added' => 0, 'quarters_removed' => 0];
+            return ['error' => false, 'message' => __('planning.replan.no_las_line_order'), 'order_uuid' => $orderUuid, 'quarters_added' => 0, 'quarters_removed' => 0];
         }
         $orderData = $this->getOrderFormulaData($orderUuid);
         if (! $orderData) {
-            return ['error' => true, 'message' => 'Dati insufficienti', 'order_uuid' => $orderUuid];
+            return ['error' => true, 'message' => __('planning.replan.insufficient_data'), 'order_uuid' => $orderUuid];
         }
 
         if ($totalQuarters <= 0) {
-            return ['error' => false, 'message' => 'Nessun quarto da pianificare', 'order_uuid' => $orderUuid, 'quarters_added' => 0, 'quarters_removed' => 0];
+            return ['error' => false, 'message' => __('planning.replan.no_quarters_to_plan'), 'order_uuid' => $orderUuid, 'quarters_added' => 0, 'quarters_removed' => 0];
         }
 
         $deliveryTimestamp = $orderData['delivery_requested_date'] ?? null;
         if (empty($deliveryTimestamp)) {
-            return ['error' => true, 'message' => 'Data di consegna mancante', 'order_uuid' => $orderUuid];
+            return ['error' => true, 'message' => __('planning.replan.delivery_date_missing'), 'order_uuid' => $orderUuid];
         }
 
         $workingHours = $this->getWorkingHoursForOrder($orderData);
@@ -558,7 +558,7 @@ class PlanningReplanService
         $deliveryDate = Carbon::createFromTimestamp($deliveryTimestamp);
         $now = Carbon::now();
         if ($deliveryDate->lt($now)) {
-            return ['error' => true, 'message' => 'Data di consegna nel passato, pianificazione non possibile', 'order_uuid' => $orderUuid];
+            return ['error' => true, 'message' => __('planning.replan.delivery_date_past'), 'order_uuid' => $orderUuid];
         }
 
         $deliveryWeekMonday = $deliveryDate->copy()->startOfWeek(Carbon::MONDAY);
@@ -646,7 +646,7 @@ class PlanningReplanService
 
         return [
             'error' => false,
-            'message' => 'Pianificazione completata',
+            'message' => __('planning.replan.planning_completed'),
             'order_uuid' => $orderUuid,
             'is_new' => $isNew,
             'hours_needed' => $hoursNeeded,

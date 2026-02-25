@@ -16,10 +16,11 @@ import {
 } from '@/components/ui/select';
 import {
     getOrderStatusColor,
-    getOrderStatusLabel,
+    getOrderStatusLabelKey,
 } from '@/constants/orderStatus';
 import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
+import { getDateLocale } from '@/lib/locales';
 import {
     calculateProgress,
     formatDecimal,
@@ -133,7 +134,7 @@ const STATUS_OPTIONS_VALUES = [
 ] as const;
 
 export default function OrdersIndex() {
-    const { props } = usePage<OrdersIndexProps>();
+    const { props } = usePage<OrdersIndexProps & { locale?: string }>();
     const {
         orders: ordersPaginated,
         articles,
@@ -191,9 +192,9 @@ export default function OrdersIndex() {
         new Set(),
     );
 
-    // Legacy: la tabella Ordini NON mostra Semafori né Q.tà Lavorata/Progresso
+    // Legacy: Orders table does NOT show Semaphores nor Qty Worked/Progress
     // (order.php: status_semaforo e worked_quantity hanno visible => false).
-    // Le colonne Progresso e Semaforo sono nascoste di default; l'utente può attivarle dal menu colonne.
+    // Progress and Semaphore columns are hidden by default; user can enable them from column menu.
     function getDefaultVisibleColumns(): Record<string, boolean> {
         return {
             id: true,
@@ -238,7 +239,7 @@ export default function OrdersIndex() {
         }
     });
 
-    // Calcolare numero di filtri attivi
+    // Calculate number of active filters
     const activeFiltersCount = useMemo(() => {
         let count = 0;
         if (filters.search) count++;
@@ -263,7 +264,7 @@ export default function OrdersIndex() {
         return count;
     }, [filters, minQuantity, maxQuantity]);
 
-    // Applicare i filtri
+    // Apply filters
     const applyFilters = (newFilters: Partial<typeof filters>) => {
         setIsLoading(true);
         const params: Record<string, string | undefined> = {
@@ -283,7 +284,7 @@ export default function OrdersIndex() {
             per_page: newFilters.per_page ?? filters.per_page ?? undefined,
         };
 
-        // Aggiungere filtri quantità se definiti
+        // Add quantity filters if defined
         if (
             minQuantity !== '' &&
             minQuantity !== null &&
@@ -306,7 +307,7 @@ export default function OrdersIndex() {
         });
     };
 
-    // Resettare tutti i filtri
+    // Reset all filters
     const clearAllFilters = () => {
         setSearchValue('');
         setSelectedArticle('');
@@ -377,7 +378,7 @@ export default function OrdersIndex() {
         });
     };
 
-    // Helper per validare e convertire sort_order in tipo letterale
+    // Helper to validate and convert sort_order to literal type
     const getSortDirection = (order?: string): 'asc' | 'desc' | undefined => {
         if (order === 'asc' || order === 'desc') {
             return order;
@@ -400,7 +401,7 @@ export default function OrdersIndex() {
         applyFilters({ sort_by: column, sort_order: newOrder });
     };
 
-    // Calcolare progresso
+    // Calculate progress
     const getProgress = (order: Order): number => {
         return calculateProgress(order.worked_quantity, order.quantity);
     };
@@ -412,11 +413,11 @@ export default function OrdersIndex() {
         return 'bg-emerald-500';
     };
 
-    // Verificare se ordine urgente o in ritardo
+    // Check if order is urgent or delayed
     const getUrgencyStatus = (
         order: Order,
     ): { type: 'overdue' | 'urgent' | 'normal'; icon: React.ReactElement } => {
-        // Per ordini completati (Evaso/Saldato) non ha senso segnalare ritardi:
+        // For completed orders (Evaso/Saldato) it doesn't make sense to signal delays:
         // mostriamo sempre lo stato \"ok\".
         if (order.status === 5 || order.status === 6) {
             return {
@@ -472,7 +473,7 @@ export default function OrdersIndex() {
         applyFilters({ search: undefined });
     };
 
-    // Sincronizzare stati con filtri da URL
+    // Sync state with filters from URL
     useEffect(() => {
         queueMicrotask(() => {
             setSelectedArticle(filters.article_uuid ?? '');
@@ -523,7 +524,7 @@ export default function OrdersIndex() {
         setDownloadingBarcode(order.uuid);
 
         try {
-            // Creare iframe temporaneo invisibile per forzare il download
+            // Create temporary invisible iframe to force download
             const iframe = document.createElement('iframe');
             iframe.style.display = 'none';
             iframe.style.width = '0';
@@ -534,7 +535,7 @@ export default function OrdersIndex() {
             // Le intestazioni Content-Disposition: attachment forzano il dialogo
             iframe.src = `/orders/${order.uuid}/download-barcode`;
 
-            // Aggiungere al DOM
+            // Add to DOM
             document.body.appendChild(iframe);
 
             // Pulire iframe dopo un delay
@@ -549,8 +550,8 @@ export default function OrdersIndex() {
             setDownloadingBarcode(null);
             alert(
                 error instanceof Error
-                    ? `Errore nello scaricare il barcode: ${error.message}`
-                    : 'Errore nello scaricare il barcode',
+                    ? `${t('orders.index.barcode_error')}: ${error.message}`
+                    : t('orders.index.barcode_error'),
             );
         }
     };
@@ -569,7 +570,7 @@ export default function OrdersIndex() {
         setDownloadingAutocontrollo(order.uuid);
 
         try {
-            // Creare iframe temporaneo invisibile per forzare il download
+            // Create temporary invisible iframe to force download
             const iframe = document.createElement('iframe');
             iframe.style.display = 'none';
             iframe.style.width = '0';
@@ -580,7 +581,7 @@ export default function OrdersIndex() {
             // Le intestazioni Content-Disposition: attachment forzano il dialogo
             iframe.src = `/orders/${order.uuid}/download-autocontrollo`;
 
-            // Aggiungere al DOM
+            // Add to DOM
             document.body.appendChild(iframe);
 
             // Pulire iframe dopo un delay
@@ -595,8 +596,8 @@ export default function OrdersIndex() {
             setDownloadingAutocontrollo(null);
             alert(
                 error instanceof Error
-                    ? `Errore nello scaricare autocontrollo: ${error.message}`
-                    : 'Errore nello scaricare autocontrollo',
+                    ? `${t('orders.index.autocontrollo_error')}: ${error.message}`
+                    : t('orders.index.autocontrollo_error'),
             );
         }
     };
@@ -632,11 +633,11 @@ export default function OrdersIndex() {
             if (res.ok && data.error_code === 0) {
                 router.reload();
             } else {
-                alert(data.message || 'Errore durante la ripianificazione.');
+                alert(data.message || t('orders.index.reschedule_error'));
             }
         } catch (e) {
             console.error('Force reschedule error:', e);
-            alert('Errore durante la ripianificazione.');
+            alert(t('orders.index.reschedule_error'));
         } finally {
             setReschedulingOrder(null);
         }
@@ -645,17 +646,17 @@ export default function OrdersIndex() {
     // Esportare in CSV
     const handleExportCSV = () => {
         const headers = [
-            'ID',
-            'N. Ordine di produzione',
-            'N. Ordine di riferimento cliente',
-            'Riga',
-            'Codice articolo LAS',
-            'Descrizione articolo',
-            'Q.tà ordine',
-            'Q.tà lavorata',
-            'Progresso %',
-            'Data di consegna richiesta',
-            'Stato',
+            t('common.id'),
+            t('orders.index.csv_production_number'),
+            t('orders.index.csv_client_ref'),
+            t('orders.index.csv_line'),
+            t('orders.index.csv_article_code'),
+            t('orders.index.csv_article_desc'),
+            t('orders.index.csv_quantity_order'),
+            t('orders.index.csv_quantity_worked'),
+            t('orders.index.csv_progress'),
+            t('orders.index.csv_delivery_date'),
+            t('common.status'),
         ];
 
         const rows = ordersPaginated.data.map((order) => {
@@ -675,9 +676,11 @@ export default function OrdersIndex() {
                 order.delivery_requested_date
                     ? new Date(
                           order.delivery_requested_date,
-                      ).toLocaleDateString('it-IT')
+                      ).toLocaleDateString(getDateLocale(props.locale ?? 'it'))
                     : '',
-                getOrderStatusLabel(order.status),
+                t(getOrderStatusLabelKey(order.status), {
+                    status: String(order.status),
+                }),
             ];
         });
 
@@ -698,7 +701,9 @@ export default function OrdersIndex() {
         link.setAttribute('href', url);
         link.setAttribute(
             'download',
-            `ordini_${new Date().toISOString().split('T')[0]}.csv`,
+            t('orders.index.csv_filename', {
+                date: new Date().toISOString().split('T')[0],
+            }),
         );
         link.style.visibility = 'hidden';
         document.body.appendChild(link);
@@ -706,12 +711,12 @@ export default function OrdersIndex() {
         document.body.removeChild(link);
     };
 
-    // Salvare preferenze vista
+    // Save view preferences
     useEffect(() => {
         localStorage.setItem('orders_view_mode', viewMode);
     }, [viewMode]);
 
-    // Salvare colonne visibili
+    // Save visible columns
     useEffect(() => {
         const columnsObj: Record<string, boolean> = {};
         [
@@ -735,7 +740,7 @@ export default function OrdersIndex() {
         );
     }, [visibleColumns]);
 
-    // Toggle selezione ordine
+    // Toggle order selection
     const toggleOrderSelection = (orderUuid: string) => {
         const newSelected = new Set(selectedOrders);
         if (newSelected.has(orderUuid)) {
@@ -746,26 +751,28 @@ export default function OrdersIndex() {
         setSelectedOrders(newSelected);
     };
 
-    // Azioni in batch
+    // Batch actions
     const handleBatchDelete = () => {
         if (selectedOrders.size === 0) return;
         if (
             confirm(
-                `Sei sicuro di voler eliminare ${selectedOrders.size} ordine/i selezionato/i?`,
+                t('orders.index.batch_delete_confirm', {
+                    count: selectedOrders.size,
+                }),
             )
         ) {
-            // Qui si implementerebbe la logica di eliminazione in batch
-            // Per ora mostriamo solo un messaggio
             alert(
-                `Eliminazione di ${selectedOrders.size} ordini (funzionalità da implementare nel backend)`,
+                t('orders.index.batch_delete_not_implemented', {
+                    count: selectedOrders.size,
+                }),
             );
             setSelectedOrders(new Set());
         }
     };
 
-    // Salvare filtri come preferito
+    // Save filters as favorite
     const saveFilterAsFavorite = () => {
-        const filterName = prompt('Nome per questo filtro:');
+        const filterName = prompt(t('orders.index.filter_name_prompt'));
         if (filterName) {
             const favorites = JSON.parse(
                 localStorage.getItem('orders_filter_favorites') || '[]',
@@ -779,11 +786,11 @@ export default function OrdersIndex() {
                 'orders_filter_favorites',
                 JSON.stringify(favorites),
             );
-            alert('Filtri salvati come preferiti!');
+            alert(t('orders.index.filters_saved'));
         }
     };
 
-    // Caricare filtri preferiti
+    // Load favourite filters
     const loadFilterFavorite = (favoriteFilters: typeof filters) => {
         setSearchValue(favoriteFilters.search ?? '');
         setSelectedArticle(favoriteFilters.article_uuid ?? '');
@@ -804,7 +811,7 @@ export default function OrdersIndex() {
         }
     }, []);
 
-    // Caricare filtro salvato
+    // Load saved filter
     const loadSavedFilter = (saved: {
         name: string;
         filters: typeof filters;
@@ -812,7 +819,7 @@ export default function OrdersIndex() {
         loadFilterFavorite(saved.filters);
     };
 
-    // Eliminare filtro salvato
+    // Delete saved filter
     const deleteSavedFilter = (index: number) => {
         const newFilters = savedFilters.filter((_, i) => i !== index);
         setSavedFilters(newFilters);
@@ -822,9 +829,9 @@ export default function OrdersIndex() {
         );
     };
 
-    // Salvare filtri attuali
+    // Save current filters
     const saveCurrentFilters = () => {
-        const filterName = prompt('Nome per questo filtro:');
+        const filterName = prompt(t('orders.index.filter_name_prompt'));
         if (filterName) {
             const newFilters = [
                 ...savedFilters,
@@ -859,7 +866,7 @@ export default function OrdersIndex() {
                             {t('nav.orders')}
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Elenco degli ordini di produzione attivi.
+                            {t('orders.index.subtitle')}
                         </p>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
@@ -868,17 +875,17 @@ export default function OrdersIndex() {
                             className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
                         >
                             <Plus className="mr-2 h-4 w-4" />
-                            Nuovo Ordine
+                            {t('orders.index.new_order')}
                         </Link>
                         {ordersPaginated.total > 0 && (
                             <>
                                 <button
                                     onClick={handleExportCSV}
                                     className="inline-flex items-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-muted"
-                                    title="Esporta tutti i risultati in CSV"
+                                    title={t('common.export_csv')}
                                 >
                                     <Download className="mr-2 h-4 w-4" />
-                                    Esporta CSV
+                                    {t('common.export_csv_short')}
                                 </button>
                                 <button
                                     onClick={() =>
@@ -891,8 +898,8 @@ export default function OrdersIndex() {
                                     className="inline-flex items-center rounded-md border border-input bg-background px-3 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-muted"
                                     title={
                                         viewMode === 'table'
-                                            ? 'Vista a schede'
-                                            : 'Vista a tabella'
+                                            ? t('orders.index.view_cards')
+                                            : t('orders.index.view_table')
                                     }
                                 >
                                     {viewMode === 'table' ? (
@@ -908,7 +915,7 @@ export default function OrdersIndex() {
                                         )
                                     }
                                     className="inline-flex items-center rounded-md border border-input bg-background px-3 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-muted"
-                                    title="Configura colonne"
+                                    title={t('common.configure_columns')}
                                 >
                                     <Settings className="h-4 w-4" />
                                 </button>
@@ -924,7 +931,8 @@ export default function OrdersIndex() {
                     <div className="flex items-center justify-between gap-2 rounded-xl border border-primary/50 bg-primary/5 p-3">
                         <div className="flex items-center gap-2">
                             <span className="text-sm font-medium">
-                                {selectedOrders.size} ordine/i selezionato/i
+                                {selectedOrders.size}{' '}
+                                {t('orders.index.orders_selected')}
                             </span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -933,13 +941,13 @@ export default function OrdersIndex() {
                                 className="inline-flex items-center rounded-md border border-destructive bg-destructive px-3 py-1.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-destructive/90"
                             >
                                 <Trash2 className="mr-2 h-4 w-4" />
-                                Elimina selezionati
+                                {t('orders.index.delete_selected')}
                             </button>
                             <button
                                 onClick={() => setSelectedOrders(new Set())}
                                 className="inline-flex items-center rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium shadow-sm transition-colors hover:bg-muted"
                             >
-                                Annulla
+                                {t('common.cancel')}
                             </button>
                         </div>
                     </div>
@@ -950,7 +958,7 @@ export default function OrdersIndex() {
                     <div className="flex items-center justify-between gap-2 rounded-xl border border-sidebar-border/70 bg-card p-3 dark:border-sidebar-border">
                         <div className="flex flex-wrap items-center gap-2">
                             <span className="text-xs font-medium text-muted-foreground">
-                                Filtri attivi:
+                                {t('orders.index.active_filters')}
                             </span>
                             <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
                                 {activeFiltersCount}
@@ -970,7 +978,7 @@ export default function OrdersIndex() {
                                         className="inline-flex items-center rounded-md border border-input bg-background px-2 py-1 text-xs font-medium shadow-sm transition-colors hover:bg-muted"
                                     >
                                         <Bookmark className="mr-1 h-3 w-3" />
-                                        Favoriti
+                                        {t('orders.index.favorites')}
                                     </button>
                                     <div
                                         id="favorites-menu"
@@ -1014,14 +1022,15 @@ export default function OrdersIndex() {
                             <button
                                 onClick={saveFilterAsFavorite}
                                 className="inline-flex items-center rounded-md border border-input bg-background px-2 py-1 text-xs font-medium shadow-sm transition-colors hover:bg-muted"
-                                title="Salva filtri come preferito"
+                                title={t('common.save_filters_as_favorite')}
                             >
                                 <Bookmark className="mr-1 h-3 w-3" />
-                                Salva
+                                {t('orders.index.save_short')}
                             </button>
                             {filters.search && (
                                 <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
-                                    Cerca: "{filters.search}"
+                                    {t('orders.index.search_filter')} "
+                                    {filters.search}"
                                     <button
                                         onClick={() => {
                                             setSearchValue('');
@@ -1035,7 +1044,7 @@ export default function OrdersIndex() {
                             )}
                             {filters.status && (
                                 <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
-                                    Stato:{' '}
+                                    {t('common.status')}:{' '}
                                     {
                                         statusOptions.find(
                                             (o: {
@@ -1057,7 +1066,7 @@ export default function OrdersIndex() {
                             )}
                             {filters.article_uuid && (
                                 <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
-                                    Articolo selezionato
+                                    {t('orders.filter.article_selected')}
                                     <button
                                         onClick={() => {
                                             setSelectedArticle('');
@@ -1073,10 +1082,10 @@ export default function OrdersIndex() {
                             )}
                             {filters.customer_uuid && (
                                 <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
-                                    Cliente:{' '}
+                                    {t('common.customer')}:{' '}
                                     {customers.find(
                                         (c) => c.uuid === filters.customer_uuid,
-                                    )?.code || 'Selezionato'}
+                                    )?.code || t('orders.index.selected')}
                                     <button
                                         onClick={() => {
                                             setSelectedCustomer('');
@@ -1092,8 +1101,9 @@ export default function OrdersIndex() {
                             )}
                             {(filters.date_from || filters.date_to) && (
                                 <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
-                                    Date: {filters.date_from || '...'} -{' '}
-                                    {filters.date_to || '...'}
+                                    {t('orders.index.dates_filter')}:{' '}
+                                    {filters.date_from || t('common.ellipsis')}{' '}
+                                    - {filters.date_to || t('common.ellipsis')}
                                     <button
                                         onClick={() => {
                                             setDateFrom('');
@@ -1113,7 +1123,8 @@ export default function OrdersIndex() {
                                 minQuantity !== null &&
                                 minQuantity !== undefined && (
                                     <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
-                                        Q.tà min: {minQuantity}
+                                        {t('orders.index.qty_min')}:{' '}
+                                        {minQuantity}
                                         <button
                                             onClick={() => {
                                                 setMinQuantity('');
@@ -1129,7 +1140,8 @@ export default function OrdersIndex() {
                                 maxQuantity !== null &&
                                 maxQuantity !== undefined && (
                                     <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
-                                        Q.tà max: {maxQuantity}
+                                        {t('orders.index.qty_max')}:{' '}
+                                        {maxQuantity}
                                         <button
                                             onClick={() => {
                                                 setMaxQuantity('');
@@ -1143,10 +1155,10 @@ export default function OrdersIndex() {
                                 )}
                             {filters.autocontrollo && (
                                 <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
-                                    Autocontrollo:{' '}
+                                    {t('common.autocontrollo')}:{' '}
                                     {filters.autocontrollo === 'false'
-                                        ? 'Pendente'
-                                        : 'Completato'}
+                                        ? t('orders.index.pending')
+                                        : t('orders.index.completed')}
                                     <button
                                         onClick={() => {
                                             setSelectedAutocontrollo('');
@@ -1166,7 +1178,7 @@ export default function OrdersIndex() {
                             className="inline-flex items-center gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-xs font-medium shadow-sm transition-colors hover:bg-muted"
                         >
                             <FilterX className="h-3 w-3" />
-                            Resetta filtri
+                            {t('orders.index.reset_filters')}
                         </button>
                     </div>
                 )}
@@ -1183,13 +1195,13 @@ export default function OrdersIndex() {
                                 className="inline-flex items-center gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-xs font-medium shadow-sm transition-colors hover:bg-muted"
                             >
                                 <Filter className="h-3 w-3" />
-                                Cerca avanzata
+                                {t('orders.index.advanced_search')}
                             </button>
                             {savedFilters.length > 0 && (
                                 <div className="group relative">
                                     <button className="inline-flex items-center gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-xs font-medium shadow-sm transition-colors hover:bg-muted">
                                         <Star className="h-3 w-3" />
-                                        Filtri salvati
+                                        {t('orders.index.saved_filters')}
                                     </button>
                                     <div className="absolute top-full left-0 z-20 mt-1 hidden min-w-[200px] rounded-md border bg-popover p-2 text-popover-foreground shadow-md group-hover:block">
                                         {savedFilters.map((saved, index) => (
@@ -1224,7 +1236,7 @@ export default function OrdersIndex() {
                                     className="inline-flex items-center gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-xs font-medium shadow-sm transition-colors hover:bg-muted"
                                 >
                                     <Save className="h-3 w-3" />
-                                    Salva filtri
+                                    {t('common.save_filters')}
                                 </button>
                             )}
                         </div>
@@ -1236,7 +1248,7 @@ export default function OrdersIndex() {
                             <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
                                 <div className="space-y-1">
                                     <label className="text-xs font-medium text-muted-foreground">
-                                        Quantità minima
+                                        {t('orders.index.min_quantity')}
                                     </label>
                                     <input
                                         type="number"
@@ -1274,7 +1286,7 @@ export default function OrdersIndex() {
                                 </div>
                                 <div className="space-y-1">
                                     <label className="text-xs font-medium text-muted-foreground">
-                                        Quantità massima
+                                        {t('orders.index.max_quantity')}
                                     </label>
                                     <input
                                         type="number"
@@ -1312,7 +1324,7 @@ export default function OrdersIndex() {
                                 </div>
                                 <div className="space-y-1">
                                     <label className="text-xs font-medium text-muted-foreground">
-                                        Solo urgenti
+                                        {t('orders.index.urgent_only')}
                                     </label>
                                     <button
                                         onClick={() => {
@@ -1342,7 +1354,7 @@ export default function OrdersIndex() {
                                         }}
                                         className="w-full rounded-md border border-input bg-background px-3 py-2 text-left text-sm shadow-sm transition-colors hover:bg-muted"
                                     >
-                                        Ordini urgenti (&lt; 3 giorni)
+                                        {t('orders.index.urgent_orders')}
                                     </button>
                                 </div>
                             </div>
@@ -1353,14 +1365,14 @@ export default function OrdersIndex() {
                         <div className="space-y-1">
                             <div className="flex items-center justify-between">
                                 <label className="text-xs font-medium text-muted-foreground">
-                                    Cerca
+                                    {t('orders.index.search_label')}
                                 </label>
                                 <button
                                     onClick={() => setShowAdvancedSearch(true)}
                                     className="flex items-center gap-1 text-xs text-primary hover:underline"
                                 >
                                     <Search className="h-3 w-3" />
-                                    Avanzata
+                                    {t('orders.index.advanced_short')}
                                 </button>
                             </div>
                             <SearchInput
@@ -1374,7 +1386,7 @@ export default function OrdersIndex() {
 
                         <div className="space-y-1">
                             <label className="text-xs font-medium text-muted-foreground">
-                                Stato
+                                {t('common.status')}
                             </label>
                             <Select
                                 value={selectedStatus || 'all'}
@@ -1386,7 +1398,7 @@ export default function OrdersIndex() {
                             >
                                 <SelectTrigger
                                     className="w-full"
-                                    aria-label="Stato"
+                                    aria-label={t('common.status')}
                                 >
                                     <SelectValue />
                                 </SelectTrigger>
@@ -1405,7 +1417,7 @@ export default function OrdersIndex() {
 
                         <div className="space-y-1">
                             <label className="text-xs font-medium text-muted-foreground">
-                                Cliente
+                                {t('common.customer')}
                             </label>
                             <Select
                                 value={selectedCustomer || 'all'}
@@ -1419,7 +1431,7 @@ export default function OrdersIndex() {
                             >
                                 <SelectTrigger
                                     className="w-full"
-                                    aria-label="Cliente"
+                                    aria-label={t('common.customer')}
                                 >
                                     <SelectValue
                                         placeholder={t('filter.all_customers')}
@@ -1435,7 +1447,8 @@ export default function OrdersIndex() {
                                             value={customer.uuid}
                                         >
                                             {customer.code} -{' '}
-                                            {customer.name || 'Senza nome'}
+                                            {customer.name ||
+                                                t('orders.index.no_name')}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -1444,7 +1457,7 @@ export default function OrdersIndex() {
 
                         <div className="space-y-1">
                             <label className="text-xs font-medium text-muted-foreground">
-                                Articolo
+                                {t('common.article')}
                             </label>
                             <Select
                                 value={selectedArticle || 'all'}
@@ -1458,7 +1471,7 @@ export default function OrdersIndex() {
                             >
                                 <SelectTrigger
                                     className="w-full"
-                                    aria-label="Articolo"
+                                    aria-label={t('common.article')}
                                 >
                                     <SelectValue
                                         placeholder={t('filter.all_articles')}
@@ -1475,7 +1488,7 @@ export default function OrdersIndex() {
                                         >
                                             {article.cod_article_las} -{' '}
                                             {article.article_descr ||
-                                                'Senza descrizione'}
+                                                t('common.no_description')}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -1484,7 +1497,7 @@ export default function OrdersIndex() {
 
                         <div className="space-y-1">
                             <label className="text-xs font-medium text-muted-foreground">
-                                Autocontrollo
+                                {t('common.autocontrollo')}
                             </label>
                             <Select
                                 value={selectedAutocontrollo || 'all'}
@@ -1498,7 +1511,7 @@ export default function OrdersIndex() {
                             >
                                 <SelectTrigger
                                     className="w-full"
-                                    aria-label="Autocontrollo"
+                                    aria-label={t('common.autocontrollo')}
                                 >
                                     <SelectValue
                                         placeholder={t('filter.all')}
@@ -1509,10 +1522,10 @@ export default function OrdersIndex() {
                                         {t('filter.all')}
                                     </SelectItem>
                                     <SelectItem value="false">
-                                        Pendente
+                                        {t('orders.index.pending')}
                                     </SelectItem>
                                     <SelectItem value="true">
-                                        Completato
+                                        {t('orders.index.completed')}
                                     </SelectItem>
                                 </SelectContent>
                             </Select>
@@ -1520,7 +1533,7 @@ export default function OrdersIndex() {
 
                         <div className="space-y-1">
                             <label className="text-xs font-medium text-muted-foreground">
-                                Elementi per pagina
+                                {t('common.items_per_page')}
                             </label>
                             <Select
                                 value={String(filters.per_page || '15')}
@@ -1530,7 +1543,7 @@ export default function OrdersIndex() {
                             >
                                 <SelectTrigger
                                     className="w-full"
-                                    aria-label="Elementi per pagina"
+                                    aria-label={t('common.items_per_page')}
                                 >
                                     <SelectValue />
                                 </SelectTrigger>
@@ -1550,7 +1563,7 @@ export default function OrdersIndex() {
                         <div className="space-y-1 md:col-span-2">
                             <label className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
                                 <Calendar className="h-3 w-3" />
-                                Data di consegna
+                                {t('orders.index.delivery_date_filter')}
                             </label>
                             <div className="flex gap-2">
                                 <input
@@ -1584,20 +1597,20 @@ export default function OrdersIndex() {
                         </div>
                         <div className="space-y-1 md:col-span-4">
                             <label className="text-xs font-medium text-muted-foreground">
-                                Presets rapidi
+                                {t('orders.index.date_presets')}
                             </label>
                             <div className="flex flex-wrap gap-2">
                                 <button
                                     onClick={() => applyDatePreset('today')}
                                     className="rounded-md border border-input bg-background px-2 py-1 text-xs transition-colors hover:bg-muted"
                                 >
-                                    Oggi
+                                    {t('orders.index.date_today')}
                                 </button>
                                 <button
                                     onClick={() => applyDatePreset('this_week')}
                                     className="rounded-md border border-input bg-background px-2 py-1 text-xs transition-colors hover:bg-muted"
                                 >
-                                    Questa settimana
+                                    {t('orders.index.date_this_week')}
                                 </button>
                                 <button
                                     onClick={() =>
@@ -1605,7 +1618,7 @@ export default function OrdersIndex() {
                                     }
                                     className="rounded-md border border-input bg-background px-2 py-1 text-xs transition-colors hover:bg-muted"
                                 >
-                                    Questo mese
+                                    {t('orders.index.date_this_month')}
                                 </button>
                                 <button
                                     onClick={() =>
@@ -1613,7 +1626,7 @@ export default function OrdersIndex() {
                                     }
                                     className="rounded-md border border-input bg-background px-2 py-1 text-xs transition-colors hover:bg-muted"
                                 >
-                                    Prossimi 7 giorni
+                                    {t('orders.index.date_next_7_days')}
                                 </button>
                                 <button
                                     onClick={() =>
@@ -1621,7 +1634,7 @@ export default function OrdersIndex() {
                                     }
                                     className="rounded-md border border-input bg-background px-2 py-1 text-xs transition-colors hover:bg-muted"
                                 >
-                                    Prossimi 30 giorni
+                                    {t('orders.index.date_next_30_days')}
                                 </button>
                             </div>
                         </div>
@@ -1632,34 +1645,37 @@ export default function OrdersIndex() {
                 <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
                     <div className="flex items-center gap-3">
                         <div>
-                            Da {ordersPaginated.from || 0} a{' '}
-                            {ordersPaginated.to || 0} di{' '}
-                            {ordersPaginated.total || 0} ordini
+                            {t('orders.index.from_to_orders', {
+                                from: ordersPaginated.from || 0,
+                                to: ordersPaginated.to || 0,
+                                total: ordersPaginated.total || 0,
+                            })}
                         </div>
                         {selectedOrders.size > 0 && (
                             <div className="flex items-center gap-2">
                                 <span className="font-medium text-primary">
-                                    {selectedOrders.size} selezionato/i
+                                    {selectedOrders.size}{' '}
+                                    {t('orders.index.selezionati')}
                                 </span>
                                 <button
                                     onClick={handleBatchDelete}
                                     className="inline-flex items-center gap-1 rounded-md border border-destructive bg-destructive/10 px-2 py-1 text-xs font-medium text-destructive transition-colors hover:bg-destructive/20"
                                 >
                                     <Trash2 className="h-3 w-3" />
-                                    Elimina selezionati
+                                    {t('orders.index.delete_selected')}
                                 </button>
                                 <button
                                     onClick={() => setSelectedOrders(new Set())}
                                     className="text-xs text-muted-foreground hover:text-foreground"
                                 >
-                                    Annulla
+                                    {t('common.cancel')}
                                 </button>
                             </div>
                         )}
                     </div>
                     {ordersPaginated.total > 0 && (
                         <div className="text-xs">
-                            Totale quantità:{' '}
+                            {t('orders.index.total_quantity')}:{' '}
                             {formatDecimal(
                                 ordersPaginated.data.reduce((sum, order) => {
                                     return (
@@ -1677,7 +1693,7 @@ export default function OrdersIndex() {
                     <div className="rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                         <div className="mb-3 flex items-center justify-between">
                             <h3 className="text-sm font-medium">
-                                Colonne visibili
+                                {t('orders.index.visible_columns')}
                             </h3>
                             <button
                                 onClick={() => setShowColumnSettings(false)}
@@ -1688,25 +1704,37 @@ export default function OrdersIndex() {
                         </div>
                         <div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-5">
                             {[
-                                { key: 'id', label: 'ID' },
+                                {
+                                    key: 'id',
+                                    label: t('orders.index.column_id'),
+                                },
                                 {
                                     key: 'order_production_number',
-                                    label: 'N. Ordine',
+                                    label: t('orders.column_order_number'),
                                 },
                                 {
                                     key: 'number_customer_reference_order',
-                                    label: 'N. Cliente',
+                                    label: t('orders.column_customer_ref'),
                                 },
-                                { key: 'line', label: 'Riga' },
-                                { key: 'article', label: 'Articolo' },
-                                { key: 'quantity', label: 'Quantità' },
-                                { key: 'progress', label: 'Progresso' },
-                                { key: 'semaforo', label: 'Semaforo' },
+                                { key: 'line', label: t('orders.column_line') },
+                                { key: 'article', label: t('common.article') },
+                                {
+                                    key: 'quantity',
+                                    label: t('orders.column_quantity'),
+                                },
+                                {
+                                    key: 'progress',
+                                    label: t('orders.column_progress'),
+                                },
+                                {
+                                    key: 'semaforo',
+                                    label: t('orders.column_semaforo'),
+                                },
                                 {
                                     key: 'delivery_date',
-                                    label: 'Data consegna',
+                                    label: t('orders.column_delivery_date'),
                                 },
-                                { key: 'status', label: 'Stato' },
+                                { key: 'status', label: t('common.status') },
                             ].map((col) => (
                                 <label
                                     key={col.key}
@@ -1778,8 +1806,12 @@ export default function OrdersIndex() {
                                                     className="rounded p-1 transition-colors hover:bg-muted/50"
                                                     title={
                                                         selectedOrders.size > 0
-                                                            ? 'Deseleziona tutti'
-                                                            : 'Seleziona tutti'
+                                                            ? t(
+                                                                  'orders.index.deselect_all',
+                                                              )
+                                                            : t(
+                                                                  'orders.index.select_all',
+                                                              )
                                                     }
                                                 >
                                                     {selectedOrders.size ===
@@ -1804,7 +1836,7 @@ export default function OrdersIndex() {
                                                     )}
                                                     onSort={handleSort}
                                                 >
-                                                    ID
+                                                    {t('common.id')}
                                                 </SortableTableHeader>
                                             )}
                                             {visibleColumns[
@@ -1820,27 +1852,34 @@ export default function OrdersIndex() {
                                                     )}
                                                     onSort={handleSort}
                                                 >
-                                                    N. Ordine di produzione
+                                                    {t(
+                                                        'orders.index.column_production_number',
+                                                    )}
                                                 </SortableTableHeader>
                                             )}
                                             {visibleColumns[
                                                 'number_customer_reference_order'
                                             ] !== false && (
                                                 <th className="hidden border-b px-3 py-2 font-medium md:table-cell">
-                                                    N. Ordine di riferimento
-                                                    cliente
+                                                    {t(
+                                                        'orders.column_customer_ref',
+                                                    )}
                                                 </th>
                                             )}
                                             {visibleColumns['line'] !==
                                                 false && (
                                                 <th className="hidden border-b px-3 py-2 font-medium lg:table-cell">
-                                                    Riga
+                                                    {t(
+                                                        'orders.index.column_line',
+                                                    )}
                                                 </th>
                                             )}
                                             {visibleColumns['article'] !==
                                                 false && (
                                                 <th className="border-b px-3 py-2 font-medium">
-                                                    Codice articolo LAS
+                                                    {t(
+                                                        'orders.index.csv_article_code',
+                                                    )}
                                                 </th>
                                             )}
                                             {visibleColumns['quantity'] !==
@@ -1855,22 +1894,30 @@ export default function OrdersIndex() {
                                                     )}
                                                     onSort={handleSort}
                                                 >
-                                                    Q.tà ordine
+                                                    {t(
+                                                        'orders.column_quantity',
+                                                    )}
                                                 </SortableTableHeader>
                                             )}
                                             {visibleColumns['progress'] !==
                                                 false && (
                                                 <th
                                                     className="border-b px-3 py-2 font-medium"
-                                                    title="Progresso di produzione (quantità lavorata / quantità totale)"
+                                                    title={t(
+                                                        'common.production_progress_tooltip',
+                                                    )}
                                                 >
-                                                    Progresso
+                                                    {t(
+                                                        'orders.column_progress',
+                                                    )}
                                                 </th>
                                             )}
                                             {visibleColumns['semaforo'] !==
                                                 false && (
                                                 <th className="border-b px-3 py-2 font-medium">
-                                                    Semaforo
+                                                    {t(
+                                                        'orders.index.column_semaforo',
+                                                    )}
                                                 </th>
                                             )}
                                             {visibleColumns['delivery_date'] !==
@@ -1885,7 +1932,9 @@ export default function OrdersIndex() {
                                                     )}
                                                     onSort={handleSort}
                                                 >
-                                                    Data di consegna richiesta
+                                                    {t(
+                                                        'orders.column_delivery_date',
+                                                    )}
                                                 </SortableTableHeader>
                                             )}
                                             {visibleColumns['status'] !==
@@ -1900,11 +1949,11 @@ export default function OrdersIndex() {
                                                     )}
                                                     onSort={handleSort}
                                                 >
-                                                    Stato
+                                                    {t('common.status')}
                                                 </SortableTableHeader>
                                             )}
                                             <th className="border-b px-3 py-2 text-right font-medium">
-                                                Azioni
+                                                {t('common.actions')}
                                             </th>
                                         </tr>
                                     </thead>
@@ -1964,7 +2013,9 @@ export default function OrdersIndex() {
                                                     }
                                                     className="px-3 py-8 text-center text-sm text-muted-foreground"
                                                 >
-                                                    Nessun ordine disponibile.
+                                                    {t(
+                                                        'orders.index.no_orders',
+                                                    )}
                                                 </td>
                                             </tr>
                                         ) : (
@@ -2115,7 +2166,18 @@ export default function OrdersIndex() {
                                                                         return (
                                                                             <div
                                                                                 className="flex items-center gap-2"
-                                                                                title={`Progresso: ${progress}% (${formatDecimal(workedQty)} / ${formatDecimal(qty)})`}
+                                                                                title={t(
+                                                                                    'orders.index.progress_tooltip',
+                                                                                    {
+                                                                                        progress,
+                                                                                        worked: formatDecimal(
+                                                                                            workedQty,
+                                                                                        ),
+                                                                                        total: formatDecimal(
+                                                                                            qty,
+                                                                                        ),
+                                                                                    },
+                                                                                )}
                                                                             >
                                                                                 <div className="min-w-[60px] flex-1">
                                                                                     <div className="h-2 w-full rounded-full bg-muted">
@@ -2158,7 +2220,9 @@ export default function OrdersIndex() {
                                                                                     <>
                                                                                         <span className="inline-flex items-center gap-1">
                                                                                             <span className="text-[10px] font-semibold">
-                                                                                                E:
+                                                                                                {t(
+                                                                                                    'orders.index.semaforo_short_e',
+                                                                                                )}
                                                                                             </span>
                                                                                             <span
                                                                                                 className={`h-3 w-3 rounded-full ${
@@ -2170,7 +2234,9 @@ export default function OrdersIndex() {
                                                                                                           ? 'bg-yellow-400'
                                                                                                           : 'bg-green-500'
                                                                                                 }`}
-                                                                                                title="Etichette"
+                                                                                                title={t(
+                                                                                                    'common.labels',
+                                                                                                )}
                                                                                             />
                                                                                         </span>
                                                                                         <span className="inline-flex items-center gap-1">
@@ -2187,7 +2253,9 @@ export default function OrdersIndex() {
                                                                                                           ? 'bg-yellow-400'
                                                                                                           : 'bg-green-500'
                                                                                                 }`}
-                                                                                                title="Packaging"
+                                                                                                title={t(
+                                                                                                    'common.packaging',
+                                                                                                )}
                                                                                             />
                                                                                         </span>
                                                                                         <span className="inline-flex items-center gap-1">
@@ -2204,7 +2272,9 @@ export default function OrdersIndex() {
                                                                                                           ? 'bg-yellow-400'
                                                                                                           : 'bg-green-500'
                                                                                                 }`}
-                                                                                                title="Prodotto"
+                                                                                                title={t(
+                                                                                                    'common.product',
+                                                                                                )}
                                                                                             />
                                                                                         </span>
                                                                                     </>
@@ -2229,11 +2299,17 @@ export default function OrdersIndex() {
                                                                                     title={
                                                                                         urgency.type ===
                                                                                         'overdue'
-                                                                                            ? 'Ordine in ritardo'
+                                                                                            ? t(
+                                                                                                  'orders.index.order_overdue',
+                                                                                              )
                                                                                             : urgency.type ===
                                                                                                 'urgent'
-                                                                                              ? 'Ordine urgente (consegna entro 3 giorni)'
-                                                                                              : 'Ordine a tempo'
+                                                                                              ? t(
+                                                                                                    'orders.index.order_urgent',
+                                                                                                )
+                                                                                              : t(
+                                                                                                    'orders.index.order_on_time',
+                                                                                                )
                                                                                     }
                                                                                 >
                                                                                     {
@@ -2244,7 +2320,10 @@ export default function OrdersIndex() {
                                                                                     {new Date(
                                                                                         order.delivery_requested_date,
                                                                                     ).toLocaleDateString(
-                                                                                        'it-IT',
+                                                                                        getDateLocale(
+                                                                                            props.locale ??
+                                                                                                'it',
+                                                                                        ),
                                                                                     )}
                                                                                 </span>
                                                                             </>
@@ -2262,10 +2341,17 @@ export default function OrdersIndex() {
                                                                 <td className="px-3 py-2">
                                                                     <span
                                                                         className={`inline-flex items-center rounded-full border px-2 py-1 text-xs font-medium ${getOrderStatusColor(order.status)}`}
-                                                                        title={`Stato: ${getOrderStatusLabel(order.status)}`}
+                                                                        title={`${t('common.status')}: ${t(getOrderStatusLabelKey(order.status), { status: String(order.status) })}`}
                                                                     >
-                                                                        {getOrderStatusLabel(
-                                                                            order.status,
+                                                                        {t(
+                                                                            getOrderStatusLabelKey(
+                                                                                order.status,
+                                                                            ),
+                                                                            {
+                                                                                status: String(
+                                                                                    order.status,
+                                                                                ),
+                                                                            },
                                                                         )}
                                                                     </span>
                                                                 </td>
@@ -2314,8 +2400,9 @@ export default function OrdersIndex() {
                                                                                         className="flex items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
                                                                                     >
                                                                                         <Package className="mr-2 h-4 w-4 text-foreground" />
-                                                                                        Visualizza
-                                                                                        Articolo
+                                                                                        {t(
+                                                                                            'orders.index.view_article',
+                                                                                        )}
                                                                                     </Link>
                                                                                 )}
                                                                                 {order
@@ -2335,8 +2422,9 @@ export default function OrdersIndex() {
                                                                                         className="flex items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
                                                                                     >
                                                                                         <FileText className="mr-2 h-4 w-4 text-foreground" />
-                                                                                        Visualizza
-                                                                                        Offerta
+                                                                                        {t(
+                                                                                            'orders.view_offer',
+                                                                                        )}
                                                                                     </Link>
                                                                                 )}
                                                                                 <div
@@ -2356,8 +2444,9 @@ export default function OrdersIndex() {
                                                                                     className="flex cursor-pointer items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
                                                                                 >
                                                                                     <Settings className="mr-2 h-4 w-4 text-foreground" />
-                                                                                    Gestisci
-                                                                                    Stato
+                                                                                    {t(
+                                                                                        'orders.manage_status',
+                                                                                    )}
                                                                                 </div>
                                                                                 <div
                                                                                     onClick={(
@@ -2374,14 +2463,16 @@ export default function OrdersIndex() {
                                                                                     order.uuid ? (
                                                                                         <>
                                                                                             <Loader2 className="mr-2 h-4 w-4 animate-spin text-foreground" />
-                                                                                            Generando
-                                                                                            Barcode...
+                                                                                            {t(
+                                                                                                'orders.barcode_generating',
+                                                                                            )}
                                                                                         </>
                                                                                     ) : (
                                                                                         <>
                                                                                             <Download className="mr-2 h-4 w-4 text-foreground" />
-                                                                                            Stampa
-                                                                                            Barcode
+                                                                                            {t(
+                                                                                                'orders.barcode_print',
+                                                                                            )}
                                                                                         </>
                                                                                     )}
                                                                                 </div>
@@ -2400,14 +2491,16 @@ export default function OrdersIndex() {
                                                                                     order.uuid ? (
                                                                                         <>
                                                                                             <Loader2 className="mr-2 h-4 w-4 animate-spin text-foreground" />
-                                                                                            Generando
-                                                                                            Autocontrollo...
+                                                                                            {t(
+                                                                                                'orders.autocontrollo_generating',
+                                                                                            )}
                                                                                         </>
                                                                                     ) : (
                                                                                         <>
                                                                                             <Download className="mr-2 h-4 w-4 text-foreground" />
-                                                                                            Stampa
-                                                                                            Autocontrollo
+                                                                                            {t(
+                                                                                                'orders.autocontrollo_print',
+                                                                                            )}
                                                                                         </>
                                                                                     )}
                                                                                 </div>
@@ -2426,13 +2519,16 @@ export default function OrdersIndex() {
                                                                                     order.uuid ? (
                                                                                         <>
                                                                                             <Loader2 className="mr-2 h-4 w-4 animate-spin text-foreground" />
-                                                                                            Ripianificazione...
+                                                                                            {t(
+                                                                                                'orders.index.rescheduling',
+                                                                                            )}
                                                                                         </>
                                                                                     ) : (
                                                                                         <>
                                                                                             <CalendarCheck className="mr-2 h-4 w-4 text-foreground" />
-                                                                                            Forza
-                                                                                            Ripianificazione
+                                                                                            {t(
+                                                                                                'orders.index.force_reschedule',
+                                                                                            )}
                                                                                         </>
                                                                                     )}
                                                                                 </div>
@@ -2469,7 +2565,7 @@ export default function OrdersIndex() {
                             ))
                         ) : ordersPaginated.data.length === 0 ? (
                             <div className="col-span-full py-12 text-center text-muted-foreground">
-                                Nessun ordine disponibile.
+                                {t('orders.index.no_orders')}
                             </div>
                         ) : (
                             ordersPaginated.data.map((order) => {
@@ -2540,7 +2636,9 @@ export default function OrdersIndex() {
                                                                               0,
                                                                               30,
                                                                           ) +
-                                                                          '...'
+                                                                          t(
+                                                                              'common.ellipsis',
+                                                                          )
                                                                         : order
                                                                               .article
                                                                               .article_descr}
@@ -2561,7 +2659,10 @@ export default function OrdersIndex() {
                                                         ] !== false &&
                                                             order.number_customer_reference_order && (
                                                                 <span>
-                                                                    Cliente:{' '}
+                                                                    {t(
+                                                                        'common.customer',
+                                                                    )}
+                                                                    :{' '}
                                                                     {
                                                                         order.number_customer_reference_order
                                                                     }
@@ -2573,7 +2674,10 @@ export default function OrdersIndex() {
                                                             order.line !=
                                                                 null && (
                                                                 <span>
-                                                                    Riga:{' '}
+                                                                    {t(
+                                                                        'orders.labels.line',
+                                                                    )}
+                                                                    :{' '}
                                                                     {order.line}
                                                                 </span>
                                                             )}
@@ -2585,8 +2689,15 @@ export default function OrdersIndex() {
                                                 <span
                                                     className={`inline-flex items-center rounded-full border px-2 py-1 text-xs font-medium ${getOrderStatusColor(order.status)}`}
                                                 >
-                                                    {getOrderStatusLabel(
-                                                        order.status,
+                                                    {t(
+                                                        getOrderStatusLabelKey(
+                                                            order.status,
+                                                        ),
+                                                        {
+                                                            status: String(
+                                                                order.status,
+                                                            ),
+                                                        },
                                                     )}
                                                 </span>
                                             )}
@@ -2598,7 +2709,9 @@ export default function OrdersIndex() {
                                                 <div className="mb-3">
                                                     <div className="mb-1 flex items-center justify-between text-xs">
                                                         <span className="text-muted-foreground">
-                                                            Progresso
+                                                            {t(
+                                                                'orders.column_progress',
+                                                            )}
                                                         </span>
                                                         <span className="font-medium">
                                                             {progress}%
@@ -2619,7 +2732,10 @@ export default function OrdersIndex() {
                                             order.status === 1 && (
                                                 <div className="mb-3 flex items-center gap-2 text-xs">
                                                     <span className="text-muted-foreground">
-                                                        Semaforo:
+                                                        {t(
+                                                            'orders.column_semaforo',
+                                                        )}
+                                                        :
                                                     </span>
                                                     {(() => {
                                                         const semaforo =
@@ -2640,7 +2756,9 @@ export default function OrdersIndex() {
                                                                               ? 'bg-yellow-400'
                                                                               : 'bg-green-500'
                                                                     }`}
-                                                                    title="Etichette"
+                                                                    title={t(
+                                                                        'common.labels',
+                                                                    )}
                                                                 />
                                                                 <span
                                                                     className={`h-2.5 w-2.5 rounded-full ${
@@ -2652,7 +2770,9 @@ export default function OrdersIndex() {
                                                                               ? 'bg-yellow-400'
                                                                               : 'bg-green-500'
                                                                     }`}
-                                                                    title="Packaging"
+                                                                    title={t(
+                                                                        'common.packaging',
+                                                                    )}
                                                                 />
                                                                 <span
                                                                     className={`h-2.5 w-2.5 rounded-full ${
@@ -2664,7 +2784,9 @@ export default function OrdersIndex() {
                                                                               ? 'bg-yellow-400'
                                                                               : 'bg-green-500'
                                                                     }`}
-                                                                    title="Prodotto"
+                                                                    title={t(
+                                                                        'common.product',
+                                                                    )}
                                                                 />
                                                             </span>
                                                         );
@@ -2678,7 +2800,10 @@ export default function OrdersIndex() {
                                                 order.quantity !== null && (
                                                     <div>
                                                         <span className="text-muted-foreground">
-                                                            Quantità:{' '}
+                                                            {t(
+                                                                'orders.show.quantity',
+                                                            )}
+                                                            :{' '}
                                                         </span>
                                                         <span className="font-medium">
                                                             {(() => {
@@ -2717,11 +2842,17 @@ export default function OrdersIndex() {
                                                             title={
                                                                 urgency.type ===
                                                                 'overdue'
-                                                                    ? 'Ordine in ritardo'
+                                                                    ? t(
+                                                                          'orders.index.order_overdue',
+                                                                      )
                                                                     : urgency.type ===
                                                                         'urgent'
-                                                                      ? 'Ordine urgente'
-                                                                      : 'A tempo'
+                                                                      ? t(
+                                                                            'orders.index.order_urgent_short',
+                                                                        )
+                                                                      : t(
+                                                                            'orders.index.on_time',
+                                                                        )
                                                             }
                                                         >
                                                             {urgency.icon}
@@ -2733,7 +2864,10 @@ export default function OrdersIndex() {
                                                             {new Date(
                                                                 order.delivery_requested_date,
                                                             ).toLocaleDateString(
-                                                                'it-IT',
+                                                                getDateLocale(
+                                                                    props.locale ??
+                                                                        'it',
+                                                                ),
                                                             )}
                                                         </span>
                                                     </div>
@@ -2772,8 +2906,9 @@ export default function OrdersIndex() {
                                                                 className="flex items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
                                                             >
                                                                 <Package className="mr-2 h-4 w-4 text-foreground" />
-                                                                Visualizza
-                                                                Articolo
+                                                                {t(
+                                                                    'orders.index.view_article',
+                                                                )}
                                                             </Link>
                                                         )}
                                                         {order.article
@@ -2791,8 +2926,9 @@ export default function OrdersIndex() {
                                                                 className="flex items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
                                                             >
                                                                 <FileText className="mr-2 h-4 w-4 text-foreground" />
-                                                                Visualizza
-                                                                Offerta
+                                                                {t(
+                                                                    'orders.view_offer',
+                                                                )}
                                                             </Link>
                                                         )}
                                                         <div
@@ -2809,7 +2945,9 @@ export default function OrdersIndex() {
                                                             className="flex cursor-pointer items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
                                                         >
                                                             <Settings className="mr-2 h-4 w-4 text-foreground" />
-                                                            Gestisci Stato
+                                                            {t(
+                                                                'orders.manage_status',
+                                                            )}
                                                         </div>
                                                         <div
                                                             onClick={(e) => {
@@ -2824,14 +2962,16 @@ export default function OrdersIndex() {
                                                             order.uuid ? (
                                                                 <>
                                                                     <Loader2 className="mr-2 h-4 w-4 animate-spin text-foreground" />
-                                                                    Generando
-                                                                    Barcode...
+                                                                    {t(
+                                                                        'orders.barcode_generating',
+                                                                    )}
                                                                 </>
                                                             ) : (
                                                                 <>
                                                                     <Download className="mr-2 h-4 w-4 text-foreground" />
-                                                                    Stampa
-                                                                    Barcode
+                                                                    {t(
+                                                                        'orders.barcode_print',
+                                                                    )}
                                                                 </>
                                                             )}
                                                         </div>
@@ -2848,14 +2988,16 @@ export default function OrdersIndex() {
                                                             order.uuid ? (
                                                                 <>
                                                                     <Loader2 className="mr-2 h-4 w-4 animate-spin text-foreground" />
-                                                                    Generando
-                                                                    Autocontrollo...
+                                                                    {t(
+                                                                        'orders.autocontrollo_generating',
+                                                                    )}
                                                                 </>
                                                             ) : (
                                                                 <>
                                                                     <Download className="mr-2 h-4 w-4 text-foreground" />
-                                                                    Stampa
-                                                                    Autocontrollo
+                                                                    {t(
+                                                                        'orders.autocontrollo_print',
+                                                                    )}
                                                                 </>
                                                             )}
                                                         </div>
@@ -2872,13 +3014,16 @@ export default function OrdersIndex() {
                                                             order.uuid ? (
                                                                 <>
                                                                     <Loader2 className="mr-2 h-4 w-4 animate-spin text-foreground" />
-                                                                    Ripianificazione...
+                                                                    {t(
+                                                                        'orders.index.rescheduling',
+                                                                    )}
                                                                 </>
                                                             ) : (
                                                                 <>
                                                                     <CalendarCheck className="mr-2 h-4 w-4 text-foreground" />
-                                                                    Forza
-                                                                    Ripianificazione
+                                                                    {t(
+                                                                        'orders.index.force_reschedule',
+                                                                    )}
                                                                 </>
                                                             )}
                                                         </div>
@@ -2906,8 +3051,11 @@ export default function OrdersIndex() {
                 onOpenChange={(open) => setDeleteDialog({ open, order: null })}
                 onConfirm={handleDeleteConfirm}
                 isLoading={isDeleting}
-                title="Conferma eliminazione"
-                description={`Sei sicuro di voler eliminare l'ordine ${deleteDialog.order?.order_production_number}? Questa azione non può essere annullata. L'ordine verrà eliminato definitivamente.`}
+                title={t('common.confirm_delete')}
+                description={t('orders.delete_confirm_description', {
+                    order_number:
+                        deleteDialog.order?.order_production_number ?? '',
+                })}
                 itemName={deleteDialog.order?.order_production_number}
             />
         </AppLayout>

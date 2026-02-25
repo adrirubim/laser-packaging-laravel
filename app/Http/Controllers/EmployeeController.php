@@ -23,7 +23,7 @@ class EmployeeController extends Controller
     {
         $query = Employee::active();
 
-        // Filtros
+        // Filters
         if ($request->has('portal_enabled')) {
             $portalEnabled = $request->get('portal_enabled');
             if ($portalEnabled === '1' || $portalEnabled === 'true') {
@@ -33,7 +33,7 @@ class EmployeeController extends Controller
             }
         }
 
-        // Ricerca
+        // Search
         if ($request->has('search')) {
             $search = $request->get('search');
             $query->where(function ($q) use ($search) {
@@ -79,14 +79,14 @@ class EmployeeController extends Controller
     {
         $validated = $request->validated();
 
-        // Hash password con SHA512 (como en el sistema legacy)
+        // Hash password with SHA512 (as in legacy system)
         $validated['password'] = hash('sha512', $validated['password']);
         $validated['portal_enabled'] = $validated['portal_enabled'] ?? false;
 
         $employee = Employee::create($validated);
 
         return redirect()->route('employees.index')
-            ->with('success', 'Dipendente creato con successo.');
+            ->with('success', __('flash.employee.created'));
     }
 
     /**
@@ -120,7 +120,7 @@ class EmployeeController extends Controller
     {
         $validated = $request->validated();
 
-        // Hash password solo se ne è stato fornito uno nuovo
+        // Hash password only if a new one was provided
         if (! empty($validated['password'])) {
             $validated['password'] = hash('sha512', $validated['password']);
         } else {
@@ -130,7 +130,7 @@ class EmployeeController extends Controller
         $employee->update($validated);
 
         return redirect()->route('employees.index')
-            ->with('success', 'Dipendente aggiornato con successo.');
+            ->with('success', __('flash.employee.updated'));
     }
 
     /**
@@ -138,10 +138,10 @@ class EmployeeController extends Controller
      */
     public function destroy(Employee $employee)
     {
-        // Verificare che non abbia lavorazioni ordini attive
+        // Check that employee has no active order processings
         if ($employee->orderProcessings()->where('removed', false)->exists()) {
             return back()->withErrors([
-                'error' => 'Impossibile eliminare il dipendente. Ha processamenti di ordini associati.',
+                'error' => __('flash.cannot_delete_employee'),
             ]);
         }
 
@@ -149,7 +149,7 @@ class EmployeeController extends Controller
         $employee->update(['removed' => true]);
 
         return redirect()->route('employees.index')
-            ->with('success', 'Dipendente eliminato con successo.');
+            ->with('success', __('flash.employee.deleted'));
     }
 
     /**
@@ -163,19 +163,19 @@ class EmployeeController extends Controller
             'confirm_password' => 'required|string|same:new_password',
         ]);
 
-        // Verificare password attuale
+        // Verify current password
         if (! $employee->verifyPassword($validated['current_password'])) {
             return back()->withErrors([
-                'current_password' => 'La password attuale non è corretta.',
+                'current_password' => __('flash.employee.wrong_password'),
             ]);
         }
 
-        // Aggiornare password
+        // Update password
         $employee->update([
             'password' => hash('sha512', $validated['new_password']),
         ]);
 
-        return back()->with('success', 'Password aggiornata con successo.');
+        return back()->with('success', __('flash.employee.password_updated'));
     }
 
     /**
@@ -201,7 +201,7 @@ class EmployeeController extends Controller
         $query = EmployeeContract::active()
             ->with(['employee', 'supplier']);
 
-        // Validare e applicare filtri
+        // Validate and apply filters
         $validated = $request->validate([
             'employee_uuid' => 'nullable|uuid',
             'supplier_uuid' => 'nullable|uuid',
@@ -211,7 +211,7 @@ class EmployeeController extends Controller
             'sort_order' => 'nullable|string|in:asc,desc',
         ]);
 
-        // Filtros
+        // Filters
         if (! empty($validated['employee_uuid'])) {
             $query->where('employee_uuid', $validated['employee_uuid']);
         }
@@ -220,7 +220,7 @@ class EmployeeController extends Controller
             $query->where('supplier_uuid', $validated['supplier_uuid']);
         }
 
-        // Ricerca
+        // Search
         if (! empty($validated['search'])) {
             $search = $validated['search'];
             $query->whereHas('employee', function ($q) use ($search) {
@@ -355,7 +355,7 @@ class EmployeeController extends Controller
         $contract = EmployeeContract::create($validated);
 
         return redirect()->route('employees.contracts.index')
-            ->with('success', 'Contratto creato con successo.');
+            ->with('success', __('flash.contract.created'));
     }
 
     /**
@@ -397,7 +397,7 @@ class EmployeeController extends Controller
         $contract->update($validated);
 
         return redirect()->route('employees.contracts.index')
-            ->with('success', 'Contratto aggiornato con successo.');
+            ->with('success', __('flash.contract.updated'));
     }
 
     /**
@@ -408,7 +408,7 @@ class EmployeeController extends Controller
         $contract->update(['removed' => true]);
 
         return redirect()->route('employees.contracts.index')
-            ->with('success', 'Contratto eliminato con successo.');
+            ->with('success', __('flash.contract.deleted'));
     }
 
     /**
@@ -419,7 +419,7 @@ class EmployeeController extends Controller
         $validated = $request->validate([
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after:start_date',
-            // Livello retributivo consentito 0–8 (parità con EmployeeContract e UI)
+            // Pay level allowed 0–8 (parity with EmployeeContract and UI)
             'pay_level' => 'nullable|integer|in:0,1,2,3,4,5,6,7,8',
         ]);
 
@@ -436,15 +436,15 @@ class EmployeeController extends Controller
      */
     public function updateContractLegacy(Request $request, Employee $employee, EmployeeContract $contract)
     {
-        // Verificare che il contratto appartenga al dipendente
+        // Verify that contract belongs to employee
         if ($contract->employee_uuid !== $employee->uuid) {
-            return response()->json(['error' => 'Contratto non trovato.'], 404);
+            return response()->json(['error' => __('flash.contract_not_found')], 404);
         }
 
         $validated = $request->validate([
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after:start_date',
-            // Livello retributivo consentito 0–8 (parità con EmployeeContract e UI)
+            // Pay level allowed 0–8 (parity with EmployeeContract and UI)
             'pay_level' => 'nullable|integer|in:0,1,2,3,4,5,6,7,8',
         ]);
 
@@ -461,9 +461,9 @@ class EmployeeController extends Controller
      */
     public function destroyContractLegacy(Employee $employee, EmployeeContract $contract)
     {
-        // Verificare che il contratto appartenga al dipendente
+        // Verify that contract belongs to employee
         if ($contract->employee_uuid !== $employee->uuid) {
-            return response()->json(['error' => 'Contratto non trovato.'], 404);
+            return response()->json(['error' => __('flash.contract_not_found')], 404);
         }
 
         $contract->update(['removed' => true]);

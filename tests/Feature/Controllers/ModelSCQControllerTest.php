@@ -321,7 +321,7 @@ class ModelSCQControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // Crear algunos modelos con código CQU
+        // Create some models with CQU code
         ModelSCQ::factory()->create([
             'cod_model' => 'CQU001',
             'removed' => false,
@@ -358,7 +358,7 @@ class ModelSCQControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // Crear más de 15 modelos para probar paginación
+        // Create more than 15 models to test pagination
         ModelSCQ::factory()->count(20)->create(['removed' => false]);
 
         $response = $this->get(route('articles.cq-models.index'));
@@ -385,7 +385,7 @@ class ModelSCQControllerTest extends TestCase
             'filename' => 'test-model.pdf',
         ]);
 
-        // Crear archivo de prueba
+        // Create test file
         $filePath = storage_path('app/modelsCQ/'.$model->uuid.'/');
         if (! file_exists($filePath)) {
             mkdir($filePath, 0755, true);
@@ -397,7 +397,7 @@ class ModelSCQControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertDownload('test-model.pdf');
 
-        // Limpiar
+        // Cleanup
         if (file_exists($filePath.'test-model.pdf')) {
             unlink($filePath.'test-model.pdf');
             rmdir($filePath);

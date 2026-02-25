@@ -9,6 +9,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import palletTypes from '@/routes/pallet-types/index';
 import { type BreadcrumbItem } from '@/types';
@@ -21,30 +22,32 @@ type PalletTypesCreateProps = {
 export default function PalletTypesCreate({
     errors: serverErrors,
 }: PalletTypesCreateProps) {
+    const { t } = useTranslations();
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Tipi di Pallet',
+            title: t('pallet_types.title'),
             href: palletTypes.index().url,
         },
         {
-            title: 'Nuovo Tipo di Pallet',
+            title: t('pallet_types.create.breadcrumb'),
             href: palletTypes.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Nuovo Tipo di Pallet" />
+            <Head title={t('pallet_types.create.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Nuovo Tipo di Pallet</CardTitle>
+                                <CardTitle>
+                                    {t('pallet_types.create.card_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Compila i campi per creare un nuovo tipo di
-                                    pallet.
+                                    {t('pallet_types.create.card_description')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -66,13 +69,17 @@ export default function PalletTypesCreate({
                                                         htmlFor="cod"
                                                         required
                                                     >
-                                                        Codice
+                                                        {t(
+                                                            'pallet_types.form.cod_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="cod"
                                                         name="cod"
                                                         required
-                                                        placeholder="Codice tipo pallet"
+                                                        placeholder={t(
+                                                            'pallet_types.form.cod_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={allErrors.cod}
@@ -84,13 +91,17 @@ export default function PalletTypesCreate({
                                                         htmlFor="description"
                                                         required
                                                     >
-                                                        Descrizione
+                                                        {t(
+                                                            'pallet_types.form.description_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="description"
                                                         name="description"
                                                         required
-                                                        placeholder="Descrizione tipo pallet"
+                                                        placeholder={t(
+                                                            'pallet_types.form.description_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={
@@ -105,8 +116,12 @@ export default function PalletTypesCreate({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Creando...'
-                                                            : 'Crea tipo pallet'}
+                                                            ? t(
+                                                                  'pallet_types.create.submitting',
+                                                              )
+                                                            : t(
+                                                                  'pallet_types.create.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -118,7 +133,7 @@ export default function PalletTypesCreate({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

@@ -19,17 +19,17 @@ class ProductionOrderProcessingController extends Controller
         $query = ProductionOrderProcessing::active()
             ->with(['employee', 'order']);
 
-        // Filtro per dipendente
+        // Filter by employee
         if ($request->has('employee_uuid') && $request->filled('employee_uuid')) {
             $query->where('employee_uuid', $request->get('employee_uuid'));
         }
 
-        // Filtro per ordine
+        // Filter by order
         if ($request->has('order_uuid') && $request->filled('order_uuid')) {
             $query->where('order_uuid', $request->get('order_uuid'));
         }
 
-        // Filtro per intervallo date
+        // Filter by date range
         if ($request->has('date_from')) {
             $dateFrom = $request->get('date_from');
             if ($dateFrom) {
@@ -43,7 +43,7 @@ class ProductionOrderProcessingController extends Controller
             }
         }
 
-        // Filtro per quantità minima
+        // Filter by minimum quantity
         if ($request->has('min_quantity') && $request->filled('min_quantity')) {
             $minQuantity = $request->get('min_quantity');
             if (is_numeric($minQuantity)) {
@@ -51,7 +51,7 @@ class ProductionOrderProcessingController extends Controller
             }
         }
 
-        // Filtro per quantità massima
+        // Filter by maximum quantity
         if ($request->has('max_quantity') && $request->filled('max_quantity')) {
             $maxQuantity = $request->get('max_quantity');
             if (is_numeric($maxQuantity)) {
@@ -59,7 +59,7 @@ class ProductionOrderProcessingController extends Controller
             }
         }
 
-        // Ricerca
+        // Search
         if ($request->has('search')) {
             $search = $request->get('search');
             $query->where(function ($q) use ($search) {
@@ -94,7 +94,7 @@ class ProductionOrderProcessingController extends Controller
         $perPage = $request->get('per_page', 10);
         $processings = $query->paginate($perPage);
 
-        // Assicurare che quantity sia serializzato come numero
+        // Ensure quantity is serialized as number
         $processings->getCollection()->transform(function ($processing) {
             if (isset($processing->quantity)) {
                 $processing->quantity = is_numeric($processing->quantity)
@@ -105,7 +105,7 @@ class ProductionOrderProcessingController extends Controller
             return $processing;
         });
 
-        // Ottenere opzioni per filtri
+        // Get filter options
         $employees = \App\Models\Employee::active()
             ->whereHas('orderProcessings', function ($query) {
                 $query->where('removed', false);
@@ -145,13 +145,13 @@ class ProductionOrderProcessingController extends Controller
      */
     public function create(): Response
     {
-        // Ottenere dipendenti attivi
+        // Get active employees
         $employees = \App\Models\Employee::active()
             ->orderBy('surname')
             ->orderBy('name')
             ->get(['uuid', 'name', 'surname', 'matriculation_number']);
 
-        // Ottenere ordini attivi con relazione article
+        // Get active orders with article relation
         $orders = \App\Models\Order::active()
             ->with('article:id,uuid,article_descr')
             ->orderBy('order_production_number', 'desc')
@@ -181,13 +181,13 @@ class ProductionOrderProcessingController extends Controller
             'quantity' => ['required', 'numeric', 'min:0.01'],
             'processed_datetime' => ['required', 'date'],
         ], [
-            'employee_uuid.required' => 'Il dipendente è obbligatorio.',
-            'employee_uuid.exists' => 'Il dipendente selezionato non è valido.',
-            'order_uuid.required' => 'L\'ordine è obbligatorio.',
-            'order_uuid.exists' => 'L\'ordine selezionato non è valido.',
-            'quantity.required' => 'La quantità è obbligatoria.',
-            'quantity.numeric' => 'La quantità deve essere un numero.',
-            'quantity.min' => 'La quantità deve essere maggiore di zero.',
+            'employee_uuid.required' => __('validation.employee_required'),
+            'employee_uuid.exists' => __('validation.employee_exists'),
+            'order_uuid.required' => __('validation.order_required'),
+            'order_uuid.exists' => __('validation.order_exists'),
+            'quantity.required' => __('validation.quantity_required'),
+            'quantity.numeric' => __('validation.quantity_numeric'),
+            'quantity.min' => __('validation.quantity_min'),
             'processed_datetime.required' => 'La data e ora di lavorazione sono obbligatorie.',
             'processed_datetime.date' => 'La data e ora di lavorazione non sono valide.',
         ]);
@@ -201,20 +201,20 @@ class ProductionOrderProcessingController extends Controller
             'removed' => false,
         ]);
 
-        // Aggiornare worked_quantity dell'ordine
+        // Update order worked_quantity
         $order = \App\Models\Order::where('uuid', $validated['order_uuid'])->first();
         if ($order) {
             $totalProcessed = ProductionOrderProcessing::loadProcessedQuantity($validated['order_uuid']);
             $order->update(['worked_quantity' => $totalProcessed]);
 
-            // Adegua automaticamente il planning futuro in base alla quantità lavorata
+            // Automatically adjust future planning based on worked quantity
             /** @var PlanningReplanService $replanService */
             $replanService = app(PlanningReplanService::class);
             $replanService->adjustForWorkedQuantity($order->uuid);
         }
 
         return redirect()->route('production-order-processing.index')
-            ->with('success', 'Lavorazione ordine creata con successo.');
+            ->with('success', __('flash.production_order_processing.created'));
     }
 
     /**
@@ -259,6 +259,6 @@ class ProductionOrderProcessingController extends Controller
         }
 
         return redirect()->route('production-order-processing.index')
-            ->with('success', 'Lavorazione ordine eliminata con successo.');
+            ->with('success', __('flash.production_order_processing.deleted'));
     }
 }

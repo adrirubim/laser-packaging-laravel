@@ -37,13 +37,13 @@ class StoreCustomerShippingAddressRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'customerdivision_uuid.required' => 'La Divisione è obbligatoria.',
-            'customerdivision_uuid.exists' => 'La Divisione selezionata non è valida.',
-            'street.required' => 'La Via è obbligatoria.',
-            'postal_code.size' => 'Il CAP deve contenere esattamente 5 cifre.',
-            'postal_code.regex' => 'Il CAP deve contenere solo numeri (5 cifre).',
-            'province.size' => 'La Provincia deve essere un codice di 2 lettere.',
-            'province.regex' => 'La Provincia deve essere un codice di 2 lettere maiuscole (es: RM, MI).',
+            'customerdivision_uuid.required' => __('validation.division_required'),
+            'customerdivision_uuid.exists' => __('validation.division_exists'),
+            'street.required' => __('validation.street_required'),
+            'postal_code.size' => __('validation.postal_code_size'),
+            'postal_code.regex' => __('validation.postal_code_regex'),
+            'province.size' => __('validation.province_size'),
+            'province.regex' => __('validation.province_regex'),
         ];
     }
 }

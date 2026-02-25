@@ -8,6 +8,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import offerTypes from '@/routes/offer-types/index';
 import { type BreadcrumbItem } from '@/types';
@@ -26,18 +27,13 @@ type OfferTypesShowProps = {
 };
 
 export default function OfferTypesShow({ offerType }: OfferTypesShowProps) {
+    const { t } = useTranslations();
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
-        {
-            title: 'Offerte',
-            href: '/offers',
-        },
-        {
-            title: 'Tipi',
-            href: offerTypes.index().url,
-        },
+        { title: t('nav.offers'), href: '/offers' },
+        { title: t('nav.offer_types'), href: offerTypes.index().url },
         {
             title: offerType.name,
             href: offerTypes.show({ offerType: offerType.uuid }).url,
@@ -66,7 +62,7 @@ export default function OfferTypesShow({ offerType }: OfferTypesShowProps) {
                     <div className="flex-1">
                         <h1 className="text-2xl font-bold">{offerType.name}</h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            UUID:{' '}
+                            {t('common.uuid')}:{' '}
                             <span className="font-mono">{offerType.uuid}</span>
                         </p>
                     </div>
@@ -80,7 +76,7 @@ export default function OfferTypesShow({ offerType }: OfferTypesShowProps) {
                                 }
                             >
                                 <Edit className="mr-2 h-4 w-4" />
-                                Modifica
+                                {t('common.edit')}
                             </Link>
                         </Button>
                         <Button
@@ -89,22 +85,24 @@ export default function OfferTypesShow({ offerType }: OfferTypesShowProps) {
                             onClick={() => setDeleteDialogOpen(true)}
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Elimina
+                            {t('common.delete')}
                         </Button>
                     </div>
                 </div>
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Dettagli Tipo di Offerta</CardTitle>
+                        <CardTitle>
+                            {t('offer_types.show.details_title')}
+                        </CardTitle>
                         <CardDescription>
-                            Informazioni su questo tipo di offerta
+                            {t('offer_types.show.details_subtitle')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div>
                             <Label className="text-sm font-medium text-muted-foreground">
-                                Nome
+                                {t('offer_types.form.name_label')}
                             </Label>
                             <p className="text-lg font-semibold">
                                 {offerType.name}
@@ -113,7 +111,7 @@ export default function OfferTypesShow({ offerType }: OfferTypesShowProps) {
 
                         <div>
                             <Label className="text-sm font-medium text-muted-foreground">
-                                UUID
+                                {t('common.uuid')}
                             </Label>
                             <p className="font-mono text-sm">
                                 {offerType.uuid}
@@ -122,7 +120,7 @@ export default function OfferTypesShow({ offerType }: OfferTypesShowProps) {
 
                         <div>
                             <Label className="text-sm font-medium text-muted-foreground">
-                                ID
+                                {t('common.id')}
                             </Label>
                             <p className="text-sm">{offerType.id}</p>
                         </div>
@@ -133,8 +131,8 @@ export default function OfferTypesShow({ offerType }: OfferTypesShowProps) {
                     open={deleteDialogOpen}
                     onOpenChange={setDeleteDialogOpen}
                     onConfirm={handleDeleteConfirm}
-                    title="Elimina Tipo di Offerta"
-                    description="Sei sicuro di voler eliminare questo tipo di offerta? Questa azione non può essere annullata."
+                    title={t('offer_types.delete.title')}
+                    description={t('offer_types.delete.description')}
                     itemName={itemName}
                     isLoading={isDeleting}
                 />

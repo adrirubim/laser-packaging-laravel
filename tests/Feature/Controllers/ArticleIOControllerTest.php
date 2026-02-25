@@ -297,7 +297,7 @@ class ArticleIOControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // Crear algunas instrucciones con code IO
+        // Create some instructions with code IO
         ArticleIO::factory()->create([
             'code' => 'IO',
             'number' => '0001',
@@ -336,7 +336,7 @@ class ArticleIOControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // Crear más de 15 instrucciones para probar paginación
+        // Create more than 15 instructions to test pagination
         ArticleIO::factory()->count(20)->create(['removed' => false]);
 
         $response = $this->get(route('articles.operational-instructions.index'));

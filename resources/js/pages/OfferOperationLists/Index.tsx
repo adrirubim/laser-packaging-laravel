@@ -116,26 +116,26 @@ export default function OfferOperationListsIndex() {
     const breadcrumbs: BreadcrumbItem[] = [
         { title: t('nav.offers'), href: offers.index().url },
         {
-            title: 'Liste Operazioni Offerta',
+            title: t('offer_operation_lists.page_title'),
             href: offerOperationLists.index().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Liste Operazioni Offerta" />
+            <Head title={t('offer_operation_lists.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="Liste Operazioni Offerta"
-                    subtitle="Elenco delle operazioni assegnate alle offerte con Cerca e filtri."
+                    title={t('offer_operation_lists.page_title')}
+                    subtitle={t('offer_operation_lists.index.subtitle')}
                     createHref={
                         filters.offer_uuid
                             ? offerOperationLists.create().url +
                               `?offer_uuid=${filters.offer_uuid}`
                             : offerOperationLists.create().url
                     }
-                    createLabel="Nuova Assegnazione"
+                    createLabel={t('offer_operation_lists.create')}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -143,7 +143,7 @@ export default function OfferOperationListsIndex() {
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="space-y-1">
                         <label className="text-xs font-medium text-muted-foreground">
-                            Cerca
+                            {t('common.search')}
                         </label>
                         <SearchInput
                             value={filters.search || ''}
@@ -162,16 +162,22 @@ export default function OfferOperationListsIndex() {
                             <thead className="sticky top-0 z-10 bg-muted/80 backdrop-blur">
                                 <tr className="text-xs tracking-wide text-muted-foreground uppercase">
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Offerta
+                                        {t('offer_operation_lists.table.offer')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Operazione
+                                        {t(
+                                            'offer_operation_lists.table.operation',
+                                        )}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Numero
+                                        {t(
+                                            'offer_operation_lists.table.number',
+                                        )}
                                     </th>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t(
+                                            'offer_operation_lists.table.actions',
+                                        )}
                                     </th>
                                 </tr>
                             </thead>
@@ -182,8 +188,9 @@ export default function OfferOperationListsIndex() {
                                             colSpan={4}
                                             className="px-3 py-6 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessuna lista operazioni trovata per
-                                            i filtri attuali.
+                                            {t(
+                                                'offer_operation_lists.index.empty',
+                                            )}
                                         </td>
                                     </tr>
                                 )}
@@ -193,11 +200,13 @@ export default function OfferOperationListsIndex() {
                                         className="border-b last:border-b-0 hover:bg-muted/40"
                                     >
                                         <td className="px-3 py-2 align-middle font-mono text-xs">
-                                            {list.offer?.offer_number || 'N/D'}
+                                            {list.offer?.offer_number ??
+                                                t('common.not_available')}
                                         </td>
                                         <td className="px-3 py-2 align-middle">
                                             <div className="font-mono text-xs">
-                                                {list.operation?.code || 'N/D'}
+                                                {list.operation?.code ??
+                                                    t('common.not_available')}
                                             </div>
                                             {list.operation?.description && (
                                                 <div className="text-xs text-muted-foreground">
@@ -248,8 +257,8 @@ export default function OfferOperationListsIndex() {
                 }
                 onConfirm={handleDeleteConfirm}
                 isDeleting={isDeleting}
-                title="Elimina assegnazione"
-                description="Sei sicuro di voler eliminare questa assegnazione operazione-offerta? L'operazione non può essere annullata."
+                title={t('offer_operation_lists.delete_title')}
+                description={t('offer_operation_lists.delete_description')}
             />
         </AppLayout>
     );

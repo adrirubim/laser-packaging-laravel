@@ -124,9 +124,9 @@ export default function MachineryIndex() {
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
                     title={t('nav.macchinari')}
-                    subtitle="Elenco dei macchinari attivi con Cerca."
+                    subtitle={t('machinery.index.subtitle')}
                     createHref={machineryRoutes.create().url}
-                    createLabel="Nuovo Macchinario"
+                    createLabel={t('machinery.index.create')}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -134,7 +134,7 @@ export default function MachineryIndex() {
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="space-y-1">
                         <label className="text-xs font-medium text-muted-foreground">
-                            Cerca
+                            {t('common.search')}
                         </label>
                         <SearchInput
                             value={filters.search || ''}
@@ -173,8 +173,7 @@ export default function MachineryIndex() {
                             {!isLoading &&
                                 (machineryPaginated.data.length === 0 ? (
                                     <div className="py-8 text-center text-sm text-muted-foreground">
-                                        Nessun macchinario trovato per i filtri
-                                        attuali.
+                                        {t('machinery.index.empty_filtered')}
                                     </div>
                                 ) : (
                                     machineryPaginated.data.map((mach) => (
@@ -197,7 +196,10 @@ export default function MachineryIndex() {
                                                     <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
                                                         <div>
                                                             <span className="text-muted-foreground">
-                                                                Parametro:{' '}
+                                                                {t(
+                                                                    'machinery.form.parameter_placeholder',
+                                                                )}
+                                                                :{' '}
                                                             </span>
                                                             <span>
                                                                 {mach.parameter ||
@@ -206,8 +208,10 @@ export default function MachineryIndex() {
                                                         </div>
                                                         <div>
                                                             <span className="text-muted-foreground">
-                                                                Tipo
-                                                                valore:{' '}
+                                                                {t(
+                                                                    'machinery.form.value_type_label',
+                                                                )}
+                                                                :{' '}
                                                             </span>
                                                             <span>
                                                                 {mach.value_type
@@ -246,22 +250,28 @@ export default function MachineryIndex() {
                                 <thead className="sticky top-0 z-10 bg-muted/80 backdrop-blur">
                                     <tr className="text-xs tracking-wide text-muted-foreground uppercase">
                                         <th className="border-b px-3 py-2 font-medium">
-                                            ID
+                                            {t('machinery.index.columns.id')}
                                         </th>
                                         <th className="border-b px-3 py-2 font-medium">
-                                            UUID
+                                            {t('machinery.index.columns.uuid')}
                                         </th>
                                         <th className="border-b px-3 py-2 font-medium">
-                                            Macchinario
+                                            {t(
+                                                'machinery.index.columns.machinery',
+                                            )}
                                         </th>
                                         <th className="border-b px-3 py-2 font-medium">
-                                            Parametro
+                                            {t(
+                                                'machinery.index.columns.parameter',
+                                            )}
                                         </th>
                                         <th className="border-b px-3 py-2 font-medium">
-                                            Tipo Valore
+                                            {t(
+                                                'machinery.index.columns.value_type',
+                                            )}
                                         </th>
                                         <th className="border-b px-3 py-2 text-right font-medium">
-                                            Azioni
+                                            {t('common.actions')}
                                         </th>
                                     </tr>
                                 </thead>
@@ -302,8 +312,9 @@ export default function MachineryIndex() {
                                                     colSpan={6}
                                                     className="px-3 py-6 text-center text-sm text-muted-foreground"
                                                 >
-                                                    Nessun macchinario trovato
-                                                    per i filtri attuali.
+                                                    {t(
+                                                        'machinery.index.empty_filtered',
+                                                    )}
                                                 </td>
                                             </tr>
                                         )}
@@ -388,8 +399,8 @@ export default function MachineryIndex() {
                 }
                 onConfirm={handleDeleteConfirm}
                 isDeleting={isDeleting}
-                title="Elimina Macchinario"
-                description="Sei sicuro di voler eliminare questo macchinario? L'operazione non può essere annullata."
+                title={t('machinery.delete.title')}
+                description={t('machinery.delete.description')}
             />
         </AppLayout>
     );

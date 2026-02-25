@@ -6,6 +6,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAppearance } from '@/hooks/use-appearance';
+import { useTranslations } from '@/hooks/use-translations';
 import { Monitor, Moon, Sun } from 'lucide-react';
 import { HTMLAttributes } from 'react';
 
@@ -13,6 +14,7 @@ export default function AppearanceToggleDropdown({
     className = '',
     ...props
 }: HTMLAttributes<HTMLDivElement>) {
+    const { t } = useTranslations();
     const { appearance, updateAppearance } = useAppearance();
 
     const getCurrentIcon = () => {
@@ -36,20 +38,22 @@ export default function AppearanceToggleDropdown({
                         className="h-9 w-9 rounded-md"
                     >
                         {getCurrentIcon()}
-                        <span className="sr-only">Toggle theme</span>
+                        <span className="sr-only">
+                            {t('settings.appearance.toggle_theme')}
+                        </span>
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                     <DropdownMenuItem onClick={() => updateAppearance('light')}>
                         <span className="flex items-center gap-2">
                             <Sun className="h-5 w-5" />
-                            Light
+                            {t('settings.appearance.theme_light')}
                         </span>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => updateAppearance('dark')}>
                         <span className="flex items-center gap-2">
                             <Moon className="h-5 w-5" />
-                            Dark
+                            {t('settings.appearance.theme_dark')}
                         </span>
                     </DropdownMenuItem>
                     <DropdownMenuItem
@@ -57,7 +61,7 @@ export default function AppearanceToggleDropdown({
                     >
                         <span className="flex items-center gap-2">
                             <Monitor className="h-5 w-5" />
-                            System
+                            {t('settings.appearance.theme_system')}
                         </span>
                     </DropdownMenuItem>
                 </DropdownMenuContent>

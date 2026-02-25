@@ -9,6 +9,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import articleCategories from '@/routes/article-categories/index';
 import { type BreadcrumbItem } from '@/types';
@@ -21,30 +22,35 @@ type ArticleCategoriesCreateProps = {
 export default function ArticleCategoriesCreate({
     errors: serverErrors,
 }: ArticleCategoriesCreateProps) {
+    const { t } = useTranslations();
+
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Categoria Articoli',
+            title: t('article_categories.breadcrumb'),
             href: articleCategories.index().url,
         },
         {
-            title: 'Nuova Categoria',
+            title: t('article_categories.create.breadcrumb'),
             href: articleCategories.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Nuova Categoria Articolo" />
+            <Head title={t('article_categories.create.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Nuova Categoria Articolo</CardTitle>
+                                <CardTitle>
+                                    {t('article_categories.create.card_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Compila i campi per creare una categoria di
-                                    articolo.
+                                    {t(
+                                        'article_categories.create.card_description',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -66,13 +72,17 @@ export default function ArticleCategoriesCreate({
                                                         htmlFor="name"
                                                         required
                                                     >
-                                                        Nome Categoria
+                                                        {t(
+                                                            'article_categories.form.name_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="name"
                                                         name="name"
                                                         required
-                                                        placeholder="Nome Categoria"
+                                                        placeholder={t(
+                                                            'article_categories.form.name_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="name-help"
                                                     />
@@ -80,9 +90,9 @@ export default function ArticleCategoriesCreate({
                                                         id="name-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci il nome della
-                                                        categoria di articolo
-                                                        (massimo 255 caratteri).
+                                                        {t(
+                                                            'article_categories.form.name_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.name}
@@ -101,15 +111,19 @@ export default function ArticleCategoriesCreate({
                                                         }
                                                         disabled={processing}
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                     <Button
                                                         type="submit"
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Creando...'
-                                                            : 'Crea Categoria'}
+                                                            ? t(
+                                                                  'article_categories.create.submitting',
+                                                              )
+                                                            : t(
+                                                                  'article_categories.create.submit',
+                                                              )}
                                                     </Button>
                                                 </div>
                                             </>

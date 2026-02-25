@@ -9,6 +9,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import offerOperationCategories from '@/routes/offer-operation-categories/index';
 import { type BreadcrumbItem } from '@/types';
@@ -30,13 +31,14 @@ export default function OfferOperationCategoriesEdit({
     category,
     errors: serverErrors,
 }: OfferOperationCategoriesEditProps) {
+    const { t } = useTranslations();
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: '/offers',
         },
         {
-            title: 'Categorie Operazioni',
+            title: t('offer_operation_categories.page_title'),
             href: offerOperationCategories.index().url,
         },
         {
@@ -46,7 +48,7 @@ export default function OfferOperationCategoriesEdit({
             }).url,
         },
         {
-            title: 'Modifica',
+            title: t('common.edit'),
             href: offerOperationCategories.edit({
                 offerOperationCategory: category.uuid,
             }).url,
@@ -55,7 +57,11 @@ export default function OfferOperationCategoriesEdit({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Modifica Categoria Operazione ${category.name}`} />
+            <Head
+                title={t('offer_operation_categories.edit.page_title', {
+                    name: category.name,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
@@ -63,11 +69,14 @@ export default function OfferOperationCategoriesEdit({
                         <Card>
                             <CardHeader>
                                 <CardTitle>
-                                    Modifica Categoria Operazione
+                                    {t(
+                                        'offer_operation_categories.edit.card_title',
+                                    )}
                                 </CardTitle>
                                 <CardDescription>
-                                    Aggiorna le informazioni della categoria
-                                    operazione.
+                                    {t(
+                                        'offer_operation_categories.edit.card_description',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -109,7 +118,9 @@ export default function OfferOperationCategoriesEdit({
                                                         htmlFor="code"
                                                         required
                                                     >
-                                                        Codice
+                                                        {t(
+                                                            'offer_operations.categories.code_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="code"
@@ -118,7 +129,9 @@ export default function OfferOperationCategoriesEdit({
                                                             category.code
                                                         }
                                                         required
-                                                        placeholder="Codice Categoria"
+                                                        placeholder={t(
+                                                            'offer_operations.categories.code_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="code-help"
                                                     />
@@ -126,9 +139,9 @@ export default function OfferOperationCategoriesEdit({
                                                         id="code-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci il codice
-                                                        univoco della categoria
-                                                        (massimo 255 caratteri).
+                                                        {t(
+                                                            'offer_operations.categories.code_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.code}
@@ -140,7 +153,9 @@ export default function OfferOperationCategoriesEdit({
                                                         htmlFor="name"
                                                         required
                                                     >
-                                                        Nome
+                                                        {t(
+                                                            'offer_operations.categories.name_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="name"
@@ -149,7 +164,9 @@ export default function OfferOperationCategoriesEdit({
                                                             category.name
                                                         }
                                                         required
-                                                        placeholder="Nome Categoria"
+                                                        placeholder={t(
+                                                            'offer_operations.categories.name_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="name-help"
                                                     />
@@ -157,9 +174,9 @@ export default function OfferOperationCategoriesEdit({
                                                         id="name-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci il nome della
-                                                        categoria (massimo 255
-                                                        caratteri).
+                                                        {t(
+                                                            'offer_operations.categories.name_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.name}
@@ -172,8 +189,12 @@ export default function OfferOperationCategoriesEdit({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Aggiornando...'
-                                                            : 'Aggiorna Categoria'}
+                                                            ? t(
+                                                                  'offer_operation_categories.edit.submitting',
+                                                              )
+                                                            : t(
+                                                                  'offer_operation_categories.edit.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -189,7 +210,7 @@ export default function OfferOperationCategoriesEdit({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

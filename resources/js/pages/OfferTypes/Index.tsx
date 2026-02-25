@@ -8,6 +8,7 @@ import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { SortableTableHeader } from '@/components/SortableTableHeader';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import offerTypes from '@/routes/offer-types';
 import { type BreadcrumbItem } from '@/types';
@@ -39,6 +40,7 @@ type OfferTypesIndexProps = {
 };
 
 export default function OfferTypesIndex() {
+    const { t } = useTranslations();
     const { props } = usePage<OfferTypesIndexProps>();
     const { offerTypes: offerTypesPaginated, filters } = props;
     const { flash } = useFlashNotifications();
@@ -54,7 +56,7 @@ export default function OfferTypesIndex() {
     });
     const [isDeleting, setIsDeleting] = useState(false);
 
-    // Sincronizzare stato iniziale con i filtri del server
+    // Sync initial state with server filters
     useEffect(() => {
         queueMicrotask(() => setSearchValue(filters.search ?? ''));
     }, [filters.search]);
@@ -135,20 +137,20 @@ export default function OfferTypesIndex() {
     };
 
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Offerte', href: '/offers' },
-        { title: 'Tipi', href: offerTypes.index().url },
+        { title: t('nav.offers'), href: '/offers' },
+        { title: t('nav.offer_types'), href: offerTypes.index().url },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Tipi di Offerta" />
+            <Head title={t('offer_types.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="Tipi di Offerta"
-                    subtitle="Elenco dei tipi di offerta attivi con Cerca."
+                    title={t('offer_types.page_title')}
+                    subtitle={t('offer_types.index.subtitle')}
                     createHref={offerTypes.create().url}
-                    createLabel="Nuovo Tipo"
+                    createLabel={t('offer_types.index.create')}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -156,12 +158,14 @@ export default function OfferTypesIndex() {
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="space-y-1">
                         <label className="text-xs font-medium text-muted-foreground">
-                            Cerca
+                            {t('common.search')}
                         </label>
                         <SearchInput
                             value={searchValue}
                             onChange={handleSearchChange}
-                            placeholder="Nome tipo..."
+                            placeholder={t(
+                                'offer_types.index.search_placeholder',
+                            )}
                             isLoading={isSearching}
                             onClear={clearSearch}
                         />
@@ -172,7 +176,7 @@ export default function OfferTypesIndex() {
                 <div className="block space-y-3 p-4 md:hidden">
                     {offerTypesPaginated.data.length === 0 ? (
                         <div className="py-8 text-center text-sm text-muted-foreground">
-                            Nessun tipo trovato per i filtri attuali.
+                            {t('offer_types.index.empty')}
                         </div>
                     ) : (
                         offerTypesPaginated.data.map((offerType) => (
@@ -217,10 +221,10 @@ export default function OfferTypesIndex() {
                             <thead className="sticky top-0 z-10 bg-muted/80 backdrop-blur">
                                 <tr className="text-xs tracking-wide text-muted-foreground uppercase">
                                     <th className="border-b px-3 py-2 font-medium">
-                                        ID
+                                        {t('common.id')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        UUID
+                                        {t('common.uuid')}
                                     </th>
                                     <SortableTableHeader
                                         column="name"
@@ -228,10 +232,10 @@ export default function OfferTypesIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Nome
+                                        {t('offer_types.form.name_label')}
                                     </SortableTableHeader>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t('common.actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -242,8 +246,7 @@ export default function OfferTypesIndex() {
                                             colSpan={4}
                                             className="px-3 py-6 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessun tipo trovato per i filtri
-                                            attuali.
+                                            {t('offer_types.index.empty')}
                                         </td>
                                     </tr>
                                 )}
@@ -302,8 +305,8 @@ export default function OfferTypesIndex() {
                         })
                     }
                     onConfirm={handleDeleteConfirm}
-                    title="Elimina Tipo di Offerta"
-                    description="Sei sicuro di voler eliminare questo tipo di offerta? Questa azione non può essere annullata."
+                    title={t('offer_types.delete.title')}
+                    description={t('offer_types.delete.description')}
                     itemName={deleteDialog.offerType?.name}
                     isLoading={isDeleting}
                 />

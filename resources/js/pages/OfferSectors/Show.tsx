@@ -8,6 +8,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import offerSectors from '@/routes/offer-sectors/index';
 import { type BreadcrumbItem } from '@/types';
@@ -26,16 +27,17 @@ type OfferSectorsShowProps = {
 };
 
 export default function OfferSectorsShow({ sector }: OfferSectorsShowProps) {
+    const { t } = useTranslations();
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: '/offers',
         },
         {
-            title: 'Settori',
+            title: t('offer_sectors.page_title'),
             href: offerSectors.index().url,
         },
         {
@@ -57,7 +59,11 @@ export default function OfferSectorsShow({ sector }: OfferSectorsShowProps) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Settore ${sector.name}`} />
+            <Head
+                title={t('offer_sectors.show.page_title', {
+                    name: sector.name,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
@@ -78,7 +84,7 @@ export default function OfferSectorsShow({ sector }: OfferSectorsShowProps) {
                                 }
                             >
                                 <Edit className="mr-2 h-4 w-4" />
-                                Modifica
+                                {t('common.edit')}
                             </Link>
                         </Button>
                         <Button
@@ -87,22 +93,24 @@ export default function OfferSectorsShow({ sector }: OfferSectorsShowProps) {
                             disabled={isDeleting}
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Elimina
+                            {t('common.delete')}
                         </Button>
                     </div>
                 </div>
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Dettagli Settore</CardTitle>
+                        <CardTitle>
+                            {t('offer_sectors.show.details_title')}
+                        </CardTitle>
                         <CardDescription>
-                            Informazioni su questo settore
+                            {t('offer_sectors.show.details_subtitle')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div>
                             <Label className="text-sm font-medium text-muted-foreground">
-                                Nome
+                                {t('offer_sectors.form.name_label')}
                             </Label>
                             <p className="text-lg font-semibold">
                                 {sector.name}
@@ -129,8 +137,8 @@ export default function OfferSectorsShow({ sector }: OfferSectorsShowProps) {
                     open={deleteDialogOpen}
                     onOpenChange={setDeleteDialogOpen}
                     onConfirm={handleDeleteConfirm}
-                    title="Elimina Settore"
-                    description="Sei sicuro di voler eliminare questo settore? Questa azione non può essere annullata."
+                    title={t('offer_sectors.delete.title')}
+                    description={t('offer_sectors.delete.description')}
                     itemName={sector.name}
                     isLoading={isDeleting}
                 />

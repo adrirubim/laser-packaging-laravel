@@ -35,7 +35,7 @@ class CreateOrderAction
     public function execute(array $validated)
     {
         return DB::transaction(function () use ($validated) {
-            // Convertir strings vacíos a null para campos nullable
+            // Convert empty strings to null for nullable fields
             $nullableFields = [
                 'customershippingaddress_uuid',
                 'number_customer_reference_order',
@@ -54,7 +54,7 @@ class CreateOrderAction
                 }
             }
 
-            // Verificare unicità del numero di produzione prima della transazione
+            // Verify production number uniqueness before transaction
             if (! empty($validated['order_production_number'])) {
                 if ($this->orderProductionNumberService->exists($validated['order_production_number'])) {
                     $this->logWarning('CreateOrderAction::execute', 'Production number already exists', [
@@ -69,7 +69,7 @@ class CreateOrderAction
                 }
             }
 
-            // Si no se proporciona order_production_number, generarlo automáticamente
+            // If order_production_number not provided, generate automatically
             if (empty($validated['order_production_number'])) {
                 $validated['order_production_number'] = $this->orderProductionNumberService->generateNext();
             }
@@ -77,15 +77,15 @@ class CreateOrderAction
             // Estado inicial: Pianificato
             $validated['status'] = OrderStatus::PIANIFICATO->value;
 
-            // Inicializar semáforos
+            // Initialize semaphores
             $validated['status_semaforo'] = json_encode([
                 'etichette' => 0,
                 'packaging' => 0,
                 'prodotto' => 0,
             ]);
 
-            // Las fechas se manejan como datetime en Laravel (el modelo tiene casts)
-            // No necesitamos convertir a timestamp, Laravel lo hace automáticamente
+            // Dates are handled as datetime in Laravel (model has casts)
+            // No need to convert to timestamp, Laravel does it automatically
 
             $order = Order::create($validated);
 

@@ -28,8 +28,9 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import {
     getOrderStatusColor,
-    getOrderStatusLabel,
+    getOrderStatusLabelKey,
 } from '@/constants/orderStatus';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import orders from '@/routes/orders/index';
 import { type BreadcrumbItem } from '@/types';
@@ -68,10 +69,10 @@ type OrdersManageStatusProps = {
     statusOptions: StatusOption[];
 };
 
-const SEMAFORO_OPTIONS = [
-    { value: 0, label: 'Rosso' },
-    { value: 1, label: 'Giallo' },
-    { value: 2, label: 'Verde' },
+const SEMAFORO_OPTIONS_KEYS = [
+    { value: 0, key: 'orders.manage_status.semaforo_red' },
+    { value: 1, key: 'orders.manage_status.semaforo_yellow' },
+    { value: 2, key: 'orders.manage_status.semaforo_green' },
 ];
 
 export default function OrdersManageStatus({
@@ -79,6 +80,7 @@ export default function OrdersManageStatus({
     statusSemaforo: initialStatusSemaforo,
     statusOptions,
 }: OrdersManageStatusProps) {
+    const { t } = useTranslations();
     const [statusSemaforo, setStatusSemaforo] = useState<StatusSemaforo>(
         initialStatusSemaforo,
     );
@@ -106,7 +108,7 @@ export default function OrdersManageStatus({
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Ordini',
+            title: t('nav.orders'),
             href: orders.index().url,
         },
         {
@@ -114,7 +116,7 @@ export default function OrdersManageStatus({
             href: orders.show({ order: order.uuid }).url,
         },
         {
-            title: 'Gestisci Stato',
+            title: t('orders.manage_status'),
             href: `/orders/${order.uuid}/manage-status`,
         },
     ];
@@ -153,19 +155,19 @@ export default function OrdersManageStatus({
             const data = await response.json();
 
             if (data.success) {
-                setSuccess('Impostazioni del semaforo salvate con successo.');
+                setSuccess(t('orders.manage_status.toasts.semaforo_saved'));
                 if (data.all_green && data.can_change_to_lanciato) {
                     setShowLanciatoPrompt(true);
                 }
             } else {
                 setError(
                     data.message ||
-                        'Si è verificato un errore nel salvataggio del semaforo.',
+                        t('orders.manage_status.toasts.semaforo_error'),
                 );
             }
         } catch {
             setError(
-                'Errore di connessione durante il salvataggio del semaforo. Riprova.',
+                t('orders.manage_status.toasts.semaforo_connection_error'),
             );
         } finally {
             setIsSavingSemaforo(false);
@@ -200,20 +202,18 @@ export default function OrdersManageStatus({
             const data = await response.json();
 
             if (data.success) {
-                setSuccess("Stato dell'ordine aggiornato con successo.");
+                setSuccess(t('orders.manage_status.toasts.status_updated'));
                 setTimeout(() => {
                     router.visit(orders.show({ order: order.uuid }).url);
                 }, 1500);
             } else {
                 setError(
                     data.message ||
-                        "Si è verificato un errore nell'aggiornamento dello stato dell'ordine.",
+                        t('orders.manage_status.toasts.status_error'),
                 );
             }
         } catch {
-            setError(
-                "Errore di connessione durante l'aggiornamento dello stato. Riprova.",
-            );
+            setError(t('orders.manage_status.toasts.status_connection_error'));
         } finally {
             setIsChangingStatus(false);
         }
@@ -221,13 +221,13 @@ export default function OrdersManageStatus({
 
     const handleChangeStatus = async () => {
         if (newStatus === null) {
-            setError('Seleziona un nuovo stato per procedere.');
+            setError(t('orders.manage_status.errors.select_status'));
             return;
         }
 
         // Validate SOSPESO requires motivazione
         if (newStatus === 4 && !motivazione.trim()) {
-            setError("La motivazione è obbligatoria per sospendere l'ordine.");
+            setError(t('orders.manage_status.errors.motivazione_required'));
             return;
         }
 
@@ -283,44 +283,57 @@ export default function OrdersManageStatus({
         switch (action) {
             case 'back':
                 return {
-                    title: 'Tornare ai dettagli?',
-                    description:
-                        "Vuoi tornare alla pagina di dettaglio dell'ordine? Le modifiche di stato già salvate resteranno applicate.",
-                    confirmLabel: 'Torna ai dettagli',
+                    title: t('orders.manage_status.dialogs.back_title'),
+                    description: t('orders.manage_status.dialogs.back_desc'),
+                    confirmLabel: t(
+                        'orders.manage_status.dialogs.back_confirm',
+                    ),
                 };
             case 'allestimento':
                 return {
-                    title: 'Passa in Allestimento',
-                    description:
-                        "Vuoi cambiare lo stato dell'ordine in Allestimento?",
-                    confirmLabel: 'Sì, passa in Allestimento',
+                    title: t('orders.manage_status.dialogs.allestimento_title'),
+                    description: t(
+                        'orders.manage_status.dialogs.allestimento_desc',
+                    ),
+                    confirmLabel: t(
+                        'orders.manage_status.dialogs.allestimento_confirm',
+                    ),
                 };
             case 'sospendi':
                 return {
-                    title: 'Sospendi ordine',
-                    description:
-                        "L'ordine verrà spostato in stato Sospeso. Specifica una motivazione per ricordare il motivo della pausa.",
-                    confirmLabel: 'Sospendi ordine',
+                    title: t('orders.manage_status.dialogs.sospendi_title'),
+                    description: t(
+                        'orders.manage_status.dialogs.sospendi_desc',
+                    ),
+                    confirmLabel: t(
+                        'orders.manage_status.dialogs.sospendi_confirm',
+                    ),
                 };
             case 'evaso':
                 return {
-                    title: 'Passa in Evaso',
-                    description: "Vuoi cambiare lo stato dell'ordine in Evaso?",
-                    confirmLabel: 'Sì, passa in Evaso',
+                    title: t('orders.manage_status.dialogs.evaso_title'),
+                    description: t('orders.manage_status.dialogs.evaso_desc'),
+                    confirmLabel: t(
+                        'orders.manage_status.dialogs.evaso_confirm',
+                    ),
                 };
             case 'riprendi':
                 return {
-                    title: 'Riprendi ordine',
-                    description:
-                        "Vuoi riprendere l'ordine e riportarlo in Avanzamento?",
-                    confirmLabel: 'Riprendi ordine',
+                    title: t('orders.manage_status.dialogs.riprendi_title'),
+                    description: t(
+                        'orders.manage_status.dialogs.riprendi_desc',
+                    ),
+                    confirmLabel: t(
+                        'orders.manage_status.dialogs.riprendi_confirm',
+                    ),
                 };
             case 'forza-avanzamento':
                 return {
-                    title: 'Forza passaggio in Avanzamento',
-                    description:
-                        "Sei sicuro di voler forzare lo stato dell'ordine in Avanzamento?",
-                    confirmLabel: 'Forza in Avanzamento',
+                    title: t('orders.manage_status.dialogs.forza_title'),
+                    description: t('orders.manage_status.dialogs.forza_desc'),
+                    confirmLabel: t(
+                        'orders.manage_status.dialogs.forza_confirm',
+                    ),
                 };
         }
     };
@@ -341,7 +354,7 @@ export default function OrdersManageStatus({
                 const trimmed = motivazione.trim();
                 if (!trimmed) {
                     setError(
-                        "La motivazione è obbligatoria per sospendere l'ordine.",
+                        t('orders.manage_status.errors.motivazione_required'),
                     );
                     return;
                 }
@@ -372,9 +385,8 @@ export default function OrdersManageStatus({
         statusSemaforo.packaging === 2 &&
         statusSemaforo.prodotto === 2;
 
-    // En legacy el botón "Passa In Lanciato" se muestra cuando
-    // todos los semáforos son > 0 (amarillo o verde). El prompt
-    // automático sólo aparece cuando los tres están en verde.
+    // In legacy the "Passa In Lanciato" button shows when all semaphores are > 0 (yellow or green).
+    // The automatic prompt only appears when all three are green.
     const allPositive =
         statusSemaforo.etichette > 0 &&
         statusSemaforo.packaging > 0 &&
@@ -384,14 +396,14 @@ export default function OrdersManageStatus({
     const getAvailableStatuses = (): StatusOption[] => {
         const currentStatus = order.status;
 
-        // Se l'ordine è già SALDATO (6), non ci sono transizioni possibili
+        // If order is already SALDATO (6), no transitions are possible
         if (currentStatus === 6) {
             return [];
         }
 
         const availableStatuses: StatusOption[] = [];
 
-        // Può andare in SOSPESO solo da stato 3 (IN_AVANZAMENTO), come nel dialogo legacy
+        // Can go to SOSPESO only from status 3 (IN_AVANZAMENTO), as in legacy dialog
         if (currentStatus === 3) {
             availableStatuses.push(
                 ...statusOptions.filter((opt) => opt.value === 4),
@@ -426,7 +438,7 @@ export default function OrdersManageStatus({
                 ...statusOptions.filter((opt) => opt.value === 5),
             );
         } else if (currentStatus === 4) {
-            // SOSPESO - può solo riprendere tornando in AVANZAMENTO (3)
+            // SOSPESO - can only resume by going back to AVANZAMENTO (3)
             availableStatuses.push(
                 ...statusOptions.filter((opt) => opt.value === 3),
             );
@@ -444,23 +456,25 @@ export default function OrdersManageStatus({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Gestisci Stato - ${order.order_production_number}`} />
+            <Head
+                title={`${t('orders.manage_status')} - ${order.order_production_number}`}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-2xl font-bold">
-                            Gestisci Stato Ordine
+                            {t('orders.manage_status.title')}
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Ordine:{' '}
+                            {t('common.order')}:{' '}
                             <span className="font-medium">
                                 {order.order_production_number}
                             </span>
                         </p>
                     </div>
                     <Button variant="outline" onClick={handleBackToDetails}>
-                        Torna ai Dettagli
+                        {t('orders.manage_status.back_to_details')}
                     </Button>
                 </div>
 
@@ -504,7 +518,9 @@ export default function OrdersManageStatus({
                                         {confirmAction === 'sospendi' && (
                                             <div className="mt-4 space-y-2">
                                                 <Label htmlFor="motivazione-modal">
-                                                    Motivazione sospensione
+                                                    {t(
+                                                        'orders.manage_status.labels.motivazione',
+                                                    )}
                                                 </Label>
                                                 <Textarea
                                                     id="motivazione-modal"
@@ -514,14 +530,16 @@ export default function OrdersManageStatus({
                                                             e.target.value,
                                                         )
                                                     }
-                                                    placeholder="Indica brevemente il motivo della sospensione (es. attesa materiali, problema qualità, richiesta cliente...)"
+                                                    placeholder={t(
+                                                        'orders.manage_status.placeholders.suspension_reason',
+                                                    )}
                                                     rows={3}
                                                 />
                                             </div>
                                         )}
                                         <AlertDialogFooter className="mt-6">
                                             <AlertDialogCancel>
-                                                Annulla
+                                                {t('common.cancel')}
                                             </AlertDialogCancel>
                                             <AlertDialogAction
                                                 onClick={() => {
@@ -542,21 +560,22 @@ export default function OrdersManageStatus({
                     <Alert className="border-blue-500 bg-blue-50">
                         <AlertCircle className="h-4 w-4 text-blue-600" />
                         <AlertDescription className="text-blue-800">
-                            Tutti i semafori sono verdi. Vuoi cambiare lo stato
-                            dell'ordine in "Lanciato"?
+                            {t('orders.manage_status.help.all_green_prompt')}
                             <div className="mt-2 flex gap-2">
                                 <Button
                                     size="sm"
                                     onClick={handleChangeToLanciato}
                                 >
-                                    Sì, cambia a Lanciato
+                                    {t(
+                                        'orders.manage_status.buttons.yes_lanciato',
+                                    )}
                                 </Button>
                                 <Button
                                     size="sm"
                                     variant="outline"
                                     onClick={() => setShowLanciatoPrompt(false)}
                                 >
-                                    No, mantieni stato attuale
+                                    {t('orders.manage_status.buttons.no_keep')}
                                 </Button>
                             </div>
                         </AlertDescription>
@@ -566,15 +585,19 @@ export default function OrdersManageStatus({
                 <div className="grid gap-4 md:grid-cols-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Informazioni Ordine</CardTitle>
+                            <CardTitle>
+                                {t('orders.manage_status.sections.order_info')}
+                            </CardTitle>
                             <CardDescription>
-                                Dettagli dell'ordine
+                                {t('orders.manage_status.labels.order_details')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    Numero di Produzione
+                                    {t(
+                                        'orders.manage_status.labels.production_number',
+                                    )}
                                 </Label>
                                 <p className="text-lg font-semibold">
                                     {order.order_production_number}
@@ -583,7 +606,9 @@ export default function OrdersManageStatus({
                             {order.article && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Articolo
+                                        {t(
+                                            'orders.manage_status.labels.article',
+                                        )}
                                     </Label>
                                     <p>{order.article.cod_article_las}</p>
                                     {order.article.article_descr && (
@@ -595,18 +620,24 @@ export default function OrdersManageStatus({
                             )}
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    Stato Attuale
+                                    {t(
+                                        'orders.manage_status.labels.current_status',
+                                    )}
                                 </Label>
                                 <span
                                     className={`inline-flex items-center rounded-full border px-2 py-1 text-xs font-medium ${getOrderStatusColor(order.status)}`}
                                 >
-                                    {getOrderStatusLabel(order.status)}
+                                    {t(getOrderStatusLabelKey(order.status), {
+                                        status: String(order.status),
+                                    })}
                                 </span>
                             </div>
                             {order.quantity && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Quantità
+                                        {t(
+                                            'orders.manage_status.labels.quantity',
+                                        )}
                                     </Label>
                                     <p>{order.quantity}</p>
                                 </div>
@@ -614,7 +645,9 @@ export default function OrdersManageStatus({
                             {order.worked_quantity != null && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Quantità Lavorata
+                                        {t(
+                                            'orders.manage_status.labels.worked_quantity',
+                                        )}
                                     </Label>
                                     <p>{order.worked_quantity}</p>
                                 </div>
@@ -622,7 +655,9 @@ export default function OrdersManageStatus({
                             {order.status === 4 && order.motivazione && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Motivazione sospensione
+                                        {t(
+                                            'orders.manage_status.labels.motivazione',
+                                        )}
                                     </Label>
                                     <p>{order.motivazione}</p>
                                 </div>
@@ -634,16 +669,23 @@ export default function OrdersManageStatus({
                         <Card>
                             <CardHeader>
                                 <CardTitle>
-                                    Semaforo materiali e controlli
+                                    {t(
+                                        'orders.manage_status.sections.semaforo_title',
+                                    )}
                                 </CardTitle>
                                 <CardDescription>
-                                    Indica se etichette, packaging e prodotto
-                                    sono pronti prima di lanciare l'ordine.
+                                    {t(
+                                        'orders.manage_status.sections.semaforo_desc',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div>
-                                    <Label htmlFor="etichette">Etichette</Label>
+                                    <Label htmlFor="etichette">
+                                        {t(
+                                            'orders.manage_status.sections.labels',
+                                        )}
+                                    </Label>
                                     <Select
                                         value={statusSemaforo.etichette.toString()}
                                         onValueChange={(value) =>
@@ -657,33 +699,42 @@ export default function OrdersManageStatus({
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {SEMAFORO_OPTIONS.map((opt) => (
-                                                <SelectItem
-                                                    key={opt.value}
-                                                    value={opt.value.toString()}
-                                                >
-                                                    <span
-                                                        className={`inline-flex items-center gap-2`}
+                                            {SEMAFORO_OPTIONS_KEYS.map(
+                                                (opt) => (
+                                                    <SelectItem
+                                                        key={opt.value}
+                                                        value={opt.value.toString()}
                                                     >
-                                                        {opt.value === 0 && (
-                                                            <XCircle className="h-4 w-4 text-red-600" />
-                                                        )}
-                                                        {opt.value === 1 && (
-                                                            <AlertCircle className="h-4 w-4 text-yellow-600" />
-                                                        )}
-                                                        {opt.value === 2 && (
-                                                            <CheckCircle2 className="h-4 w-4 text-green-600" />
-                                                        )}
-                                                        {opt.label}
-                                                    </span>
-                                                </SelectItem>
-                                            ))}
+                                                        <span
+                                                            className={`inline-flex items-center gap-2`}
+                                                        >
+                                                            {opt.value ===
+                                                                0 && (
+                                                                <XCircle className="h-4 w-4 text-red-600" />
+                                                            )}
+                                                            {opt.value ===
+                                                                1 && (
+                                                                <AlertCircle className="h-4 w-4 text-yellow-600" />
+                                                            )}
+                                                            {opt.value ===
+                                                                2 && (
+                                                                <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                                            )}
+                                                            {t(opt.key)}
+                                                        </span>
+                                                    </SelectItem>
+                                                ),
+                                            )}
                                         </SelectContent>
                                     </Select>
                                 </div>
 
                                 <div>
-                                    <Label htmlFor="packaging">Packaging</Label>
+                                    <Label htmlFor="packaging">
+                                        {t(
+                                            'orders.manage_status.sections.packaging',
+                                        )}
+                                    </Label>
                                     <Select
                                         value={statusSemaforo.packaging.toString()}
                                         onValueChange={(value) =>
@@ -697,33 +748,42 @@ export default function OrdersManageStatus({
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {SEMAFORO_OPTIONS.map((opt) => (
-                                                <SelectItem
-                                                    key={opt.value}
-                                                    value={opt.value.toString()}
-                                                >
-                                                    <span
-                                                        className={`inline-flex items-center gap-2`}
+                                            {SEMAFORO_OPTIONS_KEYS.map(
+                                                (opt) => (
+                                                    <SelectItem
+                                                        key={opt.value}
+                                                        value={opt.value.toString()}
                                                     >
-                                                        {opt.value === 0 && (
-                                                            <XCircle className="h-4 w-4 text-red-600" />
-                                                        )}
-                                                        {opt.value === 1 && (
-                                                            <AlertCircle className="h-4 w-4 text-yellow-600" />
-                                                        )}
-                                                        {opt.value === 2 && (
-                                                            <CheckCircle2 className="h-4 w-4 text-green-600" />
-                                                        )}
-                                                        {opt.label}
-                                                    </span>
-                                                </SelectItem>
-                                            ))}
+                                                        <span
+                                                            className={`inline-flex items-center gap-2`}
+                                                        >
+                                                            {opt.value ===
+                                                                0 && (
+                                                                <XCircle className="h-4 w-4 text-red-600" />
+                                                            )}
+                                                            {opt.value ===
+                                                                1 && (
+                                                                <AlertCircle className="h-4 w-4 text-yellow-600" />
+                                                            )}
+                                                            {opt.value ===
+                                                                2 && (
+                                                                <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                                            )}
+                                                            {t(opt.key)}
+                                                        </span>
+                                                    </SelectItem>
+                                                ),
+                                            )}
                                         </SelectContent>
                                     </Select>
                                 </div>
 
                                 <div>
-                                    <Label htmlFor="prodotto">Prodotto</Label>
+                                    <Label htmlFor="prodotto">
+                                        {t(
+                                            'orders.manage_status.sections.product',
+                                        )}
+                                    </Label>
                                     <Select
                                         value={statusSemaforo.prodotto.toString()}
                                         onValueChange={(value) =>
@@ -737,27 +797,32 @@ export default function OrdersManageStatus({
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {SEMAFORO_OPTIONS.map((opt) => (
-                                                <SelectItem
-                                                    key={opt.value}
-                                                    value={opt.value.toString()}
-                                                >
-                                                    <span
-                                                        className={`inline-flex items-center gap-2`}
+                                            {SEMAFORO_OPTIONS_KEYS.map(
+                                                (opt) => (
+                                                    <SelectItem
+                                                        key={opt.value}
+                                                        value={opt.value.toString()}
                                                     >
-                                                        {opt.value === 0 && (
-                                                            <XCircle className="h-4 w-4 text-red-600" />
-                                                        )}
-                                                        {opt.value === 1 && (
-                                                            <AlertCircle className="h-4 w-4 text-yellow-600" />
-                                                        )}
-                                                        {opt.value === 2 && (
-                                                            <CheckCircle2 className="h-4 w-4 text-green-600" />
-                                                        )}
-                                                        {opt.label}
-                                                    </span>
-                                                </SelectItem>
-                                            ))}
+                                                        <span
+                                                            className={`inline-flex items-center gap-2`}
+                                                        >
+                                                            {opt.value ===
+                                                                0 && (
+                                                                <XCircle className="h-4 w-4 text-red-600" />
+                                                            )}
+                                                            {opt.value ===
+                                                                1 && (
+                                                                <AlertCircle className="h-4 w-4 text-yellow-600" />
+                                                            )}
+                                                            {opt.value ===
+                                                                2 && (
+                                                                <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                                            )}
+                                                            {t(opt.key)}
+                                                        </span>
+                                                    </SelectItem>
+                                                ),
+                                            )}
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -766,20 +831,23 @@ export default function OrdersManageStatus({
                                     {allGreen ? (
                                         <span className="inline-flex items-center gap-2 text-emerald-700 dark:text-emerald-300">
                                             <CheckCircle2 className="h-4 w-4" />
-                                            Semaforo: tutto pronto, puoi
-                                            lanciare l'ordine.
+                                            {t(
+                                                'orders.manage_status.help.semaforo_ready',
+                                            )}
                                         </span>
                                     ) : allPositive ? (
                                         <span className="inline-flex items-center gap-2 text-amber-700 dark:text-amber-300">
                                             <AlertCircle className="h-4 w-4" />
-                                            Semaforo: pronto al lancio, ma con
-                                            controlli ancora da completare.
+                                            {t(
+                                                'orders.manage_status.help.semaforo_amber',
+                                            )}
                                         </span>
                                     ) : (
                                         <span className="inline-flex items-center gap-2 text-red-700 dark:text-red-300">
                                             <XCircle className="h-4 w-4" />
-                                            Semaforo: NON pronto al lancio.
-                                            Imposta almeno giallo tutte le voci.
+                                            {t(
+                                                'orders.manage_status.help.semaforo_red',
+                                            )}
                                         </span>
                                     )}
                                 </div>
@@ -792,17 +860,20 @@ export default function OrdersManageStatus({
                                     {isSavingSemaforo ? (
                                         <>
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Salvando...
+                                            {t(
+                                                'orders.manage_status.buttons.saving',
+                                            )}
                                         </>
                                     ) : (
-                                        'Salva Semaforo'
+                                        t(
+                                            'orders.manage_status.buttons.save_semaforo',
+                                        )
                                     )}
                                 </Button>
                                 <p className="text-xs text-muted-foreground">
-                                    Salvare il semaforo non cambia lo stato
-                                    dell'ordine: il passaggio in \"Lanciato\"
-                                    avviene dal riquadro \"Cambia Stato
-                                    Ordine\".
+                                    {t(
+                                        'orders.manage_status.help.semaforo_note',
+                                    )}
                                 </p>
                             </CardContent>
                         </Card>
@@ -819,21 +890,39 @@ export default function OrdersManageStatus({
                     >
                         {order.status !== 6 && (
                             <CardHeader>
-                                <CardTitle>Cambia Stato Ordine</CardTitle>
+                                <CardTitle>
+                                    {t(
+                                        'orders.manage_status.sections.change_status',
+                                    )}
+                                </CardTitle>
                                 <CardDescription>
                                     {order.status === 0
-                                        ? "L'ordine è pianificato. Quando sei pronto a preparare materiali ed etichette, passalo in Allestimento."
+                                        ? t(
+                                              'orders.manage_status.help.status_0',
+                                          )
                                         : order.status === 1
-                                          ? 'Quando il semaforo è almeno giallo su tutte le voci puoi passare l\'ordine in "Lanciato". Se è tutto verde ti consigliamo di farlo subito.'
+                                          ? t(
+                                                'orders.manage_status.help.status_1',
+                                            )
                                           : order.status === 2
-                                            ? "L'ordine è in stato Lanciato. Passerà in Avanzamento automaticamente alla prima quantità registrata dal portale. Se vuoi avviare la produzione subito senza attendere, usa il pulsante qui sotto."
+                                            ? t(
+                                                  'orders.manage_status.help.status_2',
+                                              )
                                             : order.status === 3
-                                              ? "L'ordine è in Avanzamento (in produzione). Puoi sospenderlo temporaneamente indicando il motivo, oppure segnarlo come Evaso quando la lavorazione è completata."
+                                              ? t(
+                                                    'orders.manage_status.help.status_3',
+                                                )
                                               : order.status === 4
-                                                ? "L'ordine è sospeso. Quando il problema è risolto puoi riprenderlo tornando in Avanzamento."
+                                                ? t(
+                                                      'orders.manage_status.help.status_4',
+                                                  )
                                                 : order.status === 5
-                                                  ? "L'ordine è evaso. Quando la parte amministrativa è completata, passalo in Saldato."
-                                                  : 'Seleziona il nuovo stato per questo ordine.'}
+                                                  ? t(
+                                                        'orders.manage_status.help.status_5',
+                                                    )
+                                                  : t(
+                                                        'orders.manage_status.help.select_state',
+                                                    )}
                                 </CardDescription>
                             </CardHeader>
                         )}
@@ -842,12 +931,14 @@ export default function OrdersManageStatus({
                                 <div className="flex flex-col items-center justify-center py-8 text-center">
                                     <CheckCircle2 className="mb-4 h-16 w-16 text-emerald-600 dark:text-emerald-500" />
                                     <h3 className="text-xl font-semibold text-foreground">
-                                        L'ordine è stato Saldato.
+                                        {t(
+                                            'orders.manage_status.help.status_6',
+                                        )}
                                     </h3>
                                     <p className="mt-2 text-sm break-words text-muted-foreground">
-                                        Non sono possibili ulteriori modifiche
-                                        di stato. L'ordine è chiuso
-                                        definitivamente.
+                                        {t(
+                                            'orders.manage_status.help.status_6_desc',
+                                        )}
                                     </p>
                                 </div>
                             ) : order.status === 0 ? (
@@ -860,17 +951,20 @@ export default function OrdersManageStatus({
                                         {isChangingStatus ? (
                                             <>
                                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                Aggiornamento...
+                                                {t(
+                                                    'orders.manage_status.buttons.updating',
+                                                )}
                                             </>
                                         ) : (
-                                            'Passa In Allestimento'
+                                            t(
+                                                'orders.manage_status.buttons.pass_allestimento',
+                                            )
                                         )}
                                     </Button>
                                     <p className="text-xs text-muted-foreground">
-                                        Questo passaggio prepara l&apos;ordine
-                                        per la produzione (materiali ed
-                                        etichette). Non è pensato per tornare
-                                        indietro frequentemente.
+                                        {t(
+                                            'orders.manage_status.help.allestimento_note',
+                                        )}
                                     </p>
                                 </div>
                             ) : order.status === 2 ? (
@@ -887,17 +981,20 @@ export default function OrdersManageStatus({
                                         {isChangingStatus ? (
                                             <>
                                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                Aggiornamento...
+                                                {t(
+                                                    'orders.manage_status.buttons.updating',
+                                                )}
                                             </>
                                         ) : (
-                                            'Forza In Avanzamento'
+                                            t(
+                                                'orders.manage_status.buttons.forza_avanzamento',
+                                            )
                                         )}
                                     </Button>
                                     <p className="text-xs text-muted-foreground">
-                                        Porta l&apos;ordine in Avanzamento senza
-                                        attendere la prima quantità dal portale.
-                                        Utile se la produzione è già iniziata o
-                                        per correzioni manuali.
+                                        {t(
+                                            'orders.manage_status.help.forza_note',
+                                        )}
                                     </p>
                                 </div>
                             ) : order.status === 3 ? (
@@ -914,10 +1011,14 @@ export default function OrdersManageStatus({
                                             {isChangingStatus ? (
                                                 <>
                                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                    Aggiornamento...
+                                                    {t(
+                                                        'orders.manage_status.buttons.updating',
+                                                    )}
                                                 </>
                                             ) : (
-                                                'Sospendi'
+                                                t(
+                                                    'orders.manage_status.buttons.sospendi',
+                                                )
                                             )}
                                         </Button>
                                         <Button
@@ -930,20 +1031,21 @@ export default function OrdersManageStatus({
                                             {isChangingStatus ? (
                                                 <>
                                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                    Aggiornamento...
+                                                    {t(
+                                                        'orders.manage_status.buttons.updating',
+                                                    )}
                                                 </>
                                             ) : (
-                                                'Passa In Evaso'
+                                                t(
+                                                    'orders.manage_status.buttons.pass_evaso',
+                                                )
                                             )}
                                         </Button>
                                     </div>
                                     <p className="text-xs text-muted-foreground">
-                                        <strong>Sospendi:</strong> mette in
-                                        pausa l&apos;ordine (obbligatorio
-                                        indicare il motivo).{' '}
-                                        <strong>Passa In Evaso:</strong> segna
-                                        la lavorazione come completata; potrai
-                                        poi chiuderlo in Saldato.
+                                        {t(
+                                            'orders.manage_status.help.sospendi_evaso_note',
+                                        )}
                                     </p>
                                 </div>
                             ) : order.status === 4 ? (
@@ -956,18 +1058,20 @@ export default function OrdersManageStatus({
                                         {isChangingStatus ? (
                                             <>
                                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                Aggiornamento...
+                                                {t(
+                                                    'orders.manage_status.buttons.updating',
+                                                )}
                                             </>
                                         ) : (
-                                            'Riprendi (Ritorna In Avanzamento)'
+                                            t(
+                                                'orders.manage_status.buttons.riprendi',
+                                            )
                                         )}
                                     </Button>
                                     <p className="text-xs text-muted-foreground">
-                                        Riporta l&apos;ordine dal ramo Sospeso
-                                        alla produzione attiva (stato
-                                        Avanzamento). Usa questa azione quando
-                                        il motivo della sospensione è stato
-                                        risolto.
+                                        {t(
+                                            'orders.manage_status.help.riprendi_note',
+                                        )}
                                     </p>
                                 </div>
                             ) : (
@@ -975,7 +1079,9 @@ export default function OrdersManageStatus({
                                     {order.status !== 6 && (
                                         <div className="space-y-1">
                                             <Label htmlFor="new-status">
-                                                Nuovo Stato
+                                                {t(
+                                                    'orders.manage_status.labels.new_status',
+                                                )}
                                             </Label>
                                             <Select
                                                 value={
@@ -989,7 +1095,11 @@ export default function OrdersManageStatus({
                                                 }}
                                             >
                                                 <SelectTrigger id="new-status">
-                                                    <SelectValue placeholder="Seleziona un nuovo stato" />
+                                                    <SelectValue
+                                                        placeholder={t(
+                                                            'orders.manage_status.placeholders.select_status',
+                                                        )}
+                                                    />
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     {availableStatuses.map(
@@ -1006,11 +1116,9 @@ export default function OrdersManageStatus({
                                             </Select>
                                             {order.status === 5 && (
                                                 <p className="text-xs text-muted-foreground">
-                                                    Da Evaso puoi solo
-                                                    completare l&apos;ordine
-                                                    portandolo in Saldato, dopo
-                                                    aver chiuso la parte
-                                                    amministrativa.
+                                                    {t(
+                                                        'orders.manage_status.help.evaso_saldato_note',
+                                                    )}
                                                 </p>
                                             )}
                                         </div>
@@ -1019,7 +1127,10 @@ export default function OrdersManageStatus({
                                     {order.status !== 6 && newStatus === 4 && (
                                         <div>
                                             <Label htmlFor="motivazione">
-                                                Motivazione *
+                                                {t(
+                                                    'orders.manage_status.labels.motivazione',
+                                                )}{' '}
+                                                *
                                             </Label>
                                             <Textarea
                                                 id="motivazione"
@@ -1029,12 +1140,15 @@ export default function OrdersManageStatus({
                                                         e.target.value,
                                                     )
                                                 }
-                                                placeholder="Inserisci la motivazione per la sospensione..."
+                                                placeholder={t(
+                                                    'orders.manage_status.placeholders.motivazione',
+                                                )}
                                                 rows={3}
                                             />
                                             <p className="mt-1 text-sm text-muted-foreground">
-                                                La motivazione è obbligatoria
-                                                per sospendere un ordine.
+                                                {t(
+                                                    'orders.manage_status.help.motivazione_required',
+                                                )}
                                             </p>
                                         </div>
                                     )}
@@ -1053,10 +1167,14 @@ export default function OrdersManageStatus({
                                         {isChangingStatus ? (
                                             <>
                                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                Aggiornamento...
+                                                {t(
+                                                    'orders.manage_status.buttons.updating',
+                                                )}
                                             </>
                                         ) : (
-                                            'Cambia Stato'
+                                            t(
+                                                'orders.manage_status.buttons.change_status',
+                                            )
                                         )}
                                     </Button>
                                 </>

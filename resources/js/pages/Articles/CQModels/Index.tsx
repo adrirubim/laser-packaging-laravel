@@ -10,6 +10,7 @@ import { SearchInput } from '@/components/SearchInput';
 import { SortableTableHeader } from '@/components/SortableTableHeader';
 import { Button } from '@/components/ui/button';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import articles from '@/routes/articles/index';
 import { type BreadcrumbItem } from '@/types';
@@ -49,6 +50,7 @@ type CQModelsIndexProps = {
 };
 
 export default function CQModelsIndex() {
+    const { t } = useTranslations();
     const { props } = usePage<CQModelsIndexProps>();
     const { models: modelsPaginated, filters } = props;
     const { flash } = useFlashNotifications();
@@ -123,25 +125,25 @@ export default function CQModelsIndex() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Articoli',
+            title: t('nav.articles'),
             href: articles.index().url,
         },
         {
-            title: 'Modelli CQ',
+            title: t('articles.cq_models.title'),
             href: articles.cqModels.index().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Modelli CQ" />
+            <Head title={t('articles.cq_models.title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="Modelli CQ"
-                    subtitle="Elenco dei modelli CQ attivi."
+                    title={t('articles.cq_models.title')}
+                    subtitle={t('articles.cq_models.index.subtitle')}
                     createHref={articles.cqModels.create().url}
-                    createLabel="Nuovo Modello"
+                    createLabel={t('articles.cq_models.index.create')}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -150,7 +152,7 @@ export default function CQModelsIndex() {
                     <SearchInput
                         value={filters.search || ''}
                         onChange={handleSearchChange}
-                        placeholder="Codice, descrizione o nome allegato..."
+                        placeholder={t('articles.cq_models.search_placeholder')}
                     />
                 </div>
 
@@ -160,10 +162,14 @@ export default function CQModelsIndex() {
                             <thead className="sticky top-0 z-10 bg-muted/80 backdrop-blur">
                                 <tr className="text-xs tracking-wide text-muted-foreground uppercase">
                                     <th className="border-b px-3 py-2 font-medium">
-                                        ID
+                                        {t(
+                                            'articles.cq_models.index.columns.id',
+                                        )}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        uuid
+                                        {t(
+                                            'articles.cq_models.index.columns.uuid',
+                                        )}
                                     </th>
                                     <SortableTableHeader
                                         column="cod_model"
@@ -171,7 +177,9 @@ export default function CQModelsIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Codice Modello
+                                        {t(
+                                            'articles.cq_models.index.columns.cod_model',
+                                        )}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="description_model"
@@ -179,7 +187,9 @@ export default function CQModelsIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Descrizione
+                                        {t(
+                                            'articles.cq_models.index.columns.description',
+                                        )}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="filename"
@@ -187,10 +197,12 @@ export default function CQModelsIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Filename
+                                        {t(
+                                            'articles.cq_models.index.columns.filename',
+                                        )}
                                     </SortableTableHeader>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t('common.actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -203,8 +215,9 @@ export default function CQModelsIndex() {
                                         >
                                             <div className="flex flex-col items-center justify-center gap-3">
                                                 <p>
-                                                    Nessun modello CQ. Aggiungi
-                                                    il primo.
+                                                    {t(
+                                                        'articles.cq_models.index.empty',
+                                                    )}
                                                 </p>
                                                 <Button asChild size="sm">
                                                     <Link
@@ -213,7 +226,9 @@ export default function CQModelsIndex() {
                                                                 .url
                                                         }
                                                     >
-                                                        Aggiungi
+                                                        {t(
+                                                            'articles.cq_models.index.add_first',
+                                                        )}
                                                     </Link>
                                                 </Button>
                                             </div>
@@ -274,7 +289,9 @@ export default function CQModelsIndex() {
                                                             }}
                                                         >
                                                             <Download className="mr-2 h-4 w-4" />
-                                                            Scarica allegato
+                                                            {t(
+                                                                'articles.cq_models.index.download_attachment',
+                                                            )}
                                                         </DropdownMenuItem>
                                                     ) : undefined
                                                 }
@@ -300,8 +317,10 @@ export default function CQModelsIndex() {
                 onOpenChange={(open) => setDeleteDialog({ open, model: null })}
                 onConfirm={handleDeleteConfirm}
                 isLoading={isDeleting}
-                title="Conferma eliminazione"
-                description={`Sei sicuro di voler eliminare il modello ${deleteDialog.model?.cod_model ?? ''}?\n\nQuesta azione non può essere annullata. Il modello verrà eliminato definitivamente.`}
+                title={t('articles.cq_models.delete.title')}
+                description={t('articles.cq_models.delete.description', {
+                    code: deleteDialog.model?.cod_model ?? '',
+                })}
             />
         </AppLayout>
     );

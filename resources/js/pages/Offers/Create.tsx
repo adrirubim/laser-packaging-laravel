@@ -23,6 +23,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { useTranslations } from '@/hooks/use-translations';
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
@@ -171,7 +172,7 @@ type OffersCreateProps = {
     lsResources: LsResource[];
     offerNumber: string;
     sourceOffer?: SourceOffer | null;
-    /** Nuova offerta da cliente: UUID del cliente per precompilare */
+    /** New offer from customer: customer UUID used for pre-filling */
     initialCustomerUuid?: string | null;
     errors?: Record<string, string>;
     flash?: {
@@ -198,7 +199,7 @@ export default function OffersCreate() {
         errors: serverErrors = {},
     } = props;
     const [divisions, setDivisions] = useState<Division[]>(initialDivisions);
-    // Inizializzare da sourceOffer (duplicazione) o initialCustomerUuid (Nuova Offerta da Cliente)
+    // Initialise from sourceOffer (duplication) or initialCustomerUuid (New offer from customer)
     const [selectedCustomer, setSelectedCustomer] = useState<string>(
         sourceOffer?.customer_uuid ?? initialCustomerUuid ?? '',
     );
@@ -240,7 +241,7 @@ export default function OffersCreate() {
     const [pieceValue, setPieceValue] = useState<string>(
         sourceOffer?.piece != null ? String(sourceOffer.piece) : '',
     );
-    // Campi numerici con formatNumber: useEffect li compila con formato italiano
+    // Numeric fields with formatNumber: useEffect fills them with Italian format
     const [declaredWeightCfz, setDeclaredWeightCfz] = useState<string>('');
     const [declaredWeightPz, setDeclaredWeightPz] = useState<string>('');
     const [expectedWorkers, setExpectedWorkers] = useState<string>(
@@ -281,7 +282,7 @@ export default function OffersCreate() {
             : '',
     );
 
-    // Operazioni
+    // Operations
     const [operationRows, setOperationRows] = useState<OperationRow[]>([]);
     const [operationCategories, setOperationCategories] = useState<
         OperationCategory[]
@@ -290,10 +291,10 @@ export default function OffersCreate() {
         Record<string, Operation[]>
     >({});
 
-    // Stato per conferma chiusura
+    // State for close confirmation
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
 
-    // Stato per tracciare se è stato tentato l'invio del modulo
+    // State to track if form submit was attempted
     const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
 
     // UUID stabile per il form (generato una sola volta al mount)
@@ -324,6 +325,7 @@ export default function OffersCreate() {
 
     // Hook per notifiche flash
     const { flash } = useFlashNotifications();
+    const { t } = useTranslations();
 
     // Campi calcolati (sola lettura)
     const [theoreticalTimeCfz, setTheoreticalTimeCfz] = useState<string>('');
@@ -348,7 +350,7 @@ export default function OffersCreate() {
     const offerNumberValidation = useFieldValidation(offerNumberValue, [
         validationRules.maxLength(
             255,
-            'Il numero offerta non può superare 255 caratteri',
+            t('offers.form.offer_number_max_length'),
         ),
     ]);
 
@@ -358,7 +360,7 @@ export default function OffersCreate() {
             if (val && val.trim() !== '') {
                 const num = parseFloat(val);
                 if (isNaN(num) || num < 0) {
-                    return 'La quantità deve essere un numero positivo';
+                    return t('offers.form.quantity_positive');
                 }
             }
             return null;
@@ -371,7 +373,7 @@ export default function OffersCreate() {
             if (val && val.trim() !== '') {
                 const num = parseFloat(val);
                 if (isNaN(num) || num < 0) {
-                    return 'Il numero di pezzi deve essere un numero positivo';
+                    return t('offers.form.piece_positive');
                 }
             }
             return null;
@@ -380,11 +382,11 @@ export default function OffersCreate() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: offers.index().url,
         },
         {
-            title: 'Crea',
+            title: t('offers.create.breadcrumb'),
             href: offers.create().url,
         },
     ];
@@ -413,7 +415,7 @@ export default function OffersCreate() {
         }
     };
 
-    // Formattare numeri in formato italiano (virgola decimali, punto migliaia)
+    // Format numbers in Italian format (comma decimals, period thousands)
     // Replica comportamento number_format del legacy
     const formatNumber = (value: number, decimals: number = 5): string => {
         if (isNaN(value) || value === null || value === undefined)
@@ -425,7 +427,7 @@ export default function OffersCreate() {
         const integerPart = parts[0];
         const decimalPart = parts[1] || '';
 
-        // Aggiungere separatori migliaia (punto)
+        // Add thousands separators (dot)
         const formattedInteger = integerPart.replace(
             /\B(?=(\d{3})+(?!\d))/g,
             '.',
@@ -449,7 +451,7 @@ export default function OffersCreate() {
         return isNaN(parsed) ? 0 : parsed;
     };
 
-    // Formattare input in digitazione (formato italiano)
+    // Format input on typing (Italian format)
     // Replica comportamento num_filter del legacy
     const formatInputNumber = (
         value: string,
@@ -458,18 +460,18 @@ export default function OffersCreate() {
     ): string => {
         if (!value || value.trim() === '') return '';
 
-        // Consentire solo numeri, virgola, punto e opzionalmente segno negativo
+        // Allow only numbers, comma, period and optionally negative sign
         let cleaned = value.replace(/[^\d,.-]/g, '');
 
         if (!allowNegative) {
             cleaned = cleaned.replace(/-/g, '');
         }
 
-        // Se intero, rimuovere decimali
+        // If integer, remove decimals
         if (isInteger) {
             cleaned = cleaned.replace(/[,.]/g, '');
         } else {
-            // Per decimali, assicurarsi che ci sia solo una virgola
+            // For decimals, ensure there's only one comma
             const parts = cleaned.split(',');
             if (parts.length > 2) {
                 cleaned = parts[0] + ',' + parts.slice(1).join('');
@@ -495,19 +497,19 @@ export default function OffersCreate() {
         }
     };
 
-    // Calcolare tutti i valori derivati
+    // Calculate all derived values
     const updateCalculatedData = () => {
         const piece = parseNumber(pieceValue);
         const declaredWeightCfzVal = parseNumber(declaredWeightCfz);
 
-        // Calcolare peso dichiarato per pezzo
+        // Calculate declared weight per piece
         let declaredWeightPzVal = 0;
         if (piece > 0 && !isNaN(piece)) {
             declaredWeightPzVal = declaredWeightCfzVal / piece;
         }
         setDeclaredWeightPz(formatNumber(declaredWeightPzVal));
 
-        // Calcolare totale secondi delle operazioni
+        // Calculate total operation seconds
         let totalSecOps = 0;
         operationRows.forEach((row) => {
             if (row.secOp && row.numOp) {
@@ -517,44 +519,44 @@ export default function OffersCreate() {
 
         setTheoreticalTimeCfz(formatNumber(totalSecOps));
 
-        // Calcolare imprevisti (5% tempo teorico)
+        // Calculate contingencies (5% theoretical time)
         const unexpectedVal = totalSecOps * 0.05;
         setUnexpected(formatNumber(unexpectedVal));
 
-        // Calcolare tempo teorico totale
+        // Calculate total theoretical time
         const totalTheoreticalTimeVal = totalSecOps + unexpectedVal;
         setTotalTheoreticalTime(formatNumber(totalTheoreticalTimeVal));
 
-        // Calcolare tempo teorico per pezzo
+        // Calculate theoretical time per piece
         let theoreticalTimeVal = 0;
         if (piece > 0) {
             theoreticalTimeVal = totalTheoreticalTimeVal / piece;
         }
         setTheoreticalTime(formatNumber(theoreticalTimeVal));
 
-        // Calcolare tempo produzione cfz
+        // Calculate production time cfz
         const productionTimeCfzVal = (totalTheoreticalTimeVal * 8) / 7;
         setProductionTimeCfz(formatNumber(productionTimeCfzVal));
 
-        // Calcolare tempo produzione per pezzo
+        // Calculate production time per piece
         let productionTimeVal = 0;
         if (piece > 0) {
             productionTimeVal = productionTimeCfzVal / piece;
         }
         setProductionTime(formatNumber(productionTimeVal));
 
-        // Calcolare media prevista cfz
+        // Calculate expected average cfz
         let productionAverageCfzVal = 0;
         if (productionTimeCfzVal > 0) {
             productionAverageCfzVal = 3600 / productionTimeCfzVal;
         }
         setProductionAverageCfz(formatNumber(productionAverageCfzVal));
 
-        // Calcolare media prevista pz
+        // Calculate expected average pz
         const productionAveragePzVal = productionAverageCfzVal * piece;
         setProductionAveragePz(formatNumber(productionAveragePzVal));
 
-        // Calcolare tariffa mdo cfz
+        // Calculate labor rate cfz
         const expectedRevenueVal = parseNumber(expectedRevenue);
         let rateCfzVal = 0;
         if (productionAverageCfzVal > 0) {
@@ -562,14 +564,14 @@ export default function OffersCreate() {
         }
         setRateCfz(formatNumber(rateCfzVal));
 
-        // Calcolare tariffa mdo pz
+        // Calculate labor rate pz
         let ratePzVal = 0;
         if (piece > 0) {
             ratePzVal = rateCfzVal / piece;
         }
         setRatePz(formatNumber(ratePzVal));
 
-        // Calcolare percentuale aumento/sconto
+        // Calculate percentage increase/discount
         const rateRoundingCfzVal = parseNumber(rateRoundingCfz);
         const rateIncreaseCfzVal = parseNumber(rateIncreaseCfz);
         let rateRoundingCfzPercVal = 0;
@@ -579,18 +581,18 @@ export default function OffersCreate() {
         }
         setRateRoundingCfzPerc(formatNumber(rateRoundingCfzPercVal));
 
-        // Calcolare tariffa definitiva cfz
+        // Calculate final rate cfz
         const finalRateCfzVal = rateIncreaseCfzVal + rateRoundingCfzVal;
         setFinalRateCfz(formatNumber(finalRateCfzVal));
 
-        // Calcolare tariffa definitiva pz
+        // Calculate final rate pz
         let finalRatePzVal = 0;
         if (piece > 0) {
             finalRatePzVal = finalRateCfzVal / piece;
         }
         setFinalRatePz(formatNumber(finalRatePzVal));
 
-        // Calcolare tariffa totale cfz
+        // Calculate total rate cfz
         const materialsEuroVal = parseNumber(materialsEuro);
         const logisticsEuroVal = parseNumber(logisticsEuro);
         const otherEuroVal = parseNumber(otherEuro);
@@ -601,7 +603,7 @@ export default function OffersCreate() {
             otherEuroVal;
         setTotalRateCfz(formatNumber(totalRateCfzVal));
 
-        // Calcolare tariffa totale pz
+        // Calculate total rate pz
         let totalRatePzVal = 0;
         if (piece > 0) {
             totalRatePzVal = totalRateCfzVal / piece;
@@ -638,8 +640,8 @@ export default function OffersCreate() {
         [operationsByCategory],
     );
 
-    // Ricalcolare quando cambiano i valori rilevanti
-    // Precompilare form se c'è sourceOffer (duplicazione)
+    // Recalculate when relevant values change
+    // Prefill form if sourceOffer exists (duplication)
     useEffect(() => {
         if (sourceOffer) {
             queueMicrotask(() => {
@@ -793,7 +795,7 @@ export default function OffersCreate() {
                 ) {
                     setApprovalStatus(sourceOffer.approval_status.toString());
                 }
-                // Caricare operazioni
+                // Load operations
                 if (
                     sourceOffer.operations &&
                     sourceOffer.operations.length > 0
@@ -815,7 +817,7 @@ export default function OffersCreate() {
                     );
                     setOperationRows(rows);
 
-                    // Caricare operazioni per categoria per i select
+                    // Load operations by category for selects
                     const categoryUuids = new Set<string>();
                     sourceOffer.operations.forEach((op) => {
                         if (op.operation?.category_uuid) {
@@ -823,7 +825,7 @@ export default function OffersCreate() {
                         }
                     });
 
-                    // Caricare operazioni per categoria in modo asincrono
+                    // Load operations by category asynchronously
                     setTimeout(() => {
                         categoryUuids.forEach((categoryUuid) => {
                             loadOperationsForCategory(categoryUuid);
@@ -849,7 +851,7 @@ export default function OffersCreate() {
         otherEuro,
         operationRows,
     ]);
-    // Caricare categorie operazioni al mount
+    // Load operation categories on mount
     useEffect(() => {
         const loadCategories = async () => {
             try {
@@ -881,7 +883,7 @@ export default function OffersCreate() {
         router.visit(offers.index().url);
     };
 
-    // Aggiungere nuova riga operazione
+    // Add new operation row
     const addOperationRow = () => {
         const newRow: OperationRow = {
             id: Math.random().toString(36).substr(2, 9),
@@ -894,39 +896,39 @@ export default function OffersCreate() {
         setOperationRows([...operationRows, newRow]);
     };
 
-    // Rimuovere riga operazione
+    // Remove operation row
     const removeOperationRow = (id: string) => {
         setOperationRows(operationRows.filter((row) => row.id !== id));
     };
 
-    // Aggiornare riga operazione
+    // Update operation row
     const updateOperationRow = (id: string, updates: Partial<OperationRow>) => {
         setOperationRows((prevRows) =>
             prevRows.map((row) => {
                 if (row.id === id) {
                     const updated = { ...row, ...updates };
 
-                    // Se è cambiata la categoria, caricare operazioni e pulire operazione selezionata
+                    // If category changed, load operations and clear selected operation
                     if (
                         updates.categoryUuid !== undefined &&
                         updates.categoryUuid !== row.categoryUuid
                     ) {
                         loadOperationsForCategory(updates.categoryUuid);
-                        // Pulire operazione selezionata al cambio categoria
+                        // Clear selected operation on category change
                         updated.operationUuid = '';
                         updated.secOp = 0;
                         updated.numOp = 0;
                         updated.totalSec = 0;
                     }
 
-                    // Se è cambiata l'operazione, aggiornare secOp (setTimeout per attendere il caricamento)
+                    // If operation changed, update secOp (setTimeout to wait for load)
                     if (
                         updates.operationUuid !== undefined &&
                         updates.operationUuid !== row.operationUuid
                     ) {
                         const categoryUuid =
                             updated.categoryUuid || row.categoryUuid;
-                        // Ottenere operazioni dallo stato o attendere il caricamento
+                        // Get operations from state or wait for load
                         const checkAndUpdateSecOp = () => {
                             setOperationRows((currentRows) =>
                                 currentRows.map((currentRow) => {
@@ -960,7 +962,7 @@ export default function OffersCreate() {
                             );
                         };
 
-                        // Se le operazioni sono già caricate, aggiornare subito
+                        // If operations are already loaded, update immediately
                         if (operationsByCategory[categoryUuid]) {
                             const ops = operationsByCategory[categoryUuid];
                             const selectedOp = ops.find(
@@ -970,17 +972,17 @@ export default function OffersCreate() {
                                 // Replica selectOperation del legacy: secOp si imposta, numOp sempre a 1, totalSec = secOp * 1
                                 updated.secOp =
                                     selectedOp.secondi_operazione || 0;
-                                updated.numOp = 1; // Sempre impostato a 1 alla selezione operazione (come legacy linea 625)
+                                updated.numOp = 1; // Always set to 1 on operation selection (as legacy line 625)
                                 updated.totalSec =
                                     updated.secOp * updated.numOp;
                             }
                         } else {
-                            // Se non sono ancora caricate, attendere un momento e verificare di nuovo
+                            // If not yet loaded, wait a moment and check again
                             setTimeout(checkAndUpdateSecOp, 100);
                         }
                     }
 
-                    // Ricalcolare totale se è cambiato numOp o secOp
+                    // Recalculate total if numOp or secOp changed
                     if (
                         updates.numOp !== undefined ||
                         (updates.secOp !== undefined && updated.numOp)
@@ -1025,7 +1027,7 @@ export default function OffersCreate() {
                             };
                         }
                     }
-                    // Ricalcolare totale se è cambiato numOp
+                    // Recalculate total if numOp changed
                     if (
                         row.secOp &&
                         row.numOp &&
@@ -1041,7 +1043,7 @@ export default function OffersCreate() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Crea Offerta" />
+            <Head title={t('offers.create.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 {/* Notifiche flash (successo, errore, ecc.) */}
@@ -1051,10 +1053,11 @@ export default function OffersCreate() {
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Crea nuova offerta</CardTitle>
+                                <CardTitle>
+                                    {t('offers.create.card_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Compila i campi per creare una nuova
-                                    offerta.
+                                    {t('offers.create.card_description')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -1063,7 +1066,7 @@ export default function OffersCreate() {
                                     method="post"
                                     className="space-y-5"
                                     onSuccess={() => {
-                                        // Il successo è gestito con messaggi flash mostrati nella pagina indice dopo il redirect
+                                        // Success is handled with flash messages shown on index page after redirect
                                         setHasAttemptedSubmit(false);
                                     }}
                                     onError={() => {
@@ -1089,7 +1092,7 @@ export default function OffersCreate() {
                                             las_work_line: 'lasworkline_uuid',
                                         };
 
-                                        // Convertire tutti i campi numerici da formato italiano (virgola) a formato standard (punto)
+                                        // Convert all numeric fields from Italian format (comma) to standard format (period)
                                         const numericFields = [
                                             'quantity',
                                             'piece',
@@ -1133,7 +1136,7 @@ export default function OffersCreate() {
                                             transformed[mappedKey] = data[key];
                                         });
 
-                                        // Convertire campi numerici
+                                        // Convert numeric fields
                                         numericFields.forEach((field) => {
                                             if (
                                                 transformed[field] !==
@@ -1169,7 +1172,7 @@ export default function OffersCreate() {
                                             }
                                         });
 
-                                        // Convertir expected_workers a entero
+                                        // Convert expected_workers to integer
                                         if (
                                             transformed.expected_workers !==
                                                 undefined &&
@@ -1209,7 +1212,7 @@ export default function OffersCreate() {
                                             transformed.expected_workers = null;
                                         }
 
-                                        // Convertir approval_status a entero
+                                        // Convert approval_status to integer
                                         if (
                                             transformed.approval_status !==
                                                 undefined &&
@@ -1232,7 +1235,7 @@ export default function OffersCreate() {
                                             transformed.approval_status = null;
                                         }
 
-                                        // Convertire stringhe vuote in null per campi nullable
+                                        // Convert empty strings to null for nullable fields
                                         const nullableFields = [
                                             'customerdivision_uuid',
                                             'validity_date',
@@ -1305,13 +1308,15 @@ export default function OffersCreate() {
                                                             value={formUuid}
                                                         />
 
-                                                        {/* Numero Offerta */}
+                                                        {/* Offer number */}
                                                         <div className="grid gap-2">
                                                             <FormLabel
                                                                 htmlFor="offer_number"
                                                                 required
                                                             >
-                                                                Numero Offerta
+                                                                {t(
+                                                                    'offers.show.number_label',
+                                                                )}
                                                             </FormLabel>
                                                             <Input
                                                                 id="offer_number"
@@ -1361,13 +1366,15 @@ export default function OffersCreate() {
                                                             />
                                                         </div>
 
-                                                        {/* Data Offerta */}
+                                                        {/* Offer date */}
                                                         <div className="grid gap-2">
                                                             <FormLabel
                                                                 htmlFor="offer_date"
                                                                 required
                                                             >
-                                                                Data Offerta
+                                                                {t(
+                                                                    'offers.show.date_offer_label',
+                                                                )}
                                                             </FormLabel>
                                                             <Input
                                                                 id="offer_date"
@@ -1393,13 +1400,15 @@ export default function OffersCreate() {
                                                             />
                                                         </div>
 
-                                                        {/* Data Validità */}
+                                                        {/* Validity Date */}
                                                         <div className="grid gap-2">
                                                             <FormLabel
                                                                 htmlFor="validity"
                                                                 required
                                                             >
-                                                                Data Validità
+                                                                {t(
+                                                                    'offers.show.date_validity_label',
+                                                                )}
                                                             </FormLabel>
                                                             <Input
                                                                 id="validity"
@@ -1431,7 +1440,9 @@ export default function OffersCreate() {
                                                                 htmlFor="client"
                                                                 required
                                                             >
-                                                                Cliente
+                                                                {t(
+                                                                    'offers.show.customer_label',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="customer_uuid"
@@ -1445,7 +1456,11 @@ export default function OffersCreate() {
                                                                 required
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona il cliente..." />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'offers.form.select_customer',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {customers.map(
@@ -1485,7 +1500,9 @@ export default function OffersCreate() {
                                                                 htmlFor="division"
                                                                 required
                                                             >
-                                                                Divisione
+                                                                {t(
+                                                                    'offers.show.division_label',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="customerdivision_uuid"
@@ -1507,11 +1524,17 @@ export default function OffersCreate() {
                                                                     <SelectValue
                                                                         placeholder={
                                                                             !selectedCustomer
-                                                                                ? 'Seleziona la divisione...'
+                                                                                ? t(
+                                                                                      'offers.form.select_division',
+                                                                                  )
                                                                                 : divisions.length ===
                                                                                     0
-                                                                                  ? 'Nessuna divisione disponibile'
-                                                                                  : 'Seleziona la divisione...'
+                                                                                  ? t(
+                                                                                        'offers.form.no_division_available',
+                                                                                    )
+                                                                                  : t(
+                                                                                        'offers.form.select_division',
+                                                                                    )
                                                                         }
                                                                     />
                                                                 </SelectTrigger>
@@ -1543,13 +1566,15 @@ export default function OffersCreate() {
                                                             />
                                                         </div>
 
-                                                        {/* Attività */}
+                                                        {/* Activity */}
                                                         <div className="grid gap-2">
                                                             <FormLabel
                                                                 htmlFor="activity"
                                                                 required
                                                             >
-                                                                Attività
+                                                                {t(
+                                                                    'offers.show.activity_label',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="activity"
@@ -1563,7 +1588,11 @@ export default function OffersCreate() {
                                                                 required
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona l'attività..." />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'offers.form.select_activity',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {activities.map(
@@ -1599,7 +1628,9 @@ export default function OffersCreate() {
                                                                 htmlFor="sector"
                                                                 required
                                                             >
-                                                                Settore
+                                                                {t(
+                                                                    'offers.show.sector_label',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="sector_uuid"
@@ -1613,7 +1644,11 @@ export default function OffersCreate() {
                                                                 required
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona il settore..." />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'offers.form.select_sector',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {sectors.map(
@@ -1649,7 +1684,9 @@ export default function OffersCreate() {
                                                                 htmlFor="type"
                                                                 required
                                                             >
-                                                                Stagionalità
+                                                                {t(
+                                                                    'offers.show.seasonality_label',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="type"
@@ -1663,7 +1700,11 @@ export default function OffersCreate() {
                                                                 required
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona la stagionalità..." />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'offers.form.select_seasonality',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {seasonalities.map(
@@ -1699,7 +1740,9 @@ export default function OffersCreate() {
                                                                 htmlFor="order_type"
                                                                 required
                                                             >
-                                                                Tipo Ordine
+                                                                {t(
+                                                                    'offers.show.order_type_label',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="order_type"
@@ -1713,7 +1756,11 @@ export default function OffersCreate() {
                                                                 required
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona il tipo di ordine..." />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'offers.form.select_order_type',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {orderTypes.map(
@@ -1749,7 +1796,9 @@ export default function OffersCreate() {
                                                                 htmlFor="las_family"
                                                                 required
                                                             >
-                                                                Famiglia LAS
+                                                                {t(
+                                                                    'offers.show.las_family_label',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="lasfamily_uuid"
@@ -1763,7 +1812,11 @@ export default function OffersCreate() {
                                                                 required
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona la famiglia LAS..." />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'offers.form.select_las_family',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {lasFamilies.map(
@@ -1800,7 +1853,9 @@ export default function OffersCreate() {
                                                         {/* Rif. Cliente */}
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="customer_ref">
-                                                                Rif. Cliente
+                                                                {t(
+                                                                    'offers.show.customer_ref_label',
+                                                                )}
                                                             </FormLabel>
                                                             <Input
                                                                 id="customer_ref"
@@ -1829,7 +1884,9 @@ export default function OffersCreate() {
                                                         {/* L&S Risorsa */}
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="ls_resource">
-                                                                L&S Risorsa
+                                                                {t(
+                                                                    'offers.show.ls_resource_label',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="ls_resource"
@@ -1842,7 +1899,11 @@ export default function OffersCreate() {
                                                                 }
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona la risorsa L&S..." />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'offers.form.select_ls_resource',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {lsResources.map(
@@ -1882,8 +1943,9 @@ export default function OffersCreate() {
                                                                 htmlFor="las_work_line"
                                                                 required
                                                             >
-                                                                LAS Linea di
-                                                                Lavoro
+                                                                {t(
+                                                                    'offers.show.las_work_line_label',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="lasworkline_uuid"
@@ -1897,7 +1959,11 @@ export default function OffersCreate() {
                                                                 required
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona la linea di lavoro LAS..." />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'offers.form.select_las_work_line',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {lasWorkLines.map(
@@ -1934,8 +2000,9 @@ export default function OffersCreate() {
                                                         {/* Codice articolo di riferimento */}
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="article_code_ref">
-                                                                Codice articolo
-                                                                di riferimento
+                                                                {t(
+                                                                    'offers.show.article_code_ref_label',
+                                                                )}
                                                             </FormLabel>
                                                             <Input
                                                                 id="article_code_ref"
@@ -1964,8 +2031,9 @@ export default function OffersCreate() {
                                                         {/* Descrizione provvisoria */}
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="provisional_description">
-                                                                Descrizione
-                                                                provvisoria
+                                                                {t(
+                                                                    'offers.show.provisional_description_label',
+                                                                )}
                                                             </FormLabel>
                                                             <Textarea
                                                                 id="provisional_description"
@@ -1991,13 +2059,15 @@ export default function OffersCreate() {
                                                             />
                                                         </div>
 
-                                                        {/* Unità di Misura */}
+                                                        {/* Unit of Measure */}
                                                         <div className="grid gap-2">
                                                             <FormLabel
                                                                 htmlFor="unit_of_measure"
                                                                 required
                                                             >
-                                                                Unità di Misura
+                                                                {t(
+                                                                    'offers.show.unit_of_measure_label',
+                                                                )}
                                                             </FormLabel>
                                                             <Input
                                                                 id="unit_of_measure"
@@ -2024,13 +2094,15 @@ export default function OffersCreate() {
                                                             />
                                                         </div>
 
-                                                        {/* Quantità */}
+                                                        {/* Quantity */}
                                                         <div className="grid gap-2">
                                                             <FormLabel
                                                                 htmlFor="quantity"
                                                                 required
                                                             >
-                                                                Quantità
+                                                                {t(
+                                                                    'offers.show.quantity_label',
+                                                                )}
                                                             </FormLabel>
                                                             <Input
                                                                 id="quantity"
@@ -2087,7 +2159,9 @@ export default function OffersCreate() {
                                                                 htmlFor="piece"
                                                                 required
                                                             >
-                                                                Pz
+                                                                {t(
+                                                                    'offers.show.piece_label',
+                                                                )}
                                                             </FormLabel>
                                                             <Input
                                                                 id="piece"
@@ -2145,8 +2219,9 @@ export default function OffersCreate() {
                                                         {/* Peso dichiarato gr/cfz */}
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="declared_weight_cfz">
-                                                                Peso dichiarato
-                                                                gr/cfz
+                                                                {t(
+                                                                    'offers.show.declared_weight_cfz_label',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex">
                                                                 <Input
@@ -2189,8 +2264,9 @@ export default function OffersCreate() {
                                                         {/* Peso dichiarato gr/pz */}
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="declared_weight_pz">
-                                                                Peso dichiarato
-                                                                gr/pz
+                                                                {t(
+                                                                    'offers.show.declared_weight_pz_label',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex">
                                                                 <Input
@@ -2218,7 +2294,9 @@ export default function OffersCreate() {
                                                         {/* Note */}
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="notes">
-                                                                Note
+                                                                {t(
+                                                                    'offers.show.notes_label',
+                                                                )}
                                                             </FormLabel>
                                                             <Textarea
                                                                 id="notes"
@@ -2239,26 +2317,36 @@ export default function OffersCreate() {
                                                             />
                                                         </div>
 
-                                                        {/* Operazioni */}
+                                                        {/* Operations */}
                                                         <div className="grid gap-2">
                                                             <div className="mb-3 flex gap-1">
                                                                 <label className="col-form-label w-[29%]">
-                                                                    Categoria
+                                                                    {t(
+                                                                        'offers.show.operations_category',
+                                                                    )}
                                                                 </label>
                                                                 <label className="col-form-label w-[29%]">
-                                                                    Operazioni
+                                                                    {t(
+                                                                        'offers.show.operations_operation',
+                                                                    )}
                                                                 </label>
                                                                 <label className="col-form-label w-[12%] text-right">
-                                                                    Secondi
+                                                                    {t(
+                                                                        'offers.show.operations_seconds',
+                                                                    )}
                                                                 </label>
                                                                 <label className="col-form-label w-[12%] text-right">
-                                                                    N° Op
+                                                                    {t(
+                                                                        'offers.show.operations_num',
+                                                                    )}
                                                                     <span className="ml-1 text-red-500">
                                                                         *
                                                                     </span>
                                                                 </label>
                                                                 <label className="col-form-label w-[12%] text-right">
-                                                                    Totale
+                                                                    {t(
+                                                                        'offers.show.operations_total',
+                                                                    )}
                                                                 </label>
                                                             </div>
                                                             {operationRows.map(
@@ -2287,7 +2375,11 @@ export default function OffersCreate() {
                                                                                 }
                                                                             >
                                                                                 <SelectTrigger>
-                                                                                    <SelectValue placeholder="Seleziona la categoria..." />
+                                                                                    <SelectValue
+                                                                                        placeholder={t(
+                                                                                            'offers.form.select_category',
+                                                                                        )}
+                                                                                    />
                                                                                 </SelectTrigger>
                                                                                 <SelectContent>
                                                                                     {operationCategories.map(
@@ -2336,7 +2428,11 @@ export default function OffersCreate() {
                                                                                 }
                                                                             >
                                                                                 <SelectTrigger>
-                                                                                    <SelectValue placeholder="Seleziona l'operazione..." />
+                                                                                    <SelectValue
+                                                                                        placeholder={t(
+                                                                                            'offers.form.select_operation',
+                                                                                        )}
+                                                                                    />
                                                                                 </SelectTrigger>
                                                                                 <SelectContent>
                                                                                     {(
@@ -2413,7 +2509,7 @@ export default function OffersCreate() {
                                                                                             parsed,
                                                                                         ),
                                                                                     },
-                                                                                ); // Asegurar que sea entero
+                                                                                ); // Ensure it's an integer
                                                                             }}
                                                                             onFocus={
                                                                                 handleInputFocus
@@ -2444,6 +2540,9 @@ export default function OffersCreate() {
                                                                                 )
                                                                             }
                                                                             className="ml-1"
+                                                                            aria-label={t(
+                                                                                'offers.form.remove_row',
+                                                                            )}
                                                                         >
                                                                             X
                                                                         </Button>
@@ -2458,16 +2557,18 @@ export default function OffersCreate() {
                                                                 }
                                                                 className="mt-2"
                                                             >
-                                                                Aggiungi
-                                                                operazione
+                                                                {t(
+                                                                    'offers.form.add_operation',
+                                                                )}
                                                             </Button>
                                                         </div>
 
                                                         {/* Tempo teorico (sec/cfz) */}
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="theoretical_time_cfz">
-                                                                Tempo teorico
-                                                                (sec/cfz)
+                                                                {t(
+                                                                    'offers.show.time_theoretical_cfz_label',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex">
                                                                 <Input
@@ -2494,7 +2595,9 @@ export default function OffersCreate() {
                                                         {/* Imprevisti */}
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="unexpected">
-                                                                Imprevisti
+                                                                {t(
+                                                                    'offers.show.time_unexpected_label',
+                                                                )}
                                                             </FormLabel>
                                                             <Input
                                                                 id="unexpected"
@@ -2516,8 +2619,9 @@ export default function OffersCreate() {
                                                         {/* Tempo teorico totale (sec/cfz) */}
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="total_theoretical_time">
-                                                                Tempo teorico
-                                                                totale (sec/cfz)
+                                                                {t(
+                                                                    'offers.show.time_total_theoretical_label',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex">
                                                                 <Input
@@ -2544,8 +2648,9 @@ export default function OffersCreate() {
                                                         {/* Tempo teorico (sec/pz) */}
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="theoretical_time">
-                                                                Tempo teorico
-                                                                (sec/pz)
+                                                                {t(
+                                                                    'offers.show.time_theoretical_pz_label',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex">
                                                                 <Input
@@ -2572,8 +2677,9 @@ export default function OffersCreate() {
                                                         {/* Tempo produzione (sec/cfz) */}
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="production_time_cfz">
-                                                                Tempo produzione
-                                                                (sec/cfz)
+                                                                {t(
+                                                                    'offers.show.time_production_cfz_label',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex">
                                                                 <Input
@@ -2600,8 +2706,9 @@ export default function OffersCreate() {
                                                         {/* Tempo produzione (sec/pz) */}
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="production_time">
-                                                                Tempo produzione
-                                                                (sec/pz)
+                                                                {t(
+                                                                    'offers.show.time_production_pz_label',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex">
                                                                 <Input
@@ -2628,8 +2735,9 @@ export default function OffersCreate() {
                                                         {/* Media prevista (cfz/h/ps) */}
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="production_average_cfz">
-                                                                Media prevista
-                                                                (cfz/h/ps)
+                                                                {t(
+                                                                    'offers.show.time_avg_cfz_label',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex">
                                                                 <Input
@@ -2656,8 +2764,9 @@ export default function OffersCreate() {
                                                         {/* Media prevista (pz/h/ps) */}
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="production_average_pz">
-                                                                Media prevista
-                                                                (pz/h/ps)
+                                                                {t(
+                                                                    'offers.show.time_avg_pz_label',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex">
                                                                 <Input
@@ -2684,7 +2793,9 @@ export default function OffersCreate() {
                                                         {/* Addetti previsti */}
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="expected_workers">
-                                                                Addetti previsti
+                                                                {t(
+                                                                    'offers.show.time_workers_label',
+                                                                )}
                                                             </FormLabel>
                                                             <Input
                                                                 id="expected_workers"
@@ -2726,9 +2837,9 @@ export default function OffersCreate() {
                                                                 htmlFor="expected_revenue"
                                                                 required
                                                             >
-                                                                Ricavo
-                                                                Manodopera
-                                                                prevista
+                                                                {t(
+                                                                    'offers.show.revenue_label',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex">
                                                                 <Input
@@ -2752,7 +2863,9 @@ export default function OffersCreate() {
                                                                         );
                                                                     }}
                                                                     required
-                                                                    title="Inserisci un valore valido (es. 1.234.567,00000)"
+                                                                    title={t(
+                                                                        'offers.form.validation_value_example',
+                                                                    )}
                                                                     className="rounded-r-none text-right"
                                                                 />
                                                                 <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
@@ -2769,7 +2882,9 @@ export default function OffersCreate() {
                                                         {/* Tariffa mdo cfz */}
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="rate_cfz">
-                                                                Tariffa mdo cfz
+                                                                {t(
+                                                                    'offers.show.rate_cfz_label',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex">
                                                                 <Input
@@ -2796,7 +2911,9 @@ export default function OffersCreate() {
                                                         {/* Tariffa mdo pz */}
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="rate_pz">
-                                                                Tariffa mdo pz
+                                                                {t(
+                                                                    'offers.show.rate_pz_label',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex">
                                                                 <Input
@@ -2826,8 +2943,9 @@ export default function OffersCreate() {
                                                                 htmlFor="rate_rounding_cfz"
                                                                 required
                                                             >
-                                                                Tariffa mdo cfz
-                                                                arrotondata
+                                                                {t(
+                                                                    'offers.show.rate_rounding_cfz_label',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex">
                                                                 <Input
@@ -2854,7 +2972,9 @@ export default function OffersCreate() {
                                                                         handleInputFocus
                                                                     }
                                                                     required
-                                                                    title="Inserisci un valore valido (es. 1.234.567,00000)"
+                                                                    title={t(
+                                                                        'offers.form.validation_value_example',
+                                                                    )}
                                                                     className="rounded-r-none text-right"
                                                                 />
                                                                 <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
@@ -2874,8 +2994,9 @@ export default function OffersCreate() {
                                                                 htmlFor="rate_increase_cfz"
                                                                 required
                                                             >
-                                                                Aumento/sconto
-                                                                tariffa cfz
+                                                                {t(
+                                                                    'offers.show.rate_increase_cfz_label',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex">
                                                                 <Input
@@ -2903,7 +3024,9 @@ export default function OffersCreate() {
                                                                         handleInputFocus
                                                                     }
                                                                     required
-                                                                    title="Inserisci un valore valido (es. 1.234.567,00000 o -1.234.567,00000)"
+                                                                    title={t(
+                                                                        'offers.form.validation_value_signed_example',
+                                                                    )}
                                                                     className="rounded-r-none text-right"
                                                                 />
                                                                 <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
@@ -2920,8 +3043,9 @@ export default function OffersCreate() {
                                                         {/* Tariffa mdo cfz arrotondata % */}
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="rate_rounding_cfz_perc">
-                                                                Tariffa mdo cfz
-                                                                arrotondata %
+                                                                {t(
+                                                                    'offers.show.rate_rounding_cfz_perc_label',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex">
                                                                 <Input
@@ -2948,9 +3072,9 @@ export default function OffersCreate() {
                                                         {/* Tariffa definitiva mdo cfz */}
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="final_rate_cfz">
-                                                                Tariffa
-                                                                definitiva mdo
-                                                                cfz
+                                                                {t(
+                                                                    'offers.show.final_rate_cfz_label',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex">
                                                                 <Input
@@ -2977,9 +3101,9 @@ export default function OffersCreate() {
                                                         {/* Tariffa definitiva mdo pz */}
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="final_rate_pz">
-                                                                Tariffa
-                                                                definitiva mdo
-                                                                pz
+                                                                {t(
+                                                                    'offers.show.final_rate_pz_label',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex">
                                                                 <Input
@@ -3009,7 +3133,9 @@ export default function OffersCreate() {
                                                                 htmlFor="materials_euro"
                                                                 required
                                                             >
-                                                                Euro materiali
+                                                                {t(
+                                                                    'offers.show.materials_euro_label',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex">
                                                                 <Input
@@ -3043,10 +3169,9 @@ export default function OffersCreate() {
                                                                 </span>
                                                             </div>
                                                             <small className="text-sm text-muted-foreground">
-                                                                Inserisci
-                                                                l'importo, ad
-                                                                esempio
-                                                                1.234.567,00000
+                                                                {t(
+                                                                    'offers.form.validation_amount_eur_example',
+                                                                )}
                                                             </small>
                                                             <InputError
                                                                 message={
@@ -3061,7 +3186,9 @@ export default function OffersCreate() {
                                                                 htmlFor="logistics_euro"
                                                                 required
                                                             >
-                                                                Euro logistica
+                                                                {t(
+                                                                    'offers.show.logistics_euro_label',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex">
                                                                 <Input
@@ -3095,10 +3222,9 @@ export default function OffersCreate() {
                                                                 </span>
                                                             </div>
                                                             <small className="text-sm text-muted-foreground">
-                                                                Inserisci
-                                                                l'importo, ad
-                                                                esempio
-                                                                1.234.567,00000
+                                                                {t(
+                                                                    'offers.form.validation_amount_eur_example',
+                                                                )}
                                                             </small>
                                                             <InputError
                                                                 message={
@@ -3113,7 +3239,9 @@ export default function OffersCreate() {
                                                                 htmlFor="other_euro"
                                                                 required
                                                             >
-                                                                Euro altro
+                                                                {t(
+                                                                    'offers.show.other_euro_label',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex">
                                                                 <Input
@@ -3147,10 +3275,9 @@ export default function OffersCreate() {
                                                                 </span>
                                                             </div>
                                                             <small className="text-sm text-muted-foreground">
-                                                                Inserisci
-                                                                l'importo, ad
-                                                                esempio
-                                                                1.234.567,00000
+                                                                {t(
+                                                                    'offers.form.validation_amount_eur_example',
+                                                                )}
                                                             </small>
                                                             <InputError
                                                                 message={
@@ -3162,8 +3289,9 @@ export default function OffersCreate() {
                                                         {/* Tariffa totale cfz */}
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="total_rate_cfz">
-                                                                Tariffa totale
-                                                                cfz
+                                                                {t(
+                                                                    'offers.show.total_rate_cfz_label',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex">
                                                                 <Input
@@ -3190,8 +3318,9 @@ export default function OffersCreate() {
                                                         {/* Tariffa totale pz */}
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="total_rate_pz">
-                                                                Tariffa totale
-                                                                pz
+                                                                {t(
+                                                                    'offers.show.total_rate_pz_label',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex">
                                                                 <Input
@@ -3218,8 +3347,9 @@ export default function OffersCreate() {
                                                         {/* Note sull'offerta */}
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="offer_notes">
-                                                                Note
-                                                                sull'offerta
+                                                                {t(
+                                                                    'offers.show.offer_notes_label',
+                                                                )}
                                                             </FormLabel>
                                                             <Textarea
                                                                 id="offer_notes"
@@ -3248,8 +3378,9 @@ export default function OffersCreate() {
                                                         {/* L&S Costo setup (%) */}
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="ls_setup_cost">
-                                                                L&S Costo setup
-                                                                (%)
+                                                                {t(
+                                                                    'offers.show.ls_setup_cost_label',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex">
                                                                 <Input
@@ -3288,7 +3419,9 @@ export default function OffersCreate() {
                                                         {/* L&S Altri costi */}
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="ls_other_costs">
-                                                                L&S Altri costi
+                                                                {t(
+                                                                    'offers.show.ls_other_costs_label',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex">
                                                                 <Input
@@ -3314,7 +3447,9 @@ export default function OffersCreate() {
                                                                     onFocus={
                                                                         handleInputFocus
                                                                     }
-                                                                    title="Inserisci un importo valido in euro (es. 1.234.567,00000)"
+                                                                    title={t(
+                                                                        'offers.form.validation_amount_eur_example',
+                                                                    )}
                                                                     className="rounded-r-none text-right"
                                                                 />
                                                                 <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
@@ -3322,10 +3457,9 @@ export default function OffersCreate() {
                                                                 </span>
                                                             </div>
                                                             <small className="text-sm text-muted-foreground">
-                                                                Inserisci
-                                                                l'importo, ad
-                                                                esempio
-                                                                1.234.567,00000
+                                                                {t(
+                                                                    'offers.form.validation_amount_eur_example',
+                                                                )}
                                                             </small>
                                                             <InputError
                                                                 message={
@@ -3334,10 +3468,12 @@ export default function OffersCreate() {
                                                             />
                                                         </div>
 
-                                                        {/* Approvazione */}
+                                                        {/* Approval */}
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="approval_status">
-                                                                Approvazione
+                                                                {t(
+                                                                    'offers.show.approval_status_label',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="approval_status"
@@ -3349,20 +3485,27 @@ export default function OffersCreate() {
                                                                 }
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona lo stato di approvazione" />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'offers.form.select_approval_status',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     <SelectItem value="0">
-                                                                        In
-                                                                        attesa
-                                                                        di
-                                                                        approvazione
+                                                                        {t(
+                                                                            'offers.index.mobile_status_pending',
+                                                                        )}
                                                                     </SelectItem>
                                                                     <SelectItem value="1">
-                                                                        Approvata
+                                                                        {t(
+                                                                            'offers.index.mobile_status_approved',
+                                                                        )}
                                                                     </SelectItem>
                                                                     <SelectItem value="2">
-                                                                        Respinta
+                                                                        {t(
+                                                                            'offers.index.mobile_status_rejected',
+                                                                        )}
                                                                     </SelectItem>
                                                                 </SelectContent>
                                                             </Select>
@@ -3382,8 +3525,12 @@ export default function OffersCreate() {
                                                                 }
                                                             >
                                                                 {processing
-                                                                    ? 'Creando...'
-                                                                    : 'Salva'}
+                                                                    ? t(
+                                                                          'offers.create.submit_creating',
+                                                                      )
+                                                                    : t(
+                                                                          'offers.create.submit',
+                                                                      )}
                                                             </Button>
                                                             <Button
                                                                 type="button"
@@ -3392,7 +3539,9 @@ export default function OffersCreate() {
                                                                     handleClose
                                                                 }
                                                             >
-                                                                Chiudi
+                                                                {t(
+                                                                    'dashboard.close',
+                                                                )}
                                                             </Button>
                                                         </div>
                                                     </div>

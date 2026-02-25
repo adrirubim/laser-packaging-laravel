@@ -7,6 +7,7 @@ import {
 import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import offerOperationCategories from '@/routes/offer-operation-categories/index';
 import { type BreadcrumbItem } from '@/types';
@@ -37,6 +38,7 @@ type OfferOperationCategoriesIndexProps = {
 };
 
 export default function OfferOperationCategoriesIndex() {
+    const { t } = useTranslations();
     const { props } = usePage<OfferOperationCategoriesIndexProps>();
     const { categories: categoriesPaginated, filters } = props;
     const { flash } = useFlashNotifications();
@@ -104,23 +106,23 @@ export default function OfferOperationCategoriesIndex() {
     };
 
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Offerte', href: '/offers' },
+        { title: t('nav.offers'), href: '/offers' },
         {
-            title: 'Categorie Operazioni',
+            title: t('offer_operation_categories.page_title'),
             href: offerOperationCategories.index().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Categorie Operazioni" />
+            <Head title={t('offer_operation_categories.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="Categorie Operazioni"
-                    subtitle="Elenco delle categorie operazioni attive con Cerca."
+                    title={t('offer_operation_categories.page_title')}
+                    subtitle={t('offer_operation_categories.index.subtitle')}
                     createHref={offerOperationCategories.create().url}
-                    createLabel="Nuova Categoria"
+                    createLabel={t('offer_operation_categories.index.create')}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -128,12 +130,14 @@ export default function OfferOperationCategoriesIndex() {
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="space-y-1">
                         <label className="text-xs font-medium text-muted-foreground">
-                            Cerca
+                            {t('common.search')}
                         </label>
                         <SearchInput
                             value={searchValue}
                             onChange={handleSearchChange}
-                            placeholder="Codice o nome..."
+                            placeholder={t(
+                                'offer_operation_categories.search_placeholder',
+                            )}
                             isLoading={isSearching}
                             onClear={clearSearch}
                         />
@@ -152,13 +156,17 @@ export default function OfferOperationCategoriesIndex() {
                                         UUID
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Codice categoria
+                                        {t(
+                                            'offer_operation_categories.form.code_label',
+                                        )}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Nome categoria
+                                        {t(
+                                            'offer_operation_categories.form.name_label',
+                                        )}
                                     </th>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t('common.actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -169,8 +177,9 @@ export default function OfferOperationCategoriesIndex() {
                                             colSpan={5}
                                             className="px-3 py-6 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessuna categoria trovata per i
-                                            filtri attuali.
+                                            {t(
+                                                'offer_operation_categories.index.empty',
+                                            )}
                                         </td>
                                     </tr>
                                 )}
@@ -236,8 +245,11 @@ export default function OfferOperationCategoriesIndex() {
                         })
                     }
                     onConfirm={handleDeleteConfirm}
-                    title="Elimina Categoria Operazione"
-                    description="Sei sicuro di voler eliminare questa categoria operazione? Questa azione non può essere annullata."
+                    title={t('offer_operation_categories.delete.title')}
+                    description={t(
+                        'offer_operation_categories.delete.description',
+                        { name: deleteDialog.category?.name ?? '' },
+                    )}
                     itemName={deleteDialog.category?.name}
                     isLoading={isDeleting}
                 />

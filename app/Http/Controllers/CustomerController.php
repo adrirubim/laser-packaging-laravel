@@ -49,11 +49,11 @@ class CustomerController extends Controller
     {
         $customer = Customer::create($request->validated());
 
-        // Invalidare cache
+        // Invalidate cache
         $this->customerRepository->clearCache();
 
         return redirect()->route('customers.index')
-            ->with('success', 'Cliente creato con successo.');
+            ->with('success', __('flash.customer.created'));
     }
 
     /**
@@ -85,11 +85,11 @@ class CustomerController extends Controller
     {
         $customer->update($request->validated());
 
-        // Invalidare cache
+        // Invalidate cache
         $this->customerRepository->clearCache();
 
         return redirect()->route('customers.index')
-            ->with('success', 'Cliente aggiornato con successo.');
+            ->with('success', __('flash.customer.updated'));
     }
 
     /**
@@ -97,26 +97,26 @@ class CustomerController extends Controller
      */
     public function destroy(Customer $customer)
     {
-        // Verificare se ha divisioni attive
+        // Verify if has active divisions
         if ($customer->divisions()->where('removed', false)->exists()) {
             return back()->withErrors([
-                'error' => 'Non è possibile eliminare il cliente. Ha divisioni associate.',
+                'error' => __('flash.cannot_delete_customer_divisions'),
             ]);
         }
 
-        // Verificare se ha offerte attive
+        // Verify if has active offers
         if ($customer->offers()->where('removed', false)->exists()) {
             return back()->withErrors([
-                'error' => 'Non è possibile eliminare il cliente. Ha offerte associate.',
+                'error' => __('flash.cannot_delete_customer_offers'),
             ]);
         }
 
         $customer->update(['removed' => true]);
 
-        // Invalidare cache
+        // Invalidate cache
         $this->customerRepository->clearCache();
 
         return redirect()->route('customers.index')
-            ->with('success', 'Cliente eliminato con successo.');
+            ->with('success', __('flash.customer.deleted'));
     }
 }

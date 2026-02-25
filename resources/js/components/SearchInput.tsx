@@ -26,7 +26,7 @@ export function SearchInput({
     const [localValue, setLocalValue] = useState(value);
 
     useEffect(() => {
-        // Chiamare solo se il valore locale è diverso da quello del server
+        // Call only if local value differs from server
         if (localValue === value) {
             return;
         }

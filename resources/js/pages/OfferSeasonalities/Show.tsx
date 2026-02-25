@@ -8,6 +8,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import offerSeasonalities from '@/routes/offer-seasonalities/index';
 import { type BreadcrumbItem } from '@/types';
@@ -28,16 +29,17 @@ type OfferSeasonalitiesShowProps = {
 export default function OfferSeasonalitiesShow({
     seasonality,
 }: OfferSeasonalitiesShowProps) {
+    const { t } = useTranslations();
     const [isDeleting, setIsDeleting] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: '/offers',
         },
         {
-            title: 'Stagionalità',
+            title: t('offer_seasonalities.page_title'),
             href: offerSeasonalities.index().url,
         },
         {
@@ -67,7 +69,11 @@ export default function OfferSeasonalitiesShow({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Stagionalità ${seasonality.name}`} />
+            <Head
+                title={t('offer_seasonalities.show.page_title', {
+                    name: seasonality.name,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
@@ -92,7 +98,7 @@ export default function OfferSeasonalitiesShow({
                                 }
                             >
                                 <Edit className="mr-2 h-4 w-4" />
-                                Modifica
+                                {t('common.edit')}
                             </Link>
                         </Button>
                         <Button
@@ -101,22 +107,24 @@ export default function OfferSeasonalitiesShow({
                             onClick={() => setDeleteDialogOpen(true)}
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Elimina
+                            {t('common.delete')}
                         </Button>
                     </div>
                 </div>
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Dettagli Stagionalità</CardTitle>
+                        <CardTitle>
+                            {t('offer_seasonalities.show.details_title')}
+                        </CardTitle>
                         <CardDescription>
-                            Informazioni su questa stagionalità
+                            {t('offer_seasonalities.show.details_subtitle')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div>
                             <Label className="text-sm font-medium text-muted-foreground">
-                                Nome
+                                {t('offer_seasonalities.form.name_label')}
                             </Label>
                             <p className="text-lg font-semibold">
                                 {seasonality.name}
@@ -146,14 +154,8 @@ export default function OfferSeasonalitiesShow({
                 onOpenChange={setDeleteDialogOpen}
                 onConfirm={handleDeleteConfirm}
                 isDeleting={isDeleting}
-                title="Conferma eliminazione"
-                description={
-                    <>
-                        Sei sicuro di voler eliminare la stagionalità? Questa
-                        azione non può essere annullata. La stagionalità verrà
-                        eliminata definitivamente.
-                    </>
-                }
+                title={t('offer_seasonalities.delete.title')}
+                description={t('offer_seasonalities.delete.description')}
                 itemName={seasonality.name}
             />
         </AppLayout>

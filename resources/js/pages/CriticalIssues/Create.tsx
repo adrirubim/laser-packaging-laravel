@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import criticalIssues from '@/routes/critical-issues/index';
 import { type BreadcrumbItem } from '@/types';
@@ -21,28 +22,35 @@ type CriticalIssuesCreateProps = {
 export default function CriticalIssuesCreate({
     errors: serverErrors,
 }: CriticalIssuesCreateProps) {
+    const { t } = useTranslations();
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Criticità',
+            title: t('critical_issues.breadcrumb'),
             href: criticalIssues.index().url,
         },
         {
-            title: 'Crea',
+            title: t('critical_issues.create.breadcrumb'),
             href: criticalIssues.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Crea Criticità" />
+            <Head title={t('critical_issues.create.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Gestione Criticità</CardTitle>
-                                <CardDescription>Inserimento</CardDescription>
+                                <CardTitle>
+                                    {t('critical_issues.create.card_title')}
+                                </CardTitle>
+                                <CardDescription>
+                                    {t(
+                                        'critical_issues.create.card_description',
+                                    )}
+                                </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <Form
@@ -60,13 +68,17 @@ export default function CriticalIssuesCreate({
                                             <>
                                                 <div className="grid gap-2">
                                                     <Label htmlFor="name">
-                                                        Nome Criticità *
+                                                        {t(
+                                                            'critical_issues.form.name_label',
+                                                        )}
                                                     </Label>
                                                     <Input
                                                         id="name"
                                                         name="name"
                                                         required
-                                                        placeholder="Nome Criticità"
+                                                        placeholder={t(
+                                                            'critical_issues.form.name_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="name-help"
                                                     />
@@ -74,9 +86,9 @@ export default function CriticalIssuesCreate({
                                                         id="name-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci il nome della
-                                                        criticità (massimo 255
-                                                        caratteri).
+                                                        {t(
+                                                            'critical_issues.form.name_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.name}
@@ -92,15 +104,19 @@ export default function CriticalIssuesCreate({
                                                         }
                                                         disabled={processing}
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                     <Button
                                                         type="submit"
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Salvando...'
-                                                            : 'Salva'}
+                                                            ? t(
+                                                                  'critical_issues.create.submitting',
+                                                              )
+                                                            : t(
+                                                                  'critical_issues.create.submit',
+                                                              )}
                                                     </Button>
                                                 </div>
                                             </>

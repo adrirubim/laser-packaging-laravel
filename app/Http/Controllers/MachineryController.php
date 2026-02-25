@@ -25,7 +25,7 @@ class MachineryController extends Controller
     {
         $query = Machinery::active()->with('valueType');
 
-        // Ricerca
+        // Search
         if ($request->has('search')) {
             $search = $request->get('search');
             $query->where(function ($q) use ($search) {
@@ -68,11 +68,11 @@ class MachineryController extends Controller
 
         $machinery = Machinery::create($validated);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->articleRepository->clearFormOptionsCache();
 
         return redirect()->route('machinery.index')
-            ->with('success', 'Macchinario creato con successo.');
+            ->with('success', __('flash.machinery.created'));
     }
 
     /**
@@ -108,11 +108,11 @@ class MachineryController extends Controller
     {
         $machinery->update($request->validated());
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->articleRepository->clearFormOptionsCache();
 
         return redirect()->route('machinery.index')
-            ->with('success', 'Macchinario aggiornato con successo.');
+            ->with('success', __('flash.machinery.updated'));
     }
 
     /**
@@ -122,10 +122,10 @@ class MachineryController extends Controller
     {
         $machinery->update(['removed' => true]);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->articleRepository->clearFormOptionsCache();
 
         return redirect()->route('machinery.index')
-            ->with('success', 'Macchinario eliminato con successo.');
+            ->with('success', __('flash.machinery.deleted'));
     }
 }

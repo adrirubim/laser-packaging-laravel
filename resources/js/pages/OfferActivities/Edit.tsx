@@ -9,6 +9,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useTranslations } from '@/hooks/use-translations';
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
@@ -32,24 +33,22 @@ export default function OfferActivitiesEdit({
     activity,
     errors: serverErrors,
 }: OfferActivitiesEditProps) {
+    const { t } = useTranslations();
     const [nameValue, setNameValue] = useState<string>(activity.name);
 
     // Validazione in tempo reale per name
     const nameValidation = useFieldValidation(nameValue, [
-        validationRules.required('Il nome è obbligatorio'),
-        validationRules.maxLength(
-            255,
-            'Il nome non può superare 255 caratteri',
-        ),
+        validationRules.required(t('validation.name_required')),
+        validationRules.maxLength(255, t('validation.max_length_name')),
     ]);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: '/offers',
         },
         {
-            title: 'Attività',
+            title: t('offer_activities.page_title'),
             href: offerActivities.index().url,
         },
         {
@@ -57,23 +56,31 @@ export default function OfferActivitiesEdit({
             href: offerActivities.show({ offerActivity: activity.uuid }).url,
         },
         {
-            title: 'Modifica',
+            title: t('offer_activities.edit.breadcrumb'),
             href: offerActivities.edit({ offerActivity: activity.uuid }).url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Modifica Attività ${activity.name}`} />
+            <Head
+                title={t('offer_activities.edit.page_title', {
+                    name: activity.name,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Modifica Attività</CardTitle>
+                                <CardTitle>
+                                    {t('offer_activities.edit.card_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Aggiorna le informazioni dell'attività.
+                                    {t(
+                                        'offer_activities.edit.card_description',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -114,7 +121,9 @@ export default function OfferActivitiesEdit({
                                                         htmlFor="name"
                                                         required
                                                     >
-                                                        Nome
+                                                        {t(
+                                                            'offer_activities.form.name_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="name"
@@ -132,7 +141,9 @@ export default function OfferActivitiesEdit({
                                                             nameValidation.onFocus
                                                         }
                                                         required
-                                                        placeholder="Nome Attività"
+                                                        placeholder={t(
+                                                            'offer_activities.form.name_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="name-help"
                                                         className={
@@ -152,9 +163,9 @@ export default function OfferActivitiesEdit({
                                                         id="name-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci il nome
-                                                        dell'attività (massimo
-                                                        255 caratteri).
+                                                        {t(
+                                                            'offer_activities.form.name_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.name}
@@ -167,8 +178,12 @@ export default function OfferActivitiesEdit({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Aggiornando...'
-                                                            : 'Aggiorna Attività'}
+                                                            ? t(
+                                                                  'offer_activities.edit.submitting',
+                                                              )
+                                                            : t(
+                                                                  'offer_activities.edit.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -184,7 +199,7 @@ export default function OfferActivitiesEdit({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

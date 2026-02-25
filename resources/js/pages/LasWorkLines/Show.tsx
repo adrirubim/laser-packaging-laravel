@@ -8,6 +8,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import lasWorkLines from '@/routes/las-work-lines/index';
 import { type BreadcrumbItem } from '@/types';
@@ -27,16 +28,17 @@ type LasWorkLinesShowProps = {
 };
 
 export default function LasWorkLinesShow({ workLine }: LasWorkLinesShowProps) {
+    const { t } = useTranslations();
     const [isDeleting, setIsDeleting] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: '/offers',
         },
         {
-            title: 'LAS Linee di Lavoro',
+            title: t('offer_las_work_lines.page_title'),
             href: lasWorkLines.index().url,
         },
         {
@@ -65,14 +67,18 @@ export default function LasWorkLinesShow({ workLine }: LasWorkLinesShowProps) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Linea di Lavoro LAS ${workLine.name}`} />
+            <Head
+                title={t('offer_las_work_lines.show.page_title', {
+                    name: workLine.name,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
                     <div className="flex-1">
                         <h1 className="text-2xl font-bold">{workLine.name}</h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Codice:{' '}
+                            {t('common.code')}:{' '}
                             <span className="font-mono">{workLine.code}</span> |
                             UUID:{' '}
                             <span className="font-mono">{workLine.uuid}</span>
@@ -88,7 +94,7 @@ export default function LasWorkLinesShow({ workLine }: LasWorkLinesShowProps) {
                                 }
                             >
                                 <Edit className="mr-2 h-4 w-4" />
-                                Modifica
+                                {t('common.edit')}
                             </Link>
                         </Button>
                         <Button
@@ -97,22 +103,24 @@ export default function LasWorkLinesShow({ workLine }: LasWorkLinesShowProps) {
                             onClick={() => setDeleteDialogOpen(true)}
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Elimina
+                            {t('common.delete')}
                         </Button>
                     </div>
                 </div>
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Dettagli Linea di Lavoro LAS</CardTitle>
+                        <CardTitle>
+                            {t('offer_las_work_lines.show.details_title')}
+                        </CardTitle>
                         <CardDescription>
-                            Informazioni su questa linea di lavoro
+                            {t('offer_las_work_lines.show.details_subtitle')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div>
                             <Label className="text-sm font-medium text-muted-foreground">
-                                Codice
+                                {t('common.code')}
                             </Label>
                             <p className="font-mono text-lg font-semibold">
                                 {workLine.code}
@@ -121,7 +129,7 @@ export default function LasWorkLinesShow({ workLine }: LasWorkLinesShowProps) {
 
                         <div>
                             <Label className="text-sm font-medium text-muted-foreground">
-                                Nome
+                                {t('offer_las_work_lines.form.name_label')}
                             </Label>
                             <p className="text-lg font-semibold">
                                 {workLine.name}
@@ -149,17 +157,12 @@ export default function LasWorkLinesShow({ workLine }: LasWorkLinesShowProps) {
                     onOpenChange={setDeleteDialogOpen}
                     onConfirm={handleDeleteConfirm}
                     isDeleting={isDeleting}
-                    title="Conferma eliminazione"
-                    description={
-                        <>
-                            Sei sicuro di voler eliminare la linea di lavoro LAS{' '}
-                            <strong>{workLine.name}</strong> (Codice:{' '}
-                            {workLine.code})? Questa azione non può essere
-                            annullata. La linea di lavoro verrà eliminata
-                            definitivamente.
-                        </>
-                    }
-                    itemName={`${workLine.name} (Codice: ${workLine.code})`}
+                    title={t('offer_las_work_lines.delete.title')}
+                    description={t('offer_las_work_lines.delete.description', {
+                        name: workLine.name,
+                        code: workLine.code,
+                    })}
+                    itemName={`${workLine.name} (${t('common.code')}: ${workLine.code})`}
                 />
             </div>
         </AppLayout>

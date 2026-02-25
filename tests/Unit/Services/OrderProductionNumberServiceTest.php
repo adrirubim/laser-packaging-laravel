@@ -34,7 +34,7 @@ class OrderProductionNumberServiceTest extends TestCase
     {
         $first = $this->service->generateNext();
 
-        // Crear una orden con el primer número para simular uso
+        // Create order with first number to simulate usage
         Order::factory()->create([
             'order_production_number' => $first,
             'removed' => false,
@@ -44,7 +44,7 @@ class OrderProductionNumberServiceTest extends TestCase
 
         $this->assertNotEquals($first, $second);
 
-        // Extraer el número progresivo
+        // Extract progressive number
         $firstProgressive = (int) substr($first, -4);
         $secondProgressive = (int) substr($second, -4);
 
@@ -82,10 +82,10 @@ class OrderProductionNumberServiceTest extends TestCase
             'removed' => false,
         ]);
 
-        // No debería existir si excluimos el orden actual
+        // Should not exist if we exclude current order
         $this->assertFalse($this->service->exists('2025.0001', $order->id));
 
-        // Pero sí debería existir si no lo excluimos
+        // But should exist if we do not exclude it
         $this->assertTrue($this->service->exists('2025.0001'));
     }
 
@@ -94,28 +94,28 @@ class OrderProductionNumberServiceTest extends TestCase
     {
         $number = '2025.0001';
 
-        // Crear orden removida
+        // Create removed order
         Order::factory()->create([
             'order_production_number' => $number,
             'removed' => true,
         ]);
 
-        // No debería existir porque está removida
+        // Should not exist because it is removed
         $this->assertFalse($this->service->exists($number));
     }
 
     #[Test]
     public function it_handles_concurrent_requests_thread_safe()
     {
-        // Simular múltiples requests concurrentes
-        // Necesitamos guardar cada número para que el siguiente sea diferente
+        // Simulate multiple concurrent requests
+        // Need to save each number so the next one is different
         $numbers = [];
 
         for ($i = 0; $i < 10; $i++) {
             $number = $this->service->generateNext();
             $numbers[] = $number;
 
-            // Guardar el número en la base de datos para que el siguiente sea diferente
+            // Save number to database so next one is different
             $article = \App\Models\Article::factory()->create(['removed' => false]);
             \App\Models\Order::factory()->create([
                 'article_uuid' => $article->uuid,
@@ -124,7 +124,7 @@ class OrderProductionNumberServiceTest extends TestCase
             ]);
         }
 
-        // Todos deben ser únicos
+        // All must be unique
         $uniqueNumbers = array_unique($numbers);
         $this->assertCount(10, $uniqueNumbers);
     }

@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('article_descr')->nullable();
             $table->text('additional_descr')->nullable();
             $table->uuid('article_category')->nullable();
-            $table->string('um')->nullable(); // Unità di misura
+            $table->string('um')->nullable(); // Unit of measure
             $table->integer('lot_attribution')->nullable(); // 0: Cliente, 1: Noi
             $table->integer('expiration_attribution')->nullable(); // 0: Cliente, 1: Noi
             $table->string('ean')->nullable();

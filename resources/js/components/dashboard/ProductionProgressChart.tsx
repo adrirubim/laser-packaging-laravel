@@ -41,7 +41,7 @@ type ProductionProgressChartProps = {
     data: ProductionProgressData[];
     maxItems?: number;
     /**
-     * Callback opzionale al clic su una barra (ordine specifico)
+     * Optional callback on bar click (specific order)
      */
     onBarClick?: (orderNumber: string) => void;
 };
@@ -78,9 +78,9 @@ function ProductionProgressTooltip({
         | undefined;
     if (!rawPayload) return null;
 
-    // Detectar tema dark de forma robusta:
-    // - Primero miramos si el <html> tiene la clase "dark" (Tailwind).
-    // - Si no, caemos a prefers-color-scheme.
+    // Detect dark theme robustly:
+    // - First check if <html> has "dark" class (Tailwind).
+    // - Otherwise fall back to prefers-color-scheme.
     const isDark =
         typeof document !== 'undefined'
             ? document.documentElement.classList.contains('dark') ||
@@ -255,25 +255,25 @@ export function ProductionProgressChart({
         daysUntilDelivery: item.daysUntilDelivery,
     }));
 
-    // Usiamo la stessa palette "stati" della dashboard
-    // overdue   -> rosso (vicino a sospeso)
-    // urgent    -> giallo caldo (vicino a in_avanzamento)
-    // completed -> verde (vicino a completato)
-    // in prog.  -> blu (vicino a lanciato)
+    // Use same "state" palette as dashboard
+    // overdue   -> red (near suspended)
+    // urgent    -> warm yellow (near in progress)
+    // completed -> green (near completed)
+    // in prog.  -> blue (near launched)
     const getBarColor = (item: (typeof chartData)[0]) => {
         if (
             item.isUrgent &&
             item.daysUntilDelivery !== undefined &&
             item.daysUntilDelivery < 0
         ) {
-            return '#FB7185'; // rosso/sospeso - in ritardo
+            return '#FB7185'; // red/suspended - overdue
         }
         if (
             item.isUrgent &&
             item.daysUntilDelivery !== undefined &&
             item.daysUntilDelivery <= 3
         ) {
-            return '#FACC15'; // giallo caldo - urgente
+            return '#FACC15'; // warm yellow - urgent
         }
         if (item.progress >= 100) {
             return '#4ADE80'; // verde - completato
@@ -294,8 +294,7 @@ export function ProductionProgressChart({
                 <BarChart
                     data={chartData}
                     layout="vertical"
-                    // Dejamos poco margen izquierdo para que en móvil
-                    // las barras no “nazcan” demasiado hacia el centro.
+                    // Leave little left margin so on mobile bars do not start too far from center
                     margin={{ top: 5, right: 30, left: 2, bottom: 5 }}
                 >
                     <CartesianGrid
@@ -326,7 +325,7 @@ export function ProductionProgressChart({
                     <Bar
                         dataKey="total"
                         stackId="a"
-                        // Barra di sfondo in grigio chiaro (coerente con il track del progresso)
+                        // Background bar in light gray (consistent with progress track)
                         fill="#e5e7eb"
                         radius={[0, 4, 4, 0]}
                     >
@@ -334,13 +333,13 @@ export function ProductionProgressChart({
                             <Cell key={`cell-total-${index}`} fill="#e5e7eb" />
                         ))}
                     </Bar>
-                    {/* Colore base allineato alla palette blu degli stati */}
+                    {/* Base color aligned to blue state palette */}
                     <Bar
                         dataKey="worked"
                         stackId="a"
                         fill="#60A5FA"
                         radius={[0, 4, 4, 0]}
-                        // Feedback global de interactividad
+                        // Global interactivity feedback
                         style={onBarClick ? { cursor: 'pointer' } : undefined}
                         onMouseLeave={() => setActiveIndex(null)}
                     >

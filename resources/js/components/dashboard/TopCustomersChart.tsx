@@ -217,8 +217,8 @@ export function TopCustomersChart({
             <BarChart
                 data={chartData}
                 layout="vertical"
-                // Margen fino y consistente con el resto de la dashboard,
-                // especialmente en móvil.
+                // Thin, consistent margin with rest of dashboard
+                // especially on mobile.
                 margin={{ top: 5, right: 30, left: 4, bottom: 5 }}
             >
                 <CartesianGrid
@@ -244,7 +244,7 @@ export function TopCustomersChart({
                         zIndex: 1000,
                     }}
                 />
-                {/* Verde pastello per un aspetto più morbido */}
+                {/* Pastel green for a softer look */}
                 <Bar
                     dataKey="ordini"
                     fill="#6EE7B7"

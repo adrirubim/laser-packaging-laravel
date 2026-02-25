@@ -67,34 +67,34 @@ class Machinery extends Model
      * Get valuetype as string (for compatibility with legacy).
      * Returns the type field from ValueTypes or null.
      *
-     * Nota: En el legacy, valuetype puede ser "testo", "numero", o una lista separada por comas.
-     * Por ahora, si no hay valueType relacionado o no tiene los campos necesarios, retornamos null.
+     * Note: In legacy, valuetype can be "testo", "numero", or a comma-separated list.
+     * For now, if there is no related valueType or it lacks the required fields, return null.
      */
     public function getValuetypeAttribute(): ?string
     {
-        // Verificar si la relación está cargada
+        // Check if relation is loaded
         if (! $this->relationLoaded('valueType')) {
             return null;
         }
 
-        // Tentare di ottenere la relazione in modo sicuro
+        // Try to get the relation safely
         try {
-            // Verificare se la relazione esiste usando getRelationValue che è più sicuro
-            // getRelationValue retorna null si la relación no está cargada o no existe
+            // Verify the relation exists using getRelationValue which is safer
+            // getRelationValue returns null if relation is not loaded or does not exist
             $valueType = $this->getRelationValue('valueType');
 
-            // Se la relazione è null, restituire null
+            // If relation is null, return null
             if (! $valueType || ! is_object($valueType)) {
                 return null;
             }
 
-            // Verificare che sia un'istanza di Model prima di chiamare getAttributes
+            // Verify it's a Model instance before calling getAttributes
             if (! ($valueType instanceof \Illuminate\Database\Eloquent\Model)) {
                 return null;
             }
 
-            // Tentare di ottenere da campi che potrebbero esistere in ValueTypes
-            // Si ValueTypes no tiene estos campos, retornar null para evitar errores
+            // Try to get from fields that might exist in ValueTypes
+            // If ValueTypes doesn't have these fields, return null to avoid errors
             $attributes = $valueType->getAttributes();
             if (isset($attributes['type'])) {
                 return $attributes['type'];
@@ -103,14 +103,14 @@ class Machinery extends Model
                 return $attributes['values'];
             }
         } catch (\Exception $e) {
-            // Se c'è un errore accedendo alla relazione o ai suoi attributi, restituire null
+            // If there's an error accessing the relation or its attributes, return null
             return null;
         } catch (\Error $e) {
-            // Catturare anche errori PHP (come proprietà non definite)
+            // Also catch PHP errors (like undefined properties)
             return null;
         }
 
-        // Por defecto, retornar null si no tiene los campos esperados
+        // By default, return null if it doesn't have the expected fields
         return null;
     }
 

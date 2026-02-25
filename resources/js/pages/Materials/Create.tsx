@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import materials from '@/routes/materials/index';
 import { type BreadcrumbItem } from '@/types';
@@ -21,30 +22,32 @@ type MaterialsCreateProps = {
 export default function MaterialsCreate({
     errors: serverErrors,
 }: MaterialsCreateProps) {
+    const { t } = useTranslations();
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Materiali',
+            title: t('materials.title'),
             href: materials.index().url,
         },
         {
-            title: 'Crea',
+            title: t('materials.create.breadcrumb'),
             href: materials.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Crea materiale" />
+            <Head title={t('materials.create.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Crea nuovo materiale</CardTitle>
+                                <CardTitle>
+                                    {t('materials.create.card_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Compila i campi per creare un nuovo
-                                    materiale
+                                    {t('materials.create.card_description')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -63,13 +66,17 @@ export default function MaterialsCreate({
                                             <>
                                                 <div className="grid gap-2">
                                                     <Label htmlFor="cod">
-                                                        Codice *
+                                                        {t(
+                                                            'materials.form.cod_label',
+                                                        )}
                                                     </Label>
                                                     <Input
                                                         id="cod"
                                                         name="cod"
                                                         required
-                                                        placeholder="Codice materiale"
+                                                        placeholder={t(
+                                                            'materials.form.cod_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={allErrors.cod}
@@ -78,13 +85,17 @@ export default function MaterialsCreate({
 
                                                 <div className="grid gap-2">
                                                     <Label htmlFor="description">
-                                                        Descrizione *
+                                                        {t(
+                                                            'materials.form.description_label',
+                                                        )}
                                                     </Label>
                                                     <Input
                                                         id="description"
                                                         name="description"
                                                         required
-                                                        placeholder="Descrizione materiale"
+                                                        placeholder={t(
+                                                            'materials.form.description_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={
@@ -99,8 +110,12 @@ export default function MaterialsCreate({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Creando...'
-                                                            : 'Crea materiale'}
+                                                            ? t(
+                                                                  'materials.create.submitting',
+                                                              )
+                                                            : t(
+                                                                  'materials.create.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -112,7 +127,7 @@ export default function MaterialsCreate({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

@@ -45,10 +45,10 @@ class UpdateOfferOrderTypeRequest extends FormRequest
     {
         return [
             'uuid.uuid' => 'L\'UUID deve essere un formato UUID valido.',
-            'uuid.unique' => 'Questo UUID è già utilizzato.',
-            'code.required' => 'Il Codice è obbligatorio.',
-            'code.unique' => 'Questo Codice è già utilizzato.',
-            'name.required' => 'Il Nome è obbligatorio.',
+            'uuid.unique' => __('validation.uuid_unique'),
+            'code.required' => __('validation.code_required'),
+            'code.unique' => __('validation.code_unique'),
+            'name.required' => __('validation.name_required'),
         ];
     }
 }

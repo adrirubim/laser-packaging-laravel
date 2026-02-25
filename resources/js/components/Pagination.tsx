@@ -1,3 +1,4 @@
+import { useTranslations } from '@/hooks/use-translations';
 import { Link } from '@inertiajs/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -14,6 +15,7 @@ export function Pagination({
     lastPage,
     totalItems,
 }: PaginationProps) {
+    const { t } = useTranslations();
     const prevLink = links.find((link) => link.label.includes('&laquo;'));
     const nextLink = links.find((link) => link.label.includes('&raquo;'));
     const pageLinks = links.filter(
@@ -28,9 +30,9 @@ export function Pagination({
     return (
         <div className="flex flex-col items-center justify-between gap-3 text-xs text-muted-foreground sm:flex-row">
             <div className="text-sm">
-                Pagina <strong>{currentPage}</strong> di{' '}
-                <strong>{lastPage}</strong>
-                {totalItems !== undefined && ` (${totalItems} risultati)`}
+                {t('common.page_of', { current: currentPage, last: lastPage })}
+                {totalItems !== undefined &&
+                    ` (${totalItems} ${t('common.results')})`}
             </div>
             <div className="flex items-center gap-1">
                 {prevLink && (
@@ -43,7 +45,7 @@ export function Pagination({
                         }`}
                     >
                         <ChevronLeft className="mr-1 h-4 w-4" />
-                        Precedente
+                        {t('common.previous')}
                     </Link>
                 )}
                 <div className="flex flex-wrap items-center gap-1">
@@ -72,7 +74,7 @@ export function Pagination({
                                 : 'cursor-not-allowed border-transparent opacity-50'
                         }`}
                     >
-                        Successivo
+                        {t('common.next')}
                         <ChevronRight className="ml-1 h-4 w-4" />
                     </Link>
                 )}

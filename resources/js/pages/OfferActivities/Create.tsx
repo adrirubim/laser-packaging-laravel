@@ -9,6 +9,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useTranslations } from '@/hooks/use-translations';
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { generateUUID } from '@/lib/utils/uuid';
@@ -25,6 +26,7 @@ type OfferActivitiesCreateProps = {
 export default function OfferActivitiesCreate({
     errors: serverErrors,
 }: OfferActivitiesCreateProps) {
+    const { t } = useTranslations();
     const [uuid, setUuid] = useState<string>(generateUUID());
     const [nameValue, setNameValue] = useState<string>('');
 
@@ -34,39 +36,40 @@ export default function OfferActivitiesCreate({
 
     // Validazione in tempo reale per name
     const nameValidation = useFieldValidation(nameValue, [
-        validationRules.required('Il nome è obbligatorio'),
-        validationRules.maxLength(
-            255,
-            'Il nome non può superare 255 caratteri',
-        ),
+        validationRules.required(t('validation.required_name')),
+        validationRules.maxLength(255, t('validation.max_length_name')),
     ]);
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: '/offers',
         },
         {
-            title: 'Attività',
+            title: t('offer_activities.page_title'),
             href: offerActivities.index().url,
         },
         {
-            title: 'Nuova Attività',
+            title: t('offer_activities.create.breadcrumb'),
             href: offerActivities.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Nuova Attività" />
+            <Head title={t('offer_activities.create.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Nuova Attività</CardTitle>
+                                <CardTitle>
+                                    {t('offer_activities.create.card_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Compila i campi per creare un'attività.
+                                    {t(
+                                        'offer_activities.create.card_description',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -89,7 +92,7 @@ export default function OfferActivitiesCreate({
                                                             htmlFor="uuid"
                                                             required
                                                         >
-                                                            UUID
+                                                            {t('common.uuid')}
                                                         </FormLabel>
                                                         <Button
                                                             type="button"
@@ -100,7 +103,9 @@ export default function OfferActivitiesCreate({
                                                             }
                                                             className="h-7 text-xs"
                                                         >
-                                                            Rigenera
+                                                            {t(
+                                                                'offer_activities.uuid.regenerate',
+                                                            )}
                                                         </Button>
                                                     </div>
                                                     <Input
@@ -113,7 +118,9 @@ export default function OfferActivitiesCreate({
                                                             )
                                                         }
                                                         required
-                                                        placeholder="UUID (es. 550e8400-e29b-41d4-a716-446655440000)"
+                                                        placeholder={t(
+                                                            'common.uuid_placeholder',
+                                                        )}
                                                         maxLength={36}
                                                         aria-describedby="uuid-help"
                                                     />
@@ -121,10 +128,9 @@ export default function OfferActivitiesCreate({
                                                         id="uuid-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        UUID generato
-                                                        automaticamente. Puoi
-                                                        modificarlo manualmente
-                                                        se necessario.
+                                                        {t(
+                                                            'offer_activities.uuid.help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.uuid}
@@ -136,7 +142,9 @@ export default function OfferActivitiesCreate({
                                                         htmlFor="name"
                                                         required
                                                     >
-                                                        Nome
+                                                        {t(
+                                                            'offer_activities.form.name_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="name"
@@ -154,7 +162,9 @@ export default function OfferActivitiesCreate({
                                                             nameValidation.onFocus
                                                         }
                                                         required
-                                                        placeholder="Nome Attività"
+                                                        placeholder={t(
+                                                            'offer_activities.form.name_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="name-help"
                                                         className={
@@ -174,9 +184,9 @@ export default function OfferActivitiesCreate({
                                                         id="name-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci il nome
-                                                        dell'attività (massimo
-                                                        255 caratteri).
+                                                        {t(
+                                                            'offer_activities.form.name_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.name}
@@ -189,8 +199,12 @@ export default function OfferActivitiesCreate({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Creando...'
-                                                            : 'Crea Attività'}
+                                                            ? t(
+                                                                  'offer_activities.create.submitting',
+                                                              )
+                                                            : t(
+                                                                  'offer_activities.create.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -202,7 +216,7 @@ export default function OfferActivitiesCreate({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

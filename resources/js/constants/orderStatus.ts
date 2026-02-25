@@ -1,15 +1,16 @@
 /**
- * Costanti condivise per gli stati degli ordini
+ * Shared constants for order status labels.
+ * Use translation keys; resolve with t(getOrderStatusLabelKey(status)) in components.
  */
 
-export const ORDER_STATUS_LABELS: Record<number, string> = {
-    0: 'Pianificato',
-    1: 'In Allestimento',
-    2: 'Lanciato',
-    3: 'In Avanzamento',
-    4: 'Sospeso',
-    5: 'Evaso',
-    6: 'Saldato',
+export const ORDER_STATUS_LABEL_KEYS: Record<number, string> = {
+    0: 'orders.status.planned',
+    1: 'orders.status.preparation',
+    2: 'orders.status.launched',
+    3: 'orders.status.advancement',
+    4: 'orders.status.suspended',
+    5: 'orders.status.shipped',
+    6: 'orders.status.paid',
 };
 
 export const ORDER_STATUS_COLORS: Record<number, string> = {
@@ -22,26 +23,29 @@ export const ORDER_STATUS_COLORS: Record<number, string> = {
     6: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/40',
 };
 
-export const ORDER_STATUS_OPTIONS = [
-    { value: '', label: 'Tutti gli stati' },
-    { value: '0', label: 'Pianificato' },
-    { value: '1', label: 'In Allestimento' },
-    { value: '2', label: 'Lanciato' },
-    { value: '3', label: 'In Avanzamento' },
-    { value: '4', label: 'Sospeso' },
-    { value: 'completed', label: 'Completate (Evaso + Saldato)' },
-];
+export const ORDER_STATUS_OPTION_KEYS = [
+    { value: '', labelKey: 'orders.filter.status_all_simple' },
+    { value: '0', labelKey: 'orders.status.planned' },
+    { value: '1', labelKey: 'orders.status.preparation' },
+    { value: '2', labelKey: 'orders.status.launched' },
+    { value: '3', labelKey: 'orders.status.advancement' },
+    { value: '4', labelKey: 'orders.status.suspended' },
+    { value: 'completed', labelKey: 'orders.filter.status_completed' },
+] as const;
 
 /**
- * Restituisce l'etichetta di uno stato ordine
+ * Returns the translation key for an order status
  */
-export function getOrderStatusLabel(status: number): string {
-    return ORDER_STATUS_LABELS[status] || `Stato ${status}`;
+export function getOrderStatusLabelKey(status: number): string {
+    return ORDER_STATUS_LABEL_KEYS[status] ?? 'orders.status.unknown';
 }
 
 /**
- * Restituisce il colore di uno stato ordine
+ * Returns the Tailwind classes for an order status badge
  */
 export function getOrderStatusColor(status: number): string {
-    return ORDER_STATUS_COLORS[status] || 'bg-muted';
+    return (
+        ORDER_STATUS_COLORS[status] ??
+        'bg-gray-500/10 text-gray-700 dark:text-gray-300 border-gray-500/40'
+    );
 }

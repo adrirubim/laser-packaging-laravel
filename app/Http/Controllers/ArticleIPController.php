@@ -24,7 +24,7 @@ class ArticleIPController extends Controller
     {
         $query = ArticleIP::active();
 
-        // Ricerca
+        // Search
         if ($request->has('search')) {
             $search = $request->get('search');
             $query->where(function ($q) use ($search) {
@@ -85,9 +85,9 @@ class ArticleIPController extends Controller
             $request->validate([
                 'filename' => 'file|mimes:pdf|max:10240',
             ], [
-                'filename.file' => 'Il file caricato non è valido.',
+                'filename.file' => __('validation.file_invalid'),
                 'filename.mimes' => 'Il file deve essere un PDF.',
-                'filename.max' => 'Il file non può superare 10MB.',
+                'filename.max' => __('validation.file_max_10mb'),
             ]);
         }
 
@@ -102,11 +102,11 @@ class ArticleIPController extends Controller
 
         $instruction = ArticleIP::create($data);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->articleRepository->clearFormOptionsCache();
 
         return redirect()->route('articles.palletization-instructions.index')
-            ->with('success', 'Istruzione di pallettizzazione creata con successo.');
+            ->with('success', __('flash.article_ip.created'));
     }
 
     /**
@@ -147,7 +147,7 @@ class ArticleIPController extends Controller
                         ->where('removed', false)
                         ->exists();
                     if ($exists) {
-                        $fail('Il codice esiste già.');
+                        $fail(__('validation.code_exists'));
                     }
                 },
             ],
@@ -168,9 +168,9 @@ class ArticleIPController extends Controller
             $request->validate([
                 'filename' => 'file|mimes:pdf|max:10240',
             ], [
-                'filename.file' => 'Il file caricato non è valido.',
+                'filename.file' => __('validation.file_invalid'),
                 'filename.mimes' => 'Il file deve essere un PDF.',
-                'filename.max' => 'Il file non può superare 10MB.',
+                'filename.max' => __('validation.file_max_10mb'),
             ]);
         }
 
@@ -192,11 +192,11 @@ class ArticleIPController extends Controller
 
         $palletizationInstruction->update($data);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->articleRepository->clearFormOptionsCache();
 
         return redirect()->route('articles.palletization-instructions.index')
-            ->with('success', 'Istruzione di pallettizzazione aggiornata con successo.');
+            ->with('success', __('flash.article_ip.updated'));
     }
 
     /**
@@ -206,11 +206,11 @@ class ArticleIPController extends Controller
     {
         $palletizationInstruction->update(['removed' => true]);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->articleRepository->clearFormOptionsCache();
 
         return redirect()->route('articles.palletization-instructions.index')
-            ->with('success', 'Istruzione di pallettizzazione eliminata con successo.');
+            ->with('success', __('flash.article_ip.deleted'));
     }
 
     /**
@@ -219,13 +219,13 @@ class ArticleIPController extends Controller
     public function download(ArticleIP $palletizationInstruction)
     {
         if (! $palletizationInstruction->filename) {
-            return redirect()->back()->with('error', 'Nessun file disponibile per questa istruzione di pallettizzazione.');
+            return redirect()->back()->with('error', __('flash.article_ip.no_file'));
         }
 
         $path = storage_path('app/palletization-instructions/'.$palletizationInstruction->filename);
 
         if (! file_exists($path)) {
-            return redirect()->back()->with('error', 'File non trovato sul server.');
+            return redirect()->back()->with('error', __('flash.article_ip.file_not_found'));
         }
 
         return response()->download($path, $palletizationInstruction->filename);

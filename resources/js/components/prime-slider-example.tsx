@@ -1,3 +1,4 @@
+import { useTranslations } from '@/hooks/use-translations';
 import { Slider } from 'primereact/slider';
 import { useState } from 'react';
 
@@ -6,6 +7,7 @@ import { useState } from 'react';
  * Documentazione: https://primereact.org/slider/
  */
 export function PrimeSliderExample() {
+    const { t } = useTranslations();
     const [value, setValue] = useState<number>(50);
     const [rangeValue, setRangeValue] = useState<[number, number]>([20, 80]);
     const [stepValue, setStepValue] = useState<number>(20);
@@ -13,7 +15,9 @@ export function PrimeSliderExample() {
     return (
         <div className="space-y-8 p-6">
             <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Slider semplice</h3>
+                <h3 className="text-lg font-semibold">
+                    {t('prime_slider.simple')}
+                </h3>
                 <div className="flex items-center gap-4">
                     <Slider
                         value={value}
@@ -27,7 +31,9 @@ export function PrimeSliderExample() {
             </div>
 
             <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Slider con intervallo</h3>
+                <h3 className="text-lg font-semibold">
+                    {t('prime_slider.range')}
+                </h3>
                 <div className="flex items-center gap-4">
                     <Slider
                         value={rangeValue}
@@ -44,7 +50,9 @@ export function PrimeSliderExample() {
             </div>
 
             <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Slider con step (20)</h3>
+                <h3 className="text-lg font-semibold">
+                    {t('prime_slider.step')}
+                </h3>
                 <div className="flex items-center gap-4">
                     <Slider
                         value={stepValue}
@@ -59,7 +67,9 @@ export function PrimeSliderExample() {
             </div>
 
             <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Slider verticale</h3>
+                <h3 className="text-lg font-semibold">
+                    {t('prime_slider.vertical')}
+                </h3>
                 <div className="flex items-center gap-8">
                     <div className="h-64">
                         <Slider
@@ -74,7 +84,9 @@ export function PrimeSliderExample() {
             </div>
 
             <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Slider con input</h3>
+                <h3 className="text-lg font-semibold">
+                    {t('prime_slider.with_input')}
+                </h3>
                 <div className="flex items-center gap-4">
                     <input
                         type="number"

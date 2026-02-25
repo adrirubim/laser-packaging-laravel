@@ -7,7 +7,7 @@
     $style = $pdfConfig['style'];
     $colors = $pdfConfig['colors'];
     
-    // Ajustar colores según el estilo
+    // Adjust colors according to style
     if ($style === 'monochrome') {
         $primaryColor = '#000000';
         $textColor = '#000000';
@@ -29,7 +29,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Barcode ORDINE {{ $order->order_production_number }}</title>
+    <title>{{ __('orders.barcode.title') }} {{ $order->order_production_number }}</title>
     <style>
         @page {
             margin: 15mm;
@@ -164,7 +164,7 @@
             @endif
             <div class="company-info">
                 <div class="company-name">{{ $companyName }}</div>
-                <div class="document-type">Codice a Barre</div>
+                <div class="document-type">{{ __('orders.barcode.document_type') }}</div>
             </div>
         </div>
     </div>
@@ -178,13 +178,13 @@
         </div>
         
         <div class="order-info">
-            <div class="order-label">Numero Ordine</div>
+            <div class="order-label">{{ __('orders.barcode.order_label') }}</div>
             <div class="order-number">{{ $order->order_production_number }}</div>
         </div>
     </div>
 
     <div class="footer">
-        <p>{{ $companyName }} - Documento generato il {{ date('d/m/Y H:i') }}</p>
+        <p>{{ $companyName }} - {{ __('orders.barcode.footer_generated') }} {{ date('d/m/Y H:i') }}</p>
     </div>
 </body>
 </html>

@@ -19,6 +19,8 @@ use Tests\TestCase;
  *
  * Tests system performance with large datasets to identify bottlenecks
  * and ensure acceptable response times.
+ *
+ * @group load
  */
 class LoadTest extends TestCase
 {

@@ -9,6 +9,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import { generateUUID } from '@/lib/utils/uuid';
 import offerSeasonalities from '@/routes/offer-seasonalities/index';
@@ -23,6 +24,7 @@ type OfferSeasonalitiesCreateProps = {
 export default function OfferSeasonalitiesCreate({
     errors: serverErrors,
 }: OfferSeasonalitiesCreateProps) {
+    const { t } = useTranslations();
     const [uuid, setUuid] = useState<string>(generateUUID());
 
     const regenerateUuid = () => {
@@ -30,31 +32,35 @@ export default function OfferSeasonalitiesCreate({
     };
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: '/offers',
         },
         {
-            title: 'Stagionalità',
+            title: t('offer_seasonalities.page_title'),
             href: offerSeasonalities.index().url,
         },
         {
-            title: 'Nuova Stagionalità',
+            title: t('offer_seasonalities.create.breadcrumb'),
             href: offerSeasonalities.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Nuova Stagionalità" />
+            <Head title={t('offer_seasonalities.create.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Nuova Stagionalità</CardTitle>
+                                <CardTitle>
+                                    {t('offer_seasonalities.create.card_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Compila i campi per creare una stagionalità.
+                                    {t(
+                                        'offer_seasonalities.create.card_description',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -77,7 +83,7 @@ export default function OfferSeasonalitiesCreate({
                                                             htmlFor="uuid"
                                                             required
                                                         >
-                                                            UUID
+                                                            {t('common.uuid')}
                                                         </FormLabel>
                                                         <Button
                                                             type="button"
@@ -88,7 +94,9 @@ export default function OfferSeasonalitiesCreate({
                                                             }
                                                             className="h-7 text-xs"
                                                         >
-                                                            Rigenera
+                                                            {t(
+                                                                'offer_seasonalities.uuid.regenerate',
+                                                            )}
                                                         </Button>
                                                     </div>
                                                     <Input
@@ -101,7 +109,9 @@ export default function OfferSeasonalitiesCreate({
                                                             )
                                                         }
                                                         required
-                                                        placeholder="UUID (es. 550e8400-e29b-41d4-a716-446655440000)"
+                                                        placeholder={t(
+                                                            'common.uuid_placeholder',
+                                                        )}
                                                         maxLength={36}
                                                         aria-describedby="uuid-help"
                                                     />
@@ -109,10 +119,9 @@ export default function OfferSeasonalitiesCreate({
                                                         id="uuid-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        UUID generato
-                                                        automaticamente. Puoi
-                                                        modificarlo manualmente
-                                                        se necessario.
+                                                        {t(
+                                                            'offer_seasonalities.uuid.help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.uuid}
@@ -124,13 +133,17 @@ export default function OfferSeasonalitiesCreate({
                                                         htmlFor="name"
                                                         required
                                                     >
-                                                        Nome
+                                                        {t(
+                                                            'offer_seasonalities.form.name_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="name"
                                                         name="name"
                                                         required
-                                                        placeholder="Nome Stagionalità"
+                                                        placeholder={t(
+                                                            'offer_seasonalities.form.name_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="name-help"
                                                     />
@@ -138,9 +151,9 @@ export default function OfferSeasonalitiesCreate({
                                                         id="name-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci il nome della
-                                                        stagionalità (massimo
-                                                        255 caratteri).
+                                                        {t(
+                                                            'offer_seasonalities.form.name_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.name}
@@ -153,8 +166,12 @@ export default function OfferSeasonalitiesCreate({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Creando...'
-                                                            : 'Crea Stagionalità'}
+                                                            ? t(
+                                                                  'offer_seasonalities.create.submitting',
+                                                              )
+                                                            : t(
+                                                                  'offer_seasonalities.create.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -166,7 +183,7 @@ export default function OfferSeasonalitiesCreate({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

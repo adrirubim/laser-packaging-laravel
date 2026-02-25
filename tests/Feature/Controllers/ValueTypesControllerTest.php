@@ -167,13 +167,13 @@ class ValueTypesControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // UUID generato automaticamente, quindi non è obbligatorio
+        // UUID auto-generated, so it's not required
         $response = $this->post(route('value-types.store'), []);
 
         $response->assertRedirect(route('value-types.index'));
         $response->assertSessionHas('success', 'Tipo di valore creato con successo.');
 
-        // Verificare che sia stato creato un record con UUID generato automaticamente
+        // Verify a record was created with auto-generated UUID
         $this->assertDatabaseHas('valuetypes', [
             'removed' => false,
         ]);

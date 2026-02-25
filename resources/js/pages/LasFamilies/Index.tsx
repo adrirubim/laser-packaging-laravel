@@ -6,6 +6,7 @@ import {
 } from '@/components/flash-notifications';
 import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import lasFamilies from '@/routes/las-families';
 import offers from '@/routes/offers';
@@ -38,6 +39,7 @@ type LasFamiliesIndexProps = {
 };
 
 export default function LasFamiliesIndex() {
+    const { t } = useTranslations();
     const { props } = usePage<LasFamiliesIndexProps>();
     const { families: familiesPaginated, filters } = props;
     const { flash } = useFlashNotifications();
@@ -107,20 +109,23 @@ export default function LasFamiliesIndex() {
     };
 
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Offerte', href: offers.index().url },
-        { title: 'Famiglia LAS', href: lasFamilies.index().url },
+        { title: t('nav.offers'), href: offers.index().url },
+        {
+            title: t('offer_las_families.page_title'),
+            href: lasFamilies.index().url,
+        },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Famiglia LAS" />
+            <Head title={t('offer_las_families.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="Famiglia LAS"
-                    subtitle="Elenco delle famiglie LAS attive con Cerca."
+                    title={t('offer_las_families.page_title')}
+                    subtitle={t('offer_las_families.index.subtitle')}
                     createHref={lasFamilies.create().url}
-                    createLabel="Nuova Famiglia LAS"
+                    createLabel={t('offer_las_families.index.create')}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -128,7 +133,7 @@ export default function LasFamiliesIndex() {
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4">
                     <div className="space-y-1">
                         <label className="text-xs font-medium text-muted-foreground">
-                            Cerca
+                            {t('common.search')}
                         </label>
                         <div className="relative flex items-center gap-2">
                             <div className="relative flex-1">
@@ -139,7 +144,9 @@ export default function LasFamiliesIndex() {
                                     onChange={(e) =>
                                         setSearchValue(e.target.value)
                                     }
-                                    placeholder="Codice o nome..."
+                                    placeholder={t(
+                                        'offer_las_families.search_placeholder',
+                                    )}
                                     className="w-full rounded-md border border-input bg-background px-3 py-2 pr-9 pl-9 text-sm shadow-sm focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
                                 />
                                 {isSearching && (
@@ -170,13 +177,15 @@ export default function LasFamiliesIndex() {
                                         uuid
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Codice
+                                        {t('common.code')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Nome
+                                        {t(
+                                            'offer_las_families.form.name_label',
+                                        )}
                                     </th>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t('common.actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -187,8 +196,9 @@ export default function LasFamiliesIndex() {
                                             colSpan={5}
                                             className="px-3 py-6 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessuna famiglia LAS trovata per i
-                                            filtri attuali.
+                                            {t(
+                                                'offer_las_families.index.empty',
+                                            )}
                                         </td>
                                     </tr>
                                 )}
@@ -245,8 +255,8 @@ export default function LasFamiliesIndex() {
                         setDeleteDialog({ open, family: deleteDialog.family })
                     }
                     onConfirm={handleDeleteConfirm}
-                    title="Elimina Famiglia LAS"
-                    description="Sei sicuro di voler eliminare questa famiglia LAS? Questa azione non può essere annullata."
+                    title={t('offer_las_families.delete.title')}
+                    description={t('offer_las_families.delete.description')}
                     itemName={deleteDialog.family?.name}
                     isLoading={isDeleting}
                 />

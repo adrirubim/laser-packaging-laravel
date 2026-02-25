@@ -49,7 +49,7 @@ type OrderStatusChartProps = {
     onStatusClick?: (status: OrderStatusKey) => void;
 };
 
-// Palette unificata per stati ordini (dashboard)
+// Unified palette for order statuses (dashboard)
 // Lanciato  -> blu
 // In avanz. -> giallo caldo
 // Sospeso   -> rosso
@@ -99,9 +99,9 @@ export function OrderStatusChart({
 
     const total = chartData.reduce((sum, item) => sum + item.value, 0);
 
-    // Recharts tipa `content` de forma muy genérica y no expone bien `payload`.
-    // Usamos `any` SOLO aquí como frontera con la librería, manteniendo el resto
-    // del componente estrictamente tipado.
+    // Recharts types `content` very generically and does not expose `payload` well.
+    // We use `any` ONLY here as boundary with the library, keeping the rest typed.
+    // keeping the rest of the component strictly typed.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const renderLegend = (props: any) => {
         const payload = (props?.payload ?? []) as LegendPayload[];
@@ -166,7 +166,7 @@ export function OrderStatusChart({
         const { cx, cy, midAngle, outerRadius, index, name, value, payload } =
             props;
 
-        // Solo mostramos la etiqueta para el sector activo
+        // Only show label for the active sector
         if (
             activeIndex === null ||
             typeof index !== 'number' ||
@@ -243,7 +243,7 @@ export function OrderStatusChart({
                             <Cell
                                 key={`cell-${index}`}
                                 fill={entry.color}
-                                // Evidenziazione al passaggio: la porzione attiva resta opaca, il resto perde intensità
+                                // Hover highlight: active portion stays opaque, rest loses intensity
                                 opacity={
                                     activeIndex === null ||
                                     activeIndex === index

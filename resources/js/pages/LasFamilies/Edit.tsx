@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import lasFamilies from '@/routes/las-families/index';
 import { type BreadcrumbItem } from '@/types';
@@ -30,13 +31,14 @@ export default function LasFamiliesEdit({
     family,
     errors: serverErrors,
 }: LasFamiliesEditProps) {
+    const { t } = useTranslations();
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: '/offers',
         },
         {
-            title: 'Famiglia LAS',
+            title: t('offer_las_families.page_title'),
             href: lasFamilies.index().url,
         },
         {
@@ -44,22 +46,32 @@ export default function LasFamiliesEdit({
             href: lasFamilies.show({ lasFamily: family.uuid }).url,
         },
         {
-            title: 'Modifica',
+            title: t('offer_las_families.edit.breadcrumb'),
             href: lasFamilies.edit({ lasFamily: family.uuid }).url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Modifica Famiglia LAS ${family.name}`} />
+            <Head
+                title={t('offer_las_families.edit.page_title', {
+                    name: family.name,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Gestione Famiglia LAS</CardTitle>
-                                <CardDescription>Modifica</CardDescription>
+                                <CardTitle>
+                                    {t('offer_las_families.form.card_title')}
+                                </CardTitle>
+                                <CardDescription>
+                                    {t(
+                                        'offer_las_families.edit.card_description',
+                                    )}
+                                </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <Form
@@ -96,7 +108,7 @@ export default function LasFamiliesEdit({
 
                                                 <div className="grid gap-2">
                                                     <Label htmlFor="code">
-                                                        Codice *
+                                                        {t('common.code')} *
                                                     </Label>
                                                     <Input
                                                         id="code"
@@ -105,7 +117,9 @@ export default function LasFamiliesEdit({
                                                             family.code
                                                         }
                                                         required
-                                                        placeholder="Codice Famiglia LAS"
+                                                        placeholder={t(
+                                                            'offer_las_families.form.code_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={allErrors.code}
@@ -114,7 +128,10 @@ export default function LasFamiliesEdit({
 
                                                 <div className="grid gap-2">
                                                     <Label htmlFor="name">
-                                                        Nome *
+                                                        {t(
+                                                            'offer_las_families.form.name_label',
+                                                        )}{' '}
+                                                        *
                                                     </Label>
                                                     <Input
                                                         id="name"
@@ -123,7 +140,9 @@ export default function LasFamiliesEdit({
                                                             family.name
                                                         }
                                                         required
-                                                        placeholder="Nome Famiglia LAS"
+                                                        placeholder={t(
+                                                            'offer_las_families.form.name_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={allErrors.name}
@@ -136,8 +155,12 @@ export default function LasFamiliesEdit({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Aggiornando...'
-                                                            : 'Aggiorna Famiglia LAS'}
+                                                            ? t(
+                                                                  'offer_las_families.edit.submitting',
+                                                              )
+                                                            : t(
+                                                                  'offer_las_families.edit.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -153,7 +176,7 @@ export default function LasFamiliesEdit({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

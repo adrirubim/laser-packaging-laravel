@@ -121,7 +121,7 @@ class ArticleRepository
                 'palletizingInstructions' => ArticleIP::active()
                     ->orderBy('code')
                     ->get(['uuid', 'code', 'number']),
-                // Opciones de listas hardcodeadas (como en el legacy)
+                // Hardcoded list options (as in legacy)
                 'lotAttributionList' => [
                     ['key' => 0, 'value' => 'A carico del cliente'],
                     ['key' => 1, 'value' => 'A carico ns.'],

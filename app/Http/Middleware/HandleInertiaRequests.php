@@ -68,6 +68,7 @@ class HandleInertiaRequests extends Middleware
         if (! is_array($decoded)) {
             return [];
         }
+
         return $decoded;
     }
 }

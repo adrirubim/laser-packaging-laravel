@@ -1,6 +1,6 @@
 # Test Coverage
 
-**Stack:** [VERSION_STACK.md](VERSION_STACK.md) · **Suite:** 994 tests, 6682+ assertions (Unit, Feature, Performance).
+**Stack:** [VERSION_STACK.md](VERSION_STACK.md) · **Suite:** 1017+ PHP tests (Unit, Feature, Performance), 24 Vitest tests (React/Planning).
 
 ## How to Run
 
@@ -11,7 +11,13 @@ npm run build
 php artisan test
 ```
 
-Suites: `--testsuite=Unit` | `--testsuite=Feature` | `--testsuite=Performance`
+**Full pre-push pipeline** (matches GitHub CI):
+
+```bash
+php scripts/i18n-check.php && ./vendor/bin/pint && npm run format && npm run format:check && npm run lint && npm run types && php artisan config:clear && php artisan test && npm run test -- --run && npm run build
+```
+
+**Suites:** `--testsuite=Unit` | `--testsuite=Feature` | `--testsuite=Performance` · **Vitest:** `npm run test -- --run`
 
 ## Coverage by Component
 
@@ -28,5 +34,7 @@ Suites: `--testsuite=Unit` | `--testsuite=Feature` | `--testsuite=Performance`
 | **Models** | many | 3 Unit | OfferRelations, Order, Machinery; rest via Feature. |
 
 Coverage report (when PCOV/Xdebug available): `php artisan test --coverage`.
+
+**Vitest (frontend):** Planning and other React tests in `resources/js/pages/**/*.test.tsx` — run with `npm run test -- --run`. Included in CI.
 
 Performance suites (Concurrency, Load, API response time) are described in [tests/Performance/README.md](../tests/Performance/README.md).

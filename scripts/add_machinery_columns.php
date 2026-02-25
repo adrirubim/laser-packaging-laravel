@@ -34,7 +34,7 @@ if (! in_array('value_type_uuid', $columnNames)) {
         DB::statement('ALTER TABLE machinery ADD COLUMN value_type_uuid INTEGER NULL');
         echo "✅ Columna 'value_type_uuid' agregada exitosamente\n\n";
 
-        // Agregar índice
+        // Add index
         echo "➕ Agregando índice en 'value_type_uuid'...\n";
         try {
             DB::statement('CREATE INDEX IF NOT EXISTS machinery_value_type_uuid_index ON machinery(value_type_uuid)');
@@ -49,7 +49,7 @@ if (! in_array('value_type_uuid', $columnNames)) {
     echo "✅ Columna 'value_type_uuid' ya existe\n\n";
 }
 
-// Verificar columnas finales
+// Verify final columns
 $columnsAfter = DB::select("SELECT column_name FROM information_schema.columns WHERE table_name = 'machinery' ORDER BY ordinal_position");
 $columnNamesAfter = array_column($columnsAfter, 'column_name');
 echo '📋 Columnas finales: '.implode(', ', $columnNamesAfter)."\n\n";

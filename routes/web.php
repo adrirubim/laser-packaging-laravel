@@ -15,6 +15,7 @@ Route::get('/', function () {
 Route::post('/locale', function (\Illuminate\Http\Request $request) {
     $request->validate(['locale' => 'required|string|in:it,es,en']);
     $request->session()->put('locale', $request->input('locale'));
+
     return redirect()->back();
 })->name('locale.update');
 

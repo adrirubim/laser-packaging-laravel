@@ -28,7 +28,7 @@ class PalletCalculationService
         $palletPlans = $article->pallet_plans ?? 0;
 
         if ($planPackaging <= 0 || $palletPlans <= 0) {
-            throw new \Exception("L'articolo non ha configurazione di packaging valida");
+            throw new \Exception(__('services.pallet.invalid_packaging'));
         }
 
         return $planPackaging * $palletPlans;
@@ -64,7 +64,7 @@ class PalletCalculationService
 
         $article = $order->article;
         if (! $article) {
-            throw new \Exception("L'ordine non ha articolo associato");
+            throw new \Exception(__('services.pallet.order_has_no_article'));
         }
 
         $palletQuantity = $this->getPalletQuantity($article->uuid);
@@ -95,7 +95,7 @@ class PalletCalculationService
         $palletQuantity = $this->getPalletQuantity($article->uuid);
         $processedQuantity = $this->getProcessedQuantity($orderUuid);
 
-        // Verificare se aggiungendo la quantità, il totale è multiplo di pallet_quantity
+        // Verify that adding quantity, total is multiple of pallet_quantity
         return ($processedQuantity + $quantity) % $palletQuantity === 0;
     }
 

@@ -16,12 +16,12 @@ class CreateOfferActionTest extends TestCase
     #[Test]
     public function it_returns_error_when_offer_number_already_exists()
     {
-        // Arrange: crear una oferta existente con un número concreto
+        // Arrange: create existing offer with concrete number
         $existing = Offer::factory()->create([
             'offer_number' => 'OFF-123',
         ]);
 
-        // Act: ejecutar la Action con el mismo número
+        // Act: run the Action with the same number
         /** @var CreateOfferAction $action */
         $action = $this->app->make(CreateOfferAction::class);
 
@@ -30,7 +30,7 @@ class CreateOfferActionTest extends TestCase
             'customer_uuid' => $existing->customer_uuid,
         ]);
 
-        // Assert: la Action devuelve un array de error coherente
+        // Assert: Action returns coherent error array
         $this->assertIsArray($result);
         $this->assertTrue($result['error']);
         $this->assertSame('offer_number', $result['field']);
@@ -40,7 +40,7 @@ class CreateOfferActionTest extends TestCase
     #[Test]
     public function it_generates_offer_number_when_missing()
     {
-        // Arrange: simular un servicio de numeración que siempre devuelve el mismo valor
+        // Arrange: mock numbering service that always returns same value
         $fakeService = new class extends OfferNumberService
         {
             public function __construct() {}
@@ -59,7 +59,7 @@ class CreateOfferActionTest extends TestCase
         // Act
         $result = $action->execute([
             'customer_uuid' => Offer::factory()->make()->customer_uuid,
-            // offer_number omitido para forzar generateNext()
+            // offer_number omitted to force generateNext()
         ]);
 
         // Assert

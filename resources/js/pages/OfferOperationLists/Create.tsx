@@ -16,6 +16,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import offerOperationLists from '@/routes/offer-operation-lists/index';
 import { type BreadcrumbItem } from '@/types';
@@ -49,21 +50,22 @@ export default function OfferOperationListsCreate({
 }: OfferOperationListsCreateProps) {
     const [selectedOffer, setSelectedOffer] = useState<string>(offerUuid ?? '');
 
+    const { t } = useTranslations();
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Offerte', href: '/offers' },
+        { title: t('nav.offers'), href: '/offers' },
         {
-            title: 'Liste Operazioni Offerta',
+            title: t('offer_operation_lists.page_title'),
             href: offerOperationLists.index().url,
         },
         {
-            title: 'Nuova Assegnazione',
+            title: t('offer_operation_lists.create'),
             href: offerOperationLists.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Nuova Assegnazione Operazione" />
+            <Head title={t('offer_operation_lists.create.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
@@ -71,11 +73,14 @@ export default function OfferOperationListsCreate({
                         <Card>
                             <CardHeader>
                                 <CardTitle>
-                                    Nuova Assegnazione Operazione
+                                    {t(
+                                        'offer_operation_lists.create.card_title',
+                                    )}
                                 </CardTitle>
                                 <CardDescription>
-                                    Compila i campi per assegnare un'operazione
-                                    a un'offerta.
+                                    {t(
+                                        'offer_operation_lists.create.card_description',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -97,7 +102,9 @@ export default function OfferOperationListsCreate({
                                                         htmlFor="offer_uuid"
                                                         required
                                                     >
-                                                        Offerta
+                                                        {t(
+                                                            'offer_operation_lists.table.offer',
+                                                        )}
                                                     </FormLabel>
                                                     <input
                                                         type="hidden"
@@ -115,7 +122,11 @@ export default function OfferOperationListsCreate({
                                                         required
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona un'offerta" />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'offer_operation_lists.create.select_offer',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {offers.map(
@@ -133,7 +144,9 @@ export default function OfferOperationListsCreate({
                                                                         }{' '}
                                                                         -{' '}
                                                                         {offer.provisional_description ||
-                                                                            'Senza descrizione'}
+                                                                            t(
+                                                                                'offer_operation_lists.create.no_description',
+                                                                            )}
                                                                     </SelectItem>
                                                                 ),
                                                             )}
@@ -151,14 +164,20 @@ export default function OfferOperationListsCreate({
                                                         htmlFor="offeroperation_uuid"
                                                         required
                                                     >
-                                                        Operazione
+                                                        {t(
+                                                            'offer_operation_lists.table.operation',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="offeroperation_uuid"
                                                         required
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona un'operazione" />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'offer_operation_lists.edit.select_operation',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {operations.map(
@@ -176,7 +195,9 @@ export default function OfferOperationListsCreate({
                                                                         }{' '}
                                                                         -{' '}
                                                                         {operation.description ||
-                                                                            'Senza descrizione'}
+                                                                            t(
+                                                                                'common.no_description',
+                                                                            )}
                                                                     </SelectItem>
                                                                 ),
                                                             )}
@@ -194,7 +215,9 @@ export default function OfferOperationListsCreate({
                                                         htmlFor="num_op"
                                                         required
                                                     >
-                                                        Numero operazione
+                                                        {t(
+                                                            'offer_operation_lists.show.num_op_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="num_op"
@@ -218,8 +241,10 @@ export default function OfferOperationListsCreate({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Salvando...'
-                                                            : 'Aggiungi operazione'}
+                                                            ? t('common.saving')
+                                                            : t(
+                                                                  'offers.form.add_operation',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -231,7 +256,7 @@ export default function OfferOperationListsCreate({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

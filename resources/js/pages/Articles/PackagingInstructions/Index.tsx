@@ -154,14 +154,18 @@ export default function PackagingInstructionsIndex() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Istruzioni di Confezionamento" />
+            <Head title={t('articles.packaging_instructions.index.title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="Istruzioni di Confezionamento"
-                    subtitle="Elenco delle istruzioni di confezionamento attive con Cerca e filtri."
+                    title={t('articles.packaging_instructions.index.title')}
+                    subtitle={t(
+                        'articles.packaging_instructions.index.subtitle',
+                    )}
                     createHref={articles.packagingInstructions.create().url}
-                    createLabel="Nuova Istruzione"
+                    createLabel={t(
+                        'articles.packaging_instructions.index.create',
+                    )}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -169,12 +173,14 @@ export default function PackagingInstructionsIndex() {
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="space-y-1">
                         <label className="text-xs font-medium text-muted-foreground">
-                            Cerca
+                            {t('common.search')}
                         </label>
                         <SearchInput
                             value={searchValue}
                             onChange={handleSearchChange}
-                            placeholder="Codice, numero o nome allegato..."
+                            placeholder={t(
+                                'articles.packaging_instructions.index.search_placeholder',
+                            )}
                             isLoading={isSearching}
                             onClear={clearSearch}
                         />
@@ -187,8 +193,9 @@ export default function PackagingInstructionsIndex() {
                             {instructionsPaginated.data.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center gap-4 py-12 text-center">
                                     <p className="text-sm text-muted-foreground">
-                                        Nessuna istruzione di confezionamento.
-                                        Aggiungi la prima.
+                                        {t(
+                                            'articles.packaging_instructions.index.empty',
+                                        )}
                                     </p>
                                     <Button asChild>
                                         <Link
@@ -197,7 +204,7 @@ export default function PackagingInstructionsIndex() {
                                                     .url
                                             }
                                         >
-                                            Aggiungi
+                                            {t('common.new')}
                                         </Link>
                                     </Button>
                                 </div>
@@ -217,7 +224,9 @@ export default function PackagingInstructionsIndex() {
                                                         </h3>
                                                         {instruction.number && (
                                                             <p className="text-xs text-muted-foreground">
-                                                                Numero:{' '}
+                                                                {t(
+                                                                    'articles.packaging_instructions.index.number_label',
+                                                                )}{' '}
                                                                 {
                                                                     instruction.number
                                                                 }
@@ -251,7 +260,9 @@ export default function PackagingInstructionsIndex() {
                                             </div>
                                             {instruction.filename && (
                                                 <div className="text-xs text-muted-foreground">
-                                                    Allegato:{' '}
+                                                    {t(
+                                                        'articles.packaging_instructions.index.attachment_label',
+                                                    )}{' '}
                                                     {instruction.filename}{' '}
                                                     <button
                                                         type="button"
@@ -266,7 +277,9 @@ export default function PackagingInstructionsIndex() {
                                                                 ).url;
                                                         }}
                                                     >
-                                                        Scarica
+                                                        {t(
+                                                            'articles.packaging_instructions.index.download',
+                                                        )}
                                                     </button>
                                                 </div>
                                             )}
@@ -279,10 +292,14 @@ export default function PackagingInstructionsIndex() {
                             <thead className="sticky top-0 z-10 bg-muted/80 backdrop-blur">
                                 <tr className="text-xs tracking-wide text-muted-foreground uppercase">
                                     <th className="border-b px-3 py-2 font-medium">
-                                        ID
+                                        {t(
+                                            'articles.packaging_instructions.index.columns.id',
+                                        )}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        UUID
+                                        {t(
+                                            'articles.packaging_instructions.index.columns.uuid',
+                                        )}
                                     </th>
                                     <SortableTableHeader
                                         column="code"
@@ -290,7 +307,7 @@ export default function PackagingInstructionsIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Codice
+                                        {t('common.code')}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="number"
@@ -298,7 +315,9 @@ export default function PackagingInstructionsIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Numero
+                                        {t(
+                                            'articles.packaging_instructions.index.columns.number',
+                                        )}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="filename"
@@ -306,10 +325,12 @@ export default function PackagingInstructionsIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Filename
+                                        {t(
+                                            'articles.packaging_instructions.index.columns.filename',
+                                        )}
                                     </SortableTableHeader>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t('common.actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -322,9 +343,9 @@ export default function PackagingInstructionsIndex() {
                                         >
                                             <div className="flex flex-col items-center justify-center gap-3">
                                                 <p>
-                                                    Nessuna istruzione di
-                                                    confezionamento. Aggiungi la
-                                                    prima.
+                                                    {t(
+                                                        'articles.packaging_instructions.index.empty',
+                                                    )}
                                                 </p>
                                                 <Button asChild size="sm">
                                                     <Link
@@ -333,7 +354,9 @@ export default function PackagingInstructionsIndex() {
                                                                 .url
                                                         }
                                                     >
-                                                        Aggiungi
+                                                        {t(
+                                                            'articles.packaging_instructions.index.create',
+                                                        )}
                                                     </Link>
                                                 </Button>
                                             </div>
@@ -401,7 +424,9 @@ export default function PackagingInstructionsIndex() {
                                                             }}
                                                         >
                                                             <Download className="mr-2 h-4 w-4" />
-                                                            Scarica
+                                                            {t(
+                                                                'articles.packaging_instructions.index.download',
+                                                            )}
                                                         </DropdownMenuItem>
                                                     }
                                                     onDelete={() =>
@@ -429,16 +454,21 @@ export default function PackagingInstructionsIndex() {
                 <ConfirmDeleteDialog
                     open={deleteDialog.open}
                     onOpenChange={(open) =>
-                        setDeleteDialog({
-                            open,
-                            instruction: deleteDialog.instruction,
-                        })
+                        !open &&
+                        setDeleteDialog({ open: false, instruction: null })
                     }
                     onConfirm={handleDeleteConfirm}
                     isLoading={isDeleting}
-                    title="Conferma eliminazione"
-                    description={`Sei sicuro di voler eliminare l'istruzione? Questa azione non può essere annullata. L'istruzione verrà eliminata definitivamente.`}
-                    itemName={deleteDialog.instruction?.code}
+                    title={t('common.confirm_delete')}
+                    description={t(
+                        'articles.packaging_instructions.delete.description',
+                    )}
+                    itemName={
+                        deleteDialog.instruction
+                            ? deleteDialog.instruction.code +
+                              (deleteDialog.instruction.number ?? '')
+                            : undefined
+                    }
                 />
             </div>
         </AppLayout>

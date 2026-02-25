@@ -49,7 +49,7 @@ class ProductionPortalWebController extends Controller
             $data = json_decode($response->getContent(), true);
 
             if (! isset($data['ok']) || $data['ok'] !== 1) {
-                return back()->withErrors(['error' => $data['error'] ?? 'Autenticazione fallita']);
+                return back()->withErrors(['error' => $data['error'] ?? __('production_portal.auth_failed')]);
             }
 
             // Store token and employee data in session
@@ -77,7 +77,7 @@ class ProductionPortalWebController extends Controller
         $data = json_decode($response->getContent(), true);
 
         if (! isset($data['ok']) || $data['ok'] !== 1) {
-            return back()->withErrors(['error' => $data['error'] ?? 'Credenziali non valide']);
+            return back()->withErrors(['error' => $data['error'] ?? __('production_portal.invalid_credentials')]);
         }
 
         // Store token and employee data in session
@@ -109,7 +109,7 @@ class ProductionPortalWebController extends Controller
             session()->forget(['production_portal_token', 'production_portal_employee']);
 
             return redirect()->route('production-portal.login')
-                ->withErrors(['error' => $data['error'] ?? 'Sessione scaduta']);
+                ->withErrors(['error' => $data['error'] ?? __('production_portal.session_expired')]);
         }
 
         return Inertia::render('ProductionPortal/Dashboard', [
@@ -141,7 +141,7 @@ class ProductionPortalWebController extends Controller
 
         if (! isset($data['ok']) || $data['ok'] !== 1) {
             return redirect()->route('production-portal.dashboard')
-                ->withErrors(['error' => $data['error'] ?? 'Impossibile caricare l\'ordine']);
+                ->withErrors(['error' => $data['error'] ?? __('production_portal.cannot_load_order')]);
         }
 
         $employee = session('production_portal_employee');
@@ -165,6 +165,6 @@ class ProductionPortalWebController extends Controller
         ]);
 
         return redirect()->route('production-portal.login')
-            ->with('success', 'Sessione chiusa correttamente');
+            ->with('success', __('flash.production_portal.session_closed'));
     }
 }

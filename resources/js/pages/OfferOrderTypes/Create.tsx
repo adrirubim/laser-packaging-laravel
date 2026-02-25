@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import { generateUUID } from '@/lib/utils/uuid';
 import offerOrderTypes from '@/routes/offer-order-types/index';
@@ -23,6 +24,7 @@ type OfferOrderTypesCreateProps = {
 export default function OfferOrderTypesCreate({
     errors: serverErrors,
 }: OfferOrderTypesCreateProps) {
+    const { t } = useTranslations();
     const [uuid, setUuid] = useState<string>(generateUUID());
 
     const regenerateUuid = () => {
@@ -30,30 +32,36 @@ export default function OfferOrderTypesCreate({
     };
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: '/offers',
         },
         {
-            title: 'Tipi ordini',
+            title: t('offer_order_types.page_title'),
             href: offerOrderTypes.index().url,
         },
         {
-            title: 'Crea',
+            title: t('offer_order_types.create.breadcrumb'),
             href: offerOrderTypes.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Crea Tipo Ordine" />
+            <Head title={t('offer_order_types.create.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Gestione Tipo Ordine</CardTitle>
-                                <CardDescription>Inserimento</CardDescription>
+                                <CardTitle>
+                                    {t('offer_order_types.form.card_title')}
+                                </CardTitle>
+                                <CardDescription>
+                                    {t(
+                                        'offer_order_types.create.card_description',
+                                    )}
+                                </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <Form
@@ -72,7 +80,7 @@ export default function OfferOrderTypesCreate({
                                                 <div className="grid gap-2">
                                                     <div className="flex items-center justify-between">
                                                         <Label htmlFor="uuid">
-                                                            UUID *
+                                                            {t('common.uuid')} *
                                                         </Label>
                                                         <Button
                                                             type="button"
@@ -83,7 +91,9 @@ export default function OfferOrderTypesCreate({
                                                             }
                                                             className="h-7 text-xs"
                                                         >
-                                                            Rigenera
+                                                            {t(
+                                                                'offer_order_types.uuid.regenerate',
+                                                            )}
                                                         </Button>
                                                     </div>
                                                     <Input
@@ -96,7 +106,9 @@ export default function OfferOrderTypesCreate({
                                                             )
                                                         }
                                                         required
-                                                        placeholder="UUID (es. 550e8400-e29b-41d4-a716-446655440000)"
+                                                        placeholder={t(
+                                                            'common.uuid_placeholder',
+                                                        )}
                                                         maxLength={36}
                                                         aria-describedby="uuid-help"
                                                     />
@@ -104,10 +116,9 @@ export default function OfferOrderTypesCreate({
                                                         id="uuid-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        UUID generato
-                                                        automaticamente. Puoi
-                                                        modificarlo manualmente
-                                                        se necessario.
+                                                        {t(
+                                                            'offer_order_types.uuid.help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.uuid}
@@ -116,13 +127,18 @@ export default function OfferOrderTypesCreate({
 
                                                 <div className="grid gap-2">
                                                     <Label htmlFor="code">
-                                                        Codice *
+                                                        {t(
+                                                            'offer_order_types.form.code_label',
+                                                        )}{' '}
+                                                        *
                                                     </Label>
                                                     <Input
                                                         id="code"
                                                         name="code"
                                                         required
-                                                        placeholder="Codice Tipo Ordine (es. OT-001)"
+                                                        placeholder={t(
+                                                            'offer_order_types.form.code_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="code-help"
                                                     />
@@ -130,10 +146,9 @@ export default function OfferOrderTypesCreate({
                                                         id="code-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci un codice
-                                                        univoco per il tipo di
-                                                        ordine (massimo 255
-                                                        caratteri).
+                                                        {t(
+                                                            'offer_order_types.form.code_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.code}
@@ -142,13 +157,18 @@ export default function OfferOrderTypesCreate({
 
                                                 <div className="grid gap-2">
                                                     <Label htmlFor="name">
-                                                        Nome *
+                                                        {t(
+                                                            'offer_order_types.form.name_label',
+                                                        )}{' '}
+                                                        *
                                                     </Label>
                                                     <Input
                                                         id="name"
                                                         name="name"
                                                         required
-                                                        placeholder="Nome Tipo Ordine"
+                                                        placeholder={t(
+                                                            'offer_order_types.form.name_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="name-help"
                                                     />
@@ -156,9 +176,9 @@ export default function OfferOrderTypesCreate({
                                                         id="name-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci il nome del
-                                                        tipo di ordine (massimo
-                                                        255 caratteri).
+                                                        {t(
+                                                            'offer_order_types.form.name_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.name}
@@ -171,8 +191,12 @@ export default function OfferOrderTypesCreate({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Creando...'
-                                                            : 'Crea Tipo Ordine'}
+                                                            ? t(
+                                                                  'offer_order_types.create.submitting',
+                                                              )
+                                                            : t(
+                                                                  'offer_order_types.create.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -184,7 +208,7 @@ export default function OfferOrderTypesCreate({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

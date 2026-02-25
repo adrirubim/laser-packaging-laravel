@@ -167,7 +167,7 @@ class DashboardControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // Creare più ordini per lo stesso cliente
+        // Create more orders for the same customer
         Order::factory()->create([
             'article_uuid' => $this->article->uuid,
             'order_production_number' => '2025.0005',
@@ -196,7 +196,7 @@ class DashboardControllerTest extends TestCase
         $response->assertInertia(fn ($page) => $page->has('topCustomers')
         );
 
-        // Verificar que topCustomers es un array
+        // Verify topCustomers is an array
         $topCustomers = $response->viewData('page')['props']['topCustomers'] ?? null;
         $this->assertIsArray($topCustomers);
     }
@@ -206,7 +206,7 @@ class DashboardControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // Creare più ordini per lo stesso articolo con numeri univoci
+        // Create more orders for the same article with unique numbers
         Order::factory()->create([
             'article_uuid' => $this->article->uuid,
             'order_production_number' => '2025.0001',
@@ -235,7 +235,7 @@ class DashboardControllerTest extends TestCase
         $response->assertInertia(fn ($page) => $page->has('topArticles')
         );
 
-        // Verificar que topArticles existe y es un array
+        // Verify topArticles exists and is an array
         $response->assertInertia(fn ($page) => $page->has('topArticles')
         );
     }
@@ -333,7 +333,7 @@ class DashboardControllerTest extends TestCase
         $response->assertInertia(fn ($page) => $page->has('statistics')
             ->has('statistics.production')
             ->where('statistics.production.progress_percentage', function ($value) {
-                // Consentire piccola differenza per arrotondamento
+                // Allow small difference for rounding
                 return abs($value - 50.0) < 1.0;
             })
         );
@@ -360,7 +360,7 @@ class DashboardControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // Non creare alcun dato
+        // Don't create any data
         $response = $this->get(route('dashboard'));
 
         $response->assertStatus(200);

@@ -138,7 +138,7 @@ class CustomerShippingAddressControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // Creare un'altra divisione per lo stesso cliente
+        // Create another division for the same customer
         $division2 = CustomerDivision::factory()->create([
             'customer_uuid' => $this->customer->uuid,
             'name' => 'Divisione 2',
@@ -157,7 +157,7 @@ class CustomerShippingAddressControllerTest extends TestCase
         $divisions = $response->json('customer_divisions');
         $this->assertCount(2, $divisions);
 
-        // Verificare che entrambe le divisioni siano presenti (senza dipendere dall'ordine)
+        // Verify both divisions are present (without depending on order)
         $divisionNames = array_column($divisions, 'name');
         $this->assertContains('Divisione Test', $divisionNames);
         $this->assertContains('Divisione 2', $divisionNames);
@@ -168,7 +168,7 @@ class CustomerShippingAddressControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // Creare una divisione rimossa
+        // Create a removed division
         $removedDivision = CustomerDivision::factory()->create([
             'customer_uuid' => $this->customer->uuid,
             'name' => 'Divisione Removida',
@@ -180,7 +180,7 @@ class CustomerShippingAddressControllerTest extends TestCase
         $response->assertStatus(200);
         $divisions = $response->json('customer_divisions');
 
-        // Deve restituire solo la divisione attiva
+        // Should return only the active division
         $this->assertCount(1, $divisions);
         $this->assertEquals('Divisione Test', $divisions[0]['name']);
     }
@@ -747,7 +747,7 @@ class CustomerShippingAddressControllerTest extends TestCase
             'removed' => false,
         ]);
 
-        // CAP con formato errato (meno di 5 cifre)
+        // Postal code with wrong format (less than 5 digits)
         $response = $this->put(route('customer-shipping-addresses.update', $address), [
             'customerdivision_uuid' => $this->division->uuid,
             'street' => 'Via Test',
@@ -756,7 +756,7 @@ class CustomerShippingAddressControllerTest extends TestCase
 
         $response->assertSessionHasErrors(['postal_code']);
 
-        // CAP con formato incorrecto (letras)
+        // Postal code with wrong format (letters)
         $response = $this->put(route('customer-shipping-addresses.update', $address), [
             'customerdivision_uuid' => $this->division->uuid,
             'street' => 'Via Test',
@@ -776,7 +776,7 @@ class CustomerShippingAddressControllerTest extends TestCase
             'removed' => false,
         ]);
 
-        // Provincia con formato errato (più di 2 caratteri)
+        // Province with wrong format (more than 2 characters)
         $response = $this->put(route('customer-shipping-addresses.update', $address), [
             'customerdivision_uuid' => $this->division->uuid,
             'street' => 'Via Test',
@@ -785,7 +785,7 @@ class CustomerShippingAddressControllerTest extends TestCase
 
         $response->assertSessionHasErrors(['province']);
 
-        // Provincia con formato errato (minuscole)
+        // Province with wrong format (lowercase)
         $response = $this->put(route('customer-shipping-addresses.update', $address), [
             'customerdivision_uuid' => $this->division->uuid,
             'street' => 'Via Test',
@@ -854,7 +854,7 @@ class CustomerShippingAddressControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // CAP con formato errato (meno di 5 cifre)
+        // Postal code with wrong format (less than 5 digits)
         $response = $this->post(route('customer-shipping-addresses.store'), [
             'customerdivision_uuid' => $this->division->uuid,
             'street' => 'Via Test',
@@ -863,7 +863,7 @@ class CustomerShippingAddressControllerTest extends TestCase
 
         $response->assertSessionHasErrors(['postal_code']);
 
-        // CAP con formato incorrecto (letras)
+        // Postal code with wrong format (letters)
         $response = $this->post(route('customer-shipping-addresses.store'), [
             'customerdivision_uuid' => $this->division->uuid,
             'street' => 'Via Test',
@@ -878,7 +878,7 @@ class CustomerShippingAddressControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // Provincia con formato errato (più di 2 caratteri)
+        // Province with wrong format (more than 2 characters)
         $response = $this->post(route('customer-shipping-addresses.store'), [
             'customerdivision_uuid' => $this->division->uuid,
             'street' => 'Via Test',
@@ -887,7 +887,7 @@ class CustomerShippingAddressControllerTest extends TestCase
 
         $response->assertSessionHasErrors(['province']);
 
-        // Provincia con formato errato (minuscole)
+        // Province with wrong format (lowercase)
         $response = $this->post(route('customer-shipping-addresses.store'), [
             'customerdivision_uuid' => $this->division->uuid,
             'street' => 'Via Test',
@@ -922,7 +922,7 @@ class CustomerShippingAddressControllerTest extends TestCase
 
         $response = $this->post(route('customer-shipping-addresses.store'), [
             'customerdivision_uuid' => $this->division->uuid,
-            'street' => str_repeat('a', 256), // Più di 255 caratteri
+            'street' => str_repeat('a', 256), // More than 255 characters
         ]);
 
         $response->assertSessionHasErrors(['street']);
@@ -936,7 +936,7 @@ class CustomerShippingAddressControllerTest extends TestCase
         $response = $this->post(route('customer-shipping-addresses.store'), [
             'customerdivision_uuid' => $this->division->uuid,
             'street' => 'Via Test',
-            'co' => str_repeat('a', 256), // Più di 255 caratteri
+            'co' => str_repeat('a', 256), // More than 255 characters
         ]);
 
         $response->assertSessionHasErrors(['co']);
@@ -950,7 +950,7 @@ class CustomerShippingAddressControllerTest extends TestCase
         $response = $this->post(route('customer-shipping-addresses.store'), [
             'customerdivision_uuid' => $this->division->uuid,
             'street' => 'Via Test',
-            'city' => str_repeat('a', 256), // Più di 255 caratteri
+            'city' => str_repeat('a', 256), // More than 255 characters
         ]);
 
         $response->assertSessionHasErrors(['city']);
@@ -964,7 +964,7 @@ class CustomerShippingAddressControllerTest extends TestCase
         $response = $this->post(route('customer-shipping-addresses.store'), [
             'customerdivision_uuid' => $this->division->uuid,
             'street' => 'Via Test',
-            'country' => str_repeat('a', 256), // Più di 255 caratteri
+            'country' => str_repeat('a', 256), // More than 255 characters
         ]);
 
         $response->assertSessionHasErrors(['country']);
@@ -982,7 +982,7 @@ class CustomerShippingAddressControllerTest extends TestCase
 
         $response = $this->put(route('customer-shipping-addresses.update', $address), [
             'customerdivision_uuid' => $this->division->uuid,
-            'street' => str_repeat('a', 256), // Più di 255 caratteri
+            'street' => str_repeat('a', 256), // More than 255 characters
         ]);
 
         $response->assertSessionHasErrors(['street']);
@@ -1066,7 +1066,7 @@ class CustomerShippingAddressControllerTest extends TestCase
         $response = $this->put(route('customer-shipping-addresses.update', $address), [
             'customerdivision_uuid' => $this->division->uuid,
             'street' => 'Via Test',
-            'co' => str_repeat('a', 256), // Più di 255 caratteri
+            'co' => str_repeat('a', 256), // More than 255 characters
         ]);
 
         $response->assertSessionHasErrors(['co']);
@@ -1085,7 +1085,7 @@ class CustomerShippingAddressControllerTest extends TestCase
         $response = $this->put(route('customer-shipping-addresses.update', $address), [
             'customerdivision_uuid' => $this->division->uuid,
             'street' => 'Via Test',
-            'city' => str_repeat('a', 256), // Più di 255 caratteri
+            'city' => str_repeat('a', 256), // More than 255 characters
         ]);
 
         $response->assertSessionHasErrors(['city']);
@@ -1104,7 +1104,7 @@ class CustomerShippingAddressControllerTest extends TestCase
         $response = $this->put(route('customer-shipping-addresses.update', $address), [
             'customerdivision_uuid' => $this->division->uuid,
             'street' => 'Via Test',
-            'country' => str_repeat('a', 256), // Più di 255 caratteri
+            'country' => str_repeat('a', 256), // More than 255 characters
         ]);
 
         $response->assertSessionHasErrors(['country']);
@@ -1118,7 +1118,7 @@ class CustomerShippingAddressControllerTest extends TestCase
         $response = $this->post(route('customer-shipping-addresses.store'), [
             'customerdivision_uuid' => $this->division->uuid,
             'street' => 'Via Test',
-            'postal_code' => '12345', // Formato valido: 5 cifre
+            'postal_code' => '12345', // Valid format: 5 digits
         ]);
 
         $response->assertRedirect(route('customer-shipping-addresses.index'));
@@ -1137,7 +1137,7 @@ class CustomerShippingAddressControllerTest extends TestCase
         $response = $this->post(route('customer-shipping-addresses.store'), [
             'customerdivision_uuid' => $this->division->uuid,
             'street' => 'Via Test',
-            'province' => 'RM', // Formato valido: 2 lettere maiuscole
+            'province' => 'RM', // Valid format: 2 uppercase letters
         ]);
 
         $response->assertRedirect(route('customer-shipping-addresses.index'));

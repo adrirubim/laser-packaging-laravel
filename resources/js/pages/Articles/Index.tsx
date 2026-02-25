@@ -247,9 +247,9 @@ export default function ArticlesIndex() {
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
                     title={t('nav.articles')}
-                    subtitle="Elenco degli articoli attivi con Cerca e filtri."
+                    subtitle={t('articles.index.subtitle')}
                     createHref={articles.create().url}
-                    createLabel="Nuovo Articolo"
+                    createLabel={t('articles.index.create')}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -267,14 +267,17 @@ export default function ArticlesIndex() {
                                         <Package className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                                     </div>
                                     <CardTitle className="text-sm font-semibold">
-                                        Istruzioni di Confezionamento
+                                        {t(
+                                            'articles.cards.packaging_instructions.title',
+                                        )}
                                     </CardTitle>
                                 </div>
                             </CardHeader>
                             <CardContent>
                                 <CardDescription className="text-xs">
-                                    Gestisci le istruzioni di confezionamento
-                                    (IC)
+                                    {t(
+                                        'articles.cards.packaging_instructions.description',
+                                    )}
                                 </CardDescription>
                             </CardContent>
                         </Card>
@@ -291,13 +294,17 @@ export default function ArticlesIndex() {
                                         <FileText className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                                     </div>
                                     <CardTitle className="text-sm font-semibold">
-                                        Istruzioni Operative
+                                        {t(
+                                            'articles.cards.operational_instructions.title',
+                                        )}
                                     </CardTitle>
                                 </div>
                             </CardHeader>
                             <CardContent>
                                 <CardDescription className="text-xs">
-                                    Gestisci le istruzioni operative (IO)
+                                    {t(
+                                        'articles.cards.operational_instructions.description',
+                                    )}
                                 </CardDescription>
                             </CardContent>
                         </Card>
@@ -314,14 +321,17 @@ export default function ArticlesIndex() {
                                         <Box className="h-5 w-5 text-orange-600 dark:text-orange-400" />
                                     </div>
                                     <CardTitle className="text-sm font-semibold">
-                                        Istruzioni di Pallettizzazione
+                                        {t(
+                                            'articles.cards.palletization_instructions.title',
+                                        )}
                                     </CardTitle>
                                 </div>
                             </CardHeader>
                             <CardContent>
                                 <CardDescription className="text-xs">
-                                    Gestisci le istruzioni di pallettizzazione
-                                    (IP)
+                                    {t(
+                                        'articles.cards.palletization_instructions.description',
+                                    )}
                                 </CardDescription>
                             </CardContent>
                         </Card>
@@ -338,14 +348,13 @@ export default function ArticlesIndex() {
                                         <FileCheck className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                                     </div>
                                     <CardTitle className="text-sm font-semibold">
-                                        Modelli CQ
+                                        {t('articles.cards.cq_models.title')}
                                     </CardTitle>
                                 </div>
                             </CardHeader>
                             <CardContent>
                                 <CardDescription className="text-xs">
-                                    Gestisci i modelli di controllo qualità
-                                    (CQU)
+                                    {t('articles.cards.cq_models.description')}
                                 </CardDescription>
                             </CardContent>
                         </Card>
@@ -362,13 +371,17 @@ export default function ArticlesIndex() {
                                         <Layers className="h-5 w-5 text-slate-600 dark:text-slate-400" />
                                     </div>
                                     <CardTitle className="text-sm font-semibold">
-                                        Fogli Pallet
+                                        {t(
+                                            'articles.cards.pallet_sheets.title',
+                                        )}
                                     </CardTitle>
                                 </div>
                             </CardHeader>
                             <CardContent>
                                 <CardDescription className="text-xs">
-                                    Gestisci i fogli pallet
+                                    {t(
+                                        'articles.cards.pallet_sheets.description',
+                                    )}
                                 </CardDescription>
                             </CardContent>
                         </Card>
@@ -379,12 +392,12 @@ export default function ArticlesIndex() {
                     <div className="grid gap-3 md:grid-cols-3">
                         <div className="space-y-1">
                             <label className="text-xs font-medium text-muted-foreground">
-                                Cerca
+                                {t('common.search')}
                             </label>
                             <SearchInput
                                 value={searchValue}
                                 onChange={handleSearchChange}
-                                placeholder="Codice LAS, descrizione o codice cliente..."
+                                placeholder={t('articles.search_placeholder')}
                                 isLoading={isSearching}
                                 onClear={clearSearch}
                             />
@@ -392,7 +405,7 @@ export default function ArticlesIndex() {
 
                         <div className="space-y-1">
                             <label className="text-xs font-medium text-muted-foreground">
-                                Offerta
+                                {t('common.offer')}
                             </label>
                             <Select
                                 value={offerFilter || 'all'}
@@ -400,7 +413,7 @@ export default function ArticlesIndex() {
                             >
                                 <SelectTrigger
                                     className="w-full"
-                                    aria-label="Offerta"
+                                    aria-label={t('common.offer')}
                                 >
                                     <SelectValue
                                         placeholder={t(
@@ -421,7 +434,7 @@ export default function ArticlesIndex() {
                                         >
                                             {offer.offer_number} -{' '}
                                             {offer.description ||
-                                                'Senza descrizione'}
+                                                t('common.no_description')}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -430,7 +443,7 @@ export default function ArticlesIndex() {
 
                         <div className="space-y-1">
                             <label className="text-xs font-medium text-muted-foreground">
-                                Categoria
+                                {t('common.category')}
                             </label>
                             <Select
                                 value={categoryFilter || 'all'}
@@ -438,7 +451,7 @@ export default function ArticlesIndex() {
                             >
                                 <SelectTrigger
                                     className="w-full"
-                                    aria-label="Categoria"
+                                    aria-label={t('common.category')}
                                 >
                                     <SelectValue
                                         placeholder={t(
@@ -473,18 +486,17 @@ export default function ArticlesIndex() {
                                 (articlesPaginated.total ?? 0) === 0 ? (
                                     <div className="flex flex-col items-center justify-center gap-4 py-12 text-center">
                                         <p className="text-sm text-muted-foreground">
-                                            Nessun articolo. Crea il primo.
+                                            {t('articles.index.empty')}
                                         </p>
                                         <Button asChild>
                                             <Link href={articles.create().url}>
-                                                Crea articolo
+                                                {t('articles.index.create')}
                                             </Link>
                                         </Button>
                                     </div>
                                 ) : (
                                     <div className="py-8 text-center text-sm text-muted-foreground">
-                                        Nessun articolo trovato per i filtri
-                                        attuali.
+                                        {t('articles.index.empty_filtered')}
                                     </div>
                                 )
                             ) : (
@@ -500,12 +512,12 @@ export default function ArticlesIndex() {
                                                         article.cod_article_las}
                                                 </h3>
                                                 <p className="mt-1 font-mono text-xs text-muted-foreground">
-                                                    Codice LAS:{' '}
+                                                    {t('common.code_las')}:{' '}
                                                     {article.cod_article_las}
                                                 </p>
                                                 {article.offer && (
                                                     <p className="mt-1 text-xs text-muted-foreground">
-                                                        Offerta:{' '}
+                                                        {t('common.offer')}:{' '}
                                                         {
                                                             article.offer
                                                                 .offer_number
@@ -519,7 +531,9 @@ export default function ArticlesIndex() {
                                                         variant="ghost"
                                                         size="icon"
                                                         className="h-8 w-8"
-                                                        aria-label="Apri menu azioni"
+                                                        aria-label={t(
+                                                            'common.open_actions_menu',
+                                                        )}
                                                     >
                                                         <MoreHorizontal className="h-4 w-4" />
                                                     </Button>
@@ -537,7 +551,7 @@ export default function ArticlesIndex() {
                                                         }}
                                                     >
                                                         <Eye className="mr-2 h-4 w-4" />
-                                                        Visualizza
+                                                        {t('common.view')}
                                                     </DropdownMenuItem>
                                                     {article.offer && (
                                                         <DropdownMenuItem
@@ -555,7 +569,9 @@ export default function ArticlesIndex() {
                                                             }}
                                                         >
                                                             <FileText className="mr-2 h-4 w-4" />
-                                                            Visualizza Offerta
+                                                            {t(
+                                                                'common.view_offer',
+                                                            )}
                                                         </DropdownMenuItem>
                                                     )}
                                                     <DropdownMenuItem
@@ -570,7 +586,7 @@ export default function ArticlesIndex() {
                                                         }}
                                                     >
                                                         <Edit className="mr-2 h-4 w-4" />
-                                                        Modifica
+                                                        {t('common.edit')}
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
                                                         onSelect={(e) => {
@@ -588,7 +604,7 @@ export default function ArticlesIndex() {
                                                         }}
                                                     >
                                                         <Copy className="mr-2 h-4 w-4" />
-                                                        Duplica
+                                                        {t('common.duplicate')}
                                                     </DropdownMenuItem>
                                                     {article.offer && (
                                                         <DropdownMenuItem
@@ -609,7 +625,9 @@ export default function ArticlesIndex() {
                                                             }}
                                                         >
                                                             <FilePlus className="mr-2 h-4 w-4" />
-                                                            Nuova Offerta
+                                                            {t(
+                                                                'offers.actions.new_from_article',
+                                                            )}
                                                         </DropdownMenuItem>
                                                     )}
                                                     <DropdownMenuItem
@@ -626,7 +644,9 @@ export default function ArticlesIndex() {
                                                         }}
                                                     >
                                                         <ShoppingCart className="mr-2 h-4 w-4" />
-                                                        Crea Ordine
+                                                        {t(
+                                                            'orders.actions.create_from_article',
+                                                        )}
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
                                                         variant="destructive"
@@ -638,7 +658,7 @@ export default function ArticlesIndex() {
                                                         }}
                                                     >
                                                         <Trash2 className="mr-2 h-4 w-4" />
-                                                        Elimina
+                                                        {t('common.delete')}
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
@@ -647,7 +667,10 @@ export default function ArticlesIndex() {
                                             {article.cod_article_client && (
                                                 <div>
                                                     <span className="text-muted-foreground">
-                                                        Cod. Cliente:{' '}
+                                                        {t(
+                                                            'common.code_customer',
+                                                        )}
+                                                        :{' '}
                                                     </span>
                                                     <span>
                                                         {
@@ -659,7 +682,8 @@ export default function ArticlesIndex() {
                                             {article.category && (
                                                 <div>
                                                     <span className="text-muted-foreground">
-                                                        Categoria:{' '}
+                                                        {t('common.category')}
+                                                        :{' '}
                                                     </span>
                                                     <span>
                                                         {article.category.name}
@@ -675,13 +699,15 @@ export default function ArticlesIndex() {
                             <thead className="sticky top-0 z-10 bg-muted/80 backdrop-blur">
                                 <tr className="text-xs tracking-wide text-muted-foreground uppercase">
                                     <th className="border-b px-3 py-2 font-medium">
-                                        ID
+                                        {t('articles.index.columns.id')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        UUID
+                                        {t('articles.index.columns.uuid')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Numero offerta
+                                        {t(
+                                            'articles.index.columns.offer_number',
+                                        )}
                                     </th>
                                     <SortableTableHeader
                                         column="cod_article_las"
@@ -689,7 +715,7 @@ export default function ArticlesIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Codice articolo LAS
+                                        {t('common.code_las')}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="cod_article_client"
@@ -697,7 +723,7 @@ export default function ArticlesIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Codice articolo cliente
+                                        {t('common.code_customer')}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="article_descr"
@@ -705,16 +731,20 @@ export default function ArticlesIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Descrizione articolo
+                                        {t(
+                                            'articles.index.columns.description',
+                                        )}
                                     </SortableTableHeader>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Descrizione aggiuntiva
+                                        {t(
+                                            'articles.index.columns.additional_description',
+                                        )}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Approvazione
+                                        {t('articles.index.columns.approval')}
                                     </th>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t('common.actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -729,8 +759,9 @@ export default function ArticlesIndex() {
                                             0 ? (
                                                 <div className="flex flex-col items-center justify-center gap-3">
                                                     <p>
-                                                        Nessun articolo. Crea il
-                                                        primo.
+                                                        {t(
+                                                            'articles.index.empty',
+                                                        )}
                                                     </p>
                                                     <Button asChild size="sm">
                                                         <Link
@@ -739,12 +770,16 @@ export default function ArticlesIndex() {
                                                                     .url
                                                             }
                                                         >
-                                                            Crea articolo
+                                                            {t(
+                                                                'articles.index.create',
+                                                            )}
                                                         </Link>
                                                     </Button>
                                                 </div>
                                             ) : (
-                                                'Nessun articolo trovato per i filtri attuali.'
+                                                t(
+                                                    'articles.index.empty_filtered',
+                                                )
                                             )}
                                         </td>
                                     </tr>
@@ -796,7 +831,9 @@ export default function ArticlesIndex() {
                                             article.check_approval === '1' ? (
                                                 <div
                                                     className="flex items-center gap-1"
-                                                    title="Approvato"
+                                                    title={t(
+                                                        'articles.index.approval_approved',
+                                                    )}
                                                 >
                                                     <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
                                                     <span className="sr-only">
@@ -807,7 +844,9 @@ export default function ArticlesIndex() {
                                               article.check_approval === '0' ? (
                                                 <div
                                                     className="flex items-center gap-1"
-                                                    title="Non approvato"
+                                                    title={t(
+                                                        'articles.index.approval_not_approved',
+                                                    )}
                                                 >
                                                     <AlertCircle className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
                                                     <span className="sr-only">
@@ -827,7 +866,9 @@ export default function ArticlesIndex() {
                                                         variant="ghost"
                                                         size="icon"
                                                         className="h-8 w-8"
-                                                        aria-label="Apri menu azioni"
+                                                        aria-label={t(
+                                                            'common.open_actions_menu',
+                                                        )}
                                                     >
                                                         <MoreHorizontal className="h-4 w-4" />
                                                     </Button>
@@ -845,7 +886,7 @@ export default function ArticlesIndex() {
                                                         }}
                                                     >
                                                         <Eye className="mr-2 h-4 w-4" />
-                                                        Visualizza
+                                                        {t('common.view')}
                                                     </DropdownMenuItem>
                                                     {article.offer && (
                                                         <DropdownMenuItem
@@ -863,7 +904,9 @@ export default function ArticlesIndex() {
                                                             }}
                                                         >
                                                             <FileText className="mr-2 h-4 w-4" />
-                                                            Visualizza Offerta
+                                                            {t(
+                                                                'common.view_offer',
+                                                            )}
                                                         </DropdownMenuItem>
                                                     )}
                                                     <DropdownMenuItem
@@ -878,7 +921,7 @@ export default function ArticlesIndex() {
                                                         }}
                                                     >
                                                         <Edit className="mr-2 h-4 w-4" />
-                                                        Modifica
+                                                        {t('common.edit')}
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
                                                         onSelect={(e) => {
@@ -896,7 +939,7 @@ export default function ArticlesIndex() {
                                                         }}
                                                     >
                                                         <Copy className="mr-2 h-4 w-4" />
-                                                        Duplica
+                                                        {t('common.duplicate')}
                                                     </DropdownMenuItem>
                                                     {article.offer && (
                                                         <DropdownMenuItem
@@ -917,7 +960,9 @@ export default function ArticlesIndex() {
                                                             }}
                                                         >
                                                             <FilePlus className="mr-2 h-4 w-4" />
-                                                            Nuova Offerta
+                                                            {t(
+                                                                'offers.actions.new_from_article',
+                                                            )}
                                                         </DropdownMenuItem>
                                                     )}
                                                     <DropdownMenuItem
@@ -934,7 +979,9 @@ export default function ArticlesIndex() {
                                                         }}
                                                     >
                                                         <ShoppingCart className="mr-2 h-4 w-4" />
-                                                        Crea Ordine
+                                                        {t(
+                                                            'orders.actions.create_from_article',
+                                                        )}
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
                                                         variant="destructive"
@@ -946,7 +993,7 @@ export default function ArticlesIndex() {
                                                         }}
                                                     >
                                                         <Trash2 className="mr-2 h-4 w-4" />
-                                                        Elimina
+                                                        {t('common.delete')}
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
@@ -974,8 +1021,10 @@ export default function ArticlesIndex() {
                     }
                     onConfirm={handleDeleteConfirm}
                     isLoading={isDeleting}
-                    title="Conferma eliminazione"
-                    description={`Sei sicuro di voler eliminare l'articolo? Questa azione non può essere annullata. L'articolo verrà eliminato definitivamente.`}
+                    title={t('common.confirm_delete')}
+                    description={t('articles.delete_confirm_description', {
+                        code: deleteDialog.article?.cod_article_las ?? '',
+                    })}
                     itemName={deleteDialog.article?.cod_article_las}
                 />
             </div>

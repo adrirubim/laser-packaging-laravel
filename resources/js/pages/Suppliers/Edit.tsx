@@ -15,6 +15,7 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useTranslations } from '@/hooks/use-translations';
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
@@ -48,6 +49,7 @@ export default function SuppliersEdit({
     supplier,
     errors: serverErrors,
 }: SuppliersEditProps) {
+    const { t } = useTranslations();
     const [vatNumber, setVatNumber] = useState(supplier.vat_number || '');
     const [postalCode, setPostalCode] = useState(supplier.postal_code || '');
     const [province, setProvince] = useState(supplier.province || '');
@@ -66,7 +68,7 @@ export default function SuppliersEdit({
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Fornitori',
+            title: t('nav.suppliers'),
             href: suppliers.index().url,
         },
         {
@@ -74,22 +76,30 @@ export default function SuppliersEdit({
             href: suppliers.show({ supplier: supplier.uuid }).url,
         },
         {
-            title: 'Modifica',
+            title: t('customers.edit.breadcrumb'),
             href: suppliers.edit({ supplier: supplier.uuid }).url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Modifica Fornitore ${supplier.code}`} />
+            <Head
+                title={t('suppliers.edit.page_title', {
+                    code: supplier.code,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Gestione Fornitore</CardTitle>
-                                <CardDescription>Modifica</CardDescription>
+                                <CardTitle>
+                                    {t('suppliers.edit.card_title')}
+                                </CardTitle>
+                                <CardDescription>
+                                    {t('suppliers.edit.card_description')}
+                                </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <Form
@@ -129,7 +139,9 @@ export default function SuppliersEdit({
                                                         htmlFor="code"
                                                         required
                                                     >
-                                                        Codice Fornitore
+                                                        {t(
+                                                            'suppliers.form.code',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="code"
@@ -138,7 +150,9 @@ export default function SuppliersEdit({
                                                             supplier.code
                                                         }
                                                         required
-                                                        placeholder="Codice Fornitore"
+                                                        placeholder={t(
+                                                            'suppliers.form.code',
+                                                        )}
                                                         maxLength={255}
                                                     />
                                                     <InputError
@@ -151,7 +165,9 @@ export default function SuppliersEdit({
                                                         htmlFor="company_name"
                                                         required
                                                     >
-                                                        Ragione Sociale
+                                                        {t(
+                                                            'suppliers.form.company_name',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="company_name"
@@ -160,7 +176,9 @@ export default function SuppliersEdit({
                                                             supplier.company_name
                                                         }
                                                         required
-                                                        placeholder="Ragione Sociale"
+                                                        placeholder={t(
+                                                            'suppliers.form.company_name',
+                                                        )}
                                                         maxLength={255}
                                                     />
                                                     <InputError
@@ -173,7 +191,9 @@ export default function SuppliersEdit({
                                                 <div className="grid gap-2">
                                                     <div className="flex items-center gap-2">
                                                         <FormLabel htmlFor="vat_number">
-                                                            Partita IVA
+                                                            {t(
+                                                                'suppliers.form.vat_label',
+                                                            )}
                                                         </FormLabel>
                                                         <Tooltip>
                                                             <TooltipTrigger
@@ -183,9 +203,9 @@ export default function SuppliersEdit({
                                                             </TooltipTrigger>
                                                             <TooltipContent>
                                                                 <p>
-                                                                    Inserire 11
-                                                                    cifre
-                                                                    numeriche
+                                                                    {t(
+                                                                        'suppliers.form.vat_tooltip',
+                                                                    )}
                                                                 </p>
                                                             </TooltipContent>
                                                         </Tooltip>
@@ -202,11 +222,15 @@ export default function SuppliersEdit({
                                                         onBlur={
                                                             vatNumberValidation.onBlur
                                                         }
-                                                        placeholder="12345678901"
+                                                        placeholder={t(
+                                                            'suppliers.form.vat',
+                                                        )}
                                                         pattern="[0-9]{11}"
                                                         maxLength={11}
                                                         inputMode="numeric"
-                                                        aria-label="Partita IVA (11 cifre)"
+                                                        aria-label={t(
+                                                            'suppliers.form.vat_aria',
+                                                        )}
                                                         aria-invalid={
                                                             vatNumberValidation.error
                                                                 ? 'true'
@@ -234,7 +258,9 @@ export default function SuppliersEdit({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="co">
-                                                        C/O
+                                                        {t(
+                                                            'suppliers.form.c_o',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="co"
@@ -242,7 +268,9 @@ export default function SuppliersEdit({
                                                         defaultValue={
                                                             supplier.co ?? ''
                                                         }
-                                                        placeholder="C/O"
+                                                        placeholder={t(
+                                                            'suppliers.form.c_o',
+                                                        )}
                                                         maxLength={255}
                                                     />
                                                     <InputError
@@ -252,7 +280,9 @@ export default function SuppliersEdit({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="street">
-                                                        Via
+                                                        {t(
+                                                            'suppliers.form.street',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="street"
@@ -261,7 +291,9 @@ export default function SuppliersEdit({
                                                             supplier.street ??
                                                             ''
                                                         }
-                                                        placeholder="Via"
+                                                        placeholder={t(
+                                                            'suppliers.form.street',
+                                                        )}
                                                         maxLength={255}
                                                     />
                                                     <InputError
@@ -274,7 +306,9 @@ export default function SuppliersEdit({
                                                 <div className="grid gap-2">
                                                     <div className="flex items-center gap-2">
                                                         <FormLabel htmlFor="postal_code">
-                                                            CAP
+                                                            {t(
+                                                                'suppliers.form.cap_label',
+                                                            )}
                                                         </FormLabel>
                                                         <Tooltip>
                                                             <TooltipTrigger
@@ -284,10 +318,9 @@ export default function SuppliersEdit({
                                                             </TooltipTrigger>
                                                             <TooltipContent>
                                                                 <p>
-                                                                    Codice di
-                                                                    Avviamento
-                                                                    Postale (5
-                                                                    cifre)
+                                                                    {t(
+                                                                        'suppliers.form.postal_code_tooltip',
+                                                                    )}
                                                                 </p>
                                                             </TooltipContent>
                                                         </Tooltip>
@@ -304,11 +337,15 @@ export default function SuppliersEdit({
                                                         onBlur={
                                                             postalCodeValidation.onBlur
                                                         }
-                                                        placeholder="00100"
+                                                        placeholder={t(
+                                                            'suppliers.form.postal_code',
+                                                        )}
                                                         pattern="[0-9]{5}"
                                                         maxLength={5}
                                                         inputMode="numeric"
-                                                        aria-label="CAP (Codice di Avviamento Postale - 5 cifre)"
+                                                        aria-label={t(
+                                                            'suppliers.form.postal_code_aria',
+                                                        )}
                                                         aria-invalid={
                                                             postalCodeValidation.error
                                                                 ? 'true'
@@ -336,7 +373,9 @@ export default function SuppliersEdit({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="city">
-                                                        Città
+                                                        {t(
+                                                            'suppliers.form.city',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="city"
@@ -344,7 +383,9 @@ export default function SuppliersEdit({
                                                         defaultValue={
                                                             supplier.city ?? ''
                                                         }
-                                                        placeholder="Città"
+                                                        placeholder={t(
+                                                            'suppliers.form.city',
+                                                        )}
                                                         maxLength={255}
                                                     />
                                                     <InputError
@@ -355,7 +396,9 @@ export default function SuppliersEdit({
                                                 <div className="grid gap-2">
                                                     <div className="flex items-center gap-2">
                                                         <FormLabel htmlFor="province">
-                                                            Provincia
+                                                            {t(
+                                                                'suppliers.form.province_label',
+                                                            )}
                                                         </FormLabel>
                                                         <Tooltip>
                                                             <TooltipTrigger
@@ -365,11 +408,9 @@ export default function SuppliersEdit({
                                                             </TooltipTrigger>
                                                             <TooltipContent>
                                                                 <p>
-                                                                    Codice
-                                                                    provincia di
-                                                                    2 lettere
-                                                                    (es: RM, MI,
-                                                                    TO)
+                                                                    {t(
+                                                                        'suppliers.form.province_tooltip',
+                                                                    )}
                                                                 </p>
                                                             </TooltipContent>
                                                         </Tooltip>
@@ -386,7 +427,9 @@ export default function SuppliersEdit({
                                                         onBlur={
                                                             provinceValidation.onBlur
                                                         }
-                                                        placeholder="RM"
+                                                        placeholder={t(
+                                                            'suppliers.form.province',
+                                                        )}
                                                         pattern="[A-Z]{2}"
                                                         maxLength={2}
                                                         style={{
@@ -420,7 +463,9 @@ export default function SuppliersEdit({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="country">
-                                                        Nazione
+                                                        {t(
+                                                            'suppliers.form.country',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="country"
@@ -429,7 +474,9 @@ export default function SuppliersEdit({
                                                             supplier.country ??
                                                             ''
                                                         }
-                                                        placeholder="Nazione"
+                                                        placeholder={t(
+                                                            'suppliers.form.country',
+                                                        )}
                                                         maxLength={255}
                                                     />
                                                     <InputError
@@ -441,7 +488,9 @@ export default function SuppliersEdit({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="contacts">
-                                                        Contatti
+                                                        {t(
+                                                            'suppliers.form.contacts',
+                                                        )}
                                                     </FormLabel>
                                                     <Textarea
                                                         id="contacts"
@@ -450,7 +499,9 @@ export default function SuppliersEdit({
                                                             supplier.contacts ??
                                                             ''
                                                         }
-                                                        placeholder="Contatti"
+                                                        placeholder={t(
+                                                            'suppliers.form.contacts',
+                                                        )}
                                                         rows={3}
                                                     />
                                                     <InputError
@@ -466,8 +517,12 @@ export default function SuppliersEdit({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Aggiornando...'
-                                                            : 'Aggiorna Fornitore'}
+                                                            ? t(
+                                                                  'customers.edit.saving',
+                                                              )
+                                                            : t(
+                                                                  'customers.edit.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -481,7 +536,7 @@ export default function SuppliersEdit({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

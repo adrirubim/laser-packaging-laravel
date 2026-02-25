@@ -41,7 +41,7 @@ class CreateArticleAction
     public function execute(array $validated, Request $request)
     {
         return DB::transaction(function () use ($validated, $request) {
-            // Generare codice LAS se non fornito
+            // Generate LAS code if not provided
             if (empty($validated['cod_article_las'])) {
                 try {
                     $validated['cod_article_las'] = $this->articleCodeService->generateNextLAS($validated['offer_uuid']);
@@ -58,7 +58,7 @@ class CreateArticleAction
                     ];
                 }
             } else {
-                // Verificare unicità del codice fornito
+                // Verify uniqueness of the provided code
                 if ($this->articleCodeService->lasCodeExists($validated['cod_article_las'])) {
                     $this->logWarning('CreateArticleAction::execute', 'LAS code already exists', [
                         'cod_article_las' => $validated['cod_article_las'],
@@ -72,7 +72,7 @@ class CreateArticleAction
                 }
             }
 
-            // Extraer relaciones many-to-many
+            // Extract many-to-many relationships
             $materials = $validated['materials'] ?? [];
             $machinery = $validated['machinery'] ?? [];
             $criticalIssues = $validated['critical_issues'] ?? [];
@@ -80,17 +80,17 @@ class CreateArticleAction
             $operatingInstructions = $validated['operating_instructions'] ?? [];
             $palletizingInstructions = $validated['palletizing_instructions'] ?? [];
 
-            // Gestire duplicazione: copiare relazioni dell'articolo sorgente se esiste
+            // Handle duplication: copy source article relationships if exists
             $sourceArticleUuid = $validated['source_article_uuid'] ?? null;
             $sourceArticle = $this->articleRepository->getSourceArticleForDuplication($sourceArticleUuid);
 
-            // Se è duplicazione e non sono state fornite relazioni, usare quelle dell'articolo sorgente
+            // If duplication and no relationships provided, use those from source article
             if ($sourceArticle) {
                 if (empty($materials)) {
                     $materials = $sourceArticle->materials->pluck('uuid')->toArray();
                 }
                 if (empty($machinery)) {
-                    // Para machinery, necesitamos copiar con valores
+                    // For machinery, we need to copy with values
                     $machinery = $sourceArticle->machinery->map(function ($m) {
                         return [
                             'machinery_uuid' => $m->uuid,
@@ -111,25 +111,25 @@ class CreateArticleAction
                     $palletizingInstructions = $sourceArticle->palletizingInstructions->pluck('uuid')->toArray();
                 }
 
-                // Copiar line_layout si existe en el artículo fuente y no se proporcionó uno nuevo
+                // Copy line_layout if it exists in source article and none was provided
                 if (empty($validated['line_layout']) && $sourceArticle->line_layout) {
                     $validated['line_layout'] = $sourceArticle->line_layout;
                 }
             }
 
-            // Remover relaciones y source_article_uuid del array de validación
+            // Remove relationships and source_article_uuid from validation array
             unset($validated['materials'], $validated['machinery'], $validated['critical_issues'],
                 $validated['packaging_instructions'], $validated['operating_instructions'],
                 $validated['palletizing_instructions'], $validated['source_article_uuid']);
 
-            // Convertir strings vacíos a null para campos nullable
+            // Convert empty strings to null for nullable fields
             foreach (['article_category', 'pallet_uuid'] as $field) {
                 if (isset($validated[$field]) && $validated[$field] === '') {
                     $validated[$field] = null;
                 }
             }
 
-            // Sincronizar check_approval con client_approval_checkbox (como en el legacy)
+            // Sync check_approval with client_approval_checkbox (as in legacy)
             if (isset($validated['client_approval_checkbox'])) {
                 $validated['check_approval'] = $validated['client_approval_checkbox'] ? 1 : 0;
             }
@@ -140,18 +140,18 @@ class CreateArticleAction
                 $validated['line_layout'] = $lineLayoutFile->getClientOriginalName();
             }
 
-            // Creare articolo
+            // Create article
             $article = Article::create($validated);
 
-            // Salvare file line_layout se caricato
+            // Save line_layout file if uploaded
             if ($lineLayoutFile) {
                 $this->saveLineLayoutFile($article, $lineLayoutFile);
             } elseif ($sourceArticle && $sourceArticle->line_layout) {
-                // Se è duplicazione, copiare il file line_layout
+                // If duplication, copy the line_layout file
                 $this->copyLineLayoutFile($sourceArticle, $article);
             }
 
-            // Sincronizar relaciones many-to-many
+            // Sync many-to-many relationships
             $this->syncRelationships($article, [
                 'materials' => $materials,
                 'machinery' => $machinery,
@@ -161,7 +161,7 @@ class CreateArticleAction
                 'palletizingInstructions' => $palletizingInstructions,
             ]);
 
-            // Salvare checkMaterials (hasMany, non many-to-many)
+            // Save checkMaterials (hasMany, not many-to-many)
             $checkMaterials = $validated['check_materials'] ?? [];
             if (! empty($checkMaterials)) {
                 foreach ($checkMaterials as $checkMaterialData) {
@@ -180,11 +180,11 @@ class CreateArticleAction
                 }
             }
 
-            // Refrescar el modelo para cargar las relaciones sincronizadas
+            // Refresh the model to load synced relationships
             $article->refresh();
             $article->load('packagingInstructions', 'operatingInstructions', 'palletizingInstructions');
 
-            // Invalidare cache opzioni formulari ordini
+            // Invalidate order form options cache
             $this->orderRepository->clearFormOptionsCache();
 
             return $article;

@@ -32,7 +32,7 @@ class UpdateArticleAction
     public function execute(Article $article, array $validated, Request $request): Article
     {
         return DB::transaction(function () use ($article, $validated, $request) {
-            // Extraer relaciones many-to-many
+            // Extract many-to-many relationships
             $materials = $validated['materials'] ?? [];
             $machinery = $validated['machinery'] ?? [];
             $criticalIssues = $validated['critical_issues'] ?? [];
@@ -41,34 +41,34 @@ class UpdateArticleAction
             $palletizingInstructions = $validated['palletizing_instructions'] ?? [];
             $checkMaterials = $validated['check_materials'] ?? [];
 
-            // Rimuovere relazioni dall'array di validazione
+            // Remove relationships from validation array
             unset($validated['materials'], $validated['machinery'], $validated['critical_issues'],
                 $validated['packaging_instructions'], $validated['operating_instructions'],
                 $validated['palletizing_instructions'], $validated['check_materials']);
 
-            // Convertire stringhe vuote in null per campi nullable
+            // Convert empty strings to null for nullable fields
             foreach (['article_category', 'pallet_uuid'] as $field) {
                 if (isset($validated[$field]) && $validated[$field] === '') {
                     $validated[$field] = null;
                 }
             }
 
-            // Sincronizar check_approval con client_approval_checkbox (como en el legacy)
+            // Sync check_approval with client_approval_checkbox (as in legacy)
             if (isset($validated['client_approval_checkbox'])) {
                 $validated['check_approval'] = $validated['client_approval_checkbox'] ? 1 : 0;
             }
 
-            // Gestire file line_layout se caricato
+            // Handle line_layout file if uploaded
             $lineLayoutFile = $request->file('line_layout_file');
             if ($lineLayoutFile) {
-                // Rimuovere file precedente se esiste (Storage facade - disk line_layout)
+                // Remove previous file if exists (Storage facade - disk line_layout)
                 if ($article->line_layout) {
                     $oldPath = "{$article->uuid}/{$article->line_layout}";
                     if (Storage::disk('line_layout')->exists($oldPath)) {
                         Storage::disk('line_layout')->delete($oldPath);
                     }
 
-                    // Rimuovere anche file legacy se esiste (compatibilità retroattiva)
+                    // Also remove legacy file if exists (backward compatibility)
                     $legacyOldPath = storage_path('app/line_layout/'.$article->uuid.'/');
                     $legacyOldFile = $legacyOldPath.$article->line_layout;
                     if (file_exists($legacyOldFile)) {
@@ -79,15 +79,15 @@ class UpdateArticleAction
                 $validated['line_layout'] = $lineLayoutFile->getClientOriginalName();
             }
 
-            // Aggiornare articolo
+            // Update article
             $article->update($validated);
 
-            // Salvare file line_layout se caricato
+            // Save line_layout file if uploaded
             if ($lineLayoutFile) {
                 $this->saveLineLayoutFile($article, $lineLayoutFile);
             }
 
-            // Sincronizar relaciones many-to-many
+            // Sync many-to-many relationships
             $this->syncRelationships($article, [
                 'materials' => $materials,
                 'machinery' => $machinery,
@@ -97,7 +97,7 @@ class UpdateArticleAction
                 'palletizingInstructions' => $palletizingInstructions,
             ]);
 
-            // Salvare checkMaterials (hasMany, formato legacy)
+            // Save checkMaterials (hasMany, legacy format)
             $article->checkMaterials()->delete();
             if (! empty($checkMaterials)) {
                 foreach ($checkMaterials as $checkMaterialData) {
@@ -126,7 +126,7 @@ class UpdateArticleAction
             $article->refresh();
             $article->load('packagingInstructions', 'operatingInstructions', 'palletizingInstructions');
 
-            // Invalidare cache opzioni formulari ordini e indirizzi di spedizione
+            // Invalidate order form options and shipping address cache
             $this->orderRepository->clearFormOptionsCache();
             $this->orderRepository->clearShippingAddressesCache($article->uuid);
 

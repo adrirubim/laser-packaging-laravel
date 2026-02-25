@@ -8,6 +8,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import customerDivisions from '@/routes/customer-divisions/index';
 import customerShippingAddresses from '@/routes/customer-shipping-addresses/index';
@@ -55,12 +56,13 @@ type CustomerShippingAddressesShowProps = {
 export default function CustomerShippingAddressesShow({
     address,
 }: CustomerShippingAddressesShowProps) {
+    const { t } = useTranslations();
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Indirizzi di Consegna Clienti',
+            title: t('customer_shipping_addresses.index.title'),
             href: customerShippingAddresses.index().url,
         },
         {
@@ -91,7 +93,11 @@ export default function CustomerShippingAddressesShow({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Indirizzo di Consegna ${address.street}`} />
+            <Head
+                title={t('customer_shipping_addresses.show.page_title', {
+                    street: address.street,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
@@ -113,7 +119,7 @@ export default function CustomerShippingAddressesShow({
                                     }).url
                                 }
                             >
-                                Modifica
+                                {t('common.edit')}
                             </Link>
                         </Button>
                         <Button
@@ -121,7 +127,7 @@ export default function CustomerShippingAddressesShow({
                             onClick={() => setDeleteDialogOpen(true)}
                             disabled={isDeleting}
                         >
-                            Elimina
+                            {t('common.delete')}
                         </Button>
                     </div>
                 </div>
@@ -129,15 +135,23 @@ export default function CustomerShippingAddressesShow({
                 <div className="grid gap-4 md:grid-cols-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Dettagli Indirizzo</CardTitle>
+                            <CardTitle>
+                                {t(
+                                    'customer_shipping_addresses.show.details_title',
+                                )}
+                            </CardTitle>
                             <CardDescription>
-                                Informazioni complete dell'indirizzo
+                                {t(
+                                    'customer_shipping_addresses.show.details_subtitle',
+                                )}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    Via
+                                    {t(
+                                        'customer_shipping_addresses.table.street',
+                                    )}
                                 </Label>
                                 <p className="text-lg font-semibold">
                                     {address.street}
@@ -147,7 +161,9 @@ export default function CustomerShippingAddressesShow({
                             {address.co && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        C/O
+                                        {t(
+                                            'customer_shipping_addresses.table.co',
+                                        )}
                                     </Label>
                                     <p>{address.co}</p>
                                 </div>
@@ -155,7 +171,9 @@ export default function CustomerShippingAddressesShow({
 
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    Città
+                                    {t(
+                                        'customer_shipping_addresses.table.city',
+                                    )}
                                 </Label>
                                 <p className="text-lg font-semibold">
                                     {address.city}
@@ -165,7 +183,9 @@ export default function CustomerShippingAddressesShow({
                             {address.postal_code && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        CAP
+                                        {t(
+                                            'customer_shipping_addresses.table.cap',
+                                        )}
                                     </Label>
                                     <p>{address.postal_code}</p>
                                 </div>
@@ -174,7 +194,9 @@ export default function CustomerShippingAddressesShow({
                             {address.province && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Provincia
+                                        {t(
+                                            'customer_shipping_addresses.table.province',
+                                        )}
                                     </Label>
                                     <p>{address.province}</p>
                                 </div>
@@ -183,7 +205,9 @@ export default function CustomerShippingAddressesShow({
                             {address.country && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Nazione
+                                        {t(
+                                            'customer_shipping_addresses.table.country',
+                                        )}
                                     </Label>
                                     <p>{address.country}</p>
                                 </div>
@@ -192,7 +216,9 @@ export default function CustomerShippingAddressesShow({
                             {address.contacts && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Contatti
+                                        {t(
+                                            'customer_shipping_addresses.table.contacts',
+                                        )}
                                     </Label>
                                     <p>{address.contacts}</p>
                                 </div>
@@ -202,9 +228,15 @@ export default function CustomerShippingAddressesShow({
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>Informazioni Divisione</CardTitle>
+                            <CardTitle>
+                                {t(
+                                    'customer_shipping_addresses.show.division_title',
+                                )}
+                            </CardTitle>
                             <CardDescription>
-                                Divisione e cliente di appartenenza
+                                {t(
+                                    'customer_shipping_addresses.show.division_subtitle',
+                                )}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -219,7 +251,9 @@ export default function CustomerShippingAddressesShow({
                                         {division.customer && (
                                             <div>
                                                 <Label className="text-sm font-medium text-muted-foreground">
-                                                    Cliente
+                                                    {t(
+                                                        'customer_divisions.show.customer_label',
+                                                    )}
                                                 </Label>
                                                 <p className="text-lg font-semibold">
                                                     {
@@ -231,7 +265,9 @@ export default function CustomerShippingAddressesShow({
                                         )}
                                         <div>
                                             <Label className="text-sm font-medium text-muted-foreground">
-                                                Divisione
+                                                {t(
+                                                    'customer_shipping_addresses.index.division_label',
+                                                )}
                                             </Label>
                                             <Link
                                                 href={
@@ -255,10 +291,15 @@ export default function CustomerShippingAddressesShow({
                 {address.orders && address.orders.length > 0 && (
                     <Card>
                         <CardHeader>
-                            <CardTitle>Ordini Associati</CardTitle>
+                            <CardTitle>
+                                {t(
+                                    'customer_shipping_addresses.show.orders_title',
+                                )}
+                            </CardTitle>
                             <CardDescription>
-                                Ordini che utilizzano questo indirizzo di
-                                consegna
+                                {t(
+                                    'customer_shipping_addresses.show.orders_subtitle',
+                                )}
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -292,8 +333,9 @@ export default function CustomerShippingAddressesShow({
                     <Card>
                         <CardContent className="py-8 text-center text-muted-foreground">
                             <p>
-                                Nessun ordine associato a questo indirizzo di
-                                consegna.
+                                {t(
+                                    'customer_shipping_addresses.show.orders_empty',
+                                )}
                             </p>
                         </CardContent>
                     </Card>
@@ -305,14 +347,10 @@ export default function CustomerShippingAddressesShow({
                 onOpenChange={setDeleteDialogOpen}
                 onConfirm={handleDeleteConfirm}
                 isDeleting={isDeleting}
-                title="Conferma eliminazione"
-                description={
-                    <>
-                        Sei sicuro di voler eliminare questo indirizzo di
-                        consegna? Questa azione non può essere annullata e i
-                        dati associati verranno rimossi definitivamente.
-                    </>
-                }
+                title={t('customer_shipping_addresses.delete_title')}
+                description={t(
+                    'customer_shipping_addresses.delete_description',
+                )}
                 itemName={`${address.street}${
                     address.city ? `, ${address.city}` : ''
                 }${address.postal_code ? ` (${address.postal_code})` : ''}`}

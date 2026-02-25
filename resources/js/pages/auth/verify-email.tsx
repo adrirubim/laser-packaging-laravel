@@ -2,23 +2,24 @@
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
+import { useTranslations } from '@/hooks/use-translations';
 import AuthLayout from '@/layouts/auth-layout';
 import { logout } from '@/routes';
 import { send } from '@/routes/verification/index';
 import { Form, Head } from '@inertiajs/react';
 
 export default function VerifyEmail({ status }: { status?: string }) {
+    const { t } = useTranslations();
     return (
         <AuthLayout
-            title="Verifica email"
-            description="Verifica il tuo indirizzo email cliccando sul link che ti abbiamo inviato."
+            title={t('auth.verify_email.title')}
+            description={t('auth.verify_email.description')}
         >
-            <Head title="Verifica email" />
+            <Head title={t('auth.verify_email.page_title')} />
 
             {status === 'verification-link-sent' && (
                 <div className="mb-4 text-center text-sm font-medium text-green-600">
-                    Un nuovo link di verifica è stato inviato all'indirizzo
-                    email fornito in fase di registrazione.
+                    {t('auth.verify_email.link_sent')}
                 </div>
             )}
 
@@ -27,14 +28,14 @@ export default function VerifyEmail({ status }: { status?: string }) {
                     <>
                         <Button disabled={processing} variant="secondary">
                             {processing && <Spinner />}
-                            Resend verification email
+                            {t('auth.verify_email.resend')}
                         </Button>
 
                         <TextLink
                             href={logout()}
                             className="mx-auto block text-sm"
                         >
-                            Log out
+                            {t('auth.verify_email.logout')}
                         </TextLink>
                     </>
                 )}

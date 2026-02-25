@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { PasswordInput } from '@/components/ui/password-input';
 import { Spinner } from '@/components/ui/spinner';
+import { useTranslations } from '@/hooks/use-translations';
 import AuthLayout from '@/layouts/auth-layout';
 
 interface ResetPasswordProps {
@@ -16,6 +17,7 @@ interface ResetPasswordProps {
 }
 
 export default function ResetPassword({ token, email }: ResetPasswordProps) {
+    const { t } = useTranslations();
     const confirmationRef = useRef<HTMLInputElement>(null);
     const [passwordMismatch, setPasswordMismatch] = useState(false);
 
@@ -31,10 +33,10 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
 
     return (
         <AuthLayout
-            title="Reimposta password"
-            description="Inserisci la nuova password qui sotto"
+            title={t('auth.reset_password.title')}
+            description={t('auth.reset_password.description')}
         >
-            <Head title="Reimposta password" />
+            <Head title={t('auth.reset_password.page_title')} />
 
             <Form
                 {...update.form()}
@@ -44,7 +46,9 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                 {({ processing, errors }) => (
                     <div className="grid gap-6">
                         <div className="grid gap-2">
-                            <Label htmlFor="email">Email</Label>
+                            <Label htmlFor="email">
+                                {t('auth.reset_password.email_label')}
+                            </Label>
                             <Input
                                 id="email"
                                 type="email"
@@ -61,14 +65,18 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                         </div>
 
                         <div className="grid gap-2">
-                            <Label htmlFor="password">Password</Label>
+                            <Label htmlFor="password">
+                                {t('auth.reset_password.password_label')}
+                            </Label>
                             <PasswordInput
                                 id="password"
                                 name="password"
                                 autoComplete="new-password"
                                 className="mt-1 block w-full"
                                 autoFocus
-                                placeholder="Password"
+                                placeholder={t(
+                                    'auth.reset_password.password_placeholder',
+                                )}
                                 onBlur={checkPasswordMatch}
                             />
                             <InputError message={errors.password} />
@@ -76,7 +84,7 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
 
                         <div className="grid gap-2">
                             <Label htmlFor="password_confirmation">
-                                Conferma password
+                                {t('auth.reset_password.confirm_label')}
                             </Label>
                             <PasswordInput
                                 ref={confirmationRef}
@@ -84,12 +92,14 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                                 name="password_confirmation"
                                 autoComplete="new-password"
                                 className="mt-1 block w-full"
-                                placeholder="Conferma password"
+                                placeholder={t(
+                                    'auth.reset_password.confirm_placeholder',
+                                )}
                                 onBlur={checkPasswordMatch}
                             />
                             {passwordMismatch && (
                                 <p className="text-sm text-destructive">
-                                    Le password non coincidono
+                                    {t('auth.reset_password.mismatch')}
                                 </p>
                             )}
                             <InputError
@@ -105,7 +115,7 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                             data-test="reset-password-button"
                         >
                             {processing && <Spinner />}
-                            Reimposta password
+                            {t('auth.reset_password.submit')}
                         </Button>
                     </div>
                 )}

@@ -227,12 +227,12 @@ class EmployeeControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $employee = Employee::factory()->create();
-        // Simulare che abbia lavorazioni attive (richiederebbe creare il modello OrderProcessing)
-        // Per ora verifichiamo solo che il metodo esista
+        // Simulate having active processings (would require creating OrderProcessing model)
+        // For now just verify the method exists
 
         $response = $this->delete(route('employees.destroy', $employee));
 
-        // Se non ci sono lavorazioni, dovrebbe funzionare
+        // If there are no processings, it should work
         $response->assertRedirect(route('employees.index'));
     }
 
@@ -259,7 +259,7 @@ class EmployeeControllerTest extends TestCase
 
         $employee = Employee::factory()->create(['portal_enabled' => false]);
 
-        // Verificar si la ruta existe
+        // Verify the route exists
         try {
             $response = $this->postJson("/employees/{$employee->uuid}/toggle-portal");
 
@@ -418,7 +418,7 @@ class EmployeeControllerTest extends TestCase
             'name' => 'John',
             'surname' => 'Doe',
             'matriculation_number' => 'EMP-001',
-            'password' => '12345', // Menos de 6 caracteres
+            'password' => '12345', // Less than 6 characters
         ]);
 
         $response->assertSessionHasErrors(['password']);
@@ -594,7 +594,7 @@ class EmployeeControllerTest extends TestCase
 
         $response = $this->post(route('employees.store-contract', $employee), [
             'start_date' => '2024-01-01',
-            'pay_level' => 9, // Fuera del rango permitido (0-8)
+            'pay_level' => 9, // Outside allowed range (0-8)
         ]);
 
         $response->assertSessionHasErrors(['pay_level']);
@@ -609,7 +609,7 @@ class EmployeeControllerTest extends TestCase
 
         $response = $this->post(route('employees.store-contract', $employee), [
             'start_date' => '2024-01-01',
-            'pay_level' => 8, // Valor máximo permitido
+            'pay_level' => 8, // Maximum allowed value
         ]);
 
         $response->assertSessionDoesntHaveErrors(['pay_level']);
@@ -952,16 +952,16 @@ class EmployeeControllerTest extends TestCase
             'removed' => false,
         ]);
 
-        // Tentare di usare per_page molto alto (1000) - deve essere rifiutato dalla validazione
+        // Try using very high per_page (1000) - should be rejected by validation
         $response = $this->get(route('employees.contracts.index', ['per_page' => 1000]));
 
-        // La validazione rifiuta valori maggiori di 100
+        // Validation rejects values greater than 100
         $this->assertContains($response->status(), [302, 422]);
 
         if ($response->status() === 302) {
             $response->assertSessionHasErrors(['per_page']);
         } else {
-            // Para 422, Inertia retorna JSON con errores
+            // For 422, Inertia returns JSON with errors
             $response->assertJsonValidationErrors(['per_page']);
         }
     }
@@ -980,7 +980,7 @@ class EmployeeControllerTest extends TestCase
             'removed' => false,
         ]);
 
-        // Intentar usar un per_page muy bajo (1)
+        // Try using a very low per_page (1)
         $response = $this->get(route('employees.contracts.index', ['per_page' => 1]));
 
         $response->assertStatus(200);
@@ -1007,11 +1007,11 @@ class EmployeeControllerTest extends TestCase
             'removed' => false,
         ]);
 
-        // Ricerca con apostrofo
+        // Search with apostrophe
         $response = $this->get(route('employees.contracts.index', ['search' => "O'Brien"]));
 
         $response->assertStatus(200);
-        // Verificare che non ci sia errore e che la ricerca funzioni
+        // Verify there's no error and search works
         $response->assertInertia(fn ($page) => $page->where('filters.search', "O'Brien")
         );
     }
@@ -1033,11 +1033,11 @@ class EmployeeControllerTest extends TestCase
             'removed' => false,
         ]);
 
-        // Ricerca con spazi multipli
+        // Search with multiple spaces
         $response = $this->get(route('employees.contracts.index', ['search' => 'John   Doe']));
 
         $response->assertStatus(200);
-        // Verificamos que no hay error
+        // Verify there's no error
         $response->assertInertia(fn ($page) => $page->where('filters.search', 'John   Doe')
         );
     }
@@ -1060,12 +1060,12 @@ class EmployeeControllerTest extends TestCase
             'removed' => false,
         ]);
 
-        // Ricerca in minuscolo
+        // Search in lowercase
         $response = $this->get(route('employees.contracts.index', ['search' => 'john']));
 
         $response->assertStatus(200);
-        // En SQLite LIKE es case-insensitive, en otros DB puede variar
-        // Verificare che la ricerca venga eseguita senza errore
+        // In SQLite LIKE is case-insensitive; in other DBs it may vary
+        // Verify search runs without error
         $response->assertInertia(fn ($page) => $page->where('filters.search', 'john')
         );
     }
@@ -1077,10 +1077,10 @@ class EmployeeControllerTest extends TestCase
 
         $invalidUuid = 'invalid-uuid-format';
 
-        // Tentare di accedere con UUID non valido
+        // Try to access with invalid UUID
         $response = $this->get(route('employees.show', $invalidUuid));
 
-        // Laravel dovrebbe restituire 404 per UUID non validi in route model binding
+        // Laravel should return 404 for invalid UUIDs in route model binding
         $response->assertStatus(404);
     }
 
@@ -1091,17 +1091,17 @@ class EmployeeControllerTest extends TestCase
 
         $invalidUuid = 'invalid-uuid-format';
 
-        // Tentare di filtrare con UUID non valido
+        // Try to filter with invalid UUID
         $response = $this->get(route('employees.contracts.index', ['employee_uuid' => $invalidUuid]));
 
-        // Laravel/Inertia valida il formato UUID e restituisce errore di validazione
-        // Puede ser 422 (Inertia) o 302 (redirect con errores)
+        // Laravel/Inertia validates UUID format and returns validation error
+        // Can be 422 (Inertia) or 302 (redirect with errors)
         $this->assertContains($response->status(), [302, 422]);
 
         if ($response->status() === 302) {
             $response->assertSessionHasErrors(['employee_uuid']);
         } else {
-            // Para 422, Inertia retorna JSON con errores
+            // For 422, Inertia returns JSON with errors
             $response->assertJsonValidationErrors(['employee_uuid']);
         }
     }
@@ -1120,11 +1120,11 @@ class EmployeeControllerTest extends TestCase
             'removed' => false,
         ]);
 
-        // Ricerca con stringa vuota
+        // Search with empty string
         $response = $this->get(route('employees.contracts.index', ['search' => '']));
 
         $response->assertStatus(200);
-        // Stringa vuota dovrebbe essere trattata come nessuna ricerca
+        // Empty string should be treated as no search
         $response->assertInertia(fn ($page) => $page->has('contracts')
         );
     }
@@ -1143,18 +1143,18 @@ class EmployeeControllerTest extends TestCase
             'removed' => false,
         ]);
 
-        // Intentar SQL injection
+        // Try SQL injection
         $sqlInjection = "'; DROP TABLE employeecontracts; --";
 
         $response = $this->get(route('employees.contracts.index', ['search' => $sqlInjection]));
 
         $response->assertStatus(200);
-        // Laravel usa prepared statements, quindi dovrebbe essere sicuro
-        // Verificare che non ci sia errore e che la ricerca sia trattata come testo letterale
+        // Laravel uses prepared statements, so it should be safe
+        // Verify there's no error and search is treated as literal text
         $response->assertInertia(fn ($page) => $page->where('filters.search', $sqlInjection)
         );
 
-        // Verificare che la tabella esista ancora (non sia stata eliminata)
+        // Verify the table still exists (hasn't been deleted)
         $this->assertDatabaseHas('employeecontracts', [
             'employee_uuid' => $employee->uuid,
         ]);

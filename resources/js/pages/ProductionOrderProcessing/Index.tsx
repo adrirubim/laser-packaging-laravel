@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/select';
 import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
+import { getDateLocale } from '@/lib/locales';
 import { formatDecimal, parseDecimal } from '@/lib/utils/number';
 import ordersRoutes from '@/routes/orders/index';
 import productionOrderProcessing from '@/routes/production-order-processing/index';
@@ -85,7 +86,9 @@ type ProductionOrderProcessingIndexProps = {
 };
 
 export default function ProductionOrderProcessingIndex() {
-    const { props } = usePage<ProductionOrderProcessingIndexProps>();
+    const { props } = usePage<
+        ProductionOrderProcessingIndexProps & { locale?: string }
+    >();
     const {
         processings: processingsPaginated,
         employees = [],
@@ -117,7 +120,7 @@ export default function ProductionOrderProcessingIndex() {
     });
     const [isDeleting, setIsDeleting] = useState(false);
 
-    // Inizializzare valori quantità dai filtri
+    // Initialize quantity values from filters
     useEffect(() => {
         queueMicrotask(() => {
             if (filters.min_quantity) {
@@ -131,7 +134,7 @@ export default function ProductionOrderProcessingIndex() {
         });
     }, [filters.min_quantity, filters.max_quantity]);
 
-    // Calcolare numero di filtri attivi
+    // Calculate number of active filters
     const activeFiltersCount = useMemo(() => {
         let count = 0;
         if (filters.search) count++;
@@ -154,7 +157,7 @@ export default function ProductionOrderProcessingIndex() {
         return count;
     }, [filters, minQuantity, maxQuantity]);
 
-    // Applicare i filtri
+    // Apply filters
     const applyFilters = (newFilters: Partial<typeof filters>) => {
         setIsLoading(true);
         const params: Record<string, string | undefined> = {
@@ -193,7 +196,7 @@ export default function ProductionOrderProcessingIndex() {
         });
     };
 
-    // Resettare tutti i filtri
+    // Reset all filters
     const clearAllFilters = () => {
         setSearchValue('');
         setSelectedEmployee('');
@@ -289,7 +292,7 @@ export default function ProductionOrderProcessingIndex() {
         );
     };
 
-    // Ricerca con debounce
+    // Search with debounce
     useEffect(() => {
         const timer = setTimeout(() => {
             if (searchValue !== (filters.search ?? '')) {
@@ -330,13 +333,14 @@ export default function ProductionOrderProcessingIndex() {
 
     // Esportare CSV
     const handleExportCSV = () => {
+        const dateLocale = getDateLocale(props.locale ?? 'it');
         const headers = [
-            'ID',
-            'Personale',
-            'Matricola',
-            'Ordine',
-            'Quantità',
-            'Data e Ora Lavorazione',
+            t('common.id'),
+            t('common.personnel'),
+            t('production_order_processing.matriculation_header'),
+            t('common.order'),
+            t('production_order_processing.quantity_header'),
+            t('production_order_processing.date_time_header'),
         ];
         const rows = processingsPaginated.data.map((processing) => [
             processing.id,
@@ -348,7 +352,7 @@ export default function ProductionOrderProcessingIndex() {
             formatDecimal(processing.quantity, 2, ''),
             processing.processed_datetime
                 ? new Date(processing.processed_datetime).toLocaleString(
-                      'it-IT',
+                      dateLocale,
                   )
                 : '',
         ]);
@@ -370,7 +374,9 @@ export default function ProductionOrderProcessingIndex() {
         link.setAttribute('href', url);
         link.setAttribute(
             'download',
-            `lavorazioni_ordini_${new Date().toISOString().split('T')[0]}.csv`,
+            t('production_order_processing.csv_filename', {
+                date: new Date().toISOString().split('T')[0],
+            }),
         );
         link.style.visibility = 'hidden';
         document.body.appendChild(link);
@@ -391,16 +397,16 @@ export default function ProductionOrderProcessingIndex() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Gestione Lavorazione Ordini" />
+            <Head title={t('production_order_processing.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
                         <h1 className="text-2xl font-semibold tracking-tight">
-                            Gestione Lavorazione Ordini
+                            {t('production_order_processing.page_title')}
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Elenco delle lavorazioni ordini di produzione.
+                            {t('production_order_processing.subtitle')}
                         </p>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
@@ -409,16 +415,16 @@ export default function ProductionOrderProcessingIndex() {
                             className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm hover:bg-primary/90"
                         >
                             <Plus className="mr-2 h-4 w-4" />
-                            Aggiungi nuovo
+                            {t('production_order_processing.add_new')}
                         </Link>
                         {processingsPaginated.total > 0 && (
                             <button
                                 onClick={handleExportCSV}
                                 className="inline-flex items-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-muted"
-                                title="Esporta tutti i risultati in CSV"
+                                title={t('common.export_csv')}
                             >
                                 <Download className="mr-2 h-4 w-4" />
-                                Esporta CSV
+                                {t('production_order_processing.export_csv')}
                             </button>
                         )}
                     </div>
@@ -431,14 +437,19 @@ export default function ProductionOrderProcessingIndex() {
                     <div className="flex items-center justify-between gap-2 rounded-xl border border-sidebar-border/70 bg-card p-3 dark:border-sidebar-border">
                         <div className="flex flex-wrap items-center gap-2">
                             <span className="text-xs font-medium text-muted-foreground">
-                                Filtri attivi:
+                                {t(
+                                    'production_order_processing.active_filters',
+                                )}
                             </span>
                             <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
                                 {activeFiltersCount}
                             </span>
                             {filters.search && (
                                 <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
-                                    Cerca: "{filters.search}"
+                                    {t(
+                                        'production_order_processing.search_filter_label',
+                                    )}
+                                    : "{filters.search}"
                                     <button
                                         onClick={() => {
                                             setSearchValue('');
@@ -452,7 +463,9 @@ export default function ProductionOrderProcessingIndex() {
                             )}
                             {filters.employee_uuid && (
                                 <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
-                                    Personale selezionato
+                                    {t(
+                                        'production_order_processing.personnel_selected',
+                                    )}
                                     <button
                                         onClick={() => {
                                             setSelectedEmployee('');
@@ -468,7 +481,9 @@ export default function ProductionOrderProcessingIndex() {
                             )}
                             {filters.order_uuid && (
                                 <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
-                                    Ordine selezionato
+                                    {t(
+                                        'production_order_processing.order_selected',
+                                    )}
                                     <button
                                         onClick={() => {
                                             setSelectedOrder('');
@@ -484,8 +499,12 @@ export default function ProductionOrderProcessingIndex() {
                             )}
                             {(filters.date_from || filters.date_to) && (
                                 <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
-                                    Date: {filters.date_from || '...'} -{' '}
-                                    {filters.date_to || '...'}
+                                    {t(
+                                        'production_order_processing.date_filter_label',
+                                    )}
+                                    :{' '}
+                                    {filters.date_from || t('common.ellipsis')}{' '}
+                                    - {filters.date_to || t('common.ellipsis')}
                                     <button
                                         onClick={() => {
                                             setDateFrom('');
@@ -505,7 +524,10 @@ export default function ProductionOrderProcessingIndex() {
                                 minQuantity !== null &&
                                 minQuantity !== undefined && (
                                     <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
-                                        Q.tà min: {minQuantity}
+                                        {t(
+                                            'production_order_processing.quantity_min_filter',
+                                        )}
+                                        : {minQuantity}
                                         <button
                                             onClick={() => {
                                                 setMinQuantity('');
@@ -521,7 +543,10 @@ export default function ProductionOrderProcessingIndex() {
                                 maxQuantity !== null &&
                                 maxQuantity !== undefined && (
                                     <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
-                                        Q.tà max: {maxQuantity}
+                                        {t(
+                                            'production_order_processing.quantity_max_filter',
+                                        )}
+                                        : {maxQuantity}
                                         <button
                                             onClick={() => {
                                                 setMaxQuantity('');
@@ -539,7 +564,7 @@ export default function ProductionOrderProcessingIndex() {
                             className="inline-flex items-center gap-2 rounded-md border border-input bg-background px-3 py-1.5 text-xs font-medium shadow-sm transition-colors hover:bg-muted"
                         >
                             <FilterX className="h-3 w-3" />
-                            Resetta filtri
+                            {t('production_order_processing.reset_filters')}
                         </button>
                     </div>
                 )}
@@ -549,7 +574,7 @@ export default function ProductionOrderProcessingIndex() {
                     <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-5">
                         <div className="space-y-1">
                             <label className="text-xs font-medium text-muted-foreground">
-                                Cerca
+                                {t('production_order_processing.search_label')}
                             </label>
                             <div className="relative">
                                 <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -584,7 +609,7 @@ export default function ProductionOrderProcessingIndex() {
 
                         <div className="space-y-1">
                             <label className="text-xs font-medium text-muted-foreground">
-                                Personale
+                                {t('common.personnel')}
                             </label>
                             <Select
                                 value={selectedEmployee || 'all'}
@@ -598,7 +623,7 @@ export default function ProductionOrderProcessingIndex() {
                             >
                                 <SelectTrigger
                                     className="w-full"
-                                    aria-label="Personale"
+                                    aria-label={t('common.personnel')}
                                 >
                                     <SelectValue
                                         placeholder={t('filter.all_employees')}
@@ -623,7 +648,7 @@ export default function ProductionOrderProcessingIndex() {
 
                         <div className="space-y-1">
                             <label className="text-xs font-medium text-muted-foreground">
-                                Ordine
+                                {t('common.order')}
                             </label>
                             <Select
                                 value={selectedOrder || 'all'}
@@ -637,7 +662,7 @@ export default function ProductionOrderProcessingIndex() {
                             >
                                 <SelectTrigger
                                     className="w-full"
-                                    aria-label="Ordine"
+                                    aria-label={t('common.order')}
                                 >
                                     <SelectValue
                                         placeholder={t('filter.all_orders')}
@@ -661,7 +686,7 @@ export default function ProductionOrderProcessingIndex() {
 
                         <div className="space-y-1">
                             <label className="text-xs font-medium text-muted-foreground">
-                                Quantità min
+                                {t('production_order_processing.quantity_min')}
                             </label>
                             <input
                                 type="number"
@@ -692,7 +717,7 @@ export default function ProductionOrderProcessingIndex() {
 
                         <div className="space-y-1">
                             <label className="text-xs font-medium text-muted-foreground">
-                                Elementi per pagina
+                                {t('common.items_per_page')}
                             </label>
                             <Select
                                 value={String(filters.per_page || '10')}
@@ -702,7 +727,7 @@ export default function ProductionOrderProcessingIndex() {
                             >
                                 <SelectTrigger
                                     className="w-full"
-                                    aria-label="Elementi per pagina"
+                                    aria-label={t('common.items_per_page')}
                                 >
                                     <SelectValue />
                                 </SelectTrigger>
@@ -721,7 +746,9 @@ export default function ProductionOrderProcessingIndex() {
                         <div className="space-y-1 md:col-span-2">
                             <label className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
                                 <Calendar className="h-3 w-3" />
-                                Data lavorazione
+                                {t(
+                                    'production_order_processing.date_processing',
+                                )}
                             </label>
                             <div className="flex gap-2">
                                 <input
@@ -755,20 +782,26 @@ export default function ProductionOrderProcessingIndex() {
                         </div>
                         <div className="space-y-1 md:col-span-4">
                             <label className="text-xs font-medium text-muted-foreground">
-                                Presets rapidi
+                                {t(
+                                    'production_order_processing.date_presets_label',
+                                )}
                             </label>
                             <div className="flex flex-wrap gap-2">
                                 <button
                                     onClick={() => applyDatePreset('today')}
                                     className="rounded-md border border-input bg-background px-2 py-1 text-xs transition-colors hover:bg-muted"
                                 >
-                                    Oggi
+                                    {t(
+                                        'production_order_processing.date_preset_today',
+                                    )}
                                 </button>
                                 <button
                                     onClick={() => applyDatePreset('this_week')}
                                     className="rounded-md border border-input bg-background px-2 py-1 text-xs transition-colors hover:bg-muted"
                                 >
-                                    Questa settimana
+                                    {t(
+                                        'production_order_processing.date_preset_this_week',
+                                    )}
                                 </button>
                                 <button
                                     onClick={() =>
@@ -776,7 +809,9 @@ export default function ProductionOrderProcessingIndex() {
                                     }
                                     className="rounded-md border border-input bg-background px-2 py-1 text-xs transition-colors hover:bg-muted"
                                 >
-                                    Questo mese
+                                    {t(
+                                        'production_order_processing.date_preset_this_month',
+                                    )}
                                 </button>
                                 <button
                                     onClick={() =>
@@ -784,7 +819,9 @@ export default function ProductionOrderProcessingIndex() {
                                     }
                                     className="rounded-md border border-input bg-background px-2 py-1 text-xs transition-colors hover:bg-muted"
                                 >
-                                    Ultimi 7 giorni
+                                    {t(
+                                        'production_order_processing.date_preset_last_7_days',
+                                    )}
                                 </button>
                                 <button
                                     onClick={() =>
@@ -792,7 +829,9 @@ export default function ProductionOrderProcessingIndex() {
                                     }
                                     className="rounded-md border border-input bg-background px-2 py-1 text-xs transition-colors hover:bg-muted"
                                 >
-                                    Ultimi 30 giorni
+                                    {t(
+                                        'production_order_processing.date_preset_last_30_days',
+                                    )}
                                 </button>
                             </div>
                         </div>
@@ -803,14 +842,16 @@ export default function ProductionOrderProcessingIndex() {
                 <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground">
                     <div className="flex items-center gap-3">
                         <div>
-                            Da {processingsPaginated.from || 0} a{' '}
-                            {processingsPaginated.to || 0} di{' '}
-                            {processingsPaginated.total || 0} lavorazioni
+                            {t('production_order_processing.results_range', {
+                                from: processingsPaginated.from || 0,
+                                to: processingsPaginated.to || 0,
+                                total: processingsPaginated.total || 0,
+                            })}
                         </div>
                     </div>
                     {processingsPaginated.total > 0 && (
                         <div className="text-xs">
-                            Totale quantità:{' '}
+                            {t('production_order_processing.total_quantity')}:{' '}
                             {formatDecimal(
                                 processingsPaginated.data.reduce(
                                     (sum, processing) => {
@@ -837,28 +878,34 @@ export default function ProductionOrderProcessingIndex() {
                                         <th
                                             className="cursor-pointer border-b px-3 py-2 font-medium transition-colors hover:bg-muted/50"
                                             onClick={() => handleSort('id')}
-                                            title="Clicca per ordinare per ID"
+                                            title={t(
+                                                'production_order_processing.sort_by_id',
+                                            )}
                                         >
                                             <div className="flex items-center">
-                                                ID
+                                                {t('common.id')}
                                                 {getSortIcon('id')}
                                             </div>
                                         </th>
                                         <th className="border-b px-3 py-2 font-medium">
-                                            Personale
+                                            {t('common.personnel')}
                                         </th>
                                         <th className="border-b px-3 py-2 font-medium">
-                                            Ordine
+                                            {t('common.order')}
                                         </th>
                                         <th
                                             className="cursor-pointer border-b px-3 py-2 font-medium transition-colors hover:bg-muted/50"
                                             onClick={() =>
                                                 handleSort('quantity')
                                             }
-                                            title="Clicca per ordinare per quantità"
+                                            title={t(
+                                                'production_order_processing.sort_by_quantity',
+                                            )}
                                         >
                                             <div className="flex items-center">
-                                                Quantità
+                                                {t(
+                                                    'production_order_processing.quantity_header',
+                                                )}
                                                 {getSortIcon('quantity')}
                                             </div>
                                         </th>
@@ -867,17 +914,23 @@ export default function ProductionOrderProcessingIndex() {
                                             onClick={() =>
                                                 handleSort('processed_datetime')
                                             }
-                                            title="Clicca per ordinare per data"
+                                            title={t(
+                                                'production_order_processing.sort_by_date',
+                                            )}
                                         >
                                             <div className="flex items-center">
-                                                Data e Ora Lavorazione
+                                                {t(
+                                                    'production_order_processing.date_time_header',
+                                                )}
                                                 {getSortIcon(
                                                     'processed_datetime',
                                                 )}
                                             </div>
                                         </th>
                                         <th className="border-b px-3 py-2 text-right font-medium">
-                                            Azioni
+                                            {t(
+                                                'production_order_processing.actions',
+                                            )}
                                         </th>
                                     </tr>
                                 </thead>
@@ -918,7 +971,9 @@ export default function ProductionOrderProcessingIndex() {
                                                 colSpan={6}
                                                 className="px-3 py-8 text-center text-sm text-muted-foreground"
                                             >
-                                                Nessuna lavorazione disponibile.
+                                                {t(
+                                                    'production_order_processing.empty_state',
+                                                )}
                                             </td>
                                         </tr>
                                     ) : (
@@ -947,7 +1002,9 @@ export default function ProductionOrderProcessingIndex() {
                                                                     }
                                                                 </div>
                                                                 <div className="text-xs text-muted-foreground">
-                                                                    Matr:{' '}
+                                                                    {t(
+                                                                        'production_order_processing.matriculation_short',
+                                                                    )}{' '}
                                                                     {
                                                                         processing
                                                                             .employee
@@ -957,7 +1014,9 @@ export default function ProductionOrderProcessingIndex() {
                                                             </div>
                                                         ) : (
                                                             <span className="text-muted-foreground">
-                                                                -
+                                                                {t(
+                                                                    'common.empty_value',
+                                                                )}
                                                             </span>
                                                         )}
                                                     </td>
@@ -983,7 +1042,9 @@ export default function ProductionOrderProcessingIndex() {
                                                             </Link>
                                                         ) : (
                                                             <span className="text-muted-foreground">
-                                                                -
+                                                                {t(
+                                                                    'common.empty_value',
+                                                                )}
                                                             </span>
                                                         )}
                                                     </td>
@@ -996,7 +1057,9 @@ export default function ProductionOrderProcessingIndex() {
                                                             if (qty === 0) {
                                                                 return (
                                                                     <span className="text-muted-foreground">
-                                                                        -
+                                                                        {t(
+                                                                            'common.empty_value',
+                                                                        )}
                                                                     </span>
                                                                 );
                                                             }
@@ -1010,7 +1073,9 @@ export default function ProductionOrderProcessingIndex() {
                                                             if (isNaN(numQty)) {
                                                                 return (
                                                                     <span className="text-muted-foreground">
-                                                                        -
+                                                                        {t(
+                                                                            'common.empty_value',
+                                                                        )}
                                                                     </span>
                                                                 );
                                                             }
@@ -1024,7 +1089,10 @@ export default function ProductionOrderProcessingIndex() {
                                                             new Date(
                                                                 processing.processed_datetime,
                                                             ).toLocaleString(
-                                                                'it-IT',
+                                                                getDateLocale(
+                                                                    props.locale ??
+                                                                        'it',
+                                                                ),
                                                                 {
                                                                     year: 'numeric',
                                                                     month: '2-digit',
@@ -1035,7 +1103,9 @@ export default function ProductionOrderProcessingIndex() {
                                                             )
                                                         ) : (
                                                             <span className="text-muted-foreground">
-                                                                -
+                                                                {t(
+                                                                    'common.empty_value',
+                                                                )}
                                                             </span>
                                                         )}
                                                     </td>
@@ -1071,8 +1141,10 @@ export default function ProductionOrderProcessingIndex() {
                 {/* Paginazione migliorata */}
                 <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
                     <div>
-                        Pagina {processingsPaginated.current_page} di{' '}
-                        {processingsPaginated.last_page}
+                        {t('common.page_of', {
+                            current: processingsPaginated.current_page,
+                            last: processingsPaginated.last_page,
+                        })}
                     </div>
                     <div className="flex items-center gap-2">
                         {processingsPaginated.current_page > 1 && (
@@ -1093,7 +1165,7 @@ export default function ProductionOrderProcessingIndex() {
                                 }}
                                 className="rounded-md border border-input bg-background px-3 py-1 text-sm transition-colors hover:bg-muted"
                             >
-                                Prima
+                                {t('common.first')}
                             </button>
                         )}
                         <button
@@ -1123,7 +1195,7 @@ export default function ProductionOrderProcessingIndex() {
                                     : 'transition-colors hover:bg-muted'
                             }`}
                         >
-                            Precedente
+                            {t('common.previous')}
                         </button>
                         <button
                             onClick={() => {
@@ -1157,7 +1229,7 @@ export default function ProductionOrderProcessingIndex() {
                                     : 'transition-colors hover:bg-muted'
                             }`}
                         >
-                            Successiva
+                            {t('common.next')}
                         </button>
                         {processingsPaginated.current_page <
                             processingsPaginated.last_page && (
@@ -1181,7 +1253,7 @@ export default function ProductionOrderProcessingIndex() {
                                 }}
                                 className="rounded-md border border-input bg-background px-3 py-1 text-sm transition-colors hover:bg-muted"
                             >
-                                Ultima
+                                {t('common.last')}
                             </button>
                         )}
                     </div>
@@ -1195,8 +1267,10 @@ export default function ProductionOrderProcessingIndex() {
                 }
                 onConfirm={handleDeleteConfirm}
                 isLoading={isDeleting}
-                title="Conferma eliminazione"
-                description="Sei sicuro di voler eliminare questa lavorazione ordine? Questa azione non può essere annullata. La lavorazione verrà eliminata definitivamente."
+                title={t('common.confirm_delete')}
+                description={t(
+                    'production_order_processing.delete_confirm_description',
+                )}
             />
         </AppLayout>
     );

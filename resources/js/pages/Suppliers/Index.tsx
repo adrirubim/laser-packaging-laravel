@@ -8,6 +8,7 @@ import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { SortableTableHeader } from '@/components/SortableTableHeader';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import suppliers from '@/routes/suppliers';
 import { type BreadcrumbItem } from '@/types';
@@ -51,6 +52,7 @@ export default function SuppliersIndex() {
     const { props } = usePage<SuppliersIndexProps>();
     const { suppliers: suppliersPaginated, filters } = props;
     const { flash } = useFlashNotifications();
+    const { t } = useTranslations();
 
     const [searchValue, setSearchValue] = useState(filters.search ?? '');
     const [isSearching, setIsSearching] = useState(false);
@@ -143,21 +145,21 @@ export default function SuppliersIndex() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Fornitori',
+            title: t('nav.suppliers'),
             href: suppliers.index().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Fornitori" />
+            <Head title={t('suppliers.index.title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="Fornitori"
-                    subtitle="Elenco dei fornitori attivi con Cerca e filtri di base."
+                    title={t('suppliers.index.title')}
+                    subtitle={t('suppliers.index.subtitle')}
                     createHref={suppliers.create().url}
-                    createLabel="Nuovo Fornitore"
+                    createLabel={t('suppliers.index.create')}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -165,12 +167,14 @@ export default function SuppliersIndex() {
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="space-y-1">
                         <label className="text-xs font-medium text-muted-foreground">
-                            Cerca
+                            {t('common.search')}
                         </label>
                         <SearchInput
                             value={searchValue}
                             onChange={handleSearchChange}
-                            placeholder="Codice, ragione sociale o partita IVA..."
+                            placeholder={t(
+                                'suppliers.index.search_placeholder',
+                            )}
                             isLoading={isSearching}
                             onClear={clearSearch}
                         />
@@ -182,8 +186,7 @@ export default function SuppliersIndex() {
                         <div className="block space-y-3 p-4 md:hidden">
                             {suppliersPaginated.data.length === 0 ? (
                                 <div className="py-8 text-center text-sm text-muted-foreground">
-                                    Nessun fornitore trovato per i filtri
-                                    attuali.
+                                    {t('suppliers.index.empty')}
                                 </div>
                             ) : (
                                 suppliersPaginated.data.map((supplier) => (
@@ -197,7 +200,10 @@ export default function SuppliersIndex() {
                                                     {supplier.company_name}
                                                 </h3>
                                                 <p className="mt-1 font-mono text-xs text-muted-foreground">
-                                                    Codice: {supplier.code}
+                                                    {t(
+                                                        'suppliers.index.mobile_code_label',
+                                                    )}{' '}
+                                                    {supplier.code}
                                                 </p>
                                             </div>
                                             <ActionsDropdown
@@ -220,7 +226,9 @@ export default function SuppliersIndex() {
                                             {supplier.vat_number && (
                                                 <div>
                                                     <span className="text-muted-foreground">
-                                                        P.IVA:{' '}
+                                                        {t(
+                                                            'suppliers.index.mobile_vat_label',
+                                                        )}{' '}
                                                     </span>
                                                     <span>
                                                         {supplier.vat_number}
@@ -230,7 +238,9 @@ export default function SuppliersIndex() {
                                             {supplier.city && (
                                                 <div>
                                                     <span className="text-muted-foreground">
-                                                        Città:{' '}
+                                                        {t(
+                                                            'suppliers.index.mobile_city_label',
+                                                        )}{' '}
                                                     </span>
                                                     <span>{supplier.city}</span>
                                                 </div>
@@ -238,7 +248,9 @@ export default function SuppliersIndex() {
                                             {supplier.province && (
                                                 <div>
                                                     <span className="text-muted-foreground">
-                                                        Provincia:{' '}
+                                                        {t(
+                                                            'suppliers.index.mobile_province_label',
+                                                        )}{' '}
                                                     </span>
                                                     <span>
                                                         {supplier.province}
@@ -248,7 +260,9 @@ export default function SuppliersIndex() {
                                             {supplier.postal_code && (
                                                 <div>
                                                     <span className="text-muted-foreground">
-                                                        CAP:{' '}
+                                                        {t(
+                                                            'suppliers.index.mobile_cap_label',
+                                                        )}{' '}
                                                     </span>
                                                     <span>
                                                         {supplier.postal_code}
@@ -275,7 +289,7 @@ export default function SuppliersIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Codice Fornitore
+                                        {t('suppliers.table.code')}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="company_name"
@@ -283,7 +297,7 @@ export default function SuppliersIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Ragione Sociale
+                                        {t('suppliers.table.company_name')}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="vat_number"
@@ -291,19 +305,19 @@ export default function SuppliersIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Partita IVA
+                                        {t('suppliers.table.vat')}
                                     </SortableTableHeader>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        C/O
+                                        {t('suppliers.table.co')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Via
+                                        {t('suppliers.table.street')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Contatti
+                                        {t('suppliers.table.contacts')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        CAP
+                                        {t('suppliers.table.cap')}
                                     </th>
                                     <SortableTableHeader
                                         column="city"
@@ -311,7 +325,7 @@ export default function SuppliersIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Città
+                                        {t('suppliers.table.city')}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="province"
@@ -319,7 +333,7 @@ export default function SuppliersIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Provincia
+                                        {t('suppliers.table.province')}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="country"
@@ -327,10 +341,10 @@ export default function SuppliersIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Nazione
+                                        {t('suppliers.table.country')}
                                     </SortableTableHeader>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t('suppliers.table.actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -341,8 +355,7 @@ export default function SuppliersIndex() {
                                             colSpan={13}
                                             className="px-3 py-6 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessun fornitore trovato per i
-                                            filtri attuali.
+                                            {t('suppliers.index.empty')}
                                         </td>
                                     </tr>
                                 )}
@@ -434,8 +447,8 @@ export default function SuppliersIndex() {
                         })
                     }
                     onConfirm={handleDeleteConfirm}
-                    title="Elimina Fornitore"
-                    description="Sei sicuro di voler eliminare questo fornitore? Questa azione non può essere annullata."
+                    title={t('suppliers.delete_title')}
+                    description={t('suppliers.delete_description')}
                     itemName={
                         deleteDialog.supplier?.company_name ||
                         deleteDialog.supplier?.code

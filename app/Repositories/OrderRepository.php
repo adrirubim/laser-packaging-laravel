@@ -24,17 +24,17 @@ class OrderRepository
     {
         $query = Order::active()->with(['article', 'shippingAddress.customerDivision.customer']);
 
-        // Filtros
+        // Filters
         $this->applyFilter($query, $request, 'article_uuid');
 
-        // Filtro per stato
+        // Status filter
         if ($request->has('status') && $request->filled('status')) {
             $status = $request->get('status');
-            // Se status è 'completed', includere sia EVASO (5) che SALDATO (6)
+            // If status is 'completed', include both EVASO (5) and SALDATO (6)
             if ($status === 'completed' || $status === '5,6') {
                 $query->whereIn('status', [Order::STATUS_EVASO, Order::STATUS_SALDATO]);
             } elseif (str_contains($status, ',')) {
-                // Più stati (es. 0,1,2,3,4 = solo attivi, esclusi Evaso/Saldato)
+                // Multiple states (e.g. 0,1,2,3,4 = active only, excluded Evaso/Saldato)
                 $ids = array_map('intval', array_filter(explode(',', $status), 'is_numeric'));
                 if (count($ids) > 0) {
                     $query->whereIn('status', $ids);
@@ -47,7 +47,7 @@ class OrderRepository
             }
         }
 
-        // Filtro per cliente
+        // Customer filter
         if ($request->has('customer_uuid') && $request->filled('customer_uuid')) {
             $customerUuid = $request->get('customer_uuid');
             $query->whereHas('shippingAddress.customerDivision', function ($q) use ($customerUuid) {
@@ -55,7 +55,7 @@ class OrderRepository
             });
         }
 
-        // Filtro per intervallo date (delivery_requested_date) — leggere dalla query string (GET)
+        // Date range filter (delivery_requested_date) — read from query string (GET)
         $dateFrom = $request->query('date_from');
         if ($dateFrom !== null && $dateFrom !== '') {
             $query->whereDate('delivery_requested_date', '>=', $dateFrom);
@@ -65,7 +65,7 @@ class OrderRepository
             $query->whereDate('delivery_requested_date', '<=', $dateTo);
         }
 
-        // Filtro per quantità minima
+        // Minimum quantity filter
         if ($request->has('min_quantity') && $request->filled('min_quantity')) {
             $minQuantity = $request->get('min_quantity');
             if (is_numeric($minQuantity)) {
@@ -73,7 +73,7 @@ class OrderRepository
             }
         }
 
-        // Filtro per quantità massima
+        // Maximum quantity filter
         if ($request->has('max_quantity') && $request->filled('max_quantity')) {
             $maxQuantity = $request->get('max_quantity');
             if (is_numeric($maxQuantity)) {
@@ -81,7 +81,7 @@ class OrderRepository
             }
         }
 
-        // Filtro per autocontrollo
+        // Autocontrollo filter
         if ($request->has('autocontrollo') && $request->filled('autocontrollo')) {
             $autocontrollo = $request->get('autocontrollo');
             if ($autocontrollo === 'false' || $autocontrollo === '0') {
@@ -91,7 +91,7 @@ class OrderRepository
             }
         }
 
-        // Ricerca: numero produzione, ref. cliente e articolo (cod/descrizione) in un solo AND così il filtro Stato sia rispettato
+        // Search: production number, customer ref and article (code/description) in single AND so status filter is respected
         if ($request->filled('search')) {
             $search = $request->get('search');
             $query->where(function ($q) use ($search) {
@@ -108,7 +108,7 @@ class OrderRepository
         $sortBy = $request->get('sort_by', 'order_production_number');
         $sortOrder = $request->get('sort_order', 'desc');
 
-        // Verificare colonne ordinabili
+        // Verify sortable columns
         $allowedSortColumns = [
             'order_production_number',
             'delivery_requested_date',
@@ -140,7 +140,7 @@ class OrderRepository
         // Filtri
         $this->applyFilter($query, $request, 'article_uuid');
 
-        // Ricerca
+        // Search
         $this->applySearch($query, $request, [
             'order_production_number',
             'number_customer_reference_order',
@@ -177,11 +177,11 @@ class OrderRepository
         return Cache::remember($cacheKey, 900, function () use ($onlyWithOrders, $statusFilter) {
             $query = Article::active()->with('offer');
 
-            // Se vogliamo solo articoli con ordini (per filtri)
+            // If we want only articles with orders (for filters)
             if ($onlyWithOrders) {
                 $ordersQuery = Order::active();
 
-                // Se c'è un filtro per stati, applicarlo
+                // If there is status filter, apply it
                 if ($statusFilter !== null && ! empty($statusFilter)) {
                     $ordersQuery->whereIn('status', $statusFilter);
                 }
@@ -197,7 +197,7 @@ class OrderRepository
                 }
             }
 
-            // Ottenere clienti con ordini attivi (sempre, indipendentemente da onlyWithOrders)
+            // Get customers with active orders (always, regardless of onlyWithOrders)
             $customerUuids = Order::active()
                 ->whereHas('shippingAddress.customerDivision.customer')
                 ->with('shippingAddress.customerDivision.customer')
@@ -297,8 +297,8 @@ class OrderRepository
     {
         Cache::forget('order_form_options');
         Cache::forget('order_form_options_filter');
-        // Nota: Las variantes con statusFilter se limpiarán automáticamente después de 15 minutos
-        // In produzione con Redis/Memcached, usare cache tags sarebbe più efficiente per invalidare tutte le varianti
+        // Note: Variants with statusFilter are cleared automatically after 15 minutes
+        // In production with Redis/Memcached, cache tags would be more efficient to invalidate all variants
     }
 
     /**

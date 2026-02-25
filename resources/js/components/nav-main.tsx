@@ -14,6 +14,7 @@ import {
     SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
 import { useActiveUrl } from '@/hooks/use-active-url';
+import { useTranslations } from '@/hooks/use-translations';
 import { type NavGroup, type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import { ChevronRight } from 'lucide-react';
@@ -25,6 +26,7 @@ export function NavMain({
     items?: NavItem[];
     groups?: NavGroup[];
 }) {
+    const { t } = useTranslations();
     const { urlIsActive } = useActiveUrl();
 
     return (
@@ -85,7 +87,7 @@ export function NavMain({
 
             {items.length > 0 && (
                 <SidebarGroup className="px-2 py-0">
-                    <SidebarGroupLabel>Platform</SidebarGroupLabel>
+                    <SidebarGroupLabel>{t('nav.platform')}</SidebarGroupLabel>
                     <SidebarMenu>
                         {items.map((item) => (
                             <SidebarMenuItem key={item.title}>

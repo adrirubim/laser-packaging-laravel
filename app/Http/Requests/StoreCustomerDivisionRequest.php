@@ -35,11 +35,11 @@ class StoreCustomerDivisionRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'uuid.unique' => 'Questo UUID è già utilizzato.',
-            'customer_uuid.required' => 'Il Cliente è obbligatorio.',
-            'customer_uuid.exists' => 'Il Cliente selezionato non è valido.',
-            'name.required' => 'Il Nome è obbligatorio.',
-            'email.email' => 'Inserire un indirizzo email valido.',
+            'uuid.unique' => __('validation.uuid_unique'),
+            'customer_uuid.required' => __('validation.customer_required'),
+            'customer_uuid.exists' => __('validation.customer_exists'),
+            'name.required' => __('validation.name_required'),
+            'email.email' => __('validation.email_valid'),
         ];
     }
 }

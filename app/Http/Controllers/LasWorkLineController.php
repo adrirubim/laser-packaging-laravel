@@ -50,21 +50,21 @@ class LasWorkLineController extends Controller
             'code' => 'required|string|max:255|unique:offerlasworkline,code',
             'name' => 'required|string|max:255',
         ], [
-            'uuid.required' => 'L\'UUID è obbligatorio.',
-            'uuid.uuid' => 'L\'UUID deve essere un formato UUID valido.',
-            'uuid.unique' => 'Questo UUID è già utilizzato.',
-            'code.required' => 'Il Codice è obbligatorio.',
-            'code.unique' => 'Questo Codice è già utilizzato.',
-            'name.required' => 'Il Nome è obbligatorio.',
+            'uuid.required' => __('validation.uuid_required'),
+            'uuid.uuid' => __('validation.uuid_format'),
+            'uuid.unique' => __('validation.uuid_unique'),
+            'code.required' => __('validation.code_required'),
+            'code.unique' => __('validation.code_unique'),
+            'name.required' => __('validation.name_required'),
         ]);
 
         LasWorkLine::create($validated);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->offerRepository->clearFormOptionsCache();
 
         return redirect()->route('las-work-lines.index')
-            ->with('success', 'Linea di Lavoro LAS creata con successo.');
+            ->with('success', __('flash.las_work_line.created'));
     }
 
     public function show(LasWorkLine $lasWorkLine): Response
@@ -88,27 +88,27 @@ class LasWorkLineController extends Controller
             'code' => 'required|string|max:255|unique:offerlasworkline,code,'.$lasWorkLine->id,
             'name' => 'required|string|max:255',
         ], [
-            'uuid.uuid' => 'L\'UUID deve essere un formato UUID valido.',
-            'uuid.unique' => 'Questo UUID è già utilizzato.',
-            'code.required' => 'Il Codice è obbligatorio.',
-            'code.unique' => 'Questo Codice è già utilizzato.',
-            'name.required' => 'Il Nome è obbligatorio.',
+            'uuid.uuid' => __('validation.uuid_format'),
+            'uuid.unique' => __('validation.uuid_unique'),
+            'code.required' => __('validation.code_required'),
+            'code.unique' => __('validation.code_unique'),
+            'name.required' => __('validation.name_required'),
         ]);
 
         $lasWorkLine->update($validated);
 
         return redirect()->route('las-work-lines.index')
-            ->with('success', 'Linea di Lavoro LAS aggiornata con successo.');
+            ->with('success', __('flash.las_work_line.updated'));
     }
 
     public function destroy(LasWorkLine $lasWorkLine)
     {
         $lasWorkLine->update(['removed' => true]);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->offerRepository->clearFormOptionsCache();
 
         return redirect()->route('las-work-lines.index')
-            ->with('success', 'Linea di Lavoro LAS eliminata con successo.');
+            ->with('success', __('flash.las_work_line.deleted'));
     }
 }

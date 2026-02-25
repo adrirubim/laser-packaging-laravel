@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import { generateUUID } from '@/lib/utils/uuid';
 import lasFamilies from '@/routes/las-families/index';
@@ -23,6 +24,7 @@ type LasFamiliesCreateProps = {
 export default function LasFamiliesCreate({
     errors: serverErrors,
 }: LasFamiliesCreateProps) {
+    const { t } = useTranslations();
     const [uuid, setUuid] = useState<string>(generateUUID());
 
     const regenerateUuid = () => {
@@ -30,30 +32,36 @@ export default function LasFamiliesCreate({
     };
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: '/offers',
         },
         {
-            title: 'Famiglia LAS',
+            title: t('offer_las_families.page_title'),
             href: lasFamilies.index().url,
         },
         {
-            title: 'Crea',
+            title: t('offer_las_families.create.breadcrumb'),
             href: lasFamilies.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Crea Famiglia LAS" />
+            <Head title={t('offer_las_families.create.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Gestione Famiglia LAS</CardTitle>
-                                <CardDescription>Inserimento</CardDescription>
+                                <CardTitle>
+                                    {t('offer_las_families.form.card_title')}
+                                </CardTitle>
+                                <CardDescription>
+                                    {t(
+                                        'offer_las_families.create.card_description',
+                                    )}
+                                </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <Form
@@ -72,7 +80,7 @@ export default function LasFamiliesCreate({
                                                 <div className="grid gap-2">
                                                     <div className="flex items-center justify-between">
                                                         <Label htmlFor="uuid">
-                                                            UUID *
+                                                            {t('common.uuid')} *
                                                         </Label>
                                                         <Button
                                                             type="button"
@@ -83,7 +91,9 @@ export default function LasFamiliesCreate({
                                                             }
                                                             className="h-7 text-xs"
                                                         >
-                                                            Rigenera
+                                                            {t(
+                                                                'offer_las_families.uuid.regenerate',
+                                                            )}
                                                         </Button>
                                                     </div>
                                                     <Input
@@ -96,7 +106,9 @@ export default function LasFamiliesCreate({
                                                             )
                                                         }
                                                         required
-                                                        placeholder="UUID (es. 550e8400-e29b-41d4-a716-446655440000)"
+                                                        placeholder={t(
+                                                            'common.uuid_placeholder',
+                                                        )}
                                                         maxLength={36}
                                                         aria-describedby="uuid-help"
                                                     />
@@ -104,10 +116,9 @@ export default function LasFamiliesCreate({
                                                         id="uuid-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        UUID generato
-                                                        automaticamente. Puoi
-                                                        modificarlo manualmente
-                                                        se necessario.
+                                                        {t(
+                                                            'offer_las_families.uuid.help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.uuid}
@@ -116,13 +127,15 @@ export default function LasFamiliesCreate({
 
                                                 <div className="grid gap-2">
                                                     <Label htmlFor="code">
-                                                        Codice *
+                                                        {t('common.code')} *
                                                     </Label>
                                                     <Input
                                                         id="code"
                                                         name="code"
                                                         required
-                                                        placeholder="Codice Famiglia LAS"
+                                                        placeholder={t(
+                                                            'offer_las_families.form.code_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="code-help"
                                                     />
@@ -130,10 +143,9 @@ export default function LasFamiliesCreate({
                                                         id="code-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci il codice
-                                                        univoco della famiglia
-                                                        LAS (massimo 255
-                                                        caratteri).
+                                                        {t(
+                                                            'offer_las_families.form.code_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.code}
@@ -142,13 +154,18 @@ export default function LasFamiliesCreate({
 
                                                 <div className="grid gap-2">
                                                     <Label htmlFor="name">
-                                                        Nome *
+                                                        {t(
+                                                            'offer_las_families.form.name_label',
+                                                        )}{' '}
+                                                        *
                                                     </Label>
                                                     <Input
                                                         id="name"
                                                         name="name"
                                                         required
-                                                        placeholder="Nome Famiglia LAS"
+                                                        placeholder={t(
+                                                            'offer_las_families.form.name_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="name-help"
                                                     />
@@ -156,9 +173,9 @@ export default function LasFamiliesCreate({
                                                         id="name-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci il nome della
-                                                        famiglia LAS (massimo
-                                                        255 caratteri).
+                                                        {t(
+                                                            'offer_las_families.form.name_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.name}
@@ -171,8 +188,12 @@ export default function LasFamiliesCreate({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Creando...'
-                                                            : 'Crea Famiglia LAS'}
+                                                            ? t(
+                                                                  'offer_las_families.create.submitting',
+                                                              )
+                                                            : t(
+                                                                  'offer_las_families.create.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -184,7 +205,7 @@ export default function LasFamiliesCreate({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

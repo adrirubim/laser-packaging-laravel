@@ -16,6 +16,7 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import articles from '@/routes/articles/index';
 import { type BreadcrumbItem } from '@/types';
@@ -38,6 +39,7 @@ type CQModelsEditProps = {
 export default function CQModelsEdit({
     errors: serverErrors,
 }: CQModelsEditProps) {
+    const { t } = useTranslations();
     const { props } = usePage<CQModelsEditProps>();
     const cqModel = props.model;
     const [selectedFileName, setSelectedFileName] = useState<string | null>(
@@ -47,35 +49,43 @@ export default function CQModelsEdit({
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Articoli',
+            title: t('nav.articles'),
             href: articles.index().url,
         },
         {
-            title: 'Modelli CQ',
-            href: '/articles/cq-models',
+            title: t('articles.cq_models.title'),
+            href: articles.cqModels.index().url,
         },
         {
             title: cqModel.cod_model,
-            href: `/articles/cq-models/${cqModel.uuid}`,
+            href: articles.cqModels.show({ cqModel: cqModel.uuid }).url,
         },
         {
-            title: 'Modifica',
-            href: `/articles/cq-models/${cqModel.uuid}/edit`,
+            title: t('articles.cq_models.edit.breadcrumb'),
+            href: articles.cqModels.edit({ cqModel: cqModel.uuid }).url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Modifica Modello ${cqModel.cod_model}`} />
+            <Head
+                title={t('articles.cq_models.edit.page_title', {
+                    code: cqModel.cod_model,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Modifica Modello CQ</CardTitle>
+                                <CardTitle>
+                                    {t('articles.cq_models.edit.card_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Modifica i dettagli del modello
+                                    {t(
+                                        'articles.cq_models.edit.card_description',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -110,7 +120,9 @@ export default function CQModelsEdit({
                                                             htmlFor="cod_model"
                                                             required
                                                         >
-                                                            Codice Modello
+                                                            {t(
+                                                                'articles.cq_models.form.cod_model_label',
+                                                            )}
                                                         </FormLabel>
                                                         <Tooltip>
                                                             <TooltipTrigger
@@ -120,13 +132,9 @@ export default function CQModelsEdit({
                                                             </TooltipTrigger>
                                                             <TooltipContent>
                                                                 <p>
-                                                                    Il codice
-                                                                    modello è
-                                                                    proposto
-                                                                    automaticamente
-                                                                    ma può
-                                                                    essere
-                                                                    modificato
+                                                                    {t(
+                                                                        'articles.cq_models.form.cod_model_tooltip',
+                                                                    )}
                                                                 </p>
                                                             </TooltipContent>
                                                         </Tooltip>
@@ -141,10 +149,9 @@ export default function CQModelsEdit({
                                                         maxLength={255}
                                                     />
                                                     <p className="text-xs text-muted-foreground">
-                                                        Il codice modello è
-                                                        proposto automaticamente
-                                                        ma può essere
-                                                        modificato.
+                                                        {t(
+                                                            'articles.cq_models.form.cod_model_tooltip',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -158,7 +165,9 @@ export default function CQModelsEdit({
                                                         htmlFor="description_model"
                                                         required
                                                     >
-                                                        Descrizione Modello
+                                                        {t(
+                                                            'articles.cq_models.form.description_model_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="description_model"
@@ -179,13 +188,16 @@ export default function CQModelsEdit({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="filename">
-                                                        Allegato
+                                                        {t(
+                                                            'articles.cq_models.form.attachment_label',
+                                                        )}
                                                     </FormLabel>
                                                     {cqModel.filename && (
                                                         <div className="mb-2 rounded-md bg-muted p-2">
                                                             <p className="mb-1 text-xs text-muted-foreground">
-                                                                Allegato
-                                                                attuale:
+                                                                {t(
+                                                                    'articles.cq_models.edit.current_attachment',
+                                                                )}
                                                             </p>
                                                             <p className="font-mono text-sm">
                                                                 {
@@ -217,13 +229,18 @@ export default function CQModelsEdit({
                                                         className="text-xs text-muted-foreground"
                                                     >
                                                         {cqModel.filename
-                                                            ? 'Carica un nuovo allegato PDF per sostituire quello esistente (opzionale).'
-                                                            : 'Seleziona un allegato PDF da associare al modello (opzionale).'}
+                                                            ? t(
+                                                                  'articles.cq_models.edit.attachment_replace_help',
+                                                              )
+                                                            : t(
+                                                                  'articles.cq_models.edit.attachment_help',
+                                                              )}
                                                     </p>
                                                     {selectedFileName && (
                                                         <p className="text-xs text-muted-foreground">
-                                                            Nuovo allegato
-                                                            selezionato:{' '}
+                                                            {t(
+                                                                'articles.cq_models.edit.new_attachment_selected',
+                                                            )}{' '}
                                                             <span className="font-mono">
                                                                 {
                                                                     selectedFileName
@@ -244,8 +261,12 @@ export default function CQModelsEdit({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Aggiornando...'
-                                                            : 'Aggiorna Modello'}
+                                                            ? t(
+                                                                  'articles.cq_models.edit.submitting',
+                                                              )
+                                                            : t(
+                                                                  'articles.cq_models.edit.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -256,7 +277,7 @@ export default function CQModelsEdit({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

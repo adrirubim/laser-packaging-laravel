@@ -125,7 +125,7 @@ class OrderEmployeeControllerTest extends TestCase
             'employee_list' => [$employee1->uuid, $employee2->uuid],
         ]);
 
-        // Il metodo ora restituisce un redirect invece di JSON
+        // Method now returns redirect instead of JSON
         $response->assertRedirect(route('orders.show', $order->uuid));
         $response->assertSessionHas('success');
 
@@ -152,30 +152,30 @@ class OrderEmployeeControllerTest extends TestCase
         $employee2 = Employee::factory()->create();
         $employee3 = Employee::factory()->create();
 
-        // Creare assegnazione iniziale
+        // Create initial assignment
         OfferOrderEmployee::factory()->create([
             'order_uuid' => $order->uuid,
             'employee_uuid' => $employee1->uuid,
         ]);
 
-        // Actualizar asignaciones
+        // Update assignments
         $response = $this->post(route('order-employees.save-assignments'), [
             'order_uuid' => $order->uuid,
             'employee_list' => [$employee2->uuid, $employee3->uuid],
         ]);
 
-        // Il metodo ora restituisce un redirect invece di JSON
+        // Method now returns redirect instead of JSON
         $response->assertRedirect(route('orders.show', $order->uuid));
         $response->assertSessionHas('success');
 
-        // Verificar que employee1 fue removido
+        // Verify employee1 was removed
         $this->assertDatabaseHas('offerorderemployee', [
             'order_uuid' => $order->uuid,
             'employee_uuid' => $employee1->uuid,
             'removed' => true,
         ]);
 
-        // Verificar que employee2 y employee3 fueron agregados
+        // Verify employee2 and employee3 were added
         $this->assertDatabaseHas('offerorderemployee', [
             'order_uuid' => $order->uuid,
             'employee_uuid' => $employee2->uuid,

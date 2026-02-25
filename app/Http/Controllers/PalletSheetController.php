@@ -16,7 +16,7 @@ class PalletSheetController extends Controller
     {
         $query = PalletSheet::active();
 
-        // Validare e applicare filtri
+        // Validate and apply filters
         $validated = $request->validate([
             'search' => 'nullable|string|max:255',
             'per_page' => 'nullable|integer|min:1|max:100',
@@ -24,7 +24,7 @@ class PalletSheetController extends Controller
             'sort_order' => 'nullable|string|in:asc,desc',
         ]);
 
-        // Ricerca
+        // Search
         if (! empty($validated['search'])) {
             $search = $validated['search'];
             $query->where(function ($q) use ($search) {
@@ -73,7 +73,7 @@ class PalletSheetController extends Controller
                 'max:255',
                 function ($attribute, $value, $fail) {
                     if (PalletSheet::where('code', $value)->where('removed', false)->exists()) {
-                        $fail('Il codice esiste già.');
+                        $fail(__('validation.code_exists'));
                     }
                 },
             ],
@@ -85,9 +85,9 @@ class PalletSheetController extends Controller
             $request->validate([
                 'filename' => 'file|mimes:pdf|max:10240',
             ], [
-                'filename.file' => 'Il file caricato non è valido.',
+                'filename.file' => __('validation.file_invalid'),
                 'filename.mimes' => 'Il file deve essere un PDF.',
-                'filename.max' => 'Il file non può superare 10MB.',
+                'filename.max' => __('validation.file_max_10mb'),
             ]);
         }
 
@@ -108,7 +108,7 @@ class PalletSheetController extends Controller
         }
 
         return redirect()->route('articles.pallet-sheets.index')
-            ->with('success', 'Foglio pallet creato con successo.');
+            ->with('success', __('flash.pallet_sheet.created'));
     }
 
     /**
@@ -147,7 +147,7 @@ class PalletSheetController extends Controller
                         ->where('removed', false)
                         ->exists();
                     if ($exists) {
-                        $fail('Il codice esiste già.');
+                        $fail(__('validation.code_exists'));
                     }
                 },
             ],
@@ -159,9 +159,9 @@ class PalletSheetController extends Controller
             $request->validate([
                 'filename' => 'file|mimes:pdf|max:10240',
             ], [
-                'filename.file' => 'Il file caricato non è valido.',
+                'filename.file' => __('validation.file_invalid'),
                 'filename.mimes' => 'Il file deve essere un PDF.',
-                'filename.max' => 'Il file non può superare 10MB.',
+                'filename.max' => __('validation.file_max_10mb'),
             ]);
         }
 
@@ -191,7 +191,7 @@ class PalletSheetController extends Controller
         }
 
         return redirect()->route('articles.pallet-sheets.index')
-            ->with('success', 'Foglio pallet aggiornato con successo.');
+            ->with('success', __('flash.pallet_sheet.updated'));
     }
 
     /**
@@ -203,7 +203,7 @@ class PalletSheetController extends Controller
         $palletSheet->save();
 
         return redirect()->route('articles.pallet-sheets.index')
-            ->with('success', 'Foglio pallet eliminato con successo.');
+            ->with('success', __('flash.pallet_sheet.deleted'));
     }
 
     /**
@@ -212,14 +212,14 @@ class PalletSheetController extends Controller
     public function downloadFile(PalletSheet $palletSheet)
     {
         if (! $palletSheet->filename) {
-            return back()->withErrors(['error' => 'Nessun file trovato per questo foglio pallet.']);
+            return back()->withErrors(['error' => __('flash.file_not_found_pallet')]);
         }
 
         $path = $this->filePath($palletSheet);
         $filePath = $path.$palletSheet->filename;
 
         if (! file_exists($filePath)) {
-            return back()->withErrors(['error' => 'File non trovato.']);
+            return back()->withErrors(['error' => __('flash.file_not_found')]);
         }
 
         return response()->download($filePath, $palletSheet->filename);

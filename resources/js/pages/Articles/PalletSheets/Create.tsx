@@ -9,6 +9,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import articles from '@/routes/articles/index';
 import { type BreadcrumbItem } from '@/types';
@@ -21,34 +22,40 @@ type PalletSheetsCreateProps = {
 export default function PalletSheetsCreate({
     errors: serverErrors,
 }: PalletSheetsCreateProps) {
+    const { t } = useTranslations();
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Articoli',
+            title: t('nav.articles'),
             href: articles.index().url,
         },
         {
-            title: 'Fogli Pallet',
-            href: '/articles/pallet-sheets',
+            title: t('articles.pallet_sheets.title'),
+            href: articles.palletSheets.index().url,
         },
         {
-            title: 'Crea',
-            href: '/articles/pallet-sheets/create',
+            title: t('articles.pallet_sheets.create.breadcrumb'),
+            href: articles.palletSheets.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Crea Foglio Pallet" />
+            <Head title={t('articles.pallet_sheets.create.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Nuovo Foglio Pallet</CardTitle>
+                                <CardTitle>
+                                    {t(
+                                        'articles.pallet_sheets.create.card_title',
+                                    )}
+                                </CardTitle>
                                 <CardDescription>
-                                    Inserisci i dettagli per creare un nuovo
-                                    foglio pallet
+                                    {t(
+                                        'articles.pallet_sheets.create.card_description',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -70,13 +77,17 @@ export default function PalletSheetsCreate({
                                                         htmlFor="code"
                                                         required
                                                     >
-                                                        Codice
+                                                        {t(
+                                                            'articles.pallet_sheets.form.code_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="code"
                                                         name="code"
                                                         required
-                                                        placeholder="Codice univoco"
+                                                        placeholder={t(
+                                                            'articles.pallet_sheets.form.code_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                     />
                                                     <InputError
@@ -89,13 +100,17 @@ export default function PalletSheetsCreate({
                                                         htmlFor="description"
                                                         required
                                                     >
-                                                        Descrizione
+                                                        {t(
+                                                            'articles.pallet_sheets.form.description_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="description"
                                                         name="description"
                                                         required
-                                                        placeholder="Descrizione del foglio pallet"
+                                                        placeholder={t(
+                                                            'articles.pallet_sheets.form.description_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                     />
                                                     <InputError
@@ -107,7 +122,9 @@ export default function PalletSheetsCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="filename">
-                                                        Allegato
+                                                        {t(
+                                                            'articles.pallet_sheets.form.attachment_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="filename"
@@ -121,10 +138,9 @@ export default function PalletSheetsCreate({
                                                         id="filename-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Seleziona un allegato
-                                                        PDF da associare al
-                                                        foglio pallet
-                                                        (opzionale).
+                                                        {t(
+                                                            'articles.pallet_sheets.form.attachment_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -139,8 +155,12 @@ export default function PalletSheetsCreate({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Creando...'
-                                                            : 'Crea Foglio Pallet'}
+                                                            ? t(
+                                                                  'articles.pallet_sheets.create.submitting',
+                                                              )
+                                                            : t(
+                                                                  'articles.pallet_sheets.create.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -152,7 +172,7 @@ export default function PalletSheetsCreate({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

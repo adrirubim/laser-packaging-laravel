@@ -9,6 +9,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import offerSeasonalities from '@/routes/offer-seasonalities/index';
 import { type BreadcrumbItem } from '@/types';
@@ -29,13 +30,14 @@ export default function OfferSeasonalitiesEdit({
     seasonality,
     errors: serverErrors,
 }: OfferSeasonalitiesEditProps) {
+    const { t } = useTranslations();
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: '/offers',
         },
         {
-            title: 'Stagionalità',
+            title: t('offer_seasonalities.page_title'),
             href: offerSeasonalities.index().url,
         },
         {
@@ -45,7 +47,7 @@ export default function OfferSeasonalitiesEdit({
             }).url,
         },
         {
-            title: 'Modifica',
+            title: t('offer_seasonalities.edit.breadcrumb'),
             href: offerSeasonalities.edit({
                 offerSeasonality: seasonality.uuid,
             }).url,
@@ -54,16 +56,24 @@ export default function OfferSeasonalitiesEdit({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Modifica Stagionalità ${seasonality.name}`} />
+            <Head
+                title={t('offer_seasonalities.edit.page_title', {
+                    name: seasonality.name,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Modifica Stagionalità</CardTitle>
+                                <CardTitle>
+                                    {t('offer_seasonalities.edit.card_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Aggiorna le informazioni della stagionalità.
+                                    {t(
+                                        'offer_seasonalities.edit.card_description',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -104,7 +114,9 @@ export default function OfferSeasonalitiesEdit({
                                                         htmlFor="name"
                                                         required
                                                     >
-                                                        Nome
+                                                        {t(
+                                                            'offer_seasonalities.form.name_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="name"
@@ -113,7 +125,9 @@ export default function OfferSeasonalitiesEdit({
                                                             seasonality.name
                                                         }
                                                         required
-                                                        placeholder="Nome Stagionalità"
+                                                        placeholder={t(
+                                                            'offer_seasonalities.form.name_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={allErrors.name}
@@ -126,8 +140,12 @@ export default function OfferSeasonalitiesEdit({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Aggiornando...'
-                                                            : 'Aggiorna Stagionalità'}
+                                                            ? t(
+                                                                  'offer_seasonalities.edit.submitting',
+                                                              )
+                                                            : t(
+                                                                  'offer_seasonalities.edit.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -143,7 +161,7 @@ export default function OfferSeasonalitiesEdit({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

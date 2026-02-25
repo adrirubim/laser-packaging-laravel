@@ -25,7 +25,7 @@ class PalletTypeController extends Controller
     {
         $query = PalletType::active();
 
-        // Ricerca
+        // Search
         if ($request->has('search')) {
             $search = $request->get('search');
             $query->where(function ($q) use ($search) {
@@ -63,11 +63,11 @@ class PalletTypeController extends Controller
 
         $palletType = PalletType::create($validated);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->articleRepository->clearFormOptionsCache();
 
         return redirect()->route('pallet-types.index')
-            ->with('success', 'Tipo di pallet creato con successo.');
+            ->with('success', __('flash.pallet_type.created'));
     }
 
     /**
@@ -99,11 +99,11 @@ class PalletTypeController extends Controller
     {
         $palletType->update($request->validated());
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->articleRepository->clearFormOptionsCache();
 
         return redirect()->route('pallet-types.index')
-            ->with('success', 'Tipo di pallet aggiornato con successo.');
+            ->with('success', __('flash.pallet_type.updated'));
     }
 
     /**
@@ -113,10 +113,10 @@ class PalletTypeController extends Controller
     {
         $palletType->update(['removed' => true]);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->articleRepository->clearFormOptionsCache();
 
         return redirect()->route('pallet-types.index')
-            ->with('success', 'Tipo di pallet eliminato con successo.');
+            ->with('success', __('flash.pallet_type.deleted'));
     }
 }

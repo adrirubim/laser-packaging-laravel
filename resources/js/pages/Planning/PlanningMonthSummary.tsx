@@ -1,3 +1,4 @@
+import { useTranslations } from '@/hooks/use-translations';
 import {
     Fragment,
     memo,
@@ -53,6 +54,7 @@ const PlanningMonthSummary = memo(function PlanningMonthSummary({
     onEmptyGoToday,
     onEmptyChangeRange,
 }: PlanningMonthSummaryProps) {
+    const { t } = useTranslations();
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [hasHorizontalOverflow, setHasHorizontalOverflow] = useState(false);
 
@@ -88,13 +90,12 @@ const PlanningMonthSummary = memo(function PlanningMonthSummary({
                         id="planning-month-summary-caption"
                         className="sr-only"
                     >
-                        Riepilogo mensile di pianificazione per linea di lavoro
-                        e giorno.
+                        {t('planning.month_summary_caption')}
                     </caption>
                     <thead className="sticky top-0 z-10 border-b border-border bg-card">
                         <tr>
                             <th className="sticky left-0 z-20 bg-card px-2 py-2 text-left text-xs font-semibold text-muted-foreground">
-                                Linea
+                                {t('planning.column_line')}
                             </th>
                             {rangeDays.map((day) => (
                                 <th
@@ -108,7 +109,7 @@ const PlanningMonthSummary = memo(function PlanningMonthSummary({
                                             openDay(day.dateStr, 'hour')
                                         }
                                         disabled={loading}
-                                        title="Apri dettaglio giorno"
+                                        title={t('planning.open_day_detail')}
                                     >
                                         {day.label}
                                     </button>
@@ -145,10 +146,7 @@ const PlanningMonthSummary = memo(function PlanningMonthSummary({
                                     className="px-3 py-6 text-center text-sm text-muted-foreground"
                                 >
                                     <div className="space-y-3">
-                                        <p>
-                                            Nessuna linea LAS attiva nel periodo
-                                            selezionato.
-                                        </p>
+                                        <p>{t('planning.no_lines_active')}</p>
                                         <div className="flex justify-center gap-3">
                                             {onEmptyGoToday ? (
                                                 <button
@@ -156,7 +154,7 @@ const PlanningMonthSummary = memo(function PlanningMonthSummary({
                                                     className="rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium shadow-sm hover:bg-accent hover:text-accent-foreground"
                                                     onClick={onEmptyGoToday}
                                                 >
-                                                    Vai a oggi
+                                                    {t('planning.go_today')}
                                                 </button>
                                             ) : null}
                                             {onEmptyChangeRange ? (
@@ -165,7 +163,9 @@ const PlanningMonthSummary = memo(function PlanningMonthSummary({
                                                     className="rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium shadow-sm hover:bg-accent hover:text-accent-foreground"
                                                     onClick={onEmptyChangeRange}
                                                 >
-                                                    Cambia periodo
+                                                    {t(
+                                                        'planning.change_period',
+                                                    )}
                                                 </button>
                                             ) : null}
                                         </div>
@@ -203,7 +203,9 @@ const PlanningMonthSummary = memo(function PlanningMonthSummary({
                                                                 )
                                                             }
                                                             disabled={loading}
-                                                            title="Apri dettaglio giorno"
+                                                            title={t(
+                                                                'planning.open_day_detail',
+                                                            )}
                                                         >
                                                             <BoardCell
                                                                 value={
@@ -259,7 +261,9 @@ const PlanningMonthSummary = memo(function PlanningMonthSummary({
                                                                             disabled={
                                                                                 loading
                                                                             }
-                                                                            title="Apri dettaglio giorno"
+                                                                            title={t(
+                                                                                'planning.open_day_detail',
+                                                                            )}
                                                                         >
                                                                             <BoardCell
                                                                                 value={
@@ -287,7 +291,7 @@ const PlanningMonthSummary = memo(function PlanningMonthSummary({
                                         className="border-t-2 border-border bg-muted/40 align-middle [content-visibility:auto]"
                                     >
                                         <td className="sticky left-0 z-10 bg-muted/50 px-2 py-2 text-xs font-semibold text-foreground shadow-sm">
-                                            {row.label}
+                                            {t(`planning.summary.${row.id}`)}
                                         </td>
                                         {rangeDays.map((day) => {
                                             if (day.isWeekend) {
@@ -296,7 +300,9 @@ const PlanningMonthSummary = memo(function PlanningMonthSummary({
                                                         key={day.dateStr}
                                                         className="px-1 py-2 text-center text-xs text-muted-foreground"
                                                     >
-                                                        —
+                                                        {t(
+                                                            'common.empty_value',
+                                                        )}
                                                     </td>
                                                 );
                                             }
@@ -446,7 +452,7 @@ const PlanningMonthSummary = memo(function PlanningMonthSummary({
                     role="status"
                     aria-live="polite"
                 >
-                    Scorri per vedere più colonne
+                    {t('planning.scroll_more_columns')}
                 </p>
             ) : null}
         </div>

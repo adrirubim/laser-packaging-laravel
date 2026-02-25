@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import criticalIssues from '@/routes/critical-issues/index';
 import { type BreadcrumbItem } from '@/types';
@@ -31,10 +32,11 @@ export default function CriticalIssuesEdit({
     criticalIssue,
     errors: serverErrors,
 }: CriticalIssuesEditProps) {
+    const { t } = useTranslations();
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Criticità',
+            title: t('critical_issues.breadcrumb'),
             href: criticalIssues.index().url,
         },
         {
@@ -43,7 +45,7 @@ export default function CriticalIssuesEdit({
                 .url,
         },
         {
-            title: 'Modifica',
+            title: t('critical_issues.edit.breadcrumb'),
             href: criticalIssues.edit({ criticalIssue: criticalIssue.uuid })
                 .url,
         },
@@ -51,16 +53,22 @@ export default function CriticalIssuesEdit({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Modifica Criticità ${criticalIssue.name}`} />
+            <Head
+                title={t('critical_issues.edit.page_title', {
+                    name: criticalIssue.name,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Modifica Criticità</CardTitle>
+                                <CardTitle>
+                                    {t('critical_issues.edit.card_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Aggiorna le informazioni della criticità.
+                                    {t('critical_issues.edit.card_description')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -83,7 +91,9 @@ export default function CriticalIssuesEdit({
                                             <>
                                                 <div className="grid gap-2">
                                                     <Label htmlFor="uuid">
-                                                        UUID
+                                                        {t(
+                                                            'critical_issues.show.fields.uuid',
+                                                        )}
                                                     </Label>
                                                     <Input
                                                         id="uuid"
@@ -98,7 +108,9 @@ export default function CriticalIssuesEdit({
 
                                                 <div className="grid gap-2">
                                                     <Label htmlFor="name">
-                                                        Nome Criticità *
+                                                        {t(
+                                                            'critical_issues.form.name_label',
+                                                        )}
                                                     </Label>
                                                     <Input
                                                         id="name"
@@ -107,7 +119,9 @@ export default function CriticalIssuesEdit({
                                                         defaultValue={
                                                             criticalIssue.name
                                                         }
-                                                        placeholder="Nome Criticità"
+                                                        placeholder={t(
+                                                            'critical_issues.form.name_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="name-help"
                                                     />
@@ -115,9 +129,9 @@ export default function CriticalIssuesEdit({
                                                         id="name-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci il nome della
-                                                        criticità (massimo 255
-                                                        caratteri).
+                                                        {t(
+                                                            'critical_issues.form.name_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.name}
@@ -130,8 +144,12 @@ export default function CriticalIssuesEdit({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Aggiornando...'
-                                                            : 'Aggiorna Criticità'}
+                                                            ? t(
+                                                                  'critical_issues.edit.submitting',
+                                                              )
+                                                            : t(
+                                                                  'critical_issues.edit.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -142,7 +160,7 @@ export default function CriticalIssuesEdit({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

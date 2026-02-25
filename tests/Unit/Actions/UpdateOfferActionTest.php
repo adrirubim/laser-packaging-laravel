@@ -51,7 +51,7 @@ class UpdateOfferActionTest extends TestCase
         $operationA = OfferOperation::factory()->create();
         $operationB = OfferOperation::factory()->create();
 
-        // Operación existente vinculada al offer
+        // Existing operation linked to offer
         $existingList = OfferOperationList::factory()->create([
             'offer_uuid' => $offer->uuid,
             'offeroperation_uuid' => $operationA->uuid,
@@ -59,7 +59,7 @@ class UpdateOfferActionTest extends TestCase
             'removed' => false,
         ]);
 
-        // Fake simple para no depender de la lógica real de servicios/repos
+        // Simple fake to avoid depending on real service/repo logic
         $fakeNumberService = new class extends OfferNumberService
         {
             public function __construct() {}

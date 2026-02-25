@@ -47,19 +47,19 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Seeder de datos de prueba para probar todas las funciones de la aplicación.
+ * Test data seeder to exercise all application functions.
  *
- * Cobertura principal:
- * - Clientes, divisiones, direcciones de envío, proveedores
- * - Empleados, contratos, tipos de valor, materiales, maquinaria, tipos pallet
- * - Categorías artículo, instrucciones (IC/IO/IP), ModelSCQ, CriticalIssue, PalletSheet
- * - Ofertas (actividades, sectores, estacionalidad, familias LAS, recursos, tipos orden, tipos oferta, operaciones)
- * - Artículos con relaciones (instrucciones, materiales, maquinaria, críticos, Verifica Consumi)
- * - Órdenes en todos los estados: Pianificato (0), In Allestimento (1), Lanciato (2), In Avanzamento (3), Sospese (4), Evaso (5), Saldato (6)
- * - ProductionOrderProcessing, OfferOrderState, asignaciones empleado-orden
+ * Main coverage:
+ * - Customers, divisions, shipping addresses, suppliers
+ * - Employees, contracts, value types, materials, machinery, pallet types
+ * - Article categories, instructions (IC/IO/IP), ModelSCQ, CriticalIssue, PalletSheet
+ * - Offers (activities, sectors, seasonality, LAS families, resources, order types, offer types, operations)
+ * - Articles with relations (instructions, materials, machinery, criticals, Verifica Consumi)
+ * - Orders in all states: Pianificato (0), In Allestimento (1), Lanciato (2), In Avanzamento (3), Sospese (4), Evaso (5), Saldato (6)
+ * - ProductionOrderProcessing, OfferOrderState, employee-order assignments
  *
- * Descargas: se crean archivos placeholder en storage para que funcionen las descargas
- * (packaging/operational/palletization instructions, ModelSCQ, PalletSheet, line_layout artículo, operaciones oferta).
+ * Downloads: placeholder files created in storage so downloads work
+ * (packaging/operational/palletization instructions, ModelSCQ, PalletSheet, article line_layout, offer operations).
  */
 class TestDataSeeder extends Seeder
 {
@@ -83,7 +83,7 @@ class TestDataSeeder extends Seeder
         // Disattivare verifica chiavi esterne temporaneamente (PostgreSQL)
         DB::statement('SET session_replication_role = replica;');
 
-        // Eliminar en orden de dependencias: tablas hijas/pivot antes que padres
+        // Delete in dependency order: child/pivot tables before parent tables
         // Usamos DB::table() con truncate para limpiar completamente y evitar los scopes de SoftDeletes
         DB::table('productionorderprocessing')->truncate();
         if (Schema::hasTable('productionplanning')) {
@@ -143,12 +143,12 @@ class TestDataSeeder extends Seeder
         $this->command->info('📦 Creando clientes...');
         $customers = collect();
 
-        // Distribución temporal de clientes para que el filtro de fecha del dashboard
-        // muestre diferencias claras entre "Tutto il tempo" / "Oggi" / "Questa settimana" / "Questo mese".
-        // - 2 clientes antiguos (hace 2–3 años) → sólo visibles con "Tutto il tempo".
-        // - 2 clientes de meses pasados dentro del último año.
-        // - 1 cliente creado este mes (pero no hoy).
-        // El cliente demo CLI-DEMO-ALL se crea justo después (lo consideramos "actual").
+        // Temporal distribution of customers so dashboard date filter
+        // shows clear differences between "Tutto il tempo" / "Oggi" / "Questa settimana" / "Questo mese".
+        // - 2 old customers (2–3 years ago) → only visible with "Tutto il tempo".
+        // - 2 customers from past months within last year.
+        // - 1 customer created this month (but not today).
+        // Demo customer CLI-DEMO-ALL is created right after (we consider it "current").
         $oldCustomers = Customer::factory()->count(2)->create([
             'created_at' => now()->subYears(3)->subMonths(2),
         ]);
@@ -163,7 +163,7 @@ class TestDataSeeder extends Seeder
             'created_at' => now()->startOfMonth()->addDays(2),
         ]);
         $customers->push($thisMonthCustomer);
-        // Cliente DEMO-ALL: tutti i campi per verificare gli input (Clienti → cercare CLI-DEMO-ALL)
+        // DEMO-ALL customer: all fields to verify inputs (Customers → search CLI-DEMO-ALL)
         $demoCustomer = Customer::factory()->create([
             'code' => 'CLI-DEMO-ALL',
             'company_name' => 'Demo All - Tutti i campi clienti',
@@ -292,7 +292,7 @@ class TestDataSeeder extends Seeder
         $employees->push($bianchi);
         $this->command->info("   ✅ {$employees->count()} empleados creados (demo: EMP-DEMO-ALL, Rossi, Bianchi)");
 
-        // 5.1. Crear Contratos de Empleados (pay_level 0-8, parità legacy; alcuni a tempo indeterminato)
+        // 5.1. Create Employee Contracts (pay_level 0-8, legacy parity; some indefinite)
         $this->command->info('📝 Creando contratos de empleados...');
         $contracts = collect();
         foreach ($employees as $employee) {
@@ -312,7 +312,7 @@ class TestDataSeeder extends Seeder
                 }
 
                 $supplierUuid = $suppliers->random()->uuid;
-                // Livelli 0-8 (D1..A1) come in legacy; distribuzione più realistica (più bassi che alti)
+                // Levels 0-8 (D1..A1) as in legacy; more realistic distribution (more low than high)
                 $payLevel = $faker->numberBetween(0, 8);
 
                 $contract = EmployeeContract::factory()->create([
@@ -403,7 +403,7 @@ class TestDataSeeder extends Seeder
         $palletTypes = $palletTypes->merge(collect([$demoPalletType]));
         $this->command->info("   ✅ {$materials->count()} materiales, {$machinery->count()} maquinarias, {$palletTypes->count()} tipos de pallet creados");
 
-        // 7. Creare categorie di articoli
+        // 7. Create article categories
         $this->command->info('📋 Creando categorías de artículos...');
         $categories = ArticleCategory::factory()->count(5)->create();
         // Categoria articolo DEMO-ALL (Articoli > Categorie)
@@ -414,7 +414,7 @@ class TestDataSeeder extends Seeder
         $categories = $categories->merge(collect([$demoArticleCategory]));
         $this->command->info("   ✅ {$categories->count()} categorías creadas");
 
-        // 7.1. Creare istruzioni e modelli relativi agli articoli
+        // 7.1. Create article-related instructions and models
         $this->command->info('📄 Creando instrucciones y modelos para artículos...');
         $articleICs = ArticleIC::factory()->count(10)->create();
         // Istruzione di Confezionamento DEMO-ALL (Articoli > Istruzioni di confezionamento) – Cerca "Demo"
@@ -463,7 +463,7 @@ class TestDataSeeder extends Seeder
         ]);
         $modelSCQs = $modelSCQs->merge(collect([$demoModelSCQ]));
 
-        // Crear archivos placeholder en storage para que las descargas funcionen con datos de prueba
+        // Create placeholder files in storage so downloads work with test data
         $placeholderContent = "File di test generato dal seeder. Placeholder per download.\n";
         foreach (['packaging-instructions' => $articleICs, 'operational-instructions' => $articleIOs, 'palletization-instructions' => $articleIPs] as $dir => $collection) {
             $basePath = storage_path('app/'.$dir);
@@ -480,7 +480,7 @@ class TestDataSeeder extends Seeder
             }
         }
 
-        // Crear directorios y archivos placeholder para ModelSCQ
+        // Create directories and placeholder files for ModelSCQ
         foreach ($modelSCQs as $model) {
             if ($model->filename) {
                 $directory = storage_path('app/modelsCQ/'.$model->uuid);
@@ -510,7 +510,7 @@ class TestDataSeeder extends Seeder
         ]);
         $palletSheets = $palletSheets->merge(collect([$demoPalletSheet]));
 
-        // Crear archivos placeholder para PalletSheet (foglioPallet/{uuid}/filename)
+        // Create placeholder files for PalletSheet (foglioPallet/{uuid}/filename)
         foreach ($palletSheets as $sheet) {
             if (! empty($sheet->filename)) {
                 $directory = storage_path('app/foglioPallet/'.$sheet->uuid);
@@ -530,7 +530,7 @@ class TestDataSeeder extends Seeder
         // 7.2. Crear datos relacionados con Ofertas
         $this->command->info('💼 Creando datos relacionados con ofertas...');
         $activities = OfferActivity::factory()->count(5)->create();
-        // Attività DEMO-ALL: per Offerte/Attività (cercare "Demo All")
+        // DEMO-ALL activity: for Offers/Activities (search "Demo All")
         $demoActivity = OfferActivity::factory()->create([
             'name' => 'Demo All - Attività',
             'removed' => false,
@@ -544,7 +544,7 @@ class TestDataSeeder extends Seeder
         ]);
         $sectors = $sectors->merge(collect([$demoSector]));
         $seasonalities = OfferSeasonality::factory()->count(4)->create();
-        // Stagionalità DEMO-ALL (Offerte > Stagionalità)
+        // DEMO-ALL seasonality (Offers > Seasonality)
         $demoSeasonality = OfferSeasonality::factory()->create([
             'name' => 'Demo All - Stagionalità',
             'removed' => false,
@@ -575,7 +575,7 @@ class TestDataSeeder extends Seeder
         ]);
         $lsResources = $lsResources->merge(collect([$demoLsResource]));
         $orderTypes = OfferTypeOrder::factory()->count(5)->create();
-        // Tipi di ordine DEMO-ALL (Offerte > Tipi di ordine)
+        // DEMO-ALL order types (Offers > Order types)
         $demoOrderType = OfferTypeOrder::factory()->create([
             'code' => 'ORD-TIPO-DEMO',
             'name' => 'Demo All - Tipi ordine',
@@ -639,7 +639,7 @@ class TestDataSeeder extends Seeder
         $this->command->info('💼 Creando ofertas...');
         $offers = collect();
 
-        // Ottenere l'ultimo numero di offerta esistente per evitare conflitti
+        // Get last existing offer number to avoid conflicts
         $lastOfferNumber = Offer::where('offer_number', 'like', date('Y').'_%')
             ->orderBy('offer_number', 'desc')
             ->value('offer_number');
@@ -665,9 +665,9 @@ class TestDataSeeder extends Seeder
                 $nextOfferSequence++;
 
                 // Distribuir temporalmente las ofertas:
-                // - Si el cliente es "antiguo": ofertas hace 1–2 años.
-                // - Si el cliente es "del último año": ofertas hace algunos meses.
-                // - Si el cliente es "de este mes" o demo: ofertas en este mes y algunos días de hoy.
+                // - If customer is "old": offers 1–2 years ago.
+                // - If customer is "from last year": offers some months ago.
+                // - If customer is "from this month" or demo: offers this month and some days from today.
                 $createdAt = now();
                 if ($customer->created_at < now()->subYears(2)) {
                     $createdAt = now()->subYears(2)->subMonths(rand(0, 6));
@@ -719,7 +719,7 @@ class TestDataSeeder extends Seeder
                     'created_at' => $createdAt,
                 ]);
 
-                // Crear operaciones para esta oferta (OfferOperationList)
+                // Create operations for this offer (OfferOperationList)
                 $operationCount = rand(2, 5);
                 $selectedOperations = $operations->random(min($operationCount, $operations->count()));
                 foreach ($selectedOperations as $operation) {
@@ -794,11 +794,11 @@ class TestDataSeeder extends Seeder
         $this->command->info('   📌 Tipi offerta, Famiglie LAS, Linee lavoro, Risorse L&S, Tipi ordine: cercare "Demo All" nelle rispettive sezioni Offerte');
         $this->command->info('   📌 Categorie operazioni / Operazioni: cercare "Demo All" o "OP-DEMO-ALL" in Offerte > Categorie operazioni, Offerte > Operazioni');
 
-        // 9. Creare articoli
+        // 9. Create articles
         $this->command->info('📦 Creando artículos...');
         $articles = collect();
 
-        // Articolo DEMO con TUTTI i campi compilati per verificare tutti gli input (Show/Edit/Duplica)
+        // DEMO article with ALL fields filled to verify all inputs (Show/Edit/Duplicate)
         if ($demoOffer && $articleICs->isNotEmpty() && $articleIOs->isNotEmpty() && $articleIPs->isNotEmpty()) {
             $demoArticle = Article::factory()->create([
                 'offer_uuid' => $demoOffer->uuid,
@@ -880,7 +880,7 @@ class TestDataSeeder extends Seeder
                 'uuid' => \Illuminate\Support\Str::uuid()->toString(),
                 'removed' => false,
             ]);
-            // Materiali, macchinari e criticità per il demo (includere sempre i record Demo All)
+            // Materials, machinery and criticals for demo (always include Demo All records)
             $demoArticle->materials()->attach($demoMaterial->uuid, [
                 'uuid' => \Illuminate\Support\Str::uuid()->toString(),
                 'removed' => false,
@@ -966,16 +966,16 @@ class TestDataSeeder extends Seeder
                     'client_approval_employee' => $hasClientApproval ? $employees->random()?->uuid : null,
                     'client_approval_date' => $hasClientApproval ? $faker->dateTimeBetween('-1 year', 'now') : null,
                     'client_approval_notes' => $hasClientApproval && $faker->boolean(30) ? $faker->text(200) : null,
-                    'check_approval' => $hasClientApproval ? 1 : 0, // Deve coincidere con client_approval_checkbox secondo il legacy
+                    'check_approval' => $hasClientApproval ? 1 : 0, // Must match client_approval_checkbox per legacy
                 ]);
 
-                // Pivot offerarticles: l'app usa $offer->articles() per validare e elencare gli articoli dell'offerta
+                // Pivot offerarticles: app uses $offer->articles() to validate and list offer articles
                 $offer->articles()->attach($article->uuid, [
                     'uuid' => \Illuminate\Support\Str::uuid()->toString(),
                     'removed' => false,
                 ]);
 
-                // Assegnare SEMPRE almeno 1 IC, 1 IO, 1 IP a ogni articolo (affinché in Visualizza compaiano le 3 schede)
+                // ALWAYS assign at least 1 IC, 1 IO, 1 IP to each article (so View shows all 3 tabs)
                 if ($articleICs->isNotEmpty()) {
                     $one = $articleICs->take(1);
                     $more = $articleICs->count() > 1 ? $articleICs->random(min(rand(0, 2), $articleICs->count() - 1))->unique('uuid') : collect();
@@ -1029,7 +1029,7 @@ class TestDataSeeder extends Seeder
                     }
                 }
 
-                // CriticalIssues: assegnare 0-2 problemi critici casuali (non tutti gli articoli hanno problemi)
+                // CriticalIssues: assign 0-2 random critical issues (not all articles have issues)
                 if ($criticalIssues->isNotEmpty() && $faker->boolean(60)) { // 60% de probabilidad
                     $selectedCriticalIssues = $criticalIssues->random(min(rand(1, 2), $criticalIssues->count()));
                     foreach ($selectedCriticalIssues as $criticalIssue) {
@@ -1043,13 +1043,12 @@ class TestDataSeeder extends Seeder
                 $articles->push($article);
             }
         }
-        // Distribuir temporalmente los artículos para que el filtro de fecha del dashboard
-        // afecte claramente a la card de "Articoli":
-        // - 1/3 artículos con created_at hace 1–2 años.
-        // - 1/3 artículos en los últimos 6 meses.
-        // - 1/3 artículos este mes (y algunos hoy).
+        // Temporally distribute articles so dashboard date filter clearly affects "Articoli" card:
+        // - 1/3 articles with created_at 1–2 years ago.
+        // - 1/3 articles in last 6 months.
+        // - 1/3 articles this month (and some today).
         foreach ($articles as $index => $article) {
-            // Saltar el artículo demo; lo forzamos explícitamente a "oggi" más abajo
+            // Skip demo article; we force it to "oggi" explicitly below
             if ($article->cod_article_las === 'LAS-DEMO-ALL') {
                 continue;
             }
@@ -1095,7 +1094,7 @@ class TestDataSeeder extends Seeder
             if ($materials->isEmpty()) {
                 continue;
             }
-            // Circa 40% degli articoli avranno 1-3 materiali di verifica
+            // ~40% of articles will have 1-3 check materials
             if ($faker->boolean(40)) {
                 $selectedMaterials = $materials->random(min(rand(1, 3), $materials->count()));
                 foreach ($selectedMaterials as $material) {
@@ -1112,7 +1111,7 @@ class TestDataSeeder extends Seeder
                 }
             }
         }
-        // Assicurare che l'articolo demo LAS-DEMO-ALL abbia almeno 2 Verifica Consumi (e 2 Materiali di Consumo) per verificare il flusso
+        // Ensure demo article LAS-DEMO-ALL has at least 2 Verifica Consumi (and 2 Materiali di Consumo) to verify the flow
         $demoArticle = $articles->firstWhere('cod_article_las', 'LAS-DEMO-ALL');
         if ($demoArticle && $materials->isNotEmpty()) {
             $existingChecks = ArticleCheckMaterial::where('article_uuid', $demoArticle->uuid)->where('removed', false)->get();
@@ -1136,12 +1135,12 @@ class TestDataSeeder extends Seeder
         }
         $this->command->info("   ✅ {$checkMaterialCount} registri Verifica Consumi Materiali creati");
 
-        // 10. Crear Órdenes con diferentes status
+        // 10. Create Orders with different statuses
         $this->command->info('📋 Creando órdenes con diferentes status...');
 
         $orderProductionNumberService = app(OrderProductionNumberService::class);
 
-        // Assicurare che tutte le divisioni abbiano almeno un indirizzo di spedizione
+        // Ensure all divisions have at least one shipping address
         $this->command->info('📍 Verificando direcciones de envío...');
         foreach ($divisions as $division) {
             if ($shippingAddresses->where('customerdivision_uuid', $division->uuid)->isEmpty()) {
@@ -1153,13 +1152,13 @@ class TestDataSeeder extends Seeder
         }
         $this->command->info("   ✅ Total direcciones: {$shippingAddresses->count()}");
 
-        // Convertir Collection a Eloquent Collection y cargar relaciones
+        // Convert Collection to Eloquent Collection and load relationships
         $articleUuids = $articles->pluck('uuid')->toArray();
         $articlesWithRelations = Article::whereIn('uuid', $articleUuids)
             ->with('offer.customerDivision')
             ->get();
 
-        // Filtrare articoli che hanno offerta e divisione valide
+        // Filter articles that have valid offer and division
         $validArticles = $articlesWithRelations->filter(function ($article) use ($shippingAddresses) {
             if (! $article->offer || ! $article->offer->customerDivision) {
                 return false;
@@ -1177,11 +1176,11 @@ class TestDataSeeder extends Seeder
 
         $this->command->info("   ✅ Artículos válidos para órdenes: {$validArticles->count()}");
 
-        // Órdenes: tutti gli stati (0–6) e varietà di date di consegna per simulare la realtà.
-        // Negli stati aperti (0–4): prima ordine in ritardo (icona rossa), seconda urgente 0–3 giorni (gialla), altre normali (verde).
-        // Evaso/Saldato: date sempre nel passato (in lista icona verde per ordini chiusi).
+        // Orders: all states (0–6) and variety of delivery dates to simulate reality.
+        // In open states (0–4): first order overdue (red icon), second urgent 0–3 days (yellow), others normal (green).
+        // Evaso/Saldato: dates always in the past (green icon in list for closed orders).
 
-        // Órdenes Pianificato (status 0) – Variedad de fechas: in ritardo, urgente, normal (simula realidad)
+        // Orders Pianificato (status 0) – Date variety: delayed, urgent, normal (simulates reality)
         $ordersPianificato = collect();
         for ($i = 0; $i < min(5, $validArticles->count()); $i++) {
             $article = $validArticles->random();
@@ -1193,9 +1192,9 @@ class TestDataSeeder extends Seeder
             }
             $quantity = rand(100, 1000);
             if ($i === 0) {
-                $deliveryDate = now()->subDays(rand(2, 14)); // In ritardo → icona rossa in lista
+                $deliveryDate = now()->subDays(rand(2, 14)); // Overdue → red icon in list
             } elseif ($i === 1) {
-                $deliveryDate = now()->addDays(rand(1, 3)); // Urgente (0–3 giorni) → icona gialla
+                $deliveryDate = now()->addDays(rand(1, 3)); // Urgent (0–3 days) → yellow icon
             } else {
                 $deliveryDate = now()->addDays(rand(10, 45));
             }
@@ -1227,7 +1226,7 @@ class TestDataSeeder extends Seeder
             ]);
             $ordersPianificato->push($order);
         }
-        // Ordine DEMO-ALL: articolo LAS-DEMO-ALL con tutti i campi (Ordini → filtrare per articolo LAS-DEMO-ALL)
+        // DEMO-ALL order: article LAS-DEMO-ALL with all fields (Orders → filter by article LAS-DEMO-ALL)
         $demoArticleForOrder = $validArticles->first(fn ($a) => $a->cod_article_las === 'LAS-DEMO-ALL');
         if ($demoArticleForOrder) {
             $demoOrderDivision = $demoArticleForOrder->offer->customerDivision;
@@ -1264,7 +1263,7 @@ class TestDataSeeder extends Seeder
         }
         $this->command->info("   ✅ {$ordersPianificato->count()} órdenes Pianificato (status 0) creadas (1 demo con LAS-DEMO-ALL)");
 
-        // Órdenes In Allestimento (status 1) – Variedad fechas: ritardo, urgente, normal
+        // Orders In Allestimento (status 1) – Date variety: delay, urgent, normal
         $ordersInAllestimento = collect();
         for ($i = 0; $i < min(5, $validArticles->count()); $i++) {
             $article = $validArticles->random();
@@ -1283,10 +1282,10 @@ class TestDataSeeder extends Seeder
                 $deliveryDate = now()->addDays(rand(5, 25));
             }
 
-            // Semáforo más realista para fase In Allestimento:
-            // - Algunas órdenes completamente rojas (nada listo)
-            // - Otras parcialmente listas
-            // - Algunas totalmente verdes (listas para lanzar)
+            // More realistic semaphore for In Allestimento phase:
+            // - Some orders completely red (nothing ready)
+            // - Others partially ready
+            // - Some fully green (ready to launch)
             $semaforoPatterns = [
                 ['etichette' => 0, 'packaging' => 0, 'prodotto' => 0],
                 ['etichette' => 2, 'packaging' => 1, 'prodotto' => 0],
@@ -1361,7 +1360,7 @@ class TestDataSeeder extends Seeder
         }
         $this->command->info("   ✅ {$ordersInAllestimento->count()} órdenes In Allestimento (status 1) creadas");
 
-        // Órdenes Lanciate (status 2)
+        // Orders Lanciate (status 2)
         $ordersLanciate = collect();
         for ($i = 0; $i < min(8, $validArticles->count()); $i++) {
             $article = $validArticles->random();
@@ -1382,7 +1381,7 @@ class TestDataSeeder extends Seeder
                 $deliveryDate = now()->addDays(rand(5, 30));
             }
 
-            // Semáforo para Lanciato: normalmente quasi tutto pronto,
+            // Semaphore for Lanciato: normally almost all ready,
             // ma non sempre completamente verde
             $semaforoPatternsLanciate = [
                 ['etichette' => 2, 'packaging' => 1, 'prodotto' => 0],
@@ -1458,7 +1457,7 @@ class TestDataSeeder extends Seeder
         }
         $this->command->info("   ✅ {$ordersLanciate->count()} órdenes Lanciate (status 2) creadas");
 
-        // Órdenes In Avanzamento (status 3) – Variedad fechas: ritardo, urgente, normal (più 2 demo fisse sotto)
+        // Orders In Avanzamento (status 3) – Date variety: delay, urgent, normal (plus 2 fixed demo below)
         $ordersInAvanzamento = collect();
         for ($i = 0; $i < min(12, $validArticles->count()); $i++) {
             $article = $validArticles->random();
@@ -1481,8 +1480,8 @@ class TestDataSeeder extends Seeder
             }
             $startDate = now()->subDays(rand(1, 5));
 
-            // Semáforo per In Avanzamento: quasi sempre almeno giallo,
-            // spesso tutto verde quando l'ordine è vicino al completamento
+            // Semaphore for In Avanzamento: almost always at least yellow,
+            // often all green when order is near completion
             $semaforoPatternsAvanzamento = [
                 ['etichette' => 1, 'packaging' => 1, 'prodotto' => 1],
                 ['etichette' => 2, 'packaging' => 1, 'prodotto' => 1],
@@ -1558,15 +1557,15 @@ class TestDataSeeder extends Seeder
                 ]));
             }
         }
-        // Demo urgenza: 2 ordini In Avanzamento per testare gli iconi in lista
-        // (triangolo rosso = in ritardo, triangolo giallo = urgente 0–3 giorni).
+        // Demo urgency: 2 In Avanzamento orders to test list icons
+        // (red triangle = overdue, yellow triangle = urgent 0–3 days).
         if ($validArticles->isNotEmpty() && $shippingAddresses->isNotEmpty()) {
             $demoArt = $validArticles->first();
             $demoDivision = $demoArt->offer->customerDivision;
             $demoAddresses = $shippingAddresses->where('customerdivision_uuid', $demoDivision->uuid);
             if ($demoAddresses->isNotEmpty()) {
                 $addr = $demoAddresses->first();
-                // Ordine in ritardo (data consegna nel passato) → icona rossa in lista
+                // Overdue order (delivery date in the past) → red icon in list
                 $ordersInAvanzamento->push(Order::factory()->create([
                     'article_uuid' => $demoArt->uuid,
                     'order_production_number' => $orderProductionNumberService->generateNext(),
@@ -1593,7 +1592,7 @@ class TestDataSeeder extends Seeder
                     'motivazione' => null,
                     'autocontrollo' => false,
                 ]));
-                // Ordine urgente (consegna tra 2 giorni) → icona gialla in lista
+                // Urgent order (delivery in 2 days) → yellow icon in list
                 $ordersInAvanzamento->push(Order::factory()->create([
                     'article_uuid' => $demoArt->uuid,
                     'order_production_number' => $orderProductionNumberService->generateNext(),
@@ -1625,7 +1624,7 @@ class TestDataSeeder extends Seeder
 
         $this->command->info("   ✅ {$ordersInAvanzamento->count()} órdenes In Avanzamento (status 3) creadas");
 
-        // Órdenes Sospese (status 4)
+        // Orders Sospese (status 4)
         $motivazioni = [
             'Falta de material',
             'Problema técnico en maquinaria',
@@ -1656,7 +1655,7 @@ class TestDataSeeder extends Seeder
                 $deliveryDate = now()->addDays(rand(5, 30));
             }
 
-            // Semáforo per Sospeso: motivazioni diverse, semaforo spesso "a metà"
+            // Semaphore for Sospeso: various reasons, semaphore often "halfway"
             $semaforoPatternsSospese = [
                 ['etichette' => 0, 'packaging' => 1, 'prodotto' => 1],
                 ['etichette' => 2, 'packaging' => 0, 'prodotto' => 1],
@@ -1732,10 +1731,10 @@ class TestDataSeeder extends Seeder
         }
         $this->command->info("   ✅ {$ordersSospese->count()} órdenes Sospese (status 4) creadas");
 
-        // Órdenes Evaso (status 5) - Completate
-        // Coherente: la data di consegna è nel passato (ordine già evaso).
-        // In lista, per status 5 e 6 la colonna "Data di consegna" mostra sempre
-        // icona verde (nessun "pericolo"): ordine chiuso = non ha senso segnalare ritardo.
+        // Orders Evaso (status 5) - Completed
+        // Consistent: delivery date is in the past (order already evaso).
+        // In list, for status 5 and 6 the "Delivery date" column always shows
+        // green icon (no "danger"): closed order = no point in signaling delay.
         $ordersEvaso = collect();
         for ($i = 0; $i < min(15, $validArticles->count()); $i++) {
             $article = $validArticles->random();
@@ -1751,10 +1750,10 @@ class TestDataSeeder extends Seeder
             $deliveryDate = now()->subDays(rand(1, 60));
             $startDate = $deliveryDate->copy()->subDays(rand(5, 15));
 
-            // Creare l'ordine con data di creazione nel passato
+            // Create order with creation date in the past
             $createdAt = $startDate->copy()->subDays(rand(1, 5));
-            // La data di aggiornamento (completamento) sarà dopo la creazione
-            // Simulando che l'ordine abbia impiegato tra 3 e 20 giorni per completarsi
+            // Update (completion) date will be after creation
+            // Simulate order took 3–20 days to complete
             $completedAt = $createdAt->copy()->addDays(rand(3, 20));
 
             $order = Order::factory()->create([
@@ -1762,7 +1761,7 @@ class TestDataSeeder extends Seeder
                 'order_production_number' => $orderProductionNumberService->generateNext(),
                 'status' => Order::STATUS_EVASO,
                 'quantity' => $quantity,
-                'worked_quantity' => $quantity, // Completamente trabajada
+                'worked_quantity' => $quantity, // Fully worked
                 'delivery_requested_date' => $deliveryDate,
                 'expected_production_start_date' => $startDate,
                 'customershippingaddress_uuid' => $availableAddresses->random()->uuid,
@@ -1789,7 +1788,7 @@ class TestDataSeeder extends Seeder
                 'created_at' => $createdAt,
             ]);
 
-            // Aggiornare updated_at per simulare la data di completamento
+            // Update updated_at to simulate completion date
             $order->updated_at = $completedAt;
             $order->save();
 
@@ -1797,9 +1796,9 @@ class TestDataSeeder extends Seeder
         }
         $this->command->info("   ✅ {$ordersEvaso->count()} órdenes Evaso (status 5) creadas");
 
-        // Órdenes Saldato (status 6) - Completate
-        // Coherente: data di consegna nel passato (ordine saldato).
-        // In lista si mostra sempre icona verde (nessun pericolo) per coerenza con la UI.
+        // Orders Saldato (status 6) - Completed
+        // Consistent: delivery date in the past (settled order).
+        // List always shows green icon (no danger) for UI consistency.
         $ordersSaldato = collect();
         for ($i = 0; $i < min(10, $validArticles->count()); $i++) {
             $article = $validArticles->random();
@@ -1815,10 +1814,10 @@ class TestDataSeeder extends Seeder
             $deliveryDate = now()->subDays(rand(30, 120));
             $startDate = $deliveryDate->copy()->subDays(rand(10, 20));
 
-            // Creare l'ordine con data di creazione nel passato
+            // Create order with creation date in the past
             $createdAt = $startDate->copy()->subDays(rand(1, 5));
-            // La data di aggiornamento (completamento) sarà dopo la creazione
-            // Simulando che l'ordine abbia impiegato tra 5 e 25 giorni per completarsi
+            // Update (completion) date will be after creation
+            // Simulate order took 5–25 days to complete
             $completedAt = $createdAt->copy()->addDays(rand(5, 25));
 
             $order = Order::factory()->create([
@@ -1826,7 +1825,7 @@ class TestDataSeeder extends Seeder
                 'order_production_number' => $orderProductionNumberService->generateNext(),
                 'status' => Order::STATUS_SALDATO,
                 'quantity' => $quantity,
-                'worked_quantity' => $quantity, // Completamente trabajada
+                'worked_quantity' => $quantity, // Fully worked
                 'delivery_requested_date' => $deliveryDate,
                 'expected_production_start_date' => $startDate,
                 'customershippingaddress_uuid' => $availableAddresses->random()->uuid,
@@ -1853,7 +1852,7 @@ class TestDataSeeder extends Seeder
                 'created_at' => $createdAt,
             ]);
 
-            // Aggiornare updated_at per simulare la data di completamento
+            // Update updated_at to simulate completion date
             $order->updated_at = $completedAt;
             $order->save();
 
@@ -1999,7 +1998,7 @@ class TestDataSeeder extends Seeder
 
         // 10.c Storico ordini completati per l'ultimo anno (trend lungo periodo)
         // Creiamo ordini completati (Evaso/Saldato) distribuiti sui 12 mesi precedenti
-        // così che i grafici di tendenza e le metriche annuali abbiano sempre dati realistici.
+        // so trend charts and annual metrics always have realistic data.
         $this->command->info('   ▶️ Creando storico ordini per gli ultimi 12 mesi...');
 
         $historicalArticles = $validArticles->take(3);
@@ -2025,17 +2024,17 @@ class TestDataSeeder extends Seeder
 
                     $quantity = rand(80, 600);
 
-                    // Data di consegna richiesta compresa nel mese storico
+                    // Requested delivery date within the historical month
                     $deliveryDateTime = $faker->dateTimeBetween($monthStart, $monthEnd);
                     $deliveryDate = \Carbon\Carbon::instance($deliveryDateTime);
 
-                    // created_at nel mese, prima della consegna
+                    // created_at in month, before delivery
                     $createdAt = $monthStart->copy()->addDays(rand(0, 10))->setTime(rand(8, 11), rand(0, 59));
                     if ($createdAt->greaterThanOrEqualTo($deliveryDate)) {
                         $createdAt = $deliveryDate->copy()->subDays(1)->setTime(9, 0);
                     }
 
-                    // updated_at come data di completamento (non oltre fine mese)
+                    // updated_at as completion date (not beyond month end)
                     $completedAt = $deliveryDate->copy()->addDays(rand(0, 3));
                     if ($completedAt->greaterThan($monthEnd)) {
                         $completedAt = $monthEnd->copy()->setTime(17, 0);
@@ -2085,8 +2084,8 @@ class TestDataSeeder extends Seeder
 
         $this->command->info("   ✅ {$historicalOrders->count()} ordini storici completati creati per l'ultimo anno");
 
-        // 10.d Copertura giornaliera: almeno 1 ordine completato per ciascun giorno negli ultimi 365 giorni.
-        // Questo serve per testare viste e filtri giornalieri del dashboard senza "buchi" temporali.
+        // 10.d Daily coverage: at least 1 completed order per day in last 365 days.
+        // This allows testing dashboard daily views and filters without temporal gaps.
         $this->command->info('   ▶️ Garantendo almeno 1 ordine completato per ogni giorno negli ultimi 365 giorni...');
 
         $dailyCoverageArticle = $demoArticleForDashboard ?? $validArticles->first();
@@ -2102,7 +2101,7 @@ class TestDataSeeder extends Seeder
             if ($availableAddresses->isNotEmpty()) {
                 $addressUuid = $availableAddresses->first()->uuid;
 
-                // Iteriamo da 1 a 365 giorni fa: per ogni giorno creiamo un piccolo ordine completato.
+                // Iterate from 1 to 365 days ago: create one small completed order per day.
                 for ($daysAgo = 1; $daysAgo <= 365; $daysAgo++) {
                     $day = now()->copy()->subDays($daysAgo)->startOfDay();
 
@@ -2155,7 +2154,7 @@ class TestDataSeeder extends Seeder
 
         $this->command->info("   ✅ {$dailyOrders->count()} ordini giornalieri completati creati per coprire gli ultimi 365 giorni");
 
-        // 11. Crear Procesamientos de Órdenes (ProductionOrderProcessing)
+        // 11. Create Order Processings (ProductionOrderProcessing)
         $this->command->info('⚙️  Creando procesamientos de órdenes...');
 
         // Combinare tutti gli ordini in produzione (Lanciato e In Avanzamento)
@@ -2163,13 +2162,13 @@ class TestDataSeeder extends Seeder
 
         $processings = collect();
         foreach ($ordersInProduction as $order) {
-            // Creare più lavorazioni per ordine (simulando lavoro di diversi dipendenti)
+            // Create multiple processings per order (simulating work from different employees)
             $processingCount = rand(2, 5);
             $remainingQuantity = $order->quantity - ($order->worked_quantity ?? 0);
 
-            // Si la orden ya tiene worked_quantity, ajustar remainingQuantity
+            // If order already has worked_quantity, adjust remainingQuantity
             if ($remainingQuantity <= 0) {
-                $remainingQuantity = $order->quantity; // Resetear para crear procesamientos
+                $remainingQuantity = $order->quantity; // Reset to create processings
             }
 
             for ($i = 0; $i < $processingCount && $remainingQuantity > 0; $i++) {
@@ -2182,13 +2181,13 @@ class TestDataSeeder extends Seeder
                 // Fecha de procesamiento: entre la fecha de inicio esperada y ahora
                 $startDate = $order->expected_production_start_date ?? now()->subDays(rand(1, 10));
 
-                // Asegurar que la fecha de inicio sea anterior a ahora
-                // Si la fecha de inicio es futura, usar una fecha pasada como inicio
+                // Ensure start date is before now
+                // If start date is in the future, use a past date as start
                 $minDate = $startDate && $startDate->isFuture()
                     ? now()->subDays(rand(5, 15))
                     : ($startDate ?? now()->subDays(rand(5, 15)));
 
-                // Asegurar que minDate sea anterior a now()
+                // Ensure minDate is before now()
                 if ($minDate->isFuture()) {
                     $minDate = now()->subDays(rand(5, 15));
                 }
@@ -2209,7 +2208,7 @@ class TestDataSeeder extends Seeder
 
         $this->command->info("   ✅ {$processings->count()} procesamientos de órdenes creados");
 
-        // 12. Crear Estados de Órdenes (OfferOrderState)
+        // 12. Create Order States (OfferOrderState)
         $this->command->info('📊 Creando estados de órdenes...');
         $orderStates = collect();
         $stateNames = [
@@ -2234,7 +2233,7 @@ class TestDataSeeder extends Seeder
         }
         $this->command->info("   ✅ {$orderStates->count()} estados de órdenes creados");
 
-        // 13. Crear Asignaciones de Empleados a Órdenes (OfferOrderEmployee)
+        // 13. Create Employee-Order Assignments (OfferOrderEmployee)
         $this->command->info('👥 Creando asignaciones de empleados a órdenes...');
         $allOrders = $ordersPianificato->merge($ordersInAllestimento)
             ->merge($ordersLanciate)
@@ -2260,18 +2259,18 @@ class TestDataSeeder extends Seeder
         }
         $this->command->info("   ✅ {$orderEmployeeAssignments->count()} asignaciones de empleados a órdenes creadas");
 
-        // 14. Crear Planning de Producción (productionplanning y productionplanning_summary)
+        // 14. Create Production Planning (productionplanning and productionplanning_summary)
         if (Schema::hasTable('productionplanning') && Schema::hasTable('productionplanning_summary')) {
             $this->command->info('📅 Creando planning de producción y riepilogo personale...');
 
-            // Una linea attiva senza ordini per testare UI "Nessun ordine pianificabile per questa linea"
+            // Active line without orders to test UI "No plannable orders for this line"
             OfferLasWorkLine::factory()->create([
                 'code' => 'LWL-VUOTA',
                 'name' => 'Linea vuota (test planning)',
                 'removed' => false,
             ]);
 
-            // Órdenes candidatas al planning: estados 0–4 (no completadas)
+            // Orders candidates for planning: states 0–4 (not completed)
             $allOrdersForPlanning = $ordersPianificato
                 ->merge($ordersInAllestimento)
                 ->merge($ordersLanciate)
@@ -2289,7 +2288,7 @@ class TestDataSeeder extends Seeder
                         && $order->article->offer->lasWorkLine
                 );
 
-            // Asignar turnos variados (réplica legacy): ~55% Giornata (8-16), ~15% solo mattina (6-14), ~20% solo pomeriggio (14-22), ~10% entrambi (6-22)
+            // Assign varied shifts (legacy replica): ~55% Giornata (8-16), ~15% morning only (6-14), ~20% afternoon only (14-22), ~10% both (6-22)
             $planningOrdersArray = $planningOrders->values()->all();
             $n = count($planningOrdersArray);
             foreach ($planningOrdersArray as $idx => $order) {
@@ -2321,7 +2320,7 @@ class TestDataSeeder extends Seeder
             $tomorrow = now()->addDay()->toDateString();
             $planningDates = [$yesterday, $today, $tomorrow];
 
-            // Costruisce ore per fascia (quarti 00, 15, 30, 45) – solo nel range abilitato per l'ordine (OrderShiftHours)
+            // Build hours by slot (quarters 00, 15, 30, 45) – only in range enabled for order (OrderShiftHours)
             $buildHoursForRange = function (int $startHour, int $endHourExcl, int $workers = 1): array {
                 $hours = [];
                 for ($h = $startHour; $h < $endHourExcl; $h++) {

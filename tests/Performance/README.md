@@ -63,6 +63,19 @@ Tests for Production Portal endpoints to ensure acceptable response times.
 php artisan test --testsuite=Performance
 ```
 
+### LoadTest and parallel execution
+LoadTest (`@group load`) creates large datasets and relies on a fully migrated database. When using parallel testing (`php artisan test --parallel`), LoadTest may fail with database errors (e.g. "relation users does not exist"). Run LoadTest separately:
+
+```bash
+# Option 1: Exclude load from parallel, then run load tests
+php artisan test --parallel --exclude-group=load
+php artisan test --group=load
+
+# Option 2: Use composer scripts
+composer test:parallel
+composer test:load
+```
+
 ### Run a single class:
 ```bash
 php artisan test tests/Performance/ConcurrencyTest.php
@@ -91,7 +104,7 @@ These tests establish baselines. If they start failing:
 - Tests use the `RefreshDatabase` trait for automatic cleanup.
 - These tests focus on response times, not absolute throughput.
 - Adjust performance targets based on actual production requirements.
-- See the project root [README_TEST_DATABASE.md](../../README_TEST_DATABASE.md) for database setup.
+- See [docs/DATABASE.md](../../docs/DATABASE.md) for database setup.
 
 ## Future Improvements
 

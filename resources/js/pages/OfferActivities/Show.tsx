@@ -8,6 +8,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import offerActivities from '@/routes/offer-activities/index';
 import { type BreadcrumbItem } from '@/types';
@@ -28,16 +29,17 @@ type OfferActivitiesShowProps = {
 export default function OfferActivitiesShow({
     activity,
 }: OfferActivitiesShowProps) {
+    const { t } = useTranslations();
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: '/offers',
         },
         {
-            title: 'Attività',
+            title: t('offer_activities.page_title'),
             href: offerActivities.index().url,
         },
         {
@@ -64,7 +66,11 @@ export default function OfferActivitiesShow({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Attività ${activity.name}`} />
+            <Head
+                title={t('offer_activities.show.page_title', {
+                    name: activity.name,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
@@ -85,7 +91,7 @@ export default function OfferActivitiesShow({
                                 }
                             >
                                 <Edit className="mr-2 h-4 w-4" />
-                                Modifica
+                                {t('common.edit')}
                             </Link>
                         </Button>
                         <Button
@@ -94,22 +100,24 @@ export default function OfferActivitiesShow({
                             disabled={isDeleting}
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Elimina
+                            {t('common.delete')}
                         </Button>
                     </div>
                 </div>
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Dettagli Attività</CardTitle>
+                        <CardTitle>
+                            {t('offer_activities.show.details_title')}
+                        </CardTitle>
                         <CardDescription>
-                            Informazioni su questa attività
+                            {t('offer_activities.show.details_subtitle')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div>
                             <Label className="text-sm font-medium text-muted-foreground">
-                                Nome
+                                {t('offer_activities.form.name_label')}
                             </Label>
                             <p className="text-lg font-semibold">
                                 {activity.name}
@@ -136,8 +144,8 @@ export default function OfferActivitiesShow({
                     open={deleteDialogOpen}
                     onOpenChange={setDeleteDialogOpen}
                     onConfirm={handleDeleteConfirm}
-                    title="Elimina Attività"
-                    description="Sei sicuro di voler eliminare questa attività? Questa azione non può essere annullata."
+                    title={t('offer_activities.delete.title')}
+                    description={t('offer_activities.delete.description')}
                     itemName={activity.name}
                     isLoading={isDeleting}
                 />

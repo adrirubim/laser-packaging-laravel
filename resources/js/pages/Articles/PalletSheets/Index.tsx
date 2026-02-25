@@ -10,6 +10,7 @@ import { SearchInput } from '@/components/SearchInput';
 import { SortableTableHeader } from '@/components/SortableTableHeader';
 import { Button } from '@/components/ui/button';
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import articles from '@/routes/articles/index';
 import { type BreadcrumbItem } from '@/types';
@@ -49,6 +50,7 @@ type PalletSheetsIndexProps = {
 };
 
 export default function PalletSheetsIndex() {
+    const { t } = useTranslations();
     const { props } = usePage<PalletSheetsIndexProps>();
     const { sheets: sheetsPaginated, filters } = props;
     const { flash } = useFlashNotifications();
@@ -125,25 +127,25 @@ export default function PalletSheetsIndex() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Articoli',
+            title: t('nav.articles'),
             href: articles.index().url,
         },
         {
-            title: 'Fogli Pallet',
+            title: t('articles.pallet_sheets.title'),
             href: articles.palletSheets.index().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Fogli Pallet" />
+            <Head title={t('articles.pallet_sheets.title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="Fogli Pallet"
-                    subtitle="Elenco dei fogli pallet attivi."
+                    title={t('articles.pallet_sheets.title')}
+                    subtitle={t('articles.pallet_sheets.index.subtitle')}
                     createHref={articles.palletSheets.create().url}
-                    createLabel="Nuovo Foglio"
+                    createLabel={t('articles.pallet_sheets.index.create')}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -152,7 +154,9 @@ export default function PalletSheetsIndex() {
                     <SearchInput
                         value={filters.search || ''}
                         onChange={handleSearchChange}
-                        placeholder="Codice, descrizione o nome allegato..."
+                        placeholder={t(
+                            'articles.pallet_sheets.search_placeholder',
+                        )}
                     />
                 </div>
 
@@ -162,10 +166,14 @@ export default function PalletSheetsIndex() {
                             <thead className="sticky top-0 z-10 bg-muted/80 backdrop-blur">
                                 <tr className="text-xs tracking-wide text-muted-foreground uppercase">
                                     <th className="border-b px-3 py-2 font-medium">
-                                        ID
+                                        {t(
+                                            'articles.pallet_sheets.index.columns.id',
+                                        )}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        uuid
+                                        {t(
+                                            'articles.pallet_sheets.index.columns.uuid',
+                                        )}
                                     </th>
                                     <SortableTableHeader
                                         column="code"
@@ -173,7 +181,9 @@ export default function PalletSheetsIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Codice
+                                        {t(
+                                            'articles.pallet_sheets.index.columns.code',
+                                        )}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="description"
@@ -181,7 +191,9 @@ export default function PalletSheetsIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Descrizione
+                                        {t(
+                                            'articles.pallet_sheets.index.columns.description',
+                                        )}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="filename"
@@ -189,10 +201,12 @@ export default function PalletSheetsIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Filename
+                                        {t(
+                                            'articles.pallet_sheets.index.columns.filename',
+                                        )}
                                     </SortableTableHeader>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t('common.actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -205,8 +219,9 @@ export default function PalletSheetsIndex() {
                                         >
                                             <div className="flex flex-col items-center justify-center gap-3">
                                                 <p>
-                                                    Nessun foglio pallet.
-                                                    Aggiungi il primo.
+                                                    {t(
+                                                        'articles.pallet_sheets.index.empty',
+                                                    )}
                                                 </p>
                                                 <Button asChild size="sm">
                                                     <Link
@@ -215,7 +230,9 @@ export default function PalletSheetsIndex() {
                                                                 .url
                                                         }
                                                     >
-                                                        Aggiungi
+                                                        {t(
+                                                            'articles.pallet_sheets.index.add_first',
+                                                        )}
                                                     </Link>
                                                 </Button>
                                             </div>
@@ -276,7 +293,9 @@ export default function PalletSheetsIndex() {
                                                             }}
                                                         >
                                                             <Download className="mr-2 h-4 w-4" />
-                                                            Scarica allegato
+                                                            {t(
+                                                                'articles.pallet_sheets.index.download_attachment',
+                                                            )}
                                                         </DropdownMenuItem>
                                                     ) : undefined
                                                 }
@@ -302,8 +321,10 @@ export default function PalletSheetsIndex() {
                 onOpenChange={(open) => setDeleteDialog({ open, sheet: null })}
                 onConfirm={handleDeleteConfirm}
                 isLoading={isDeleting}
-                title="Conferma eliminazione"
-                description={`Sei sicuro di voler eliminare il foglio pallet ${deleteDialog.sheet?.code}? Questa azione non può essere annullata. Il foglio pallet verrà eliminato definitivamente.`}
+                title={t('articles.pallet_sheets.delete.title')}
+                description={t('articles.pallet_sheets.delete.description', {
+                    code: deleteDialog.sheet?.code ?? '',
+                })}
             />
         </AppLayout>
     );

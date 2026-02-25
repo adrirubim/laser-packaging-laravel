@@ -11,7 +11,7 @@
     $style = $pdfConfig['style'];
     $colors = $pdfConfig['colors'];
     
-    // Ajustar colores según el estilo
+    // Adjust colors according to style
     if ($style === 'monochrome') {
         $primaryColor = '#000000';
         $secondaryColor = '#000000';
@@ -42,7 +42,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Autocontrollo ORDINE {{ $order_production_number }}</title>
+    <title>{{ __('orders.autocontrollo.title') }} {{ $order_production_number }}</title>
     <style>
         @page {
             margin: 15mm;
@@ -233,58 +233,58 @@
             @endif
             <div class="company-info">
                 <div class="company-name">{{ $companyName }}</div>
-                <div class="document-title">Autocontrollo Ordine</div>
-                <div class="document-subtitle">Documento di Controllo Qualità</div>
+                <div class="document-title">{{ __('orders.autocontrollo.document_title') }}</div>
+                <div class="document-subtitle">{{ __('orders.autocontrollo.document_subtitle') }}</div>
             </div>
         </div>
         <div class="header-right">
             <div class="order-number-badge">
-                Ordine: {{ $order_production_number }}
+                {{ __('orders.autocontrollo.order_label') }}: {{ $order_production_number }}
             </div>
         </div>
     </div>
 
     <div class="section">
-        <div class="section-title">Dati Ordine</div>
+        <div class="section-title">{{ __('orders.autocontrollo.section_order_data') }}</div>
         <div class="row">
-            <span class="label">Numero Ordine:</span>
+            <span class="label">{{ __('orders.autocontrollo.label_order_number') }}:</span>
             <span class="value">{{ $order_production_number }}</span>
         </div>
         <div class="row">
-            <span class="label">Quantità:</span>
+            <span class="label">{{ __('orders.autocontrollo.label_quantity') }}:</span>
             <span class="value">{{ $quantity }}</span>
         </div>
         <div class="row">
-            <span class="label">Lotto:</span>
+            <span class="label">{{ __('orders.autocontrollo.label_lot') }}:</span>
             <span class="value">{{ $lot }}</span>
         </div>
         <div class="row">
-            <span class="label">Data Scadenza:</span>
+            <span class="label">{{ __('orders.autocontrollo.label_expiration_date') }}:</span>
             <span class="value">{{ $expiration_date }}</span>
         </div>
     </div>
 
     <div class="section">
-        <div class="section-title">Dati Articolo</div>
+        <div class="section-title">{{ __('orders.autocontrollo.section_article_data') }}</div>
         <div class="row">
-            <span class="label">Codice LAS:</span>
+            <span class="label">{{ __('orders.autocontrollo.label_las_code') }}:</span>
             <span class="value">{{ $article->cod_article_las ?? '-' }}</span>
         </div>
         <div class="row">
-            <span class="label">Codice Cliente:</span>
+            <span class="label">{{ __('orders.autocontrollo.label_customer_code') }}:</span>
             <span class="value">{{ $cod_article_cliente }}</span>
         </div>
         <div class="row">
-            <span class="label">Descrizione:</span>
+            <span class="label">{{ __('orders.autocontrollo.label_description') }}:</span>
             <span class="value">{{ $article_descr }}</span>
         </div>
         <div class="row">
-            <span class="label">Unità di Misura:</span>
+            <span class="label">{{ __('orders.autocontrollo.label_uom') }}:</span>
             <span class="value">{{ $um }}</span>
         </div>
         @if(!empty($additional_descr) && $additional_descr !== '-')
         <div class="row">
-            <span class="label">Descrizione Aggiuntiva:</span>
+            <span class="label">{{ __('orders.autocontrollo.label_additional_description') }}:</span>
             <span class="value">{{ $additional_descr }}</span>
         </div>
         @endif
@@ -292,7 +292,7 @@
 
     @if(!empty($label_info) && $label_info !== '- / - / -')
     <div class="section">
-        <div class="section-title">Informazioni Etichette</div>
+        <div class="section-title">{{ __('orders.autocontrollo.section_labels') }}</div>
         <div class="row">
             <span class="value">{{ $label_info }}</span>
         </div>
@@ -301,7 +301,7 @@
 
     @if(!empty($packaging_instruct) && $packaging_instruct !== ' - ')
     <div class="section">
-        <div class="section-title">Istruzioni Packaging</div>
+        <div class="section-title">{{ __('orders.autocontrollo.section_packaging') }}</div>
         <div class="row">
             <span class="value">{{ $packaging_instruct }}</span>
         </div>
@@ -310,7 +310,7 @@
 
     @if(!empty($palletizing_instruct) && $palletizing_instruct !== ' - ')
     <div class="section">
-        <div class="section-title">Istruzioni Palletizzazione</div>
+        <div class="section-title">{{ __('orders.autocontrollo.section_palletizing') }}</div>
         <div class="row">
             <span class="value">{{ $palletizing_instruct }}</span>
         </div>
@@ -319,7 +319,7 @@
 
     @if(!empty($criticita) && $criticita !== '-')
     <div class="section">
-        <div class="section-title">Criticità</div>
+        <div class="section-title">{{ __('orders.autocontrollo.section_criticality') }}</div>
         <div class="row">
             <span class="value">{{ $criticita }}</span>
         </div>
@@ -328,12 +328,12 @@
 
     @if(!empty($article_material_list) && count($article_material_list) > 0)
     <div class="section">
-        <div class="section-title">Materiali</div>
+        <div class="section-title">{{ __('orders.autocontrollo.section_materials') }}</div>
         <table>
             <thead>
                 <tr>
-                    <th>Codice</th>
-                    <th>Descrizione</th>
+                    <th>{{ __('orders.autocontrollo.th_code') }}</th>
+                    <th>{{ __('orders.autocontrollo.th_description') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -350,14 +350,14 @@
 
     @if($pallet)
     <div class="section">
-        <div class="section-title">Informazioni Pallet</div>
+        <div class="section-title">{{ __('orders.autocontrollo.section_pallet_info') }}</div>
         <div class="row">
-            <span class="label">Codice:</span>
+            <span class="label">{{ __('orders.autocontrollo.label_code') }}:</span>
             <span class="value">{{ $pallet->code ?? '-' }}</span>
         </div>
         @if(!empty($pallet->description))
         <div class="row">
-            <span class="label">Descrizione:</span>
+            <span class="label">{{ __('orders.autocontrollo.label_description') }}:</span>
             <span class="value">{{ $pallet->description }}</span>
         </div>
         @endif
@@ -366,7 +366,7 @@
 
     @if(!empty($weight_info) && trim($weight_info) !== '')
     <div class="section">
-        <div class="section-title">Informazioni Peso</div>
+        <div class="section-title">{{ __('orders.autocontrollo.section_weight_info') }}</div>
         <div class="row">
             <span class="value">{{ $weight_info }}</span>
         </div>
@@ -375,7 +375,7 @@
 
     @if(!empty($notes) && $notes !== '-')
     <div class="section">
-        <div class="section-title">Note</div>
+        <div class="section-title">{{ __('orders.autocontrollo.section_notes') }}</div>
         <div class="row">
             <span class="value">{{ $notes }}</span>
         </div>
@@ -389,16 +389,16 @@
         @endif
         @if($companyPhone || $companyEmail)
         <div class="footer-info">
-            @if($companyPhone)Tel: {{ $companyPhone }}@endif
+            @if($companyPhone){{ __('orders.autocontrollo.tel') }}: {{ $companyPhone }}@endif
             @if($companyPhone && $companyEmail) | @endif
-            @if($companyEmail)Email: {{ $companyEmail }}@endif
+            @if($companyEmail){{ __('orders.autocontrollo.email') }}: {{ $companyEmail }}@endif
         </div>
         @endif
         @if($companyWebsite)
-        <div class="footer-info">Web: {{ $companyWebsite }}</div>
+        <div class="footer-info">{{ __('orders.autocontrollo.web') }}: {{ $companyWebsite }}</div>
         @endif
         <div class="footer-info" style="margin-top: 8px;">
-            Documento generato il {{ date('d/m/Y H:i') }}
+            {{ __('orders.autocontrollo.footer_generated') }} {{ date('d/m/Y H:i') }}
         </div>
     </div>
 </body>

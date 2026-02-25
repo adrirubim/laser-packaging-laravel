@@ -56,7 +56,7 @@ type PalletType = {
 
 type Material = {
     uuid: string;
-    /** Backend invia `cod`; accettare anche `code` */
+    /** Backend sends `cod`; also accept `code` */
     code?: string | null;
     cod?: string | null;
     description?: string | null;
@@ -208,14 +208,16 @@ type ArticlesShowProps = {
     article: Article;
 };
 
-const STATUS_LABELS: Record<number, string> = {
-    0: 'Pianificato',
-    1: 'In Allestimento',
-    2: 'Lanciato',
-    3: 'In Avanzamento',
-    4: 'Sospeso',
-    5: 'Completato',
-};
+const getStatusLabels = (
+    t: (key: string) => string,
+): Record<number, string> => ({
+    0: t('articles.show.planning_status.planned'),
+    1: t('articles.show.planning_status.setup'),
+    2: t('articles.show.planning_status.launched'),
+    3: t('articles.show.planning_status.in_progress'),
+    4: t('articles.show.planning_status.suspended'),
+    5: t('articles.show.planning_status.completed'),
+});
 
 const formatNumber = (value: unknown, decimals: number = 2): string => {
     if (value === null || value === undefined) return '';
@@ -234,6 +236,7 @@ const formatNumber = (value: unknown, decimals: number = 2): string => {
 
 export default function ArticlesShow({ article }: ArticlesShowProps) {
     const { t } = useTranslations();
+    const STATUS_LABELS = getStatusLabels(t);
     const [isDeleting, setIsDeleting] = useState(false);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
@@ -263,7 +266,11 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Articolo ${article.cod_article_las}`} />
+            <Head
+                title={t('articles.show.title', {
+                    code: article.cod_article_las,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
@@ -293,10 +300,10 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                             offer: article.offer.uuid,
                                         }).url
                                     }
-                                    aria-label="Visualizza offerta"
+                                    aria-label={t('articles.show.view_offer')}
                                 >
                                     <Eye className="mr-2 h-4 w-4" />
-                                    Visualizza Offerta
+                                    {t('common.view_offer')}
                                 </Link>
                             </Button>
                         )}
@@ -305,10 +312,10 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                 href={
                                     articles.edit({ article: article.uuid }).url
                                 }
-                                aria-label="Modifica articolo"
+                                aria-label={t('articles.show.edit_article')}
                             >
                                 <Edit className="mr-2 h-4 w-4" />
-                                Modifica
+                                {t('common.edit')}
                             </Link>
                         </Button>
                         <Button asChild variant="outline" size="sm">
@@ -320,10 +327,12 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                         },
                                     }).url
                                 }
-                                aria-label="Duplica articolo"
+                                aria-label={t(
+                                    'articles.show.duplicate_article',
+                                )}
                             >
                                 <Copy className="mr-2 h-4 w-4" />
-                                Duplica
+                                {t('common.duplicate')}
                             </Link>
                         </Button>
                         {article.line_layout && (
@@ -336,10 +345,12 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                             article: article.uuid,
                                         }).url;
                                 }}
-                                aria-label="Scarica layout linea"
+                                aria-label={t(
+                                    'articles.show.download_line_layout',
+                                )}
                             >
                                 <Download className="mr-2 h-4 w-4" />
-                                Scarica layout
+                                {t('articles.show.download_layout')}
                             </Button>
                         )}
                         <Button
@@ -347,10 +358,10 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             size="sm"
                             onClick={() => setShowDeleteDialog(true)}
                             disabled={isDeleting}
-                            aria-label="Elimina articolo"
+                            aria-label={t('articles.show.delete_article')}
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Elimina
+                            {t('common.delete')}
                         </Button>
                     </div>
                 </div>
@@ -358,15 +369,17 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                 <div className="grid gap-4 md:grid-cols-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Informazioni Base</CardTitle>
+                            <CardTitle>
+                                {t('articles.show.basic_info.title')}
+                            </CardTitle>
                             <CardDescription>
-                                Dettagli principali dell'articolo
+                                {t('articles.show.basic_info.description')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    Codice LAS
+                                    {t('common.code_las')}
                                 </Label>
                                 <p className="font-mono text-lg font-semibold">
                                     {article.cod_article_las}
@@ -376,7 +389,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             {article.cod_article_client && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Codice Cliente
+                                        {t('common.code_customer')}
                                     </Label>
                                     <p className="font-mono">
                                         {article.cod_article_client}
@@ -387,7 +400,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             {article.article_descr && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Descrizione
+                                        {t('common.description')}
                                     </Label>
                                     <p>{article.article_descr}</p>
                                 </div>
@@ -396,7 +409,9 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             {article.additional_descr && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Descrizione Aggiuntiva
+                                        {t(
+                                            'articles.show.basic_info.additional_description',
+                                        )}
                                     </Label>
                                     <p>{article.additional_descr}</p>
                                 </div>
@@ -405,7 +420,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             {article.category && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Categoria
+                                        {t('common.category')}
                                     </Label>
                                     <p>{article.category.name}</p>
                                 </div>
@@ -417,7 +432,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                     disabled
                                 />
                                 <Label className="text-sm font-medium">
-                                    Visibilità Codice
+                                    {t('articles.show.basic_info.visibility')}
                                 </Label>
                             </div>
 
@@ -427,7 +442,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                     disabled
                                 />
                                 <Label className="text-sm font-medium">
-                                    Gestione Magazzino
+                                    {t('articles.show.basic_info.stock')}
                                 </Label>
                             </div>
                         </CardContent>
@@ -435,16 +450,18 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>Offerta e Unità</CardTitle>
+                            <CardTitle>
+                                {t('articles.show.offer_and_unit.title')}
+                            </CardTitle>
                             <CardDescription>
-                                Informazioni su offerta e unità di misura
+                                {t('articles.show.offer_and_unit.description')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {article.offer && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Offerta
+                                        {t('common.offer')}
                                     </Label>
                                     <p className="font-mono">
                                         {article.offer.offer_number}
@@ -460,7 +477,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             {article.um && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Unità di Misura
+                                        {t('articles.show.unit')}
                                     </Label>
                                     <p className="font-mono">{article.um}</p>
                                 </div>
@@ -470,7 +487,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                 article.lot_attribution !== undefined && (
                                     <div>
                                         <Label className="text-sm font-medium text-muted-foreground">
-                                            Attribuzione Lotto
+                                            {t('articles.show.lot_attribution')}
                                         </Label>
                                         <p>{article.lot_attribution}</p>
                                     </div>
@@ -481,7 +498,9 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                     undefined && (
                                     <div>
                                         <Label className="text-sm font-medium text-muted-foreground">
-                                            Attribuzione Scadenza
+                                            {t(
+                                                'articles.show.expiration_attribution',
+                                            )}
                                         </Label>
                                         <p>{article.expiration_attribution}</p>
                                     </div>
@@ -490,7 +509,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             {article.ean && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        EAN
+                                        {t('articles.show.ean')}
                                     </Label>
                                     <p className="font-mono">{article.ean}</p>
                                 </div>
@@ -500,7 +519,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                 article.db !== undefined && (
                                     <div>
                                         <Label className="text-sm font-medium text-muted-foreground">
-                                            DB
+                                            {t('articles.show.db')}
                                         </Label>
                                         <p>{article.db}</p>
                                     </div>
@@ -509,7 +528,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             {article.line_layout && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Layout Linea
+                                        {t('articles.show.line_layout')}
                                     </Label>
                                     <div className="flex items-center gap-2">
                                         <p className="font-mono text-sm">
@@ -527,11 +546,10 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <Box className="h-5 w-5" />
-                                Macchinari e Parametri
+                                {t('articles.show.machinery_and_params')}
                             </CardTitle>
                             <CardDescription>
-                                Macchinari associati all'articolo con i loro
-                                parametri
+                                {t('articles.show.machinery_description')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -552,15 +570,19 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                             )}
                                             {machine.parameter && (
                                                 <p className="mt-1 text-xs text-muted-foreground">
-                                                    Parametro:{' '}
-                                                    {machine.parameter}
+                                                    {t(
+                                                        'articles.show.parameter',
+                                                    )}
+                                                    : {machine.parameter}
                                                 </p>
                                             )}
                                         </div>
                                         {machine.value && (
                                             <div className="ml-4">
                                                 <Label className="text-xs text-muted-foreground">
-                                                    Valore
+                                                    {t(
+                                                        'articles.show.weight_control.value',
+                                                    )}
                                                 </Label>
                                                 <p className="font-mono text-sm">
                                                     {machine.value}
@@ -579,11 +601,14 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                         <Card>
                             <CardHeader>
                                 <CardTitle>
-                                    Istruzioni di Confezionamento
+                                    {t(
+                                        'articles.show.packaging_instructions.title',
+                                    )}
                                 </CardTitle>
                                 <CardDescription>
-                                    Istruzioni di confezionamento associate
-                                    all'articolo
+                                    {t(
+                                        'articles.show.packaging_instructions.description',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -618,7 +643,9 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                                             variant="ghost"
                                                             size="icon"
                                                             className="h-8 w-8 shrink-0"
-                                                            aria-label="Azioni"
+                                                            aria-label={t(
+                                                                'common.open_actions_menu',
+                                                            )}
                                                         >
                                                             <MoreHorizontal className="h-4 w-4" />
                                                         </Button>
@@ -638,7 +665,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                                             }}
                                                         >
                                                             <Eye className="mr-2 h-4 w-4" />
-                                                            Visualizza
+                                                            {t('common.view')}
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem
                                                             onSelect={(e) => {
@@ -654,7 +681,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                                             }}
                                                         >
                                                             <Edit className="mr-2 h-4 w-4" />
-                                                            Modifica
+                                                            {t('common.edit')}
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem
                                                             disabled={
@@ -676,7 +703,9 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                                             }}
                                                         >
                                                             <Download className="mr-2 h-4 w-4" />
-                                                            Scarica allegato
+                                                            {t(
+                                                                'articles.show.download_attachment',
+                                                            )}
                                                         </DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
@@ -693,10 +722,14 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                         <Card>
                             <CardHeader>
                                 <CardTitle>
-                                    Istruzioni di Pallettizzazione
+                                    {t(
+                                        'articles.show.palletization_instructions.title',
+                                    )}
                                 </CardTitle>
                                 <CardDescription>
-                                    Dati da istruzioni di pallettizzazione
+                                    {t(
+                                        'articles.show.palletization_instructions.description',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-6">
@@ -735,7 +768,9 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                                     <div className="flex min-w-0 items-center gap-2">
                                                         <div>
                                                             <Label className="text-sm font-medium text-muted-foreground">
-                                                                Istruzione
+                                                                {t(
+                                                                    'articles.show.instruction',
+                                                                )}
                                                             </Label>
                                                             <p className="truncate font-mono font-medium">
                                                                 {
@@ -763,7 +798,9 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                                                 variant="ghost"
                                                                 size="icon"
                                                                 className="h-8 w-8 shrink-0"
-                                                                aria-label="Azioni"
+                                                                aria-label={t(
+                                                                    'common.open_actions_menu',
+                                                                )}
                                                             >
                                                                 <MoreHorizontal className="h-4 w-4" />
                                                             </Button>
@@ -785,7 +822,9 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                                                 }}
                                                             >
                                                                 <Eye className="mr-2 h-4 w-4" />
-                                                                Visualizza
+                                                                {t(
+                                                                    'common.view',
+                                                                )}
                                                             </DropdownMenuItem>
                                                             <DropdownMenuItem
                                                                 onSelect={(
@@ -803,7 +842,9 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                                                 }}
                                                             >
                                                                 <Edit className="mr-2 h-4 w-4" />
-                                                                Modifica
+                                                                {t(
+                                                                    'common.edit',
+                                                                )}
                                                             </DropdownMenuItem>
                                                             <DropdownMenuItem
                                                                 disabled={
@@ -827,7 +868,9 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                                                 }}
                                                             >
                                                                 <Download className="mr-2 h-4 w-4" />
-                                                                Scarica allegato
+                                                                {t(
+                                                                    'articles.show.download_attachment',
+                                                                )}
                                                             </DropdownMenuItem>
                                                         </DropdownMenuContent>
                                                     </DropdownMenu>
@@ -1066,9 +1109,15 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                     article.operating_instructions.length > 0 && (
                         <Card>
                             <CardHeader>
-                                <CardTitle>Istruzioni Operative</CardTitle>
+                                <CardTitle>
+                                    {t(
+                                        'articles.show.operational_instructions.title',
+                                    )}
+                                </CardTitle>
                                 <CardDescription>
-                                    Istruzioni operative associate all'articolo
+                                    {t(
+                                        'articles.show.operational_instructions.description',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -1103,7 +1152,9 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                                             variant="ghost"
                                                             size="icon"
                                                             className="h-8 w-8 shrink-0"
-                                                            aria-label="Azioni"
+                                                            aria-label={t(
+                                                                'common.open_actions_menu',
+                                                            )}
                                                         >
                                                             <MoreHorizontal className="h-4 w-4" />
                                                         </Button>
@@ -1123,7 +1174,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                                             }}
                                                         >
                                                             <Eye className="mr-2 h-4 w-4" />
-                                                            Visualizza
+                                                            {t('common.view')}
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem
                                                             onSelect={(e) => {
@@ -1139,7 +1190,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                                             }}
                                                         >
                                                             <Edit className="mr-2 h-4 w-4" />
-                                                            Modifica
+                                                            {t('common.edit')}
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem
                                                             disabled={
@@ -1161,7 +1212,9 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                                             }}
                                                         >
                                                             <Download className="mr-2 h-4 w-4" />
-                                                            Scarica allegato
+                                                            {t(
+                                                                'articles.show.download_attachment',
+                                                            )}
                                                         </DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
@@ -1176,9 +1229,11 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                 <div className="grid gap-4 md:grid-cols-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Etichette</CardTitle>
+                            <CardTitle>
+                                {t('articles.show.labels.title')}
+                            </CardTitle>
                             <CardDescription>
-                                Configurazione etichette
+                                {t('articles.show.labels.description')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -1186,7 +1241,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                 article.labels_external !== undefined && (
                                     <div>
                                         <Label className="text-sm font-medium text-muted-foreground">
-                                            Etichette Esterne
+                                            {t('articles.show.labels.external')}
                                         </Label>
                                         <p>{article.labels_external}</p>
                                     </div>
@@ -1196,7 +1251,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                 article.labels_pvp !== undefined && (
                                     <div>
                                         <Label className="text-sm font-medium text-muted-foreground">
-                                            Etichette PVP
+                                            {t('articles.show.labels.pvp')}
                                         </Label>
                                         <p>{article.labels_pvp}</p>
                                     </div>
@@ -1206,7 +1261,9 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                 article.value_pvp !== undefined && (
                                     <div>
                                         <Label className="text-sm font-medium text-muted-foreground">
-                                            Valore PVP
+                                            {t(
+                                                'articles.show.labels.value_pvp',
+                                            )}
                                         </Label>
                                         <div className="flex items-center gap-2">
                                             <p className="text-right font-mono">
@@ -1226,7 +1283,9 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                 article.labels_ingredient !== undefined && (
                                     <div>
                                         <Label className="text-sm font-medium text-muted-foreground">
-                                            Etichette Ingredienti
+                                            {t(
+                                                'articles.show.labels.ingredient',
+                                            )}
                                         </Label>
                                         <p>{article.labels_ingredient}</p>
                                     </div>
@@ -1236,7 +1295,9 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                 article.labels_data_variable !== undefined && (
                                     <div>
                                         <Label className="text-sm font-medium text-muted-foreground">
-                                            Etichette Dati Variabili
+                                            {t(
+                                                'articles.show.labels.data_variable',
+                                            )}
                                         </Label>
                                         <p>{article.labels_data_variable}</p>
                                     </div>
@@ -1246,7 +1307,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                 article.label_of_jumpers !== undefined && (
                                     <div>
                                         <Label className="text-sm font-medium text-muted-foreground">
-                                            Etichetta Cavallotti
+                                            {t('articles.show.labels.jumpers')}
                                         </Label>
                                         <p>{article.label_of_jumpers}</p>
                                     </div>
@@ -1256,9 +1317,13 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>Peso e Allergeni</CardTitle>
+                            <CardTitle>
+                                {t('articles.show.weight_allergens.title')}
+                            </CardTitle>
                             <CardDescription>
-                                Informazioni su peso e allergeni
+                                {t(
+                                    'articles.show.weight_allergens.description',
+                                )}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -1266,7 +1331,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                 article.weight_kg !== undefined && (
                                     <div>
                                         <Label className="text-sm font-medium text-muted-foreground">
-                                            Peso Collo
+                                            {t('articles.show.weight_collo')}
                                         </Label>
                                         <div className="flex items-center gap-2">
                                             <p className="text-right font-mono">
@@ -1288,7 +1353,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                     disabled
                                 />
                                 <Label className="text-sm font-medium">
-                                    Allergeni
+                                    {t('articles.show.allergens')}
                                 </Label>
                             </div>
                         </CardContent>
@@ -1299,9 +1364,13 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                     article.critical_issues.length > 0 && (
                         <Card>
                             <CardHeader>
-                                <CardTitle>Problemi Critici</CardTitle>
+                                <CardTitle>
+                                    {t('articles.show.critical_issues.title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Problemi critici associati all'articolo
+                                    {t(
+                                        'articles.show.critical_issues.description',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -1320,7 +1389,9 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                                 <p className="text-sm text-muted-foreground">
                                                     {issue.description ||
                                                         issue.name ||
-                                                        'Nessuna descrizione'}
+                                                        t(
+                                                            'common.no_description',
+                                                        )}
                                                 </p>
                                             </div>
                                         </div>
@@ -1332,9 +1403,11 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Controllo Peso Nominale</CardTitle>
+                        <CardTitle>
+                            {t('articles.show.weight_control.title')}
+                        </CardTitle>
                         <CardDescription>
-                            Configurazione controllo peso nominale
+                            {t('articles.show.weight_control.description')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -1342,7 +1415,9 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             article.nominal_weight_control !== undefined && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Controllo Peso
+                                        {t(
+                                            'articles.show.weight_control.control',
+                                        )}
                                     </Label>
                                     <p>{article.nominal_weight_control}</p>
                                 </div>
@@ -1351,7 +1426,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                         {article.weight_unit_of_measur && (
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    Unità di Misura
+                                    {t('articles.show.unit')}
                                 </Label>
                                 <p>{article.weight_unit_of_measur}</p>
                             </div>
@@ -1361,7 +1436,9 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             article.weight_value !== undefined && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Valore
+                                        {t(
+                                            'articles.show.weight_control.value',
+                                        )}
                                     </Label>
                                     <p className="font-mono">
                                         {formatNumber(article.weight_value, 5)}
@@ -1373,7 +1450,9 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             article.object_control_weight !== undefined && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Oggetto del Controllo
+                                        {t(
+                                            'articles.show.weight_control.object',
+                                        )}
                                     </Label>
                                     <p>{article.object_control_weight}</p>
                                 </div>
@@ -1391,10 +1470,10 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
                                     <Package className="h-5 w-5" />
-                                    Materiali di Consumo
+                                    {t('articles.show.materials.title')}
                                 </CardTitle>
                                 <CardDescription>
-                                    Materiali associati all'articolo
+                                    {t('articles.show.materials.description')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -1412,7 +1491,9 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                                 </p>
                                                 <p className="text-sm text-muted-foreground">
                                                     {material.description ??
-                                                        'Nessuna descrizione'}
+                                                        t(
+                                                            'common.no_description',
+                                                        )}
                                                 </p>
                                             </div>
                                         </div>
@@ -1426,16 +1507,18 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                 <div className="grid gap-4 md:grid-cols-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Pallet e Modelli</CardTitle>
+                            <CardTitle>
+                                {t('articles.show.pallet_models.title')}
+                            </CardTitle>
                             <CardDescription>
-                                Informazioni su pallet e modelli
+                                {t('articles.show.pallet_models.description')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {article.pallet_type && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Tipo Pallet
+                                        {t('articles.show.pallet_type_label')}
                                     </Label>
                                     <p className="font-mono">
                                         {article.pallet_type.cod}
@@ -1452,7 +1535,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                 article.plan_packaging !== undefined && (
                                     <div>
                                         <Label className="text-sm font-medium text-muted-foreground">
-                                            Piano Imballaggio
+                                            {t('articles.show.plan_packaging')}
                                         </Label>
                                         <p>{article.plan_packaging}</p>
                                     </div>
@@ -1462,7 +1545,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                 article.pallet_plans !== undefined && (
                                     <div>
                                         <Label className="text-sm font-medium text-muted-foreground">
-                                            Piani Pallet
+                                            {t('articles.show.pallet_plans')}
                                         </Label>
                                         <p>{article.pallet_plans}</p>
                                     </div>
@@ -1471,7 +1554,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             {article.pallet_sheet && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Foglio Pallet
+                                        {t('articles.show.pallet_sheet')}
                                     </Label>
                                     <div className="flex items-center gap-2">
                                         <p className="font-mono">
@@ -1503,7 +1586,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                             }}
                                         >
                                             <Download className="mr-1 h-3 w-3" />
-                                            Scarica
+                                            {t('articles.edit.download')}
                                         </Button>
                                     </div>
                                 </div>
@@ -1512,7 +1595,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             {article.model && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Modello CQ
+                                        {t('articles.show.model_cq')}
                                     </Label>
                                     <div className="flex items-center gap-2">
                                         <p className="font-mono">
@@ -1543,7 +1626,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                             }}
                                         >
                                             <Download className="mr-1 h-3 w-3" />
-                                            Scarica
+                                            {t('articles.edit.download')}
                                         </Button>
                                     </div>
                                 </div>
@@ -1553,9 +1636,13 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>Campioni Cliente</CardTitle>
+                            <CardTitle>
+                                {t('articles.show.customer_samples.title')}
+                            </CardTitle>
                             <CardDescription>
-                                Informazioni sui campioni cliente
+                                {t(
+                                    'articles.show.customer_samples.description',
+                                )}
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -1563,7 +1650,9 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                 article.customer_samples_list !== undefined && (
                                     <div>
                                         <Label className="text-sm font-medium text-muted-foreground">
-                                            Lista Campioni Cliente
+                                            {t(
+                                                'articles.show.customer_samples.list',
+                                            )}
                                         </Label>
                                         <p>{article.customer_samples_list}</p>
                                     </div>
@@ -1577,10 +1666,12 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                         <Card>
                             <CardHeader>
                                 <CardTitle>
-                                    Verifica Consumi Materiali
+                                    {t('articles.show.check_materials.title')}
                                 </CardTitle>
                                 <CardDescription>
-                                    Verifica dei consumi materiali
+                                    {t(
+                                        'articles.show.check_materials.description',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -1589,16 +1680,24 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                         <thead>
                                             <tr className="border-b">
                                                 <th className="p-2 text-left text-sm font-medium">
-                                                    Materiale
+                                                    {t(
+                                                        'articles.show.check_materials.material',
+                                                    )}
                                                 </th>
                                                 <th className="p-2 text-left text-sm font-medium">
-                                                    U.M.
+                                                    {t(
+                                                        'articles.show.check_materials.um',
+                                                    )}
                                                 </th>
                                                 <th className="p-2 text-left text-sm font-medium">
-                                                    Q.tà Prev
+                                                    {t(
+                                                        'articles.show.check_materials.qty_prev',
+                                                    )}
                                                 </th>
                                                 <th className="p-2 text-left text-sm font-medium">
-                                                    Q.tà Effett
+                                                    {t(
+                                                        'articles.show.check_materials.qty_effett',
+                                                    )}
                                                 </th>
                                             </tr>
                                         </thead>
@@ -1685,9 +1784,13 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                     article.media_reale_pz_h_ps !== null) && (
                     <Card>
                         <CardHeader>
-                            <CardTitle>Media Produttività</CardTitle>
+                            <CardTitle>
+                                {t('articles.show.productivity.title')}
+                            </CardTitle>
                             <CardDescription>
-                                Medie di produttività previste e reali
+                                {t(
+                                    'articles.show.media_productivity.description',
+                                )}
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -1697,7 +1800,9 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                         undefined && (
                                         <div>
                                             <Label className="text-sm font-medium text-muted-foreground">
-                                                Media Prevista CFZ h/pz
+                                                {t(
+                                                    'articles.show.media_prevista_cfz',
+                                                )}
                                             </Label>
                                             <p className="font-mono">
                                                 {formatNumber(
@@ -1713,7 +1818,9 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                         undefined && (
                                         <div>
                                             <Label className="text-sm font-medium text-muted-foreground">
-                                                Media Reale CFZ h/pz
+                                                {t(
+                                                    'articles.show.media_reale_cfz',
+                                                )}
                                             </Label>
                                             <p className="font-mono">
                                                 {formatNumber(
@@ -1729,7 +1836,9 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                         undefined && (
                                         <div>
                                             <Label className="text-sm font-medium text-muted-foreground">
-                                                Media Prevista pz/h/ps
+                                                {t(
+                                                    'articles.show.media_prevista_pz',
+                                                )}
                                             </Label>
                                             <p className="font-mono">
                                                 {formatNumber(
@@ -1745,7 +1854,9 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                         undefined && (
                                         <div>
                                             <Label className="text-sm font-medium text-muted-foreground">
-                                                Media Reale pz/h/ps
+                                                {t(
+                                                    'articles.show.media_reale_pz',
+                                                )}
                                             </Label>
                                             <p className="font-mono">
                                                 {formatNumber(
@@ -1764,17 +1875,17 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <CheckCircle2 className="h-5 w-5" />
-                            Approvazioni
+                            {t('articles.show.approvals.title')}
                         </CardTitle>
                         <CardDescription>
-                            Stato delle approvazioni per questo articolo
+                            {t('articles.show.approvals.description')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        {/* Approvazione Produzione */}
+                        {/* Production Approval */}
                         <div className="space-y-3 border-b pb-4">
                             <Label className="text-base font-semibold">
-                                Approvazione Produzione
+                                {t('articles.show.approval_production')}
                             </Label>
                             <div className="flex items-center space-x-2">
                                 {article.production_approval_checkbox ? (
@@ -1784,14 +1895,14 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                 )}
                                 <Label className="text-sm font-medium">
                                     {article.production_approval_checkbox
-                                        ? 'Approvato'
-                                        : 'Non Approvato'}
+                                        ? t('common.approved')
+                                        : t('common.not_approved')}
                                 </Label>
                             </div>
                             {article.production_approval_employee && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Addetto
+                                        {t('articles.show.attendant')}
                                     </Label>
                                     <p>
                                         {article.production_approval_employee}
@@ -1801,7 +1912,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             {article.production_approval_date && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Data
+                                        {t('articles.show.date')}
                                     </Label>
                                     <p>
                                         {new Date(
@@ -1813,7 +1924,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             {article.production_approval_notes && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Note
+                                        {t('articles.show.notes')}
                                     </Label>
                                     <p className="text-sm whitespace-pre-wrap">
                                         {article.production_approval_notes}
@@ -1822,10 +1933,10 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             )}
                         </div>
 
-                        {/* Approvazione Qualità */}
+                        {/* Quality Approval */}
                         <div className="space-y-3 border-b pb-4">
                             <Label className="text-base font-semibold">
-                                Approvazione Qualità
+                                {t('articles.show.approval_quality')}
                             </Label>
                             <div className="flex items-center space-x-2">
                                 {article.approv_quality_checkbox ? (
@@ -1835,14 +1946,14 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                 )}
                                 <Label className="text-sm font-medium">
                                     {article.approv_quality_checkbox
-                                        ? 'Approvato'
-                                        : 'Non Approvato'}
+                                        ? t('common.approved')
+                                        : t('common.not_approved')}
                                 </Label>
                             </div>
                             {article.approv_quality_employee && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Addetto
+                                        {t('articles.show.attendant')}
                                     </Label>
                                     <p>{article.approv_quality_employee}</p>
                                 </div>
@@ -1850,7 +1961,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             {article.approv_quality_date && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Data
+                                        {t('articles.show.date')}
                                     </Label>
                                     <p>
                                         {new Date(
@@ -1862,7 +1973,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             {article.approv_quality_notes && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Note
+                                        {t('articles.show.notes')}
                                     </Label>
                                     <p className="text-sm whitespace-pre-wrap">
                                         {article.approv_quality_notes}
@@ -1874,7 +1985,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                         {/* Approvazione Commerciale */}
                         <div className="space-y-3 border-b pb-4">
                             <Label className="text-base font-semibold">
-                                Approvazione Commerciale
+                                {t('articles.show.approval_commercial')}
                             </Label>
                             <div className="flex items-center space-x-2">
                                 {article.commercial_approval_checkbox ? (
@@ -1884,14 +1995,14 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                 )}
                                 <Label className="text-sm font-medium">
                                     {article.commercial_approval_checkbox
-                                        ? 'Approvato'
-                                        : 'Non Approvato'}
+                                        ? t('common.approved')
+                                        : t('common.not_approved')}
                                 </Label>
                             </div>
                             {article.commercial_approval_employee && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Addetto
+                                        {t('articles.show.attendant')}
                                     </Label>
                                     <p>
                                         {article.commercial_approval_employee}
@@ -1901,7 +2012,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             {article.commercial_approval_date && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Data
+                                        {t('articles.show.date')}
                                     </Label>
                                     <p>
                                         {new Date(
@@ -1913,7 +2024,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             {article.commercial_approval_notes && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Note
+                                        {t('articles.show.notes')}
                                     </Label>
                                     <p className="text-sm whitespace-pre-wrap">
                                         {article.commercial_approval_notes}
@@ -1922,10 +2033,10 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             )}
                         </div>
 
-                        {/* Approvazione Cliente */}
+                        {/* Customer Approval */}
                         <div className="space-y-3 border-b pb-4">
                             <Label className="text-base font-semibold">
-                                Approvazione Cliente
+                                {t('articles.show.approval_client')}
                             </Label>
                             <div className="flex items-center space-x-2">
                                 {article.client_approval_checkbox ? (
@@ -1935,14 +2046,14 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                 )}
                                 <Label className="text-sm font-medium">
                                     {article.client_approval_checkbox
-                                        ? 'Approvato'
-                                        : 'Non Approvato'}
+                                        ? t('common.approved')
+                                        : t('common.not_approved')}
                                 </Label>
                             </div>
                             {article.client_approval_employee && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Addetto
+                                        {t('articles.show.attendant')}
                                     </Label>
                                     <p>{article.client_approval_employee}</p>
                                 </div>
@@ -1950,7 +2061,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             {article.client_approval_date && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Data
+                                        {t('articles.show.date')}
                                     </Label>
                                     <p>
                                         {new Date(
@@ -1962,7 +2073,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             {article.client_approval_notes && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Note
+                                        {t('articles.show.notes')}
                                     </Label>
                                     <p className="text-sm whitespace-pre-wrap">
                                         {article.client_approval_notes}
@@ -1978,7 +2089,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                 disabled
                             />
                             <Label className="text-sm font-medium">
-                                Spunta Approvazione
+                                {t('articles.show.check_approval')}
                             </Label>
                         </div>
                     </CardContent>
@@ -1990,9 +2101,13 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                     article.height_cm) && (
                     <Card>
                         <CardHeader>
-                            <CardTitle>Dimensioni e Peso</CardTitle>
+                            <CardTitle>
+                                {t('articles.show.dimensions_weight.title')}
+                            </CardTitle>
                             <CardDescription>
-                                Misure e peso dell'articolo
+                                {t(
+                                    'articles.show.dimensions_weight.description',
+                                )}
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -2121,8 +2236,10 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                 onOpenChange={setShowDeleteDialog}
                 onConfirm={handleDelete}
                 isLoading={isDeleting}
-                title="Conferma eliminazione"
-                description={`Sei sicuro di voler eliminare l'articolo ${article.cod_article_las}?\n\nQuesta azione non può essere annullata. L'articolo verrà eliminato definitivamente.`}
+                title={t('common.confirm_delete')}
+                description={t('articles.show.delete_confirm.description', {
+                    code: article.cod_article_las,
+                })}
             />
         </AppLayout>
     );

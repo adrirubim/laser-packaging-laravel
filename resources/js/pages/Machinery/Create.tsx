@@ -66,17 +66,18 @@ export default function MachineryCreate() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Nuovo Macchinario" />
+            <Head title={t('machinery.create.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Nuovo Macchinario</CardTitle>
+                                <CardTitle>
+                                    {t('machinery.create.card_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Compila i dettagli per creare un nuovo
-                                    macchinario
+                                    {t('machinery.form.card_description')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -101,7 +102,7 @@ export default function MachineryCreate() {
                                                         htmlFor="cod"
                                                         required
                                                     >
-                                                        Codice
+                                                        {t('common.code')}
                                                     </FormLabel>
                                                     <Input
                                                         id="cod"
@@ -114,7 +115,9 @@ export default function MachineryCreate() {
                                                             )
                                                         }
                                                         required
-                                                        placeholder="Codice macchinario"
+                                                        placeholder={t(
+                                                            'machinery.form.code_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={allErrors.cod}
@@ -126,7 +129,9 @@ export default function MachineryCreate() {
                                                         htmlFor="description"
                                                         required
                                                     >
-                                                        Descrizione
+                                                        {t(
+                                                            'common.description',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="description"
@@ -141,7 +146,9 @@ export default function MachineryCreate() {
                                                             )
                                                         }
                                                         required
-                                                        placeholder="Descrizione macchinario"
+                                                        placeholder={t(
+                                                            'machinery.form.description_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={
@@ -152,7 +159,9 @@ export default function MachineryCreate() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="parameter">
-                                                        Parametro
+                                                        {t(
+                                                            'machinery.form.parameter_placeholder',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="parameter"
@@ -166,7 +175,9 @@ export default function MachineryCreate() {
                                                                 e.target.value,
                                                             )
                                                         }
-                                                        placeholder="Parametro"
+                                                        placeholder={t(
+                                                            'machinery.form.parameter_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={
@@ -177,7 +188,9 @@ export default function MachineryCreate() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="value_type_uuid">
-                                                        Tipo Valore
+                                                        {t(
+                                                            'machinery.form.value_type_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="value_type_uuid"
@@ -205,7 +218,9 @@ export default function MachineryCreate() {
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             <SelectItem value="none">
-                                                                Nessuno
+                                                                {t(
+                                                                    'machinery.form.none',
+                                                                )}
                                                             </SelectItem>
                                                             {valueTypes?.map(
                                                                 (vt) => (
@@ -239,8 +254,12 @@ export default function MachineryCreate() {
                                                         }
                                                     >
                                                         {form.processing
-                                                            ? 'Creando...'
-                                                            : 'Crea Macchinario'}
+                                                            ? t(
+                                                                  'machinery.create.submitting',
+                                                              )
+                                                            : t(
+                                                                  'machinery.create.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -252,7 +271,7 @@ export default function MachineryCreate() {
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

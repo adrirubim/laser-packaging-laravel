@@ -7,6 +7,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { useTranslations } from '@/hooks/use-translations';
 import productionPortal from '@/routes/production-portal/index';
 import { Head, Link, router } from '@inertiajs/react';
 import { Eye, LogOut, Package, RefreshCw } from 'lucide-react';
@@ -66,6 +67,7 @@ export default function ProductionPortalDashboard({
     token,
     flash,
 }: DashboardProps) {
+    const { t } = useTranslations();
     const [isRefreshing, setIsRefreshing] = useState(false);
 
     // Store token globally for API calls (in effect to satisfy immutability rule)
@@ -93,17 +95,20 @@ export default function ProductionPortalDashboard({
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-            <Head title="Portale di Produzione - Dashboard" />
+            <Head title={t('production_portal.dashboard.page_title')} />
 
             {/* Header */}
             <header className="border-b bg-white/50 backdrop-blur dark:bg-slate-900/50">
                 <div className="container mx-auto flex items-center justify-between px-4 py-4">
                     <div>
                         <h1 className="text-2xl font-bold">
-                            Portale di Produzione
+                            {t('production_portal.dashboard.title')}
                         </h1>
                         <p className="text-sm text-muted-foreground">
-                            Benvenuto, {employee.name} {employee.surname}
+                            {t('production_portal.dashboard.welcome', {
+                                name: employee.name,
+                                surname: employee.surname,
+                            })}
                         </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -116,7 +121,7 @@ export default function ProductionPortalDashboard({
                             <RefreshCw
                                 className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`}
                             />
-                            Aggiorna
+                            {t('production_portal.dashboard.refresh')}
                         </Button>
                         <Button
                             variant="outline"
@@ -124,7 +129,7 @@ export default function ProductionPortalDashboard({
                             onClick={handleLogout}
                         >
                             <LogOut className="mr-2 h-4 w-4" />
-                            Esci
+                            {t('production_portal.dashboard.logout')}
                         </Button>
                     </div>
                 </div>
@@ -148,7 +153,9 @@ export default function ProductionPortalDashboard({
                 <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
                     <Card>
                         <CardHeader className="pb-2">
-                            <CardDescription>Ordini Attivi</CardDescription>
+                            <CardDescription>
+                                {t('production_portal.dashboard.stats_active')}
+                            </CardDescription>
                             <CardTitle className="text-3xl">
                                 {orders.length}
                             </CardTitle>
@@ -156,7 +163,11 @@ export default function ProductionPortalDashboard({
                     </Card>
                     <Card>
                         <CardHeader className="pb-2">
-                            <CardDescription>In corso</CardDescription>
+                            <CardDescription>
+                                {t(
+                                    'production_portal.dashboard.stats_in_progress',
+                                )}
+                            </CardDescription>
                             <CardTitle className="text-3xl">
                                 {orders.filter((o) => o.status === 3).length}
                             </CardTitle>
@@ -164,7 +175,11 @@ export default function ProductionPortalDashboard({
                     </Card>
                     <Card>
                         <CardHeader className="pb-2">
-                            <CardDescription>Lanciate</CardDescription>
+                            <CardDescription>
+                                {t(
+                                    'production_portal.dashboard.stats_launched',
+                                )}
+                            </CardDescription>
                             <CardTitle className="text-3xl">
                                 {orders.filter((o) => o.status === 2).length}
                             </CardTitle>
@@ -175,16 +190,20 @@ export default function ProductionPortalDashboard({
                 {/* Orders List */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>Ordini di Produzione</CardTitle>
+                        <CardTitle>
+                            {t('production_portal.dashboard.orders_title')}
+                        </CardTitle>
                         <CardDescription>
-                            Lista degli ordini attivi disponibili
+                            {t('production_portal.dashboard.orders_subtitle')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
                         {orders.length === 0 ? (
                             <div className="py-12 text-center text-muted-foreground">
                                 <Package className="mx-auto mb-4 h-12 w-12 opacity-50" />
-                                <p>Non ci sono ordini attivi disponibili</p>
+                                <p>
+                                    {t('production_portal.dashboard.no_orders')}
+                                </p>
                             </div>
                         ) : (
                             <div className="space-y-4">
@@ -216,8 +235,9 @@ export default function ProductionPortalDashboard({
                                                             variant="outline"
                                                             className="border-orange-500 text-orange-700 dark:text-orange-300"
                                                         >
-                                                            Pendiente
-                                                            Autocontrollo
+                                                            {t(
+                                                                'production_portal.dashboard.pending_autocontrollo',
+                                                            )}
                                                         </Badge>
                                                     )}
                                                 </div>
@@ -225,7 +245,10 @@ export default function ProductionPortalDashboard({
                                                 {order.article && (
                                                     <p className="mb-1 text-sm text-muted-foreground">
                                                         <strong>
-                                                            Artículo:
+                                                            {t(
+                                                                'production_portal.dashboard.article_label',
+                                                            )}
+                                                            :
                                                         </strong>{' '}
                                                         {
                                                             order.article
@@ -234,14 +257,19 @@ export default function ProductionPortalDashboard({
                                                         -{' '}
                                                         {order.article
                                                             .article_descr ||
-                                                            'Sin descripción'}
+                                                            t(
+                                                                'production_portal.dashboard.no_description',
+                                                            )}
                                                     </p>
                                                 )}
 
                                                 {order.customer && (
                                                     <p className="mb-1 text-sm text-muted-foreground">
                                                         <strong>
-                                                            Cliente:
+                                                            {t(
+                                                                'production_portal.dashboard.customer_label',
+                                                            )}
+                                                            :
                                                         </strong>{' '}
                                                         {
                                                             order.customer
@@ -256,7 +284,10 @@ export default function ProductionPortalDashboard({
                                                 <div className="mt-3">
                                                     <div className="mb-1 flex items-center justify-between text-xs text-muted-foreground">
                                                         <span>
-                                                            Progresso:{' '}
+                                                            {t(
+                                                                'production_portal.dashboard.progress_label',
+                                                            )}
+                                                            :{' '}
                                                             {
                                                                 order.worked_quantity
                                                             }{' '}
@@ -278,7 +309,10 @@ export default function ProductionPortalDashboard({
                                                         />
                                                     </div>
                                                     <p className="mt-1 text-xs text-muted-foreground">
-                                                        Restante:{' '}
+                                                        {t(
+                                                            'production_portal.dashboard.remaining_label',
+                                                        )}
+                                                        :{' '}
                                                         {order.remain_quantity}
                                                     </p>
                                                 </div>
@@ -294,7 +328,9 @@ export default function ProductionPortalDashboard({
                                                     size="sm"
                                                 >
                                                     <Eye className="mr-2 h-4 w-4" />
-                                                    Vedi dettagli
+                                                    {t(
+                                                        'production_portal.dashboard.view_details',
+                                                    )}
                                                 </Button>
                                             </Link>
                                         </div>

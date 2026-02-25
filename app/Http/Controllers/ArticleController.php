@@ -67,7 +67,7 @@ class ArticleController extends Controller
                 \Log::error('Errore caricamento opzioni formulario in ArticleController@index: '.$e->getMessage(), [
                     'trace' => $e->getTraceAsString(),
                 ]);
-                // Continuare con opzioni vuote se getFormOptions fallisce
+                // Continue with empty options if getFormOptions fails
                 $formOptions = [
                     'offers' => [],
                     'categories' => [],
@@ -92,7 +92,7 @@ class ArticleController extends Controller
                 'offers' => [],
                 'categories' => [],
                 'filters' => $request->only(['search', 'offer_uuid', 'article_category']),
-                'error' => 'Si è verificato un errore nel caricamento degli articoli. Controlla i log per maggiori dettagli.',
+                'error' => __('flash.articles_load_error'),
             ]);
         }
     }
@@ -104,16 +104,16 @@ class ArticleController extends Controller
     {
         $formOptions = $this->articleRepository->getFormOptions();
 
-        // Se c'è source_article_uuid, caricare dati per duplicazione
+        // If source_article_uuid exists, load data for duplication
         $sourceArticle = $this->articleRepository->getSourceArticleForDuplication(
             $request->get('source_article_uuid')
         );
 
-        // Generare codice LAS automaticamente se c'è offerta selezionata
+        // Generate LAS code automatically if offer is selected
         $lasCode = null;
         $selectedOfferUuid = $request->get('offer_uuid');
 
-        // Se è duplicazione, usare l'offerta dell'articolo sorgente
+        // If duplication, use the source article's offer
         if ($sourceArticle && ! $selectedOfferUuid) {
             $selectedOfferUuid = $sourceArticle->offer_uuid;
         }
@@ -122,11 +122,11 @@ class ArticleController extends Controller
             try {
                 $lasCode = $this->articleCodeService->generateNextLAS($selectedOfferUuid);
             } catch (\Exception $e) {
-                // Se non si può generare, lasciare vuoto
+                // If generation fails, leave empty
             }
         }
 
-        // Ottenere dati dell'offerta se selezionata (per um, pieces_per_package, media e precompilare Converti in Articolo)
+        // Get offer data if selected (for um, pieces_per_package, media and prefill Convert to Article)
         $selectedOffer = null;
         $um = null;
         $piecesPerPackage = null;
@@ -140,9 +140,9 @@ class ArticleController extends Controller
             if ($selectedOffer) {
                 $um = $selectedOffer->unit_of_measure;
                 $piecesPerPackage = $selectedOffer->piece;
-                // Calcolare media dall'offerta (simile al legacy)
+                // Calculate media from offer (similar to legacy)
                 $mediaValues = $this->calculateMediaFromOffer($selectedOffer);
-                // Converti in Articolo: precompilare con dati dell'offerta quando non c'è articolo sorgente
+                // Convert to Article: prefill with offer data when no source article
                 if (! $sourceArticle) {
                     $articleDescrFromOffer = $selectedOffer->provisional_description;
                     $codArticleClientFromOffer = $selectedOffer->article_code_ref;
@@ -302,7 +302,7 @@ class ArticleController extends Controller
         }
 
         return redirect()->route('articles.index')
-            ->with('success', 'Articolo creato con successo.');
+            ->with('success', __('flash.article.created'));
     }
 
     /**
@@ -339,7 +339,7 @@ class ArticleController extends Controller
         $formOptions = $this->articleRepository->getFormOptions();
         $article = $this->articleRepository->getForEdit($article);
 
-        // Ottenere dati dell'offerta dell'articolo (per um, pieces_per_package, media)
+        // Get article's offer data (for um, pieces_per_package, media)
         $selectedOffer = $article->offer;
         $um = $selectedOffer?->unit_of_measure;
         $piecesPerPackage = $selectedOffer?->piece;
@@ -348,7 +348,7 @@ class ArticleController extends Controller
 
         if ($selectedOffer) {
             $mediaValues = $this->calculateMediaFromOffer($selectedOffer);
-            // Calcolare media_reale_pz_h_ps se esiste media_reale_cfz_h_pz
+            // Calculate media_reale_pz_h_ps if media_reale_cfz_h_pz exists
             if ($article->media_reale_cfz_h_pz) {
                 $mediaRealePzHPs = $article->media_reale_cfz_h_pz * ($piecesPerPackage ?? 1);
             }
@@ -398,7 +398,7 @@ class ArticleController extends Controller
                 'max:255',
                 function ($attribute, $value, $fail) use ($article) {
                     if (! empty($value) && $this->articleCodeService->lasCodeExists($value, $article->id)) {
-                        $fail('Il codice LAS esiste già.');
+                        $fail(__('validation.las_code_exists'));
                     }
                 },
             ],
@@ -512,7 +512,7 @@ class ArticleController extends Controller
         $article = $this->updateArticleAction->execute($article, $validated, $request);
 
         return redirect()->route('articles.show', $article)
-            ->with('success', 'Articolo aggiornato con successo.');
+            ->with('success', __('flash.article.updated'));
     }
 
     /**
@@ -520,10 +520,10 @@ class ArticleController extends Controller
      */
     public function destroy(Article $article)
     {
-        // Verificare che non abbia ordini associati
+        // Check that it has no associated orders
         if ($article->orders()->where('removed', false)->exists()) {
             return back()->withErrors([
-                'error' => 'Impossibile eliminare l\'articolo. Ha ordini associati.',
+                'error' => __('flash.cannot_delete_article'),
             ]);
         }
 
@@ -532,12 +532,12 @@ class ArticleController extends Controller
         $article->removed = true;
         $article->save();
 
-        // Invalidare cache opzioni formulari ordini e indirizzi di spedizione
+        // Invalidate order form options and shipping addresses cache
         $this->orderRepository->clearFormOptionsCache();
         $this->orderRepository->clearShippingAddressesCache($articleUuid);
 
         return redirect()->route('articles.index')
-            ->with('success', 'Articolo eliminato con successo.');
+            ->with('success', __('flash.article.deleted'));
     }
 
     /**
@@ -600,7 +600,7 @@ class ArticleController extends Controller
     public function downloadLineLayoutFile(Article $article)
     {
         if (! $article->line_layout) {
-            return back()->withErrors(['error' => 'Nessun file Layout linea trovato per questo articolo.']);
+            return back()->withErrors(['error' => __('flash.file_not_found_layout')]);
         }
 
         $path = $this->lineLayoutStoragePath($article);
@@ -610,7 +610,7 @@ class ArticleController extends Controller
             return Storage::disk('line_layout')->download($path, $article->line_layout);
         }
 
-        // Fallback a filesystem diretto (compatibilità con file esistenti)
+        // Fallback to direct filesystem (compatibility with existing files)
         $legacyPath = storage_path('app/line_layout/'.$article->uuid.'/');
         $filePath = $legacyPath.$article->line_layout;
 
@@ -618,7 +618,7 @@ class ArticleController extends Controller
             return response()->download($filePath, $article->line_layout);
         }
 
-        return back()->withErrors(['error' => 'File non trovato.']);
+        return back()->withErrors(['error' => __('flash.file_not_found')]);
     }
 
     /**

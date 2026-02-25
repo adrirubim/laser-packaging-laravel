@@ -77,7 +77,7 @@ class ArticleFactory extends Factory
             'weight_unit_of_measur' => $this->faker->randomElement(['KG', 'G', 'MG']),
             'weight_value' => $this->faker->randomFloat(3, 0.1, 50),
             'object_control_weight' => $this->faker->boolean(50),
-            'pallet_sheet' => null, // UUID PalletSheet, verrà assegnato nel seeder
+            'pallet_sheet' => null, // UUID PalletSheet, will be assigned in seeder
             'customer_samples_list' => $this->faker->boolean(30) ? 1 : 0, // Entero: 0 o 1
             'removed' => false,
         ];

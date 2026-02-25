@@ -25,7 +25,7 @@ class MaterialController extends Controller
     {
         $query = Material::active();
 
-        // Ricerca
+        // Search
         if ($request->has('search')) {
             $search = $request->get('search');
             $query->where(function ($q) use ($search) {
@@ -63,11 +63,11 @@ class MaterialController extends Controller
 
         $material = Material::create($validated);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->articleRepository->clearFormOptionsCache();
 
         return redirect()->route('materials.index')
-            ->with('success', 'Materiale creato con successo.');
+            ->with('success', __('flash.material.created'));
     }
 
     /**
@@ -99,11 +99,11 @@ class MaterialController extends Controller
     {
         $material->update($request->validated());
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->articleRepository->clearFormOptionsCache();
 
         return redirect()->route('materials.index')
-            ->with('success', 'Materiale aggiornato con successo.');
+            ->with('success', __('flash.material.updated'));
     }
 
     /**
@@ -113,10 +113,10 @@ class MaterialController extends Controller
     {
         $material->update(['removed' => true]);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->articleRepository->clearFormOptionsCache();
 
         return redirect()->route('materials.index')
-            ->with('success', 'Materiale eliminato con successo.');
+            ->with('success', __('flash.material.deleted'));
     }
 }

@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/input-otp';
 import { useAppearance } from '@/hooks/use-appearance';
 import { useClipboard } from '@/hooks/use-clipboard';
+import { useTranslations } from '@/hooks/use-translations';
 import { OTP_MAX_LENGTH } from '@/hooks/use-two-factor-auth';
 import { confirm } from '@/routes/two-factor/index';
 import { Form } from '@inertiajs/react';
@@ -62,6 +63,7 @@ function TwoFactorSetupStep({
     onNextStep: () => void;
     errors: string[];
 }) {
+    const { t } = useTranslations();
     const { resolvedAppearance } = useAppearance();
     const [copiedText, copy] = useClipboard();
     const IconComponent = copiedText === manualSetupKey ? Check : Copy;
@@ -104,7 +106,7 @@ function TwoFactorSetupStep({
                     <div className="relative flex w-full items-center justify-center">
                         <div className="absolute inset-0 top-1/2 h-px w-full bg-border" />
                         <span className="relative bg-card px-2 py-1">
-                            oppure inserisci il codice manualmente
+                            {t('auth.two_factor.setup.or_enter_manually')}
                         </span>
                     </div>
 
@@ -145,6 +147,7 @@ function TwoFactorVerificationStep({
     onClose: () => void;
     onBack: () => void;
 }) {
+    const { t } = useTranslations();
     const [code, setCode] = useState<string>('');
     const pinInputContainerRef = useRef<HTMLDivElement>(null);
 
@@ -209,7 +212,7 @@ function TwoFactorVerificationStep({
                                 onClick={onBack}
                                 disabled={processing}
                             >
-                                Indietro
+                                {t('common.back')}
                             </Button>
                             <Button
                                 type="submit"
@@ -218,7 +221,7 @@ function TwoFactorVerificationStep({
                                     processing || code.length < OTP_MAX_LENGTH
                                 }
                             >
-                                Conferma
+                                {t('auth.two_factor.setup.confirm')}
                             </Button>
                         </div>
                     </div>
@@ -251,6 +254,7 @@ export default function TwoFactorSetupModal({
     fetchSetupData,
     errors,
 }: TwoFactorSetupModalProps) {
+    const { t } = useTranslations();
     const [showVerificationStep, setShowVerificationStep] =
         useState<boolean>(false);
 
@@ -261,29 +265,26 @@ export default function TwoFactorSetupModal({
     }>(() => {
         if (twoFactorEnabled) {
             return {
-                title: 'Autenticazione a due fattori attivata',
-                description:
-                    "L'autenticazione a due fattori è ora attiva. Scansiona il codice QR o inserisci la chiave di configurazione nell'app di autenticazione.",
-                buttonText: 'Chiudi',
+                title: t('auth.two_factor.setup.enabled_title'),
+                description: t('auth.two_factor.setup.enabled_description'),
+                buttonText: t('common.close'),
             };
         }
 
         if (showVerificationStep) {
             return {
-                title: 'Verifica codice di autenticazione',
-                description:
-                    'Inserisci il codice a 6 cifre dalla tua app di autenticazione',
-                buttonText: 'Continua',
+                title: t('auth.two_factor.setup.verify_title'),
+                description: t('auth.two_factor.setup.verify_description'),
+                buttonText: t('auth.two_factor.submit'),
             };
         }
 
         return {
-            title: 'Attiva autenticazione a due fattori',
-            description:
-                "Per completare l'attivazione dell'autenticazione a due fattori, scansiona il codice QR o inserisci la chiave di configurazione nell'app di autenticazione",
-            buttonText: 'Continua',
+            title: t('auth.two_factor.setup.enable_title'),
+            description: t('auth.two_factor.setup.enable_description'),
+            buttonText: t('auth.two_factor.submit'),
         };
-    }, [twoFactorEnabled, showVerificationStep]);
+    }, [twoFactorEnabled, showVerificationStep, t]);
 
     const handleModalNextStep = useCallback(() => {
         if (requiresConfirmation) {

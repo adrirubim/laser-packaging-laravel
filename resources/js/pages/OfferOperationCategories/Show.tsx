@@ -8,6 +8,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import offerOperationCategories from '@/routes/offer-operation-categories/index';
 import offerOperations from '@/routes/offer-operations/index';
@@ -38,16 +39,17 @@ type OfferOperationCategoriesShowProps = {
 export default function OfferOperationCategoriesShow({
     category,
 }: OfferOperationCategoriesShowProps) {
+    const { t } = useTranslations();
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: '/offers',
         },
         {
-            title: 'Categorie Operazioni',
+            title: t('offer_operation_categories.page_title'),
             href: offerOperationCategories.index().url,
         },
         {
@@ -78,14 +80,18 @@ export default function OfferOperationCategoriesShow({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Categoria Operazione ${category.name}`} />
+            <Head
+                title={t('offer_operation_categories.show.page_title', {
+                    name: category.name,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
                     <div className="flex-1">
                         <h1 className="text-2xl font-bold">{category.name}</h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Codice:{' '}
+                            {t('offer_operation_categories.form.code_label')}:{' '}
                             <span className="font-mono">{category.code}</span> |
                             UUID:{' '}
                             <span className="font-mono">{category.uuid}</span>
@@ -101,7 +107,7 @@ export default function OfferOperationCategoriesShow({
                                 }
                             >
                                 <Edit className="mr-2 h-4 w-4" />
-                                Modifica
+                                {t('common.edit')}
                             </Link>
                         </Button>
                         <Button
@@ -110,7 +116,7 @@ export default function OfferOperationCategoriesShow({
                             disabled={isDeleting}
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Elimina
+                            {t('common.delete')}
                         </Button>
                     </div>
                 </div>
@@ -118,15 +124,23 @@ export default function OfferOperationCategoriesShow({
                 <div className="grid gap-4 md:grid-cols-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Dettagli Categoria</CardTitle>
+                            <CardTitle>
+                                {t(
+                                    'offer_operation_categories.show.details_title',
+                                )}
+                            </CardTitle>
                             <CardDescription>
-                                Informazioni su questa categoria
+                                {t(
+                                    'offer_operation_categories.show.details_subtitle',
+                                )}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    Codice
+                                    {t(
+                                        'offer_operation_categories.form.code_label',
+                                    )}
                                 </Label>
                                 <p className="font-mono text-lg font-semibold">
                                     {category.code}
@@ -135,7 +149,9 @@ export default function OfferOperationCategoriesShow({
 
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    Nome
+                                    {t(
+                                        'offer_operation_categories.form.name_label',
+                                    )}
                                 </Label>
                                 <p className="text-lg font-semibold">
                                     {category.name}
@@ -166,9 +182,15 @@ export default function OfferOperationCategoriesShow({
                         <CardHeader>
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <CardTitle>Operazioni</CardTitle>
+                                    <CardTitle>
+                                        {t(
+                                            'offer_operation_categories.show.operations_title',
+                                        )}
+                                    </CardTitle>
                                     <CardDescription>
-                                        Operazioni associate a questa categoria
+                                        {t(
+                                            'offer_operation_categories.show.operations_subtitle',
+                                        )}
                                     </CardDescription>
                                 </div>
                                 <Button asChild size="sm" variant="outline">
@@ -183,7 +205,9 @@ export default function OfferOperationCategoriesShow({
                                         }
                                     >
                                         <Plus className="mr-2 h-4 w-4" />
-                                        Nuova Operazione
+                                        {t(
+                                            'offer_operation_categories.show.operations_create',
+                                        )}
                                     </Link>
                                 </Button>
                             </div>
@@ -221,8 +245,11 @@ export default function OfferOperationCategoriesShow({
                     open={deleteDialogOpen}
                     onOpenChange={setDeleteDialogOpen}
                     onConfirm={handleDeleteConfirm}
-                    title="Elimina Categoria Operazione"
-                    description="Sei sicuro di voler eliminare questa categoria operazione? Questa azione non può essere annullata."
+                    title={t('offer_operation_categories.delete.title')}
+                    description={t(
+                        'offer_operation_categories.delete.description',
+                        { name: category.name },
+                    )}
                     itemName={category.name}
                     isLoading={isDeleting}
                 />

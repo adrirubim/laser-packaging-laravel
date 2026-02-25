@@ -32,7 +32,7 @@ class PlanningCalculationServiceTest extends TestCase
             'worked_quantity' => 0,
         ]);
 
-        // una lavorazione di 50 pezzi già registrata
+        // one processing of 50 pieces already registered
         ProductionOrderProcessing::factory()->create([
             'order_uuid' => $order->uuid,
             'quantity' => 50,

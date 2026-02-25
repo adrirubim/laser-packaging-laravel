@@ -22,7 +22,7 @@ return new class extends Migration
                 $table->integer('value_type_uuid')->nullable()->after('parameter');
             });
 
-            // Aggiungere indice in un'operazione separata
+            // Add index in a separate operation
             Schema::table('machinery', function (Blueprint $table) {
                 if (! $this->indexExists('machinery', 'machinery_value_type_uuid_index')) {
                     $table->index('value_type_uuid');

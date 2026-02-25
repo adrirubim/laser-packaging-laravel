@@ -5,6 +5,7 @@ import {
     useFlashNotifications,
 } from '@/components/flash-notifications';
 import { IndexHeader } from '@/components/IndexHeader';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import criticalIssues from '@/routes/critical-issues/index';
 import { type BreadcrumbItem } from '@/types';
@@ -44,6 +45,7 @@ type CriticalIssuesIndexProps = {
 export default function CriticalIssuesIndex() {
     const { props } = usePage<CriticalIssuesIndexProps>();
     const { criticalIssues: criticalIssuesPaginated, filters } = props;
+    const { t } = useTranslations();
     const { flash } = useFlashNotifications();
 
     const [searchValue, setSearchValue] = useState(filters.search ?? '');
@@ -130,21 +132,21 @@ export default function CriticalIssuesIndex() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Criticità',
+            title: t('critical_issues.breadcrumb'),
             href: criticalIssues.index().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Criticità" />
+            <Head title={t('critical_issues.title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="Criticità"
-                    subtitle="Elenco delle criticità attive."
+                    title={t('critical_issues.title')}
+                    subtitle={t('critical_issues.index.subtitle')}
                     createHref={criticalIssues.create().url}
-                    createLabel="Nuova Criticità"
+                    createLabel={t('critical_issues.index.create')}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -152,7 +154,7 @@ export default function CriticalIssuesIndex() {
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="space-y-1">
                         <label className="text-xs font-medium text-muted-foreground">
-                            Cerca
+                            {t('common.search')}
                         </label>
                         <div className="relative flex items-center gap-2">
                             <div className="relative flex-1">
@@ -163,7 +165,9 @@ export default function CriticalIssuesIndex() {
                                     onChange={(e) =>
                                         setSearchValue(e.target.value)
                                     }
-                                    placeholder="Nome criticità..."
+                                    placeholder={t(
+                                        'critical_issues.search_placeholder',
+                                    )}
                                     className="w-full rounded-md border border-input bg-background px-3 py-2 pr-9 pl-9 text-sm shadow-sm focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
                                 />
                                 {isSearching && (
@@ -187,8 +191,7 @@ export default function CriticalIssuesIndex() {
                         <div className="block space-y-3 p-4 md:hidden">
                             {criticalIssuesPaginated.data.length === 0 ? (
                                 <div className="py-8 text-center text-sm text-muted-foreground">
-                                    Nessuna criticità trovata per i filtri
-                                    attuali.
+                                    {t('critical_issues.index.empty_filtered')}
                                 </div>
                             ) : (
                                 criticalIssuesPaginated.data.map(
@@ -236,16 +239,16 @@ export default function CriticalIssuesIndex() {
                             <thead className="sticky top-0 z-10 bg-muted/80 backdrop-blur">
                                 <tr className="text-xs tracking-wide text-muted-foreground uppercase">
                                     <th className="border-b px-3 py-2 font-medium">
-                                        ID
+                                        {t('critical_issues.columns.id')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        uuid
+                                        {t('critical_issues.columns.uuid')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Nome
+                                        {t('critical_issues.columns.name')}
                                     </th>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t('common.actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -256,8 +259,9 @@ export default function CriticalIssuesIndex() {
                                             colSpan={4}
                                             className="px-3 py-8 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessuna criticità trovata per i
-                                            filtri attuali.
+                                            {t(
+                                                'critical_issues.index.empty_filtered',
+                                            )}
                                         </td>
                                     </tr>
                                 ) : (
@@ -318,8 +322,10 @@ export default function CriticalIssuesIndex() {
                 {criticalIssuesPaginated.last_page > 1 && (
                     <div className="flex items-center justify-between gap-2 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                         <div className="text-xs text-muted-foreground">
-                            Pagina {criticalIssuesPaginated.current_page} di{' '}
-                            {criticalIssuesPaginated.last_page}
+                            {t('critical_issues.index.pagination_label', {
+                                current: criticalIssuesPaginated.current_page,
+                                last: criticalIssuesPaginated.last_page,
+                            })}
                         </div>
                         <div className="flex items-center gap-2">
                             {prevLink && (
@@ -332,7 +338,7 @@ export default function CriticalIssuesIndex() {
                                     }`}
                                 >
                                     <ChevronLeft className="mr-1 h-3 w-3" />
-                                    Precedente
+                                    {t('common.previous')}
                                 </Link>
                             )}
                             {pageLinks.map((link, index) => (
@@ -360,7 +366,7 @@ export default function CriticalIssuesIndex() {
                                             : 'cursor-not-allowed bg-muted text-muted-foreground'
                                     }`}
                                 >
-                                    Successivo
+                                    {t('common.next')}
                                     <ChevronRight className="ml-1 h-3 w-3" />
                                 </Link>
                             )}
@@ -374,8 +380,10 @@ export default function CriticalIssuesIndex() {
                         setDeleteDialog({ open, criticalIssue: null })
                     }
                     onConfirm={handleDeleteConfirm}
-                    title="Elimina Criticità"
-                    description={`Sei sicuro di voler eliminare la criticità "${deleteDialog.criticalIssue?.name}"? Questa azione non può essere annullata.`}
+                    title={t('critical_issues.delete.title')}
+                    description={t('critical_issues.delete.description', {
+                        name: deleteDialog.criticalIssue?.name ?? '',
+                    })}
                     isLoading={isDeleting}
                 />
             </div>

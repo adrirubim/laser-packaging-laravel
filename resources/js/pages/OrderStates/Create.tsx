@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import orderStates from '@/routes/order-states/index';
 import { type BreadcrumbItem } from '@/types';
@@ -21,30 +22,32 @@ type OrderStatesCreateProps = {
 export default function OrderStatesCreate({
     errors: serverErrors,
 }: OrderStatesCreateProps) {
+    const { t } = useTranslations();
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Stati ordine',
+            title: t('order_states.page_title'),
             href: orderStates.index().url,
         },
         {
-            title: 'Crea',
+            title: t('common.create'),
             href: orderStates.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Crea stato ordine" />
+            <Head title={t('order_states.create.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Crea nuovo stato ordine</CardTitle>
+                                <CardTitle>
+                                    {t('order_states.create.card_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Compila i campi per creare un nuovo stato
-                                    ordine
+                                    {t('order_states.create.card_description')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -63,13 +66,16 @@ export default function OrderStatesCreate({
                                             <>
                                                 <div className="grid gap-2">
                                                     <Label htmlFor="name">
-                                                        Name *
+                                                        {t('order_states.name')}{' '}
+                                                        *
                                                     </Label>
                                                     <Input
                                                         id="name"
                                                         name="name"
                                                         required
-                                                        placeholder="Nome stato ordine"
+                                                        placeholder={t(
+                                                            'order_states.create.name_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={allErrors.name}
@@ -78,14 +84,18 @@ export default function OrderStatesCreate({
 
                                                 <div className="grid gap-2">
                                                     <Label htmlFor="sorting">
-                                                        Sorting
+                                                        {t(
+                                                            'order_states.sorting',
+                                                        )}
                                                     </Label>
                                                     <Input
                                                         id="sorting"
                                                         name="sorting"
                                                         type="number"
                                                         min="0"
-                                                        placeholder="Ordine di ordinamento"
+                                                        placeholder={t(
+                                                            'order_states.create.sorting_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={
@@ -106,7 +116,9 @@ export default function OrderStatesCreate({
                                                         htmlFor="initial"
                                                         className="cursor-pointer text-sm font-normal"
                                                     >
-                                                        Initial state
+                                                        {t(
+                                                            'order_states.initial_state_label',
+                                                        )}
                                                     </Label>
                                                 </div>
 
@@ -122,7 +134,9 @@ export default function OrderStatesCreate({
                                                         htmlFor="production"
                                                         className="cursor-pointer text-sm font-normal"
                                                     >
-                                                        Production state
+                                                        {t(
+                                                            'order_states.production_state_label',
+                                                        )}
                                                     </Label>
                                                 </div>
 
@@ -132,8 +146,12 @@ export default function OrderStatesCreate({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Creando...'
-                                                            : 'Crea stato ordine'}
+                                                            ? t(
+                                                                  'order_states.create.creating',
+                                                              )
+                                                            : t(
+                                                                  'order_states.create.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -145,7 +163,7 @@ export default function OrderStatesCreate({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

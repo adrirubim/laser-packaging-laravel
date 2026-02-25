@@ -23,6 +23,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { useTranslations } from '@/hooks/use-translations';
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
@@ -195,7 +196,7 @@ export default function OffersEdit() {
         offer.customer_uuid || '',
     );
 
-    // Formattare numeri in formato italiano (virgola decimali, punto migliaia)
+    // Format numbers in Italian format (comma decimals, period thousands)
     const formatNumber = (value: number, decimals: number = 5): string => {
         if (isNaN(value) || value === null || value === undefined)
             return '0,' + '0'.repeat(decimals);
@@ -330,10 +331,11 @@ export default function OffersEdit() {
         Record<string, Operation[]>
     >({});
 
-    // Stato per conferma chiusura
+    // State for close confirmation
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
     const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
     const { flash } = useFlashNotifications();
+    const { t } = useTranslations();
 
     // Campos calculados (readonly)
     const [theoreticalTimeCfz, setTheoreticalTimeCfz] = useState<string>('');
@@ -358,7 +360,7 @@ export default function OffersEdit() {
     const offerNumberValidation = useFieldValidation(offerNumberValue, [
         validationRules.maxLength(
             255,
-            'Il numero offerta non può superare 255 caratteri',
+            t('offers.form.offer_number_max_length'),
         ),
     ]);
 
@@ -368,7 +370,7 @@ export default function OffersEdit() {
             if (val && val.trim() !== '') {
                 const num = parseFloat(val);
                 if (isNaN(num) || num < 0) {
-                    return 'La quantità deve essere un numero positivo';
+                    return t('offers.form.quantity_positive');
                 }
             }
             return null;
@@ -381,7 +383,7 @@ export default function OffersEdit() {
             if (val && val.trim() !== '') {
                 const num = parseFloat(val);
                 if (isNaN(num) || num < 0) {
-                    return 'Il numero di pezzi deve essere un numero positivo';
+                    return t('offers.form.piece_positive');
                 }
             }
             return null;
@@ -390,7 +392,7 @@ export default function OffersEdit() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: offers.index().url,
         },
         {
@@ -398,7 +400,7 @@ export default function OffersEdit() {
             href: offers.show({ offer: offer.uuid }).url,
         },
         {
-            title: 'Modifica',
+            title: t('offers.edit.breadcrumb'),
             href: offers.edit({ offer: offer.uuid }).url,
         },
     ];
@@ -426,19 +428,19 @@ export default function OffersEdit() {
         }
     };
 
-    // Calcolare tutti i valori derivati
+    // Calculate all derived values
     const updateCalculatedData = () => {
         const piece = parseNumber(pieceValue);
         const declaredWeightCfzVal = parseNumber(declaredWeightCfz);
 
-        // Calcolare peso dichiarato per pezzo
+        // Calculate declared weight per piece
         let declaredWeightPzVal = 0;
         if (piece > 0 && !isNaN(piece)) {
             declaredWeightPzVal = declaredWeightCfzVal / piece;
         }
         setDeclaredWeightPz(formatNumber(declaredWeightPzVal));
 
-        // Calcolare totale secondi operazioni
+        // Calculate total operation seconds
         let totalSecOps = 0;
         operationRows.forEach((row) => {
             if (row.secOp && row.numOp) {
@@ -448,44 +450,44 @@ export default function OffersEdit() {
 
         setTheoreticalTimeCfz(formatNumber(totalSecOps));
 
-        // Calcolare imprevisti (5% tempo teorico)
+        // Calculate contingencies (5% theoretical time)
         const unexpectedVal = totalSecOps * 0.05;
         setUnexpected(formatNumber(unexpectedVal));
 
-        // Calcolare tempo teorico totale
+        // Calculate total theoretical time
         const totalTheoreticalTimeVal = totalSecOps + unexpectedVal;
         setTotalTheoreticalTime(formatNumber(totalTheoreticalTimeVal));
 
-        // Calcolare tempo teorico per pezzo
+        // Calculate theoretical time per piece
         let theoreticalTimeVal = 0;
         if (piece > 0) {
             theoreticalTimeVal = totalTheoreticalTimeVal / piece;
         }
         setTheoreticalTime(formatNumber(theoreticalTimeVal));
 
-        // Calcolare tempo produzione cfz
+        // Calculate production time cfz
         const productionTimeCfzVal = (totalTheoreticalTimeVal * 8) / 7;
         setProductionTimeCfz(formatNumber(productionTimeCfzVal));
 
-        // Calcolare tempo produzione per pezzo
+        // Calculate production time per piece
         let productionTimeVal = 0;
         if (piece > 0) {
             productionTimeVal = productionTimeCfzVal / piece;
         }
         setProductionTime(formatNumber(productionTimeVal));
 
-        // Calcolare media prevista cfz
+        // Calculate expected average cfz
         let productionAverageCfzVal = 0;
         if (productionTimeCfzVal > 0) {
             productionAverageCfzVal = 3600 / productionTimeCfzVal;
         }
         setProductionAverageCfz(formatNumber(productionAverageCfzVal));
 
-        // Calcolare media prevista pz
+        // Calculate expected average pz
         const productionAveragePzVal = productionAverageCfzVal * piece;
         setProductionAveragePz(formatNumber(productionAveragePzVal));
 
-        // Calcolare tariffa mdo cfz
+        // Calculate labor rate cfz
         const expectedRevenueVal = parseNumber(expectedRevenue);
         let rateCfzVal = 0;
         if (productionAverageCfzVal > 0) {
@@ -493,14 +495,14 @@ export default function OffersEdit() {
         }
         setRateCfz(formatNumber(rateCfzVal));
 
-        // Calcolare tariffa mdo pz
+        // Calculate labor rate pz
         let ratePzVal = 0;
         if (piece > 0) {
             ratePzVal = rateCfzVal / piece;
         }
         setRatePz(formatNumber(ratePzVal));
 
-        // Calcolare percentuale di aumento/sconto
+        // Calculate percentage increase/discount
         const rateRoundingCfzVal = parseNumber(rateRoundingCfz);
         const rateIncreaseCfzVal = parseNumber(rateIncreaseCfz);
         let rateRoundingCfzPercVal = 0;
@@ -510,18 +512,18 @@ export default function OffersEdit() {
         }
         setRateRoundingCfzPerc(formatNumber(rateRoundingCfzPercVal));
 
-        // Calcolare tariffa definitiva cfz
+        // Calculate final rate cfz
         const finalRateCfzVal = rateIncreaseCfzVal + rateRoundingCfzVal;
         setFinalRateCfz(formatNumber(finalRateCfzVal));
 
-        // Calcolare tariffa definitiva pz
+        // Calculate final rate pz
         let finalRatePzVal = 0;
         if (piece > 0) {
             finalRatePzVal = finalRateCfzVal / piece;
         }
         setFinalRatePz(formatNumber(finalRatePzVal));
 
-        // Calcolare tariffa totale cfz
+        // Calculate total rate cfz
         const materialsEuroVal = parseNumber(materialsEuro);
         const logisticsEuroVal = parseNumber(logisticsEuro);
         const otherEuroVal = parseNumber(otherEuro);
@@ -532,7 +534,7 @@ export default function OffersEdit() {
             otherEuroVal;
         setTotalRateCfz(formatNumber(totalRateCfzVal));
 
-        // Calcolare tariffa totale pz
+        // Calculate total rate pz
         let totalRatePzVal = 0;
         if (piece > 0) {
             totalRatePzVal = totalRateCfzVal / piece;
@@ -540,7 +542,7 @@ export default function OffersEdit() {
         setTotalRatePz(formatNumber(totalRatePzVal));
     };
 
-    // Ricalcolare quando cambiano i valori rilevanti
+    // Recalculate when relevant values change
     useEffect(() => {
         queueMicrotask(() => updateCalculatedData());
         // eslint-disable-next-line react-hooks/exhaustive-deps -- updateCalculatedData re-reads state; deps list is intentional
@@ -557,7 +559,7 @@ export default function OffersEdit() {
         operationRows,
     ]);
 
-    // Caricare le categorie di operazioni al montaggio del componente
+    // Load operation categories on component mount
     useEffect(() => {
         const loadCategories = async () => {
             try {
@@ -601,7 +603,7 @@ export default function OffersEdit() {
         [operationsByCategory],
     );
 
-    // Caricare operazioni esistenti al mount
+    // Load existing operations on mount
     useEffect(() => {
         if (existingOperations && existingOperations.length > 0) {
             const loadedRows: OperationRow[] = existingOperations.map((op) => ({
@@ -614,7 +616,7 @@ export default function OffersEdit() {
             }));
             queueMicrotask(() => setOperationRows(loadedRows));
 
-            // Caricare operazioni per ogni categoria unica
+            // Load operations for each unique category
             const uniqueCategoryUuids = [
                 ...new Set(
                     loadedRows.map((row) => row.categoryUuid).filter(Boolean),
@@ -637,7 +639,7 @@ export default function OffersEdit() {
         router.visit(offers.show({ offer: offer.uuid }).url);
     };
 
-    // Aggiungere nuova riga operazione
+    // Add new operation row
     const addOperationRow = () => {
         const newRow: OperationRow = {
             id: Math.random().toString(36).substr(2, 9),
@@ -650,12 +652,12 @@ export default function OffersEdit() {
         setOperationRows([...operationRows, newRow]);
     };
 
-    // Rimuovere riga operazione
+    // Remove operation row
     const removeOperationRow = (id: string) => {
         setOperationRows(operationRows.filter((row) => row.id !== id));
     };
 
-    // Aggiornare riga operazione
+    // Update operation row
     const updateOperationRow = (id: string, updates: Partial<OperationRow>) => {
         setOperationRows((prevRows) =>
             prevRows.map((row) => {
@@ -783,7 +785,11 @@ export default function OffersEdit() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Modifica Offerta ${offer.offer_number}`} />
+            <Head
+                title={t('offers.edit.page_title', {
+                    number: offer.offer_number,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <FlashNotifications flash={flash} />
@@ -938,8 +944,8 @@ export default function OffersEdit() {
                             }
                         });
 
-                        // I campi UUID obbligatori non devono diventare null se vuoti
-                        // Si mantengono come stringa vuota affinché la validazione backend li rifiuti correttamente
+                        // Required UUID fields must not become null when empty
+                        // Keep as empty string so backend validation rejects them correctly
                         const requiredUuidFields = [
                             'activity_uuid',
                             'sector_uuid',
@@ -955,7 +961,7 @@ export default function OffersEdit() {
                                 transformed[field] === null ||
                                 transformed[field] === undefined
                             ) {
-                                // Mantenere stringa vuota per validazione 'required'
+                                // Keep empty string for 'required' validation
                                 transformed[field] = '';
                             }
                         });
@@ -970,7 +976,7 @@ export default function OffersEdit() {
                                 )
                                 .map((row) => ({
                                     offeroperation_uuid: row.operationUuid,
-                                    num_op: Math.round(row.numOp), // Assicurare che sia un numero intero
+                                    num_op: Math.round(row.numOp), // Ensure it's an integer
                                 }));
                         }
 
@@ -999,11 +1005,14 @@ export default function OffersEdit() {
                                         <Card>
                                             <CardHeader>
                                                 <CardTitle>
-                                                    Gestione Offerta
+                                                    {t(
+                                                        'offers.edit.card_title',
+                                                    )}
                                                 </CardTitle>
                                                 <CardDescription>
-                                                    Modifica i dettagli
-                                                    dell&apos;offerta
+                                                    {t(
+                                                        'offers.edit.card_description',
+                                                    )}
                                                 </CardDescription>
                                             </CardHeader>
                                             <CardContent className="space-y-5">
@@ -1012,7 +1021,9 @@ export default function OffersEdit() {
                                                         htmlFor="offer_number"
                                                         required
                                                     >
-                                                        Numero Offerta
+                                                        {t(
+                                                            'offers.show.number_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="offer_number"
@@ -1060,7 +1071,9 @@ export default function OffersEdit() {
                                                         htmlFor="offer_date"
                                                         required
                                                     >
-                                                        Data Offerta
+                                                        {t(
+                                                            'offers.show.date_offer_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="offer_date"
@@ -1089,7 +1102,9 @@ export default function OffersEdit() {
                                                         htmlFor="validity"
                                                         required
                                                     >
-                                                        Data Validità
+                                                        {t(
+                                                            'offers.show.date_validity_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="validity"
@@ -1118,7 +1133,9 @@ export default function OffersEdit() {
                                                         htmlFor="client"
                                                         required
                                                     >
-                                                        Cliente
+                                                        {t(
+                                                            'offers.show.customer_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="customer_uuid"
@@ -1132,7 +1149,11 @@ export default function OffersEdit() {
                                                         required
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona il cliente..." />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'offers.form.select_customer',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {customers.map(
@@ -1169,7 +1190,9 @@ export default function OffersEdit() {
                                                         htmlFor="division"
                                                         required
                                                     >
-                                                        Divisione
+                                                        {t(
+                                                            'offers.show.division_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="customerdivision_uuid"
@@ -1188,11 +1211,17 @@ export default function OffersEdit() {
                                                             <SelectValue
                                                                 placeholder={
                                                                     !selectedCustomer
-                                                                        ? 'Seleziona la divisione...'
+                                                                        ? t(
+                                                                              'offers.form.select_division',
+                                                                          )
                                                                         : divisions.length ===
                                                                             0
-                                                                          ? 'Nessuna divisione disponibile'
-                                                                          : 'Seleziona la divisione...'
+                                                                          ? t(
+                                                                                'offers.form.no_division_available',
+                                                                            )
+                                                                          : t(
+                                                                                'offers.form.select_division',
+                                                                            )
                                                                 }
                                                             />
                                                         </SelectTrigger>
@@ -1227,7 +1256,9 @@ export default function OffersEdit() {
                                                         htmlFor="activity"
                                                         required
                                                     >
-                                                        Attività
+                                                        {t(
+                                                            'offers.show.activity_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="activity_uuid"
@@ -1238,7 +1269,11 @@ export default function OffersEdit() {
                                                         required
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona l'attività..." />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'offers.form.select_activity',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {activities.map(
@@ -1271,7 +1306,9 @@ export default function OffersEdit() {
                                                         htmlFor="sector"
                                                         required
                                                     >
-                                                        Settore
+                                                        {t(
+                                                            'offers.show.sector_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="sector_uuid"
@@ -1282,7 +1319,11 @@ export default function OffersEdit() {
                                                         required
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona il settore..." />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'offers.form.select_sector',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {sectors.map(
@@ -1315,7 +1356,9 @@ export default function OffersEdit() {
                                                         htmlFor="type"
                                                         required
                                                     >
-                                                        Stagionalità
+                                                        {t(
+                                                            'offers.show.seasonality_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="seasonality_uuid"
@@ -1326,7 +1369,11 @@ export default function OffersEdit() {
                                                         required
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona la stagionalità..." />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'offers.form.select_seasonality',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {seasonalities.map(
@@ -1361,7 +1408,9 @@ export default function OffersEdit() {
                                                         htmlFor="order_type"
                                                         required
                                                     >
-                                                        Tipo Ordine
+                                                        {t(
+                                                            'offers.show.order_type_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="order_type_uuid"
@@ -1372,7 +1421,11 @@ export default function OffersEdit() {
                                                         required
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona il tipo di ordine..." />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'offers.form.select_order_type',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {orderTypes.map(
@@ -1405,7 +1458,9 @@ export default function OffersEdit() {
                                                         htmlFor="las_family"
                                                         required
                                                     >
-                                                        Famiglia LAS
+                                                        {t(
+                                                            'offers.show.las_family_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="lasfamily_uuid"
@@ -1416,7 +1471,11 @@ export default function OffersEdit() {
                                                         required
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona la famiglia LAS..." />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'offers.form.select_las_family',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {lasFamilies.map(
@@ -1450,7 +1509,9 @@ export default function OffersEdit() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="customer_ref">
-                                                        Rif. Cliente
+                                                        {t(
+                                                            'offers.show.customer_ref_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="customer_ref"
@@ -1475,7 +1536,9 @@ export default function OffersEdit() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="ls_resource">
-                                                        L&S Risorsa
+                                                        {t(
+                                                            'offers.show.ls_resource_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="lsresource_uuid"
@@ -1485,7 +1548,11 @@ export default function OffersEdit() {
                                                         }
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona la risorsa L&S..." />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'offers.form.select_ls_resource',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {lsResources.map(
@@ -1522,7 +1589,9 @@ export default function OffersEdit() {
                                                         htmlFor="las_work_line"
                                                         required
                                                     >
-                                                        LAS Linea di Lavoro
+                                                        {t(
+                                                            'offers.show.las_work_line_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="lasworkline_uuid"
@@ -1533,7 +1602,11 @@ export default function OffersEdit() {
                                                         required
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona la linea di lavoro LAS..." />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'offers.form.select_las_work_line',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {lasWorkLines.map(
@@ -1567,8 +1640,9 @@ export default function OffersEdit() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="article_code_ref">
-                                                        Codice articolo di
-                                                        riferimento
+                                                        {t(
+                                                            'offers.show.article_code_ref_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="article_code_ref"
@@ -1593,7 +1667,9 @@ export default function OffersEdit() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="provisional_description">
-                                                        Descrizione provvisoria
+                                                        {t(
+                                                            'offers.show.provisional_description_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Textarea
                                                         id="provisional_description"
@@ -1623,7 +1699,9 @@ export default function OffersEdit() {
                                                         htmlFor="unit_of_measure"
                                                         required
                                                     >
-                                                        Unità di Misura
+                                                        {t(
+                                                            'offers.show.unit_of_measure_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="unit_of_measure"
@@ -1652,7 +1730,9 @@ export default function OffersEdit() {
                                                         htmlFor="quantity"
                                                         required
                                                     >
-                                                        Quantità
+                                                        {t(
+                                                            'offers.show.quantity_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="quantity"
@@ -1699,7 +1779,9 @@ export default function OffersEdit() {
                                                         htmlFor="piece"
                                                         required
                                                     >
-                                                        Pz
+                                                        {t(
+                                                            'offers.show.piece_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="piece"
@@ -1747,7 +1829,9 @@ export default function OffersEdit() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="declared_weight_cfz">
-                                                        Peso dichiarato gr/cfz
+                                                        {t(
+                                                            'offers.show.declared_weight_cfz_label',
+                                                        )}
                                                     </FormLabel>
                                                     <div className="flex">
                                                         <Input
@@ -1786,7 +1870,9 @@ export default function OffersEdit() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="declared_weight_pz">
-                                                        Peso dichiarato gr/pz
+                                                        {t(
+                                                            'offers.show.declared_weight_pz_label',
+                                                        )}
                                                     </FormLabel>
                                                     <div className="flex">
                                                         <Input
@@ -1813,7 +1899,9 @@ export default function OffersEdit() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="notes">
-                                                        Note
+                                                        {t(
+                                                            'offers.show.notes_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Textarea
                                                         id="notes"
@@ -1836,22 +1924,32 @@ export default function OffersEdit() {
                                                 <div className="grid gap-2">
                                                     <div className="mb-3 flex items-center gap-1 text-xs font-medium text-muted-foreground">
                                                         <label className="col-form-label w-[24%]">
-                                                            Categoria
+                                                            {t(
+                                                                'offers.show.operations_category',
+                                                            )}
                                                         </label>
                                                         <label className="col-form-label flex-1">
-                                                            Operazioni
+                                                            {t(
+                                                                'offers.show.operations_operation',
+                                                            )}
                                                         </label>
                                                         <label className="col-form-label w-[11%] text-right">
-                                                            Secondi
+                                                            {t(
+                                                                'offers.show.operations_seconds',
+                                                            )}
                                                         </label>
                                                         <label className="col-form-label w-[11%] text-right">
-                                                            N° Op
+                                                            {t(
+                                                                'offers.show.operations_num',
+                                                            )}
                                                             <span className="ml-1 text-red-500">
                                                                 *
                                                             </span>
                                                         </label>
                                                         <label className="col-form-label w-[11%] text-right">
-                                                            Totale
+                                                            {t(
+                                                                'offers.show.operations_total',
+                                                            )}
                                                         </label>
                                                     </div>
                                                     {operationRows.map(
@@ -1878,7 +1976,11 @@ export default function OffersEdit() {
                                                                         }
                                                                     >
                                                                         <SelectTrigger>
-                                                                            <SelectValue placeholder="Seleziona la categoria..." />
+                                                                            <SelectValue
+                                                                                placeholder={t(
+                                                                                    'offers.form.select_category',
+                                                                                )}
+                                                                            />
                                                                         </SelectTrigger>
                                                                         <SelectContent>
                                                                             {operationCategories.map(
@@ -1927,7 +2029,11 @@ export default function OffersEdit() {
                                                                         }
                                                                     >
                                                                         <SelectTrigger>
-                                                                            <SelectValue placeholder="Seleziona l'operazione..." />
+                                                                            <SelectValue
+                                                                                placeholder={t(
+                                                                                    'offers.form.select_operation',
+                                                                                )}
+                                                                            />
                                                                         </SelectTrigger>
                                                                         <SelectContent>
                                                                             {(
@@ -2035,6 +2141,9 @@ export default function OffersEdit() {
                                                                         )
                                                                     }
                                                                     className="ml-1"
+                                                                    aria-label={t(
+                                                                        'offers.form.remove_row',
+                                                                    )}
                                                                 >
                                                                     X
                                                                 </Button>
@@ -2049,13 +2158,17 @@ export default function OffersEdit() {
                                                         }
                                                         className="mt-2"
                                                     >
-                                                        Aggiungi operazione
+                                                        {t(
+                                                            'offers.form.add_operation',
+                                                        )}
                                                     </Button>
                                                 </div>
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="theoretical_time_cfz">
-                                                        Tempo teorico (sec/cfz)
+                                                        {t(
+                                                            'offers.show.time_theoretical_cfz_label',
+                                                        )}
                                                     </FormLabel>
                                                     <div className="flex">
                                                         <Input
@@ -2081,7 +2194,9 @@ export default function OffersEdit() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="unexpected">
-                                                        Imprevisti
+                                                        {t(
+                                                            'offers.show.time_unexpected_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="unexpected"
@@ -2100,8 +2215,9 @@ export default function OffersEdit() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="total_theoretical_time">
-                                                        Tempo teorico totale
-                                                        (sec/cfz)
+                                                        {t(
+                                                            'offers.show.time_total_theoretical_label',
+                                                        )}
                                                     </FormLabel>
                                                     <div className="flex">
                                                         <Input
@@ -2127,7 +2243,9 @@ export default function OffersEdit() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="theoretical_time">
-                                                        Tempo teorico (sec/pz)
+                                                        {t(
+                                                            'offers.show.time_theoretical_pz_label',
+                                                        )}
                                                     </FormLabel>
                                                     <div className="flex">
                                                         <Input
@@ -2153,8 +2271,9 @@ export default function OffersEdit() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="production_time_cfz">
-                                                        Tempo produzione
-                                                        (sec/cfz)
+                                                        {t(
+                                                            'offers.show.time_production_cfz_label',
+                                                        )}
                                                     </FormLabel>
                                                     <div className="flex">
                                                         <Input
@@ -2180,8 +2299,9 @@ export default function OffersEdit() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="production_time">
-                                                        Tempo produzione
-                                                        (sec/pz)
+                                                        {t(
+                                                            'offers.show.time_production_pz_label',
+                                                        )}
                                                     </FormLabel>
                                                     <div className="flex">
                                                         <Input
@@ -2207,8 +2327,9 @@ export default function OffersEdit() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="production_average_cfz">
-                                                        Media prevista
-                                                        (cfz/h/ps)
+                                                        {t(
+                                                            'offers.show.time_avg_cfz_label',
+                                                        )}
                                                     </FormLabel>
                                                     <div className="flex">
                                                         <Input
@@ -2234,7 +2355,9 @@ export default function OffersEdit() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="production_average_pz">
-                                                        Media prevista (pz/h/ps)
+                                                        {t(
+                                                            'offers.show.time_avg_pz_label',
+                                                        )}
                                                     </FormLabel>
                                                     <div className="flex">
                                                         <Input
@@ -2260,7 +2383,9 @@ export default function OffersEdit() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="expected_workers">
-                                                        Addetti previsti
+                                                        {t(
+                                                            'offers.show.time_workers_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="expected_workers"
@@ -2296,8 +2421,9 @@ export default function OffersEdit() {
                                                         htmlFor="expected_revenue"
                                                         required
                                                     >
-                                                        Ricavo Manodopera
-                                                        prevista
+                                                        {t(
+                                                            'offers.show.revenue_label',
+                                                        )}
                                                     </FormLabel>
                                                     <div className="flex">
                                                         <Input
@@ -2318,7 +2444,9 @@ export default function OffersEdit() {
                                                                 );
                                                             }}
                                                             required
-                                                            title="Inserisci un valore valido (es. 1.234.567,00000)"
+                                                            title={t(
+                                                                'offers.form.validation_value_example',
+                                                            )}
                                                             className="rounded-r-none text-right"
                                                         />
                                                         <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
@@ -2334,7 +2462,9 @@ export default function OffersEdit() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="rate_cfz">
-                                                        Tariffa mdo cfz
+                                                        {t(
+                                                            'offers.show.rate_cfz_label',
+                                                        )}
                                                     </FormLabel>
                                                     <div className="flex">
                                                         <Input
@@ -2358,7 +2488,9 @@ export default function OffersEdit() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="rate_pz">
-                                                        Tariffa mdo pz
+                                                        {t(
+                                                            'offers.show.rate_pz_label',
+                                                        )}
                                                     </FormLabel>
                                                     <div className="flex">
                                                         <Input
@@ -2385,7 +2517,9 @@ export default function OffersEdit() {
                                                         htmlFor="rate_rounding_cfz"
                                                         required
                                                     >
-                                                        Tariffa mdo cfz
+                                                        {t(
+                                                            'offers.show.rate_cfz_label',
+                                                        )}
                                                         arrotondata
                                                     </FormLabel>
                                                     <div className="flex">
@@ -2410,7 +2544,9 @@ export default function OffersEdit() {
                                                                 handleInputFocus
                                                             }
                                                             required
-                                                            title="Inserisci un valore valido (es. 1.234.567,00000)"
+                                                            title={t(
+                                                                'offers.form.validation_value_example',
+                                                            )}
                                                             className="rounded-r-none text-right"
                                                         />
                                                         <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
@@ -2429,8 +2565,9 @@ export default function OffersEdit() {
                                                         htmlFor="rate_increase_cfz"
                                                         required
                                                     >
-                                                        Aumento/sconto tariffa
-                                                        cfz
+                                                        {t(
+                                                            'offers.show.rate_increase_cfz_label',
+                                                        )}
                                                     </FormLabel>
                                                     <div className="flex">
                                                         <Input
@@ -2455,7 +2592,9 @@ export default function OffersEdit() {
                                                                 handleInputFocus
                                                             }
                                                             required
-                                                            title="Inserisci un valore valido (es. 1.234.567,00000 o -1.234.567,00000)"
+                                                            title={t(
+                                                                'offers.form.validation_value_signed_example',
+                                                            )}
                                                             className="rounded-r-none text-right"
                                                         />
                                                         <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
@@ -2471,7 +2610,9 @@ export default function OffersEdit() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="rate_rounding_cfz_perc">
-                                                        Tariffa mdo cfz
+                                                        {t(
+                                                            'offers.show.rate_cfz_label',
+                                                        )}
                                                         arrotondata %
                                                     </FormLabel>
                                                     <div className="flex">
@@ -2498,8 +2639,9 @@ export default function OffersEdit() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="final_rate_cfz">
-                                                        Tariffa definitiva mdo
-                                                        cfz
+                                                        {t(
+                                                            'offers.show.final_rate_cfz_label',
+                                                        )}
                                                     </FormLabel>
                                                     <div className="flex">
                                                         <Input
@@ -2523,8 +2665,9 @@ export default function OffersEdit() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="final_rate_pz">
-                                                        Tariffa definitiva mdo
-                                                        pz
+                                                        {t(
+                                                            'offers.show.final_rate_pz_label',
+                                                        )}
                                                     </FormLabel>
                                                     <div className="flex">
                                                         <Input
@@ -2551,7 +2694,9 @@ export default function OffersEdit() {
                                                         htmlFor="materials_euro"
                                                         required
                                                     >
-                                                        Euro materiali
+                                                        {t(
+                                                            'offers.show.materials_euro_label',
+                                                        )}
                                                     </FormLabel>
                                                     <div className="flex">
                                                         <Input
@@ -2582,8 +2727,9 @@ export default function OffersEdit() {
                                                         </span>
                                                     </div>
                                                     <small className="text-sm text-muted-foreground">
-                                                        Inserisci l'importo, ad
-                                                        esempio 1.234.567,00000
+                                                        {t(
+                                                            'offers.form.validation_amount_eur_example',
+                                                        )}
                                                     </small>
                                                     <InputError
                                                         message={
@@ -2597,7 +2743,9 @@ export default function OffersEdit() {
                                                         htmlFor="logistics_euro"
                                                         required
                                                     >
-                                                        Euro logistica
+                                                        {t(
+                                                            'offers.show.logistics_euro_label',
+                                                        )}
                                                     </FormLabel>
                                                     <div className="flex">
                                                         <Input
@@ -2628,8 +2776,9 @@ export default function OffersEdit() {
                                                         </span>
                                                     </div>
                                                     <small className="text-sm text-muted-foreground">
-                                                        Inserisci l'importo, ad
-                                                        esempio 1.234.567,00000
+                                                        {t(
+                                                            'offers.form.validation_amount_eur_example',
+                                                        )}
                                                     </small>
                                                     <InputError
                                                         message={
@@ -2643,7 +2792,9 @@ export default function OffersEdit() {
                                                         htmlFor="other_euro"
                                                         required
                                                     >
-                                                        Euro altro
+                                                        {t(
+                                                            'offers.show.other_euro_label',
+                                                        )}
                                                     </FormLabel>
                                                     <div className="flex">
                                                         <Input
@@ -2672,8 +2823,9 @@ export default function OffersEdit() {
                                                         </span>
                                                     </div>
                                                     <small className="text-sm text-muted-foreground">
-                                                        Inserisci l'importo, ad
-                                                        esempio 1.234.567,00000
+                                                        {t(
+                                                            'offers.form.validation_amount_eur_example',
+                                                        )}
                                                     </small>
                                                     <InputError
                                                         message={
@@ -2684,7 +2836,9 @@ export default function OffersEdit() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="total_rate_cfz">
-                                                        Tariffa totale cfz
+                                                        {t(
+                                                            'offers.show.total_rate_cfz_label',
+                                                        )}
                                                     </FormLabel>
                                                     <div className="flex">
                                                         <Input
@@ -2708,7 +2862,9 @@ export default function OffersEdit() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="total_rate_pz">
-                                                        Tariffa totale pz
+                                                        {t(
+                                                            'offers.show.total_rate_pz_label',
+                                                        )}
                                                     </FormLabel>
                                                     <div className="flex">
                                                         <Input
@@ -2732,7 +2888,9 @@ export default function OffersEdit() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="offer_notes">
-                                                        Note sull'offerta
+                                                        {t(
+                                                            'offers.show.offer_notes_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Textarea
                                                         id="offer_notes"
@@ -2757,7 +2915,9 @@ export default function OffersEdit() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="ls_setup_cost">
-                                                        L&S Costo setup (%)
+                                                        {t(
+                                                            'offers.show.ls_setup_cost_label',
+                                                        )}
                                                     </FormLabel>
                                                     <div className="flex">
                                                         <Input
@@ -2790,7 +2950,9 @@ export default function OffersEdit() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="ls_other_costs">
-                                                        L&S Altri costi
+                                                        {t(
+                                                            'offers.show.ls_other_costs_label',
+                                                        )}
                                                     </FormLabel>
                                                     <div className="flex">
                                                         <Input
@@ -2811,7 +2973,9 @@ export default function OffersEdit() {
                                                             onFocus={
                                                                 handleInputFocus
                                                             }
-                                                            title="Inserisci un importo valido in euro (es. 1.234.567,00000)"
+                                                            title={t(
+                                                                'offers.form.validation_amount_eur_example',
+                                                            )}
                                                             className="rounded-r-none text-right"
                                                         />
                                                         <span className="inline-flex items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm">
@@ -2819,8 +2983,9 @@ export default function OffersEdit() {
                                                         </span>
                                                     </div>
                                                     <small className="text-sm text-muted-foreground">
-                                                        Inserisci l'importo, ad
-                                                        esempio 1.234.567,00000
+                                                        {t(
+                                                            'offers.form.validation_amount_eur_example',
+                                                        )}
                                                     </small>
                                                     <InputError
                                                         message={
@@ -2831,7 +2996,9 @@ export default function OffersEdit() {
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="approval_status">
-                                                        Approvazione
+                                                        {t(
+                                                            'offers.show.approval_status_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="approval_status"
@@ -2841,18 +3008,27 @@ export default function OffersEdit() {
                                                         }
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona lo stato di approvazione" />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'offers.form.select_approval_status',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             <SelectItem value="0">
-                                                                In attesa di
-                                                                approvazione
+                                                                {t(
+                                                                    'offers.index.mobile_status_pending',
+                                                                )}
                                                             </SelectItem>
                                                             <SelectItem value="1">
-                                                                Approvata
+                                                                {t(
+                                                                    'offers.index.mobile_status_approved',
+                                                                )}
                                                             </SelectItem>
                                                             <SelectItem value="2">
-                                                                Respinta
+                                                                {t(
+                                                                    'offers.index.mobile_status_rejected',
+                                                                )}
                                                             </SelectItem>
                                                         </SelectContent>
                                                     </Select>
@@ -2869,15 +3045,17 @@ export default function OffersEdit() {
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Aggiornando...'
-                                                            : 'Aggiorna Offerta'}
+                                                            ? t('common.saving')
+                                                            : t(
+                                                                  'offers.edit.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
                                                         variant="outline"
                                                         onClick={handleClose}
                                                     >
-                                                        Chiudi
+                                                        {t('dashboard.close')}
                                                     </Button>
                                                 </div>
                                             </CardContent>

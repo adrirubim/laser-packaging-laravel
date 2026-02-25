@@ -60,13 +60,13 @@ class OfferOperationController extends Controller
             'descrizione' => 'nullable|string',
             'secondi_operazione' => 'nullable|numeric|min:0',
         ], [
-            'uuid.required' => 'L\'UUID è obbligatorio.',
-            'uuid.uuid' => 'L\'UUID deve essere un formato UUID valido.',
-            'uuid.unique' => 'Questo UUID è già utilizzato.',
-            'category_uuid.exists' => 'La Categoria selezionata non è valida.',
-            'codice_univoco.unique' => 'Questo Codice univoco è già utilizzato.',
-            'secondi_operazione.numeric' => 'I secondi devono essere un numero.',
-            'secondi_operazione.min' => 'I secondi non possono essere negativi.',
+            'uuid.required' => __('validation.uuid_required'),
+            'uuid.uuid' => __('validation.uuid_format'),
+            'uuid.unique' => __('validation.uuid_unique'),
+            'category_uuid.exists' => __('validation.category_exists'),
+            'codice_univoco.unique' => __('validation.codice_univoco_unique'),
+            'secondi_operazione.numeric' => __('validation.secondi_numeric'),
+            'secondi_operazione.min' => __('validation.secondi_min'),
         ]);
 
         // Validare il file separatamente se presente
@@ -74,8 +74,8 @@ class OfferOperationController extends Controller
             $request->validate([
                 'filename' => 'file|max:10240', // 10MB max
             ], [
-                'filename.file' => 'Il file caricato non è valido.',
-                'filename.max' => 'Il file non può superare 10MB.',
+                'filename.file' => __('validation.file_invalid'),
+                'filename.max' => __('validation.file_max_10mb'),
             ]);
         }
 
@@ -94,7 +94,7 @@ class OfferOperationController extends Controller
         OfferOperation::create($data);
 
         return redirect()->route('offer-operations.index')
-            ->with('success', 'Operazione creata con successo.');
+            ->with('success', __('flash.offer_operation.created'));
     }
 
     public function show(OfferOperation $offerOperation): Response
@@ -126,12 +126,12 @@ class OfferOperationController extends Controller
             'descrizione' => 'nullable|string',
             'secondi_operazione' => 'nullable|numeric|min:0',
         ], [
-            'uuid.uuid' => 'L\'UUID deve essere un formato UUID valido.',
-            'uuid.unique' => 'Questo UUID è già utilizzato.',
-            'category_uuid.exists' => 'La Categoria selezionata non è valida.',
-            'codice_univoco.unique' => 'Questo Codice univoco è già utilizzato.',
-            'secondi_operazione.numeric' => 'I secondi devono essere un numero.',
-            'secondi_operazione.min' => 'I secondi non possono essere negativi.',
+            'uuid.uuid' => __('validation.uuid_format'),
+            'uuid.unique' => __('validation.uuid_unique'),
+            'category_uuid.exists' => __('validation.category_exists'),
+            'codice_univoco.unique' => __('validation.codice_univoco_unique'),
+            'secondi_operazione.numeric' => __('validation.secondi_numeric'),
+            'secondi_operazione.min' => __('validation.secondi_min'),
         ]);
 
         // Validare il file separatamente se presente
@@ -139,8 +139,8 @@ class OfferOperationController extends Controller
             $request->validate([
                 'filename' => 'file|max:10240', // 10MB max
             ], [
-                'filename.file' => 'Il file caricato non è valido.',
-                'filename.max' => 'Il file non può superare 10MB.',
+                'filename.file' => __('validation.file_invalid'),
+                'filename.max' => __('validation.file_max_10mb'),
             ]);
         }
 
@@ -165,7 +165,7 @@ class OfferOperationController extends Controller
         $offerOperation->update($data);
 
         return redirect()->route('offer-operations.index')
-            ->with('success', 'Operazione aggiornata con successo.');
+            ->with('success', __('flash.offer_operation.updated'));
     }
 
     public function destroy(OfferOperation $offerOperation)
@@ -173,7 +173,7 @@ class OfferOperationController extends Controller
         $offerOperation->update(['removed' => true]);
 
         return redirect()->route('offer-operations.index')
-            ->with('success', 'Operazione eliminata con successo.');
+            ->with('success', __('flash.offer_operation.deleted'));
     }
 
     /**
@@ -182,11 +182,11 @@ class OfferOperationController extends Controller
     public function downloadFile(OfferOperation $offerOperation)
     {
         if (! $offerOperation->filename) {
-            return redirect()->back()->with('error', 'Nessun file operazione disponibile per questa operazione.');
+            return redirect()->back()->with('error', __('flash.offer_operation.no_file'));
         }
 
         if (! Storage::disk('public')->exists($offerOperation->filename)) {
-            return redirect()->back()->with('error', 'Il file operazione non esiste più sul server.');
+            return redirect()->back()->with('error', __('flash.offer_operation.file_not_found'));
         }
 
         $downloadName = basename($offerOperation->filename);

@@ -215,10 +215,10 @@ export default function MaterialsIndex() {
                                 <thead className="sticky top-0 z-10 bg-muted/80 backdrop-blur">
                                     <tr className="text-xs tracking-wide text-muted-foreground uppercase">
                                         <th className="border-b px-3 py-2 font-medium">
-                                            ID
+                                            {t('materials.index.columns.id')}
                                         </th>
                                         <th className="border-b px-3 py-2 font-medium">
-                                            uuid
+                                            {t('materials.index.columns.uuid')}
                                         </th>
                                         <th className="border-b px-3 py-2 font-medium">
                                             {t('common.code')}

@@ -30,7 +30,7 @@ class PlanningCalculationService
         if ($mediaReale === null || $mediaReale <= 0 || $expectedWorkers === null || $expectedWorkers <= 0) {
             return [
                 'error_code' => -1,
-                'message' => 'Dati insufficienti per il calcolo',
+                'message' => __('planning.calculation.insufficient_data'),
             ];
         }
 

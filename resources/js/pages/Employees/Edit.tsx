@@ -64,28 +64,22 @@ export default function EmployeesEdit({
         password !== '';
 
     const nameValidation = useFieldValidation(name, [
-        validationRules.required('Il nome è obbligatorio'),
-        validationRules.maxLength(
-            255,
-            'Il nome non può superare i 255 caratteri',
-        ),
+        validationRules.required(t('validation.name_required')),
+        validationRules.maxLength(255, t('validation.max_length_name')),
     ]);
 
     const surnameValidation = useFieldValidation(surname, [
-        validationRules.required('Il cognome è obbligatorio'),
-        validationRules.maxLength(
-            255,
-            'Il cognome non può superare i 255 caratteri',
-        ),
+        validationRules.required(t('validation.surname_required')),
+        validationRules.maxLength(255, t('validation.max_length_surname')),
     ]);
 
     const matriculationNumberValidation = useFieldValidation(
         matriculationNumber,
         [
-            validationRules.required('Il numero di matricola è obbligatorio'),
+            validationRules.required(t('validation.matriculation_required')),
             validationRules.maxLength(
                 255,
-                'Il numero di matricola non può superare i 255 caratteri',
+                t('validation.max_length_matriculation'),
             ),
         ],
     );
@@ -94,7 +88,7 @@ export default function EmployeesEdit({
         (value) => {
             if (!value) return null; // Opzionale in Modifica
             if (value.length < 6) {
-                return 'La password deve contenere almeno 6 caratteri';
+                return t('validation.password_min_length', { min: 6 });
             }
             return null;
         },
@@ -118,7 +112,9 @@ export default function EmployeesEdit({
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head
-                title={`Modifica Dipendente ${employee.matriculation_number}`}
+                title={t('employees.edit.page_title', {
+                    matriculation: employee.matriculation_number,
+                })}
             />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
@@ -126,16 +122,16 @@ export default function EmployeesEdit({
                     <Button
                         variant="outline"
                         onClick={() => setShowCloseConfirm(true)}
-                        aria-label="Torna indietro"
+                        aria-label={t('employees.edit.back_aria')}
                     >
                         <ArrowLeft className="mr-2 h-4 w-4" />
-                        Indietro
+                        {t('common.back')}
                     </Button>
                 </div>
 
                 <FormValidationNotification
                     errors={validationErrors}
-                    message="Correggi gli errori nel modulo prima di salvare."
+                    message={t('employees.create.validation_message')}
                     showOnSubmit={false}
                 />
 
@@ -143,8 +139,12 @@ export default function EmployeesEdit({
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Gestione Dipendente</CardTitle>
-                                <CardDescription>Modifica</CardDescription>
+                                <CardTitle>
+                                    {t('employees.edit.card_title')}
+                                </CardTitle>
+                                <CardDescription>
+                                    {t('employees.edit.card_description')}
+                                </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <Form
@@ -170,7 +170,9 @@ export default function EmployeesEdit({
                                                             htmlFor="name"
                                                             required
                                                         >
-                                                            Nome
+                                                            {t(
+                                                                'employees.create.name_label',
+                                                            )}
                                                         </FormLabel>
                                                         <Input
                                                             id="name"
@@ -216,7 +218,9 @@ export default function EmployeesEdit({
                                                             htmlFor="surname"
                                                             required
                                                         >
-                                                            Cognome
+                                                            {t(
+                                                                'employees.create.surname_label',
+                                                            )}
                                                         </FormLabel>
                                                         <Input
                                                             id="surname"
@@ -264,7 +268,9 @@ export default function EmployeesEdit({
                                                         htmlFor="matriculation_number"
                                                         required
                                                     >
-                                                        Numero di matricola
+                                                        {t(
+                                                            'employees.create.matriculation_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="matriculation_number"
@@ -309,9 +315,9 @@ export default function EmployeesEdit({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="password">
-                                                        Nuova password (lascia
-                                                        vuoto per mantenere
-                                                        l'attuale)
+                                                        {t(
+                                                            'employees.edit.password_optional_label',
+                                                        )}
                                                     </FormLabel>
                                                     <PasswordInput
                                                         id="password"
@@ -326,7 +332,9 @@ export default function EmployeesEdit({
                                                             passwordValidation.onBlur
                                                         }
                                                         minLength={6}
-                                                        placeholder="Minimo 6 caratteri"
+                                                        placeholder={t(
+                                                            'employees.edit.password_placeholder',
+                                                        )}
                                                         aria-invalid={
                                                             passwordValidation.error
                                                                 ? 'true'
@@ -365,7 +373,9 @@ export default function EmployeesEdit({
                                                         htmlFor="portal_enabled"
                                                         className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                                     >
-                                                        Abilita accesso portale
+                                                        {t(
+                                                            'employees.create.portal_enable_label',
+                                                        )}
                                                     </FormLabel>
                                                 </div>
                                                 <InputError
@@ -380,8 +390,12 @@ export default function EmployeesEdit({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Salvando...'
-                                                            : 'Aggiorna Dipendente'}
+                                                            ? t(
+                                                                  'employees.edit.saving',
+                                                              )
+                                                            : t(
+                                                                  'employees.edit.submit_label',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -401,7 +415,7 @@ export default function EmployeesEdit({
                                                                   )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>
@@ -423,8 +437,8 @@ export default function EmployeesEdit({
                         employees.show({ employee: employee.uuid }).url,
                     );
                 }}
-                title="Conferma chiusura"
-                description="Sei sicuro di voler uscire? I dati non salvati andranno persi."
+                title={t('common.confirm_close.title')}
+                description={t('common.confirm_close.description')}
             />
         </AppLayout>
     );

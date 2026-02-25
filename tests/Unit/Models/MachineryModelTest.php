@@ -46,7 +46,7 @@ class MachineryModelTest extends TestCase
     {
         $valueType = ValueTypes::create([
             'id' => 1,
-            // Los campos reales pueden variar; solo comprobamos que el accessor no rompa
+            // Real fields may vary; we only check that the accessor does not break
             'type' => 'numero',
             'values' => null,
             'removed' => false,
@@ -58,9 +58,9 @@ class MachineryModelTest extends TestCase
 
         $machinery->load('valueType');
 
-        // El accessor debe ser seguro y devolver null o un string, pero nunca lanzar excepción
+        // Accessor must be safe and return null or string, never throw
         $valuetype = $machinery->valuetype;
         $this->assertTrue($valuetype === null || is_string($valuetype));
-        // No forzamos que la relación esté necesariamente presente: solo que no rompa
+        // Do not require relation to be present: only that it does not break
     }
 }

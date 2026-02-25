@@ -5,6 +5,7 @@ import { Component, type ErrorInfo, type ReactNode } from 'react';
 type ErrorBoundaryProps = {
     children: ReactNode;
     fallback?: ReactNode;
+    translations?: Record<string, string>;
 };
 
 type ErrorBoundaryState = {
@@ -39,22 +40,26 @@ export class ErrorBoundary extends Component<
             if (this.props.fallback) {
                 return this.props.fallback;
             }
+            const tr = this.props.translations ?? {};
+            const title =
+                tr['common.something_went_wrong'] ?? 'Something went wrong.';
+            const message =
+                tr['common.error_unexpected_reload'] ??
+                'An unexpected error occurred. You can try reloading the page.';
+            const reloadLabel = tr['common.reload_page'] ?? 'Reload page';
             return (
                 <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4 p-8 text-center">
                     <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-6">
                         <AlertCircleIcon className="mx-auto mb-3 size-12 text-destructive" />
-                        <h2 className="mb-2 text-lg font-semibold">
-                            Qualcosa è andato storto.
-                        </h2>
+                        <h2 className="mb-2 text-lg font-semibold">{title}</h2>
                         <p className="mb-4 text-sm text-muted-foreground">
-                            Si è verificato un errore imprevisto. Puoi provare a
-                            ricaricare la pagina.
+                            {message}
                         </p>
                         <Button
                             variant="outline"
                             onClick={() => window.location.reload()}
                         >
-                            Ricarica la pagina
+                            {reloadLabel}
                         </Button>
                     </div>
                 </div>

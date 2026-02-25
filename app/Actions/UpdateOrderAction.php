@@ -28,7 +28,7 @@ class UpdateOrderAction
      */
     public function execute(Order $order, array $validated)
     {
-        // Verificare unicità del numero di produzione (escludendo il record corrente) prima della transazione
+        // Verify production number uniqueness (excluding current record) before transaction
         if ($validated['order_production_number'] !== $order->order_production_number) {
             if ($this->orderProductionNumberService->exists($validated['order_production_number'], $order->id)) {
                 $this->logWarning('UpdateOrderAction::execute', 'Production number already exists', [
@@ -48,7 +48,7 @@ class UpdateOrderAction
             // Las fechas se manejan como datetime en Laravel (el modelo tiene casts)
             // Laravel converte automaticamente stringhe in Carbon/datetime
 
-            // Convertire stringhe vuote in null per campi nullable
+            // Convert empty strings to null for nullable fields
             foreach (['customershippingaddress_uuid', 'number_customer_reference_order', 'lot', 'indications_for_shop', 'indications_for_production', 'indications_for_delivery'] as $field) {
                 if (isset($validated[$field]) && $validated[$field] === '') {
                     $validated[$field] = null;
@@ -56,8 +56,8 @@ class UpdateOrderAction
             }
 
             // Gestione automatica dello stato in base alla worked_quantity
-            // Se la quantità lavorata aumenta rispetto al valore corrente e
-            // lo stato è ancora fino a LANCIATO (0,1,2), passare a IN_AVANZAMENTO (3)
+            // If worked quantity increases vs current value and
+            // status is still up to LANCIATO (0,1,2), switch to IN_AVANZAMENTO (3)
             if (array_key_exists('worked_quantity', $validated)) {
                 $previousWorkedQuantity = (float) ($order->worked_quantity ?? 0);
                 $newWorkedQuantity = (float) $validated['worked_quantity'];

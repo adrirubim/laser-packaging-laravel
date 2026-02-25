@@ -104,7 +104,7 @@ class PalletCalculationServiceTest extends TestCase
     {
         $article = Article::factory()->create([
             'plan_packaging' => 10,
-            'pallet_plans' => 5, // 50 por pallet
+            'pallet_plans' => 5, // 50 per pallet
             'removed' => false,
         ]);
 
@@ -113,7 +113,7 @@ class PalletCalculationServiceTest extends TestCase
             'removed' => false,
         ]);
 
-        // Procesar 30 unidades (faltan 20 para completar pallet de 50)
+        // Process 30 units (20 left to complete pallet of 50)
         ProductionOrderProcessing::factory()->create([
             'order_uuid' => $order->uuid,
             'quantity' => 30,
@@ -130,7 +130,7 @@ class PalletCalculationServiceTest extends TestCase
     {
         $article = Article::factory()->create([
             'plan_packaging' => 10,
-            'pallet_plans' => 5, // 50 por pallet
+            'pallet_plans' => 5, // 50 per pallet
             'removed' => false,
         ]);
 
@@ -139,17 +139,17 @@ class PalletCalculationServiceTest extends TestCase
             'removed' => false,
         ]);
 
-        // Procesar 30 unidades
+        // Process 30 units
         ProductionOrderProcessing::factory()->create([
             'order_uuid' => $order->uuid,
             'quantity' => 30,
             'removed' => false,
         ]);
 
-        // Añadir 20 más debería completar el pallet
+        // Adding 20 more should complete the pallet
         $this->assertTrue($this->service->willCompletePallet($order->uuid, 20));
 
-        // Añadir 10 más NO debería completar el pallet
+        // Adding 10 more should NOT complete the pallet
         $this->assertFalse($this->service->willCompletePallet($order->uuid, 10));
     }
 
@@ -158,7 +158,7 @@ class PalletCalculationServiceTest extends TestCase
     {
         $article = Article::factory()->create([
             'plan_packaging' => 10,
-            'pallet_plans' => 5, // 50 por pallet
+            'pallet_plans' => 5, // 50 per pallet
             'removed' => false,
         ]);
 
@@ -167,7 +167,7 @@ class PalletCalculationServiceTest extends TestCase
             'removed' => false,
         ]);
 
-        // Procesar 150 unidades = 3 pallets completos
+        // Process 150 units = 3 complete pallets
         ProductionOrderProcessing::factory()->create([
             'order_uuid' => $order->uuid,
             'quantity' => 150,

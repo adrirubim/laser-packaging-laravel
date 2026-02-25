@@ -37,7 +37,7 @@ class UpdateOfferRequest extends FormRequest
                 'required',
                 function ($attribute, $value, $fail) {
                     if ($value && ! \Illuminate\Support\Facades\DB::table('offeractivity')->where('uuid', $value)->exists()) {
-                        $fail('The selected activity uuid is invalid.');
+                        $fail(__('validation.invalid_activity_uuid'));
                     }
                 },
             ],
@@ -45,7 +45,7 @@ class UpdateOfferRequest extends FormRequest
                 'required',
                 function ($attribute, $value, $fail) {
                     if ($value && ! \Illuminate\Support\Facades\DB::table('offersector')->where('uuid', $value)->exists()) {
-                        $fail('The selected sector uuid is invalid.');
+                        $fail(__('validation.invalid_sector_uuid'));
                     }
                 },
             ],
@@ -53,7 +53,7 @@ class UpdateOfferRequest extends FormRequest
                 'required',
                 function ($attribute, $value, $fail) {
                     if ($value && ! \Illuminate\Support\Facades\DB::table('offerseasonality')->where('uuid', $value)->exists()) {
-                        $fail('The selected seasonality uuid is invalid.');
+                        $fail(__('validation.invalid_seasonality_uuid'));
                     }
                 },
             ],
@@ -61,7 +61,7 @@ class UpdateOfferRequest extends FormRequest
                 'required',
                 function ($attribute, $value, $fail) {
                     if ($value && ! \Illuminate\Support\Facades\DB::table('offertypeorder')->where('uuid', $value)->exists()) {
-                        $fail('The selected order type uuid is invalid.');
+                        $fail(__('validation.invalid_order_type_uuid'));
                     }
                 },
             ],
@@ -69,7 +69,7 @@ class UpdateOfferRequest extends FormRequest
                 'required',
                 function ($attribute, $value, $fail) {
                     if ($value && ! \Illuminate\Support\Facades\DB::table('offerlasfamily')->where('uuid', $value)->exists()) {
-                        $fail('The selected lasfamily uuid is invalid.');
+                        $fail(__('validation.invalid_lasfamily_uuid'));
                     }
                 },
             ],
@@ -77,7 +77,7 @@ class UpdateOfferRequest extends FormRequest
                 'required',
                 function ($attribute, $value, $fail) {
                     if ($value && ! \Illuminate\Support\Facades\DB::table('offerlasworkline')->where('uuid', $value)->exists()) {
-                        $fail('The selected lasworkline uuid is invalid.');
+                        $fail(__('validation.invalid_lasworkline_uuid'));
                     }
                 },
             ],
@@ -85,7 +85,7 @@ class UpdateOfferRequest extends FormRequest
                 'nullable',
                 function ($attribute, $value, $fail) {
                     if ($value && ! \Illuminate\Support\Facades\DB::table('offerlsresource')->where('uuid', $value)->exists()) {
-                        $fail('The selected lsresource uuid is invalid.');
+                        $fail(__('validation.invalid_lsresource_uuid'));
                     }
                 },
             ],

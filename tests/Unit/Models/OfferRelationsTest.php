@@ -103,7 +103,7 @@ class OfferRelationsTest extends TestCase
         ]);
         $offer = Offer::factory()->create(['order_type_uuid' => $orderType->uuid]);
 
-        // Verificare che typeOrder() funzioni anche (alias)
+        // Verify that typeOrder() works too (alias)
         $this->assertInstanceOf(OfferTypeOrder::class, $offer->typeOrder);
         $this->assertEquals($orderType->uuid, $offer->typeOrder->uuid);
     }
@@ -176,7 +176,7 @@ class OfferRelationsTest extends TestCase
             'offeroperation_uuid' => $operation->uuid,
         ]);
 
-        // Verificare che operationLists() funzioni anche (alias)
+        // Verify that operationLists() works too (alias)
         $this->assertCount(1, $offer->operationLists);
         $this->assertInstanceOf(OfferOperationList::class, $offer->operationLists->first());
     }

@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Verificar si la columna uuid existe
+        // Check if uuid column exists
         $hasUuidColumn = Schema::hasColumn('valuetypes', 'uuid');
 
         if (! $hasUuidColumn) {
@@ -20,7 +20,7 @@ return new class extends Migration
                 $table->uuid('uuid')->unique()->after('id');
             });
 
-            // Generar UUIDs para los registros existentes
+            // Generate UUIDs for existing records
             $valueTypes = DB::table('valuetypes')->get();
             foreach ($valueTypes as $valueType) {
                 DB::table('valuetypes')

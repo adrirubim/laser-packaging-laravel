@@ -8,6 +8,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import lasFamilies from '@/routes/las-families/index';
 import { type BreadcrumbItem } from '@/types';
@@ -27,16 +28,17 @@ type LasFamiliesShowProps = {
 };
 
 export default function LasFamiliesShow({ family }: LasFamiliesShowProps) {
+    const { t } = useTranslations();
     const [isDeleting, setIsDeleting] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: '/offers',
         },
         {
-            title: 'Famiglia LAS',
+            title: t('offer_las_families.page_title'),
             href: lasFamilies.index().url,
         },
         {
@@ -62,14 +64,18 @@ export default function LasFamiliesShow({ family }: LasFamiliesShowProps) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Famiglia LAS ${family.name}`} />
+            <Head
+                title={t('offer_las_families.show.page_title', {
+                    name: family.name,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
                     <div className="flex-1">
                         <h1 className="text-2xl font-bold">{family.name}</h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Codice:{' '}
+                            {t('common.code')}:{' '}
                             <span className="font-mono">{family.code}</span> |
                             UUID:{' '}
                             <span className="font-mono">{family.uuid}</span>
@@ -84,7 +90,7 @@ export default function LasFamiliesShow({ family }: LasFamiliesShowProps) {
                                 }
                             >
                                 <Edit className="mr-2 h-4 w-4" />
-                                Modifica
+                                {t('common.edit')}
                             </Link>
                         </Button>
                         <Button
@@ -93,22 +99,24 @@ export default function LasFamiliesShow({ family }: LasFamiliesShowProps) {
                             onClick={() => setDeleteDialogOpen(true)}
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Elimina
+                            {t('common.delete')}
                         </Button>
                     </div>
                 </div>
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Dettagli Famiglia LAS</CardTitle>
+                        <CardTitle>
+                            {t('offer_las_families.show.details_title')}
+                        </CardTitle>
                         <CardDescription>
-                            Informazioni su questa famiglia LAS
+                            {t('offer_las_families.show.details_subtitle')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div>
                             <Label className="text-sm font-medium text-muted-foreground">
-                                Codice
+                                {t('common.code')}
                             </Label>
                             <p className="font-mono text-lg font-semibold">
                                 {family.code}
@@ -117,7 +125,7 @@ export default function LasFamiliesShow({ family }: LasFamiliesShowProps) {
 
                         <div>
                             <Label className="text-sm font-medium text-muted-foreground">
-                                Nome
+                                {t('offer_las_families.form.name_label')}
                             </Label>
                             <p className="text-lg font-semibold">
                                 {family.name}
@@ -145,17 +153,12 @@ export default function LasFamiliesShow({ family }: LasFamiliesShowProps) {
                     onOpenChange={setDeleteDialogOpen}
                     onConfirm={handleDeleteConfirm}
                     isDeleting={isDeleting}
-                    title="Conferma eliminazione"
-                    description={
-                        <>
-                            Sei sicuro di voler eliminare la famiglia LAS{' '}
-                            <strong>{family.name}</strong> (Codice:{' '}
-                            {family.code}
-                            )? Questa azione non può essere annullata. La
-                            famiglia LAS verrà eliminata definitivamente.
-                        </>
-                    }
-                    itemName={`${family.name} (Codice: ${family.code})`}
+                    title={t('offer_las_families.delete.title')}
+                    description={t('offer_las_families.delete.description', {
+                        name: family.name,
+                        code: family.code,
+                    })}
+                    itemName={`${family.name} (${t('common.code')}: ${family.code})`}
                 />
             </div>
         </AppLayout>

@@ -5,6 +5,7 @@ import {
 } from '@/components/flash-notifications';
 import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import orderStates from '@/routes/order-states/index';
 import { type BreadcrumbItem } from '@/types';
@@ -37,24 +38,25 @@ export default function OrderStatesIndex() {
     const { props } = usePage<OrderStatesIndexProps>();
     const { orderStates: orderStatesPaginated } = props;
     const { flash } = useFlashNotifications();
+    const { t } = useTranslations();
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Stati Ordine',
+            title: t('order_states.page_title'),
             href: orderStates.index().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Stati Ordine" />
+            <Head title={t('order_states.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="Stati Ordine"
-                    subtitle="Elenco degli stati ordine."
+                    title={t('order_states.page_title')}
+                    subtitle={t('order_states.subtitle')}
                     createHref={orderStates.create().url}
-                    createLabel="Nuovo Stato"
+                    createLabel={t('order_states.create_label')}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -65,25 +67,25 @@ export default function OrderStatesIndex() {
                             <thead className="sticky top-0 z-10 bg-muted/80 backdrop-blur">
                                 <tr className="text-xs tracking-wide text-muted-foreground uppercase">
                                     <th className="border-b px-3 py-2 font-medium">
-                                        ID
+                                        {t('common.id')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        uuid
+                                        {t('order_states.uuid_column')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Nome
+                                        {t('order_states.name')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Ordinamento
+                                        {t('order_states.sorting')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Iniziale
+                                        {t('order_states.initial')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Produzione
+                                        {t('order_states.production')}
                                     </th>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t('common.actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -94,7 +96,7 @@ export default function OrderStatesIndex() {
                                             colSpan={7}
                                             className="px-3 py-6 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessuno stato ordine trovato.
+                                            {t('order_states.empty_state')}
                                         </td>
                                     </tr>
                                 )}
@@ -118,22 +120,22 @@ export default function OrderStatesIndex() {
                                         <td className="px-3 py-2 align-middle text-xs">
                                             {state.initial ? (
                                                 <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-300">
-                                                    Sì
+                                                    {t('common.yes')}
                                                 </span>
                                             ) : (
                                                 <span className="text-muted-foreground">
-                                                    No
+                                                    {t('common.no')}
                                                 </span>
                                             )}
                                         </td>
                                         <td className="px-3 py-2 align-middle text-xs">
                                             {state.production ? (
                                                 <span className="inline-flex items-center rounded-full bg-blue-500/10 px-2 py-1 text-xs font-medium text-blue-700 dark:text-blue-300">
-                                                    Sì
+                                                    {t('common.yes')}
                                                 </span>
                                             ) : (
                                                 <span className="text-muted-foreground">
-                                                    No
+                                                    {t('common.no')}
                                                 </span>
                                             )}
                                         </td>

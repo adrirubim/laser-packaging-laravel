@@ -1,3 +1,4 @@
+import { useTranslations } from '@/hooks/use-translations';
 import { usePage } from '@inertiajs/react';
 import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -20,6 +21,7 @@ export function FlashNotifications({
     onDismiss,
     autoHideDuration = 5000,
 }: FlashNotificationsProps) {
+    const { t } = useTranslations();
     const [showSuccess, setShowSuccess] = useState(false);
     const [showError, setShowError] = useState(false);
     const [showWarning, setShowWarning] = useState(false);
@@ -84,7 +86,7 @@ export function FlashNotifications({
                             if (onDismiss) onDismiss();
                         }}
                         className="ml-2 transition-opacity hover:opacity-70"
-                        aria-label="Chiudi notifica"
+                        aria-label={t('common.close_notification')}
                     >
                         <X className="h-4 w-4" />
                     </button>
@@ -99,7 +101,7 @@ export function FlashNotifications({
                             if (onDismiss) onDismiss();
                         }}
                         className="ml-2 transition-opacity hover:opacity-70"
-                        aria-label="Chiudi notifica"
+                        aria-label={t('common.close_notification')}
                     >
                         <X className="h-4 w-4" />
                     </button>
@@ -114,7 +116,7 @@ export function FlashNotifications({
                             if (onDismiss) onDismiss();
                         }}
                         className="ml-2 transition-opacity hover:opacity-70"
-                        aria-label="Chiudi notifica"
+                        aria-label={t('common.close_notification')}
                     >
                         <X className="h-4 w-4" />
                     </button>
@@ -129,7 +131,7 @@ export function FlashNotifications({
                             if (onDismiss) onDismiss();
                         }}
                         className="ml-2 transition-opacity hover:opacity-70"
-                        aria-label="Chiudi notifica"
+                        aria-label={t('common.close_notification')}
                     >
                         <X className="h-4 w-4" />
                     </button>

@@ -21,7 +21,7 @@ class InstructionCodeService
     public function generateNextIC(): string
     {
         return DB::transaction(function () {
-            // Cercare ultimo codice IC
+            // Find last IC code
             // PostgreSQL no tiene UNSIGNED, usar INTEGER o CAST a INTEGER
             $driver = DB::connection()->getDriverName();
             if ($driver === 'pgsql') {
@@ -58,7 +58,7 @@ class InstructionCodeService
     public function generateNextIO(): string
     {
         return DB::transaction(function () {
-            // Buscar último código IO
+            // Find last IO code
             // PostgreSQL no tiene UNSIGNED, usar INTEGER o CAST a INTEGER
             $driver = DB::connection()->getDriverName();
             if ($driver === 'pgsql') {
@@ -78,7 +78,7 @@ class InstructionCodeService
             $progressive = 1;
             if ($lastIO && ! empty($lastIO->code)) {
                 $lastIOCode = $lastIO->code;
-                $progressive = (int) substr($lastIOCode, 2) + 1; // Extrae después de "IO"
+                $progressive = (int) substr($lastIOCode, 2) + 1; // Extract after "IO"
             }
 
             return sprintf('IO%04d', $progressive);
@@ -95,7 +95,7 @@ class InstructionCodeService
     public function generateNextIP(): string
     {
         return DB::transaction(function () {
-            // Cercare ultimo codice IP
+            // Find last IP code
             // PostgreSQL no tiene UNSIGNED, usar INTEGER o CAST a INTEGER
             $driver = DB::connection()->getDriverName();
             if ($driver === 'pgsql') {

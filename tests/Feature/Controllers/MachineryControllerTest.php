@@ -207,7 +207,7 @@ class MachineryControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $response = $this->post(route('machinery.store'), [
-            'cod' => str_repeat('a', 256), // Più di 255 caratteri
+            'cod' => str_repeat('a', 256), // More than 255 characters
             'description' => 'Test Description',
         ]);
 
@@ -221,7 +221,7 @@ class MachineryControllerTest extends TestCase
 
         $response = $this->post(route('machinery.store'), [
             'cod' => 'MAC-001',
-            'description' => str_repeat('a', 256), // Más de 255 caracteres
+            'description' => str_repeat('a', 256), // More than 255 characters
         ]);
 
         $response->assertSessionHasErrors(['description']);

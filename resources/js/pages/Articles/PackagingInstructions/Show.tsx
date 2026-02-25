@@ -8,6 +8,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import articles from '@/routes/articles/index';
 import { type BreadcrumbItem } from '@/types';
@@ -35,20 +36,22 @@ type PackagingInstructionsShowProps = {
 export default function PackagingInstructionsShow({
     instruction,
 }: PackagingInstructionsShowProps) {
+    const { t } = useTranslations();
     const [isDeleting, setIsDeleting] = useState(false);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const instructionCode = instruction.code + (instruction.number || '');
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Articoli',
+            title: t('nav.articles'),
             href: articles.index().url,
         },
         {
-            title: 'Istruzioni di Confezionamento',
+            title: t('articles.packaging_instructions.index.title'),
             href: articles.packagingInstructions.index().url,
         },
         {
-            title: instruction.code + (instruction.number || ''),
+            title: instructionCode,
             href: articles.packagingInstructions.show({
                 packagingInstruction: instruction.uuid,
             }).url,
@@ -76,7 +79,9 @@ export default function PackagingInstructionsShow({
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head
-                title={`Istruzione ${instruction.code}${instruction.number || ''}`}
+                title={t('articles.packaging_instructions.show.page_title', {
+                    code: instructionCode,
+                })}
             />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
@@ -87,7 +92,7 @@ export default function PackagingInstructionsShow({
                             {instruction.number || ''}
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Dettagli dell'istruzione di confezionamento
+                            {t('articles.packaging_instructions.show.subtitle')}
                         </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -100,21 +105,24 @@ export default function PackagingInstructionsShow({
                         >
                             <Button variant="outline" size="sm">
                                 <Edit className="mr-2 h-4 w-4" />
-                                Modifica
+                                {t('common.edit')}
                             </Button>
                         </Link>
                         <Button
                             variant="destructive"
                             size="sm"
                             onClick={() => setShowDeleteDialog(true)}
+                            disabled={isDeleting}
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Elimina
+                            {isDeleting
+                                ? t('common.deleting')
+                                : t('common.delete')}
                         </Button>
                         <Link href={articles.packagingInstructions.index().url}>
                             <Button variant="ghost" size="sm">
                                 <ArrowLeft className="mr-2 h-4 w-4" />
-                                Indietro
+                                {t('articles.packaging_instructions.show.back')}
                             </Button>
                         </Link>
                     </div>
@@ -123,12 +131,18 @@ export default function PackagingInstructionsShow({
                 <div className="grid gap-4 md:grid-cols-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Informazioni Generali</CardTitle>
+                            <CardTitle>
+                                {t(
+                                    'articles.packaging_instructions.show.general_info',
+                                )}
+                            </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    Codice
+                                    {t(
+                                        'articles.packaging_instructions.show.fields.code',
+                                    )}
                                 </Label>
                                 <p className="mt-1 text-sm font-medium">
                                     {instruction.code}
@@ -137,7 +151,9 @@ export default function PackagingInstructionsShow({
                             {instruction.number && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Numero
+                                        {t(
+                                            'articles.packaging_instructions.show.fields.number',
+                                        )}
                                     </Label>
                                     <p className="mt-1 text-sm font-medium">
                                         {instruction.number}
@@ -147,7 +163,9 @@ export default function PackagingInstructionsShow({
                             {instruction.filename && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Filename
+                                        {t(
+                                            'articles.packaging_instructions.show.fields.filename',
+                                        )}
                                     </Label>
                                     <div className="mt-1 flex items-center gap-2">
                                         <p className="text-sm font-medium">
@@ -178,10 +196,15 @@ export default function PackagingInstructionsShow({
                         instruction.articles.length > 0 && (
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Articoli Associati</CardTitle>
+                                    <CardTitle>
+                                        {t(
+                                            'articles.packaging_instructions.show.articles_title',
+                                        )}
+                                    </CardTitle>
                                     <CardDescription>
-                                        Articoli che utilizzano questa
-                                        istruzione
+                                        {t(
+                                            'articles.packaging_instructions.show.articles_subtitle',
+                                        )}
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
@@ -212,21 +235,11 @@ export default function PackagingInstructionsShow({
                     onOpenChange={setShowDeleteDialog}
                     onConfirm={handleDelete}
                     isDeleting={isDeleting}
-                    title="Conferma eliminazione"
-                    description={
-                        <>
-                            Sei sicuro di voler eliminare l'istruzione{' '}
-                            <strong>
-                                {instruction.code}
-                                {instruction.number || ''}
-                            </strong>
-                            ?
-                            <br />
-                            <br />
-                            Questa azione non può essere annullata. L'istruzione
-                            verrà eliminata definitivamente.
-                        </>
-                    }
+                    title={t('articles.packaging_instructions.delete.title')}
+                    description={t(
+                        'articles.packaging_instructions.delete.description',
+                    )}
+                    itemName={instructionCode}
                 />
             </div>
         </AppLayout>

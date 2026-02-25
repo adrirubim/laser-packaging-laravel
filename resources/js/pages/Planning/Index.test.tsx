@@ -1,15 +1,20 @@
 /**
- * Test de integración de la página Planning/Index.
- * Comprueba título fijo, subtítulo por vista, toolbar y que no explota al renderizar.
+ * Integration test for Planning/Index page.
+ * Asserts fixed title, subtitle per view, toolbar, and that it renders without errors.
+ * useTranslations is mocked to isolate i18n; real keys are validated by i18n-check.
  */
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 import PlanningBoard from './Index';
 
-// Mocks para poder renderizar Index sin Inertia, layout ni API
+vi.mock('@/hooks/use-translations', () => ({
+    useTranslations: () => ({ t: (key: string) => key }),
+}));
+
 vi.mock('@inertiajs/react', () => ({
     Head: () => null,
+    usePage: () => ({ props: {} }),
 }));
 
 vi.mock('@/layouts/app-layout', () => ({
@@ -42,7 +47,7 @@ vi.mock('@/routes/planning', () => ({
     default: { index: { url: () => '/planning' } },
 }));
 
-// Lazy-loaded views: componentes mínimos para no suspender y no cargar toda la grilla
+// Lazy-loaded views: minimal components to avoid suspense and loading the full grid
 vi.mock('./PlanningDayGridView', () => ({
     default: function MockDayGrid() {
         return React.createElement(
@@ -63,36 +68,36 @@ vi.mock('./PlanningMonthSummary', () => ({
     },
 }));
 
-describe('Planning Index (integración)', () => {
+describe('Planning Index (integration)', () => {
     const today = '2026-02-23';
 
-    it('renderiza sin errores con props mínimas', () => {
+    it('renders without errors with minimal props', () => {
         const html = renderToString(<PlanningBoard today={today} />);
 
-        expect(html).toContain('Pianificazione produzione');
-        expect(html).toContain('Oggi');
-        expect(html).toContain('Giornaliera');
-        expect(html).toContain('Settimanale');
-        expect(html).toContain('Mensile');
+        expect(html).toContain('planning.page_title');
+        expect(html).toContain('planning.today');
+        expect(html).toContain('planning.range_day');
+        expect(html).toContain('planning.range_week');
+        expect(html).toContain('planning.range_month');
     });
 
-    it('muestra subtítulo de vista giornaliera por defecto', () => {
+    it('shows day view subtitle by default', () => {
         const html = renderToString(<PlanningBoard today={today} />);
 
-        expect(html).toContain('Vista giornaliera per linea e ordine.');
+        expect(html).toContain('planning.view_description_day');
     });
 
-    it('incluye la leyenda y el área de controles', () => {
+    it('includes legend and controls area', () => {
         const html = renderToString(<PlanningBoard today={today} />);
 
-        expect(html).toContain('Suggerimenti tastiera');
-        expect(html).toMatch(/Data:|Range:/);
+        expect(html).toContain('planning.legend_keyboard_hints');
+        expect(html).toMatch(/planning\.date_label|planning\.range_label/);
     });
 
-    it('renderiza contenido principal (toolbar + leyenda o griglia)', () => {
+    it('renders main content (toolbar + legend or grid)', () => {
         const html = renderToString(<PlanningBoard today={today} />);
         const hasGridOrFallback =
-            html.includes('DayGrid') || html.includes('Caricamento griglia');
+            html.includes('DayGrid') || html.includes('planning.loading_grid');
 
         expect(hasGridOrFallback).toBe(true);
     });

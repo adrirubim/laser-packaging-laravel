@@ -36,7 +36,7 @@ class OfferNumberServiceTest extends TestCase
 
         $parts = explode('_', $number);
         $this->assertCount(4, $parts);
-        $this->assertEquals('01', $parts[2]); // Subversión default
+        $this->assertEquals('01', $parts[2]); // Default subversion
         $this->assertEquals('A', $parts[3]); // Sufijo default
     }
 
@@ -64,7 +64,7 @@ class OfferNumberServiceTest extends TestCase
 
         $this->assertNotEquals($first, $second);
 
-        // Extraer el número progresivo
+        // Extract progressive number
         $firstParts = explode('_', $first);
         $secondParts = explode('_', $second);
 

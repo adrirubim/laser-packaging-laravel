@@ -8,6 +8,7 @@ import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { SortableTableHeader } from '@/components/SortableTableHeader';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import articleCategories from '@/routes/article-categories/index';
 import { type BreadcrumbItem } from '@/types';
@@ -43,6 +44,7 @@ export default function ArticleCategoriesIndex() {
     const { props } = usePage<ArticleCategoriesIndexProps>();
     const { categories: categoriesPaginated, filters } = props;
     const { flash } = useFlashNotifications();
+    const { t } = useTranslations();
 
     const [deleteDialog, setDeleteDialog] = useState<{
         open: boolean;
@@ -125,21 +127,21 @@ export default function ArticleCategoriesIndex() {
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Categorie Articoli',
+            title: t('article_categories.breadcrumb'),
             href: articleCategories.index().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Categorie Articoli" />
+            <Head title={t('article_categories.title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="Categorie Articoli"
-                    subtitle="Elenco delle categorie di articoli attive con Cerca e filtri."
+                    title={t('article_categories.title')}
+                    subtitle={t('article_categories.index.subtitle')}
                     createHref={articleCategories.create().url}
-                    createLabel="Nuova Categoria"
+                    createLabel={t('article_categories.index.create')}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -147,12 +149,14 @@ export default function ArticleCategoriesIndex() {
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="space-y-1">
                         <label className="text-xs font-medium text-muted-foreground">
-                            Cerca
+                            {t('common.search')}
                         </label>
                         <SearchInput
                             value={filters.search ?? ''}
                             onChange={handleSearchChange}
-                            placeholder="Nome categoria..."
+                            placeholder={t(
+                                'article_categories.search_placeholder',
+                            )}
                             debounceMs={500}
                             onClear={clearSearch}
                         />
@@ -164,8 +168,7 @@ export default function ArticleCategoriesIndex() {
                         <div className="block space-y-3 p-4 md:hidden">
                             {categoriesPaginated.data.length === 0 ? (
                                 <div className="py-8 text-center text-sm text-muted-foreground">
-                                    Nessuna categoria trovata per i filtri
-                                    attuali.
+                                    {t('article_categories.empty_filtered')}
                                 </div>
                             ) : (
                                 categoriesPaginated.data.map((category) => (
@@ -209,10 +212,10 @@ export default function ArticleCategoriesIndex() {
                             <thead className="sticky top-0 z-10 bg-muted/80 backdrop-blur">
                                 <tr className="text-xs tracking-wide text-muted-foreground uppercase">
                                     <th className="border-b px-3 py-2 font-medium">
-                                        ID
+                                        {t('article_categories.columns.id')}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        UUID
+                                        {t('article_categories.columns.uuid')}
                                     </th>
                                     <SortableTableHeader
                                         column="name"
@@ -220,10 +223,10 @@ export default function ArticleCategoriesIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Nome
+                                        {t('article_categories.columns.name')}
                                     </SortableTableHeader>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t('common.actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -234,8 +237,9 @@ export default function ArticleCategoriesIndex() {
                                             colSpan={4}
                                             className="px-3 py-8 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessuna categoria trovata per i
-                                            filtri attuali.
+                                            {t(
+                                                'article_categories.empty_filtered',
+                                            )}
                                         </td>
                                     </tr>
                                 ) : (
@@ -302,8 +306,8 @@ export default function ArticleCategoriesIndex() {
                         })
                     }
                     onConfirm={handleDeleteConfirm}
-                    title="Elimina Categoria"
-                    description="Sei sicuro di voler eliminare questa categoria di articolo? Questa azione non può essere annullata."
+                    title={t('article_categories.delete.title')}
+                    description={t('article_categories.delete.description')}
                     itemName={deleteDialog.category?.name}
                     isLoading={isDeleting}
                 />

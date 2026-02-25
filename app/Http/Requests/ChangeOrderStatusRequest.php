@@ -29,7 +29,7 @@ class ChangeOrderStatusRequest extends FormRequest
             'status' => ['required', 'integer', Rule::in(OrderStatus::values())],
         ];
 
-        // Si el nuevo estado es SOSPESO, requerir motivazione
+        // If new status is SOSPESO, require motivazione (reason)
         if ($newStatus == OrderStatus::SOSPESO->value) {
             $rules['motivazione'] = ['required', 'string', 'max:1000'];
         }
@@ -43,12 +43,12 @@ class ChangeOrderStatusRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'status.required' => 'Lo stato è obbligatorio.',
-            'status.integer' => 'Lo stato deve essere un numero intero.',
-            'status.in' => 'Lo stato selezionato non è valido.',
-            'motivazione.required' => 'La motivazione è obbligatoria per sospendere un ordine.',
-            'motivazione.string' => 'La motivazione deve essere un testo.',
-            'motivazione.max' => 'La motivazione non può superare i 1000 caratteri.',
+            'status.required' => __('validation.status_required'),
+            'status.integer' => __('validation.status_integer'),
+            'status.in' => __('validation.status_in'),
+            'motivazione.required' => __('validation.motivazione_required'),
+            'motivazione.string' => __('validation.motivazione_string'),
+            'motivazione.max' => __('validation.motivazione_max'),
         ];
     }
 }

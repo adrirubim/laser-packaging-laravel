@@ -94,7 +94,7 @@ export default function OffersIndex() {
     const [isDeleting, setIsDeleting] = useState(false);
     const [downloadingPdf, setDownloadingPdf] = useState<string | null>(null);
 
-    // Sincronizzare stato iniziale con i filtri del server
+    // Sync initial state with server filters
     useEffect(() => {
         queueMicrotask(() => {
             setSearchValue(filters.search ?? '');
@@ -207,8 +207,8 @@ export default function OffersIndex() {
         setDownloadingPdf(offer.uuid);
 
         try {
-            // Creare iframe temporaneo invisibile per forzare il download
-            // Questo metodo funziona in modo coerente in modalità normale e in incognito
+            // Create temporary invisible iframe to force download
+            // This method works consistently in normal and incognito mode
             const iframe = document.createElement('iframe');
             iframe.style.display = 'none';
             iframe.style.visibility = 'hidden';
@@ -220,7 +220,7 @@ export default function OffersIndex() {
             // Le intestazioni Content-Disposition: attachment forzano il dialogo
             iframe.src = `/offers/${offer.uuid}/download-pdf`;
 
-            // Aggiungere al DOM
+            // Add to DOM
             document.body.appendChild(iframe);
 
             // Pulire iframe dopo un delay
@@ -235,11 +235,13 @@ export default function OffersIndex() {
             console.error('Errore nello scaricare il PDF:', error);
             setDownloadingPdf(null);
 
-            // Mostrare messaggio di errore all'utente
+            // Show error message to user
             alert(
                 error instanceof Error
-                    ? `Errore nello scaricare il PDF: ${error.message}`
-                    : 'Errore nello scaricare il PDF. Riprova.',
+                    ? t('offers.pdf_download_error', {
+                          message: error.message,
+                      })
+                    : t('offers.pdf_download_error_fallback'),
             );
         }
     };
@@ -252,12 +254,12 @@ export default function OffersIndex() {
         const label =
             offer.approval_status_label ??
             (status === 0
-                ? 'In attesa di approvazione'
+                ? t('offers.index.mobile_status_pending')
                 : status === 1
-                  ? 'Approvata'
+                  ? t('offers.index.mobile_status_approved')
                   : status === 2
-                    ? 'Respinta'
-                    : '—');
+                    ? t('offers.index.mobile_status_rejected')
+                    : t('common.empty_value'));
 
         if (status === null || status === undefined) {
             return <span className="text-muted-foreground">—</span>;
@@ -312,9 +314,9 @@ export default function OffersIndex() {
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
                     title={t('nav.offers')}
-                    subtitle="Elenco delle offerte attive con Cerca e filtri di base."
+                    subtitle={t('offers.index.subtitle')}
                     createHref={offers.create().url}
-                    createLabel="Nuova Offerta"
+                    createLabel={t('offers.index.create')}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -323,7 +325,7 @@ export default function OffersIndex() {
                     <div className="grid gap-3 md:grid-cols-2">
                         <div className="space-y-1">
                             <label className="text-xs font-medium text-muted-foreground">
-                                Cerca
+                                {t('common.search')}
                             </label>
                             <SearchInput
                                 value={searchValue}
@@ -336,7 +338,7 @@ export default function OffersIndex() {
 
                         <div className="space-y-1">
                             <label className="text-xs font-medium text-muted-foreground">
-                                Cliente
+                                {t('common.customer')}
                             </label>
                             <Select
                                 value={customerFilter || 'all'}
@@ -348,7 +350,7 @@ export default function OffersIndex() {
                             >
                                 <SelectTrigger
                                     className="w-full"
-                                    aria-label="Cliente"
+                                    aria-label={t('common.customer')}
                                 >
                                     <SelectValue
                                         placeholder={t('filter.all_customers')}
@@ -376,7 +378,7 @@ export default function OffersIndex() {
                 <div className="block space-y-3 p-4 md:hidden">
                     {offersPaginated.data.length === 0 ? (
                         <div className="py-8 text-center text-sm text-muted-foreground">
-                            Nessuna offerta trovata per i filtri attuali.
+                            {t('offers.index.empty')}
                         </div>
                     ) : (
                         offersPaginated.data.map((offer) => (
@@ -396,7 +398,9 @@ export default function OffersIndex() {
                                         <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted-foreground">
                                             {offer.offer_date && (
                                                 <span>
-                                                    Data:{' '}
+                                                    {t(
+                                                        'offers.index.mobile_date_label',
+                                                    )}{' '}
                                                     {new Date(
                                                         offer.offer_date,
                                                     ).toLocaleDateString(
@@ -406,7 +410,9 @@ export default function OffersIndex() {
                                             )}
                                             {offer.validity_date && (
                                                 <span>
-                                                    Validità:{' '}
+                                                    {t(
+                                                        'offers.index.mobile_validity_label',
+                                                    )}{' '}
                                                     {new Date(
                                                         offer.validity_date,
                                                     ).toLocaleDateString(
@@ -418,13 +424,19 @@ export default function OffersIndex() {
                                         <p className="mt-1 text-xs text-muted-foreground">
                                             {offer.approval_status_label ??
                                                 (offer.approval_status === 0
-                                                    ? 'In attesa di approvazione'
+                                                    ? t(
+                                                          'offers.index.mobile_status_pending',
+                                                      )
                                                     : offer.approval_status ===
                                                         1
-                                                      ? 'Approvata'
+                                                      ? t(
+                                                            'offers.index.mobile_status_approved',
+                                                        )
                                                       : offer.approval_status ===
                                                           2
-                                                        ? 'Respinta'
+                                                        ? t(
+                                                              'offers.index.mobile_status_rejected',
+                                                          )
                                                         : '—')}
                                         </p>
                                     </div>
@@ -458,7 +470,9 @@ export default function OffersIndex() {
                                                     }}
                                                 >
                                                     <Copy className="mr-2 h-4 w-4" />
-                                                    Duplica
+                                                    {t(
+                                                        'offers.actions.duplicate',
+                                                    )}
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem
                                                     onSelect={(e) => {
@@ -474,7 +488,9 @@ export default function OffersIndex() {
                                                     }}
                                                 >
                                                     <Package className="mr-2 h-4 w-4" />
-                                                    Converti in Articolo
+                                                    {t(
+                                                        'offers.actions.convert_to_article',
+                                                    )}
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem
                                                     onSelect={(e) => {
@@ -492,12 +508,16 @@ export default function OffersIndex() {
                                                     offer.uuid ? (
                                                         <>
                                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                            Generando PDF...
+                                                            {t(
+                                                                'offers.actions.generating_pdf',
+                                                            )}
                                                         </>
                                                     ) : (
                                                         <>
                                                             <FileText className="mr-2 h-4 w-4" />
-                                                            Genera PDF
+                                                            {t(
+                                                                'offers.actions.generate_pdf',
+                                                            )}
                                                         </>
                                                     )}
                                                 </DropdownMenuItem>
@@ -523,7 +543,7 @@ export default function OffersIndex() {
                                         UUID
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        Cliente
+                                        {t('offers.table.customer')}
                                     </th>
                                     <SortableTableHeader
                                         column="offer_number"
@@ -531,7 +551,7 @@ export default function OffersIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Numero Offerta
+                                        {t('offers.table.number')}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="offer_date"
@@ -539,7 +559,7 @@ export default function OffersIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Data Offerta
+                                        {t('offers.table.date')}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="validity_date"
@@ -547,7 +567,7 @@ export default function OffersIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Validità
+                                        {t('offers.table.validity')}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="approval_status"
@@ -555,10 +575,10 @@ export default function OffersIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Approvazione
+                                        {t('offers.table.approval')}
                                     </SortableTableHeader>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t('offers.table.actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -569,8 +589,7 @@ export default function OffersIndex() {
                                             colSpan={8}
                                             className="px-3 py-6 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessuna offerta trovata per i filtri
-                                            attuali.
+                                            {t('offers.index.empty')}
                                         </td>
                                     </tr>
                                 )}
@@ -642,7 +661,9 @@ export default function OffersIndex() {
                                                             }}
                                                         >
                                                             <Copy className="mr-2 h-4 w-4" />
-                                                            Duplica
+                                                            {t(
+                                                                'offers.actions.duplicate',
+                                                            )}
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem
                                                             onSelect={(e) => {
@@ -660,7 +681,9 @@ export default function OffersIndex() {
                                                             }}
                                                         >
                                                             <Package className="mr-2 h-4 w-4" />
-                                                            Converti in Articolo
+                                                            {t(
+                                                                'offers.actions.convert_to_article',
+                                                            )}
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem
                                                             onSelect={(e) => {
@@ -678,13 +701,16 @@ export default function OffersIndex() {
                                                             offer.uuid ? (
                                                                 <>
                                                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                                    Generando
-                                                                    PDF...
+                                                                    {t(
+                                                                        'offers.actions.generating_pdf',
+                                                                    )}
                                                                 </>
                                                             ) : (
                                                                 <>
                                                                     <FileText className="mr-2 h-4 w-4" />
-                                                                    Genera PDF
+                                                                    {t(
+                                                                        'offers.actions.generate_pdf',
+                                                                    )}
                                                                 </>
                                                             )}
                                                         </DropdownMenuItem>
@@ -711,8 +737,8 @@ export default function OffersIndex() {
                         setDeleteDialog({ open, offer: deleteDialog.offer })
                     }
                     onConfirm={handleDeleteConfirm}
-                    title="Elimina Offerta"
-                    description="Sei sicuro di voler eliminare questa offerta? Questa azione non può essere annullata."
+                    title={t('offers.delete_title')}
+                    description={t('offers.delete_description')}
                     itemName={deleteDialog.offer?.offer_number}
                     isLoading={isDeleting}
                 />

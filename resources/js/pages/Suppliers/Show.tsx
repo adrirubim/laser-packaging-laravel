@@ -8,6 +8,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import suppliers from '@/routes/suppliers/index';
 import { type BreadcrumbItem } from '@/types';
@@ -36,10 +37,11 @@ type SuppliersShowProps = {
 export default function SuppliersShow({ supplier }: SuppliersShowProps) {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const { t } = useTranslations();
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Fornitori',
+            title: t('nav.suppliers'),
             href: suppliers.index().url,
         },
         {
@@ -63,7 +65,11 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Fornitore ${supplier.code}`} />
+            <Head
+                title={t('suppliers.show.page_title', {
+                    code: supplier.code,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
@@ -72,7 +78,7 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
                             {supplier.company_name}
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Codice: {supplier.code}
+                            {t('suppliers.show.code_label')} {supplier.code}
                         </p>
                     </div>
                     <div className="flex gap-2">
@@ -83,7 +89,7 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
                                         .url
                                 }
                             >
-                                Modifica
+                                {t('common.edit')}
                             </Link>
                         </Button>
                         <Button
@@ -91,7 +97,7 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
                             onClick={() => setDeleteDialogOpen(true)}
                             disabled={isDeleting}
                         >
-                            Elimina
+                            {t('common.delete')}
                         </Button>
                     </div>
                 </div>
@@ -99,15 +105,17 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
                 <div className="grid gap-4 md:grid-cols-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Dettagli Fornitore</CardTitle>
+                            <CardTitle>
+                                {t('suppliers.show.details_title')}
+                            </CardTitle>
                             <CardDescription>
-                                Informazioni principali
+                                {t('suppliers.show.details_subtitle')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
                                 <FormLabel className="text-sm font-medium text-muted-foreground">
-                                    UUID
+                                    {t('suppliers.show.uuid_label')}
                                 </FormLabel>
                                 <p className="font-mono text-sm">
                                     {supplier.uuid}
@@ -116,7 +124,7 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
 
                             <div>
                                 <FormLabel className="text-sm font-medium text-muted-foreground">
-                                    Codice Fornitore
+                                    {t('suppliers.table.code')}
                                 </FormLabel>
                                 <p className="font-mono text-lg font-semibold">
                                     {supplier.code}
@@ -125,7 +133,7 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
 
                             <div>
                                 <FormLabel className="text-sm font-medium text-muted-foreground">
-                                    Ragione Sociale
+                                    {t('suppliers.table.company_name')}
                                 </FormLabel>
                                 <p className="text-lg font-semibold">
                                     {supplier.company_name}
@@ -135,7 +143,7 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
                             {supplier.vat_number && (
                                 <div>
                                     <FormLabel className="text-sm font-medium text-muted-foreground">
-                                        Partita IVA
+                                        {t('suppliers.table.vat')}
                                     </FormLabel>
                                     <p>{supplier.vat_number}</p>
                                 </div>
@@ -145,16 +153,18 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>Informazioni di Contatto</CardTitle>
+                            <CardTitle>
+                                {t('suppliers.show.contact_title')}
+                            </CardTitle>
                             <CardDescription>
-                                Indirizzo e contatti
+                                {t('suppliers.show.contact_subtitle')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {supplier.co && (
                                 <div>
                                     <FormLabel className="text-sm font-medium text-muted-foreground">
-                                        C/O
+                                        {t('suppliers.table.co')}
                                     </FormLabel>
                                     <p>{supplier.co}</p>
                                 </div>
@@ -163,7 +173,7 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
                             {supplier.street && (
                                 <div>
                                     <FormLabel className="text-sm font-medium text-muted-foreground">
-                                        Via
+                                        {t('suppliers.table.street')}
                                     </FormLabel>
                                     <p>{supplier.street}</p>
                                 </div>
@@ -172,7 +182,7 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
                             {(supplier.city || supplier.postal_code) && (
                                 <div>
                                     <FormLabel className="text-sm font-medium text-muted-foreground">
-                                        Città / CAP
+                                        {t('suppliers.show.city_cap_label')}
                                     </FormLabel>
                                     <p>
                                         {supplier.city ?? ''}{' '}
@@ -186,7 +196,7 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
                             {supplier.province && (
                                 <div>
                                     <FormLabel className="text-sm font-medium text-muted-foreground">
-                                        Provincia
+                                        {t('suppliers.show.province_label')}
                                     </FormLabel>
                                     <p>{supplier.province}</p>
                                 </div>
@@ -195,7 +205,7 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
                             {supplier.country && (
                                 <div>
                                     <FormLabel className="text-sm font-medium text-muted-foreground">
-                                        Nazione
+                                        {t('suppliers.show.country_label')}
                                     </FormLabel>
                                     <p>{supplier.country}</p>
                                 </div>
@@ -204,7 +214,7 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
                             {supplier.contacts && (
                                 <div>
                                     <FormLabel className="text-sm font-medium text-muted-foreground">
-                                        Contatti
+                                        {t('suppliers.table.contacts')}
                                     </FormLabel>
                                     <p className="whitespace-pre-wrap">
                                         {supplier.contacts}
@@ -221,8 +231,8 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
                 onOpenChange={setDeleteDialogOpen}
                 onConfirm={handleDeleteConfirm}
                 isDeleting={isDeleting}
-                title="Elimina Fornitore"
-                description="Sei sicuro di voler eliminare questo fornitore? Questa azione non può essere annullata."
+                title={t('suppliers.delete_title')}
+                description={t('suppliers.delete_description')}
                 itemName={`${supplier.company_name} (Codice: ${supplier.code})`}
             />
         </AppLayout>

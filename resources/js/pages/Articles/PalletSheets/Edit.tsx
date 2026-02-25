@@ -11,6 +11,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import articles from '@/routes/articles/index';
 import { type BreadcrumbItem } from '@/types';
@@ -33,41 +34,54 @@ export default function PalletSheetsEdit({
     sheet: palletSheet,
     errors: serverErrors,
 }: PalletSheetsEditProps) {
+    const { t } = useTranslations();
     const [selectedFileName, setSelectedFileName] = useState<string | null>(
         null,
     );
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Articoli',
+            title: t('nav.articles'),
             href: articles.index().url,
         },
         {
-            title: 'Fogli Pallet',
-            href: '/articles/pallet-sheets',
+            title: t('articles.pallet_sheets.title'),
+            href: articles.palletSheets.index().url,
         },
         {
             title: palletSheet.code,
-            href: `/articles/pallet-sheets/${palletSheet.uuid}`,
+            href: articles.palletSheets.show({ palletSheet: palletSheet.uuid })
+                .url,
         },
         {
-            title: 'Modifica',
-            href: `/articles/pallet-sheets/${palletSheet.uuid}/edit`,
+            title: t('articles.pallet_sheets.edit.breadcrumb'),
+            href: articles.palletSheets.edit({ palletSheet: palletSheet.uuid })
+                .url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Modifica Foglio Pallet ${palletSheet.code}`} />
+            <Head
+                title={t('articles.pallet_sheets.edit.page_title', {
+                    code: palletSheet.code,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Modifica Foglio Pallet</CardTitle>
+                                <CardTitle>
+                                    {t(
+                                        'articles.pallet_sheets.edit.card_title',
+                                    )}
+                                </CardTitle>
                                 <CardDescription>
-                                    Modifica i dettagli del foglio pallet
+                                    {t(
+                                        'articles.pallet_sheets.edit.card_description',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -101,7 +115,9 @@ export default function PalletSheetsEdit({
                                                         htmlFor="code"
                                                         required
                                                     >
-                                                        Codice
+                                                        {t(
+                                                            'articles.pallet_sheets.form.code_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="code"
@@ -122,7 +138,9 @@ export default function PalletSheetsEdit({
                                                         htmlFor="description"
                                                         required
                                                     >
-                                                        Descrizione
+                                                        {t(
+                                                            'articles.pallet_sheets.form.description_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="description"
@@ -143,13 +161,16 @@ export default function PalletSheetsEdit({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="filename">
-                                                        Allegato
+                                                        {t(
+                                                            'articles.pallet_sheets.form.attachment_label',
+                                                        )}
                                                     </FormLabel>
                                                     {palletSheet.filename && (
                                                         <div className="mb-2 rounded-md bg-muted p-2">
                                                             <p className="mb-1 text-xs text-muted-foreground">
-                                                                Allegato
-                                                                attuale:
+                                                                {t(
+                                                                    'articles.pallet_sheets.edit.current_attachment',
+                                                                )}
                                                             </p>
                                                             <p className="font-mono text-sm">
                                                                 {
@@ -181,13 +202,18 @@ export default function PalletSheetsEdit({
                                                         className="text-xs text-muted-foreground"
                                                     >
                                                         {palletSheet.filename
-                                                            ? 'Carica un nuovo allegato PDF per sostituire quello esistente (opzionale).'
-                                                            : 'Seleziona un allegato PDF da associare al foglio pallet (opzionale).'}
+                                                            ? t(
+                                                                  'articles.pallet_sheets.edit.attachment_replace_help',
+                                                              )
+                                                            : t(
+                                                                  'articles.pallet_sheets.edit.attachment_help',
+                                                              )}
                                                     </p>
                                                     {selectedFileName && (
                                                         <p className="text-xs text-muted-foreground">
-                                                            Nuovo allegato
-                                                            selezionato:{' '}
+                                                            {t(
+                                                                'articles.pallet_sheets.edit.new_attachment_selected',
+                                                            )}{' '}
                                                             <span className="font-mono">
                                                                 {
                                                                     selectedFileName
@@ -208,8 +234,12 @@ export default function PalletSheetsEdit({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Aggiornando...'
-                                                            : 'Aggiorna Foglio Pallet'}
+                                                            ? t(
+                                                                  'articles.pallet_sheets.edit.submitting',
+                                                              )
+                                                            : t(
+                                                                  'articles.pallet_sheets.edit.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -220,7 +250,7 @@ export default function PalletSheetsEdit({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

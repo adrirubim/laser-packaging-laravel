@@ -45,7 +45,7 @@ class CustomerControllerTest extends TestCase
             ->has('customers.data')
             ->where('customers.data', function ($data) {
                 $this->assertCount(2, $data);
-                // Convertir Collection a array si es necesario
+                // Convert Collection to array if necessary
                 if (is_object($data) && method_exists($data, 'toArray')) {
                     $dataArray = $data->toArray();
                 } else {
@@ -110,7 +110,7 @@ class CustomerControllerTest extends TestCase
             'vat_number' => '98765432109',
         ]);
 
-        // Cercare per codice
+        // Search by code
         $response = $this->get(route('customers.index', ['search' => 'CLI001']));
         $response->assertStatus(200);
         $response->assertInertia(fn ($page) => $page->where('customers.data', function ($data) {
@@ -121,7 +121,7 @@ class CustomerControllerTest extends TestCase
         })
         );
 
-        // Buscar por nombre de empresa
+        // Search by company name
         $response = $this->get(route('customers.index', ['search' => 'ABC']));
         $response->assertStatus(200);
         $response->assertInertia(fn ($page) => $page->where('customers.data', function ($data) {
@@ -132,7 +132,7 @@ class CustomerControllerTest extends TestCase
         })
         );
 
-        // Buscar por partita IVA
+        // Search by VAT number
         $response = $this->get(route('customers.index', ['search' => '12345678901']));
         $response->assertStatus(200);
         $response->assertInertia(fn ($page) => $page->where('customers.data', function ($data) {
@@ -389,7 +389,7 @@ class CustomerControllerTest extends TestCase
             'removed' => false,
         ]);
 
-        // Tentare di cambiare CLI002 in CLI001 dovrebbe fallire
+        // Try changing CLI002 to CLI001 should fail
         $response = $this->put(route('customers.update', $customer2), [
             'code' => 'CLI001',
             'company_name' => 'Test Customer SRL',
@@ -398,7 +398,7 @@ class CustomerControllerTest extends TestCase
 
         $response->assertSessionHasErrors(['code']);
 
-        // Ma aggiornare CLI001 mantenendo il suo codice dovrebbe funzionare
+        // But updating CLI001 keeping its code should work
         $response = $this->put(route('customers.update', $customer1), [
             'code' => 'CLI001',
             'company_name' => 'Updated Name',
@@ -477,11 +477,11 @@ class CustomerControllerTest extends TestCase
         $response->assertRedirect(route('customers.index'));
         $response->assertSessionHas('success');
 
-        // Refrescar el modelo para obtener los valores actualizados
+        // Refresh model to get updated values
         $customer->refresh();
         $this->assertTrue($customer->removed);
 
-        // Verificare anche nel database
+        // Verify also in database
         $this->assertDatabaseHas('customer', [
             'id' => $customer->id,
             'removed' => 1,
@@ -493,7 +493,7 @@ class CustomerControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // Creare più di 15 clienti (default per_page)
+        // Create more than 15 customers (default per_page)
         Customer::factory()->count(20)->create([
             'removed' => false,
         ]);
@@ -590,7 +590,7 @@ class CustomerControllerTest extends TestCase
             'province' => 'RM',
         ]);
 
-        // Filtrar por provincia RM
+        // Filter by province RM
         $response = $this->get(route('customers.index', ['province' => 'RM']));
 
         $response->assertStatus(200);
@@ -605,7 +605,7 @@ class CustomerControllerTest extends TestCase
             ->where('filters.province', 'RM')
         );
 
-        // Filtrar por provincia MI
+        // Filter by province MI
         $response = $this->get(route('customers.index', ['province' => 'MI']));
 
         $response->assertStatus(200);
@@ -623,12 +623,12 @@ class CustomerControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // VAT number deve avere esattamente 11 cifre
+        // VAT number must have exactly 11 digits
         $response = $this->post(route('customers.store'), [
             'code' => 'CLI001',
             'company_name' => 'Test Customer SRL',
             'street' => 'Via Roma 1',
-            'vat_number' => '1234567890', // Solo 10 cifre
+            'vat_number' => '1234567890', // Only 10 digits
         ]);
 
         $response->assertSessionHasErrors(['vat_number']);
@@ -643,7 +643,7 @@ class CustomerControllerTest extends TestCase
             'code' => 'CLI001',
             'company_name' => 'Test Customer SRL',
             'street' => 'Via Roma 1',
-            'vat_number' => '12345678901', // 11 cifre - valido
+            'vat_number' => '12345678901', // 11 digits - valid
         ]);
 
         $response->assertRedirect(route('customers.index'));
@@ -662,7 +662,7 @@ class CustomerControllerTest extends TestCase
             'code' => 'CLI001',
             'company_name' => 'Test Customer SRL',
             'street' => 'Via Roma 1',
-            'vat_number' => '1234567890A', // Contiene letra
+            'vat_number' => '1234567890A', // Contains letter
         ]);
 
         $response->assertSessionHasErrors(['vat_number']);
@@ -674,7 +674,7 @@ class CustomerControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $response = $this->post(route('customers.store'), [
-            'code' => str_repeat('a', 256), // Più di 255 caratteri
+            'code' => str_repeat('a', 256), // More than 255 characters
             'company_name' => 'Test Customer SRL',
             'street' => 'Via Roma 1',
         ]);
@@ -713,7 +713,7 @@ class CustomerControllerTest extends TestCase
             ->has('customers.data')
         );
 
-        // Verificar que no hay resultados
+        // Verify there are no results
         $response->assertInertia(fn ($page) => $page->has('customers.data')
             ->where('customers.data', [])
         );

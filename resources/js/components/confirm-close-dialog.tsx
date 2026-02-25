@@ -8,6 +8,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { useTranslations } from '@/hooks/use-translations';
 
 type ConfirmCloseDialogProps = {
     open: boolean;
@@ -40,24 +41,30 @@ export function ConfirmCloseDialog({
     open,
     onOpenChange,
     onConfirm,
-    title = 'Conferma chiusura',
-    description = 'Sei sicuro di voler chiudere? I dati non salvati andranno persi.',
-    confirmLabel = 'Chiudi',
-    cancelLabel = 'Annulla',
+    title,
+    description,
+    confirmLabel,
+    cancelLabel,
 }: ConfirmCloseDialogProps) {
+    const { t } = useTranslations();
+    const resolvedTitle = title ?? t('common.confirm_close.title');
+    const resolvedDescription =
+        description ?? t('common.confirm_close.description');
+    const resolvedConfirmLabel = confirmLabel ?? t('common.close');
+    const resolvedCancelLabel = cancelLabel ?? t('common.cancel');
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>{title}</AlertDialogTitle>
+                    <AlertDialogTitle>{resolvedTitle}</AlertDialogTitle>
                     <AlertDialogDescription>
-                        {description}
+                        {resolvedDescription}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel>{cancelLabel}</AlertDialogCancel>
+                    <AlertDialogCancel>{resolvedCancelLabel}</AlertDialogCancel>
                     <AlertDialogAction onClick={onConfirm}>
-                        {confirmLabel}
+                        {resolvedConfirmLabel}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

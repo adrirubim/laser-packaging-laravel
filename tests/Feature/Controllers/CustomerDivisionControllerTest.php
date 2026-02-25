@@ -603,7 +603,7 @@ class CustomerDivisionControllerTest extends TestCase
 
         $response = $this->post(route('customer-divisions.store'), [
             'customer_uuid' => $this->customer->uuid,
-            'name' => str_repeat('a', 256), // Más de 255 caracteres
+            'name' => str_repeat('a', 256), // More than 255 characters
         ]);
 
         $response->assertSessionHasErrors(['name']);
@@ -617,7 +617,7 @@ class CustomerDivisionControllerTest extends TestCase
         $response = $this->post(route('customer-divisions.store'), [
             'customer_uuid' => $this->customer->uuid,
             'name' => 'Divisione Test',
-            'code' => str_repeat('a', 256), // Más de 255 caracteres
+            'code' => str_repeat('a', 256), // More than 255 characters
         ]);
 
         $response->assertSessionHasErrors(['code']);
@@ -628,7 +628,7 @@ class CustomerDivisionControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        $longEmail = str_repeat('a', 250).'@test.com'; // Más de 255 caracteres
+        $longEmail = str_repeat('a', 250).'@test.com'; // More than 255 characters
 
         $response = $this->post(route('customer-divisions.store'), [
             'customer_uuid' => $this->customer->uuid,
@@ -651,7 +651,7 @@ class CustomerDivisionControllerTest extends TestCase
 
         $response = $this->put(route('customer-divisions.update', $division), [
             'customer_uuid' => $this->customer->uuid,
-            'name' => str_repeat('a', 256), // Más de 255 caracteres
+            'name' => str_repeat('a', 256), // More than 255 characters
         ]);
 
         $response->assertSessionHasErrors(['name']);
@@ -705,7 +705,7 @@ class CustomerDivisionControllerTest extends TestCase
 
         $division->refresh();
         $this->assertEquals('Divisione Aggiornata', $division->name);
-        // Los campos vacíos se mantienen como están (no se convierten a null automáticamente en este controlador)
+        // Empty fields remain as-is (not converted to null automatically in this controller)
     }
 
     #[Test]
@@ -721,7 +721,7 @@ class CustomerDivisionControllerTest extends TestCase
         $response = $this->put(route('customer-divisions.update', $division), [
             'customer_uuid' => $this->customer->uuid,
             'name' => 'Divisione Test',
-            'code' => str_repeat('a', 256), // Más de 255 caracteres
+            'code' => str_repeat('a', 256), // More than 255 characters
         ]);
 
         $response->assertSessionHasErrors(['code']);
@@ -737,7 +737,7 @@ class CustomerDivisionControllerTest extends TestCase
             'removed' => false,
         ]);
 
-        $longEmail = str_repeat('a', 250).'@test.com'; // Más de 255 caracteres
+        $longEmail = str_repeat('a', 250).'@test.com'; // More than 255 characters
 
         $response = $this->put(route('customer-divisions.update', $division), [
             'customer_uuid' => $this->customer->uuid,

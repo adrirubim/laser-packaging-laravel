@@ -69,7 +69,19 @@ jobs:
       - name: Generate Application Key
         run: php artisan key:generate
 
-      - name: Tests
+      - name: i18n Check
+        run: php scripts/i18n-check.php
+
+      - name: Config Clear
+        run: php artisan config:clear
+
+      - name: TypeScript Check
+        run: npm run types
+
+      - name: Vitest
+        run: npm run test -- --run
+
+      - name: PHP Tests
         env:
           DB_PASSWORD: postgres
-        run: ./vendor/bin/phpunit
+        run: php artisan test

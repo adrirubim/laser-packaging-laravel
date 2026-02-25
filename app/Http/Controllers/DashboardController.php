@@ -38,7 +38,7 @@ class DashboardController extends Controller
             return $this->dashboardRepository->getStatistics($dateRange, $customerUuid, $statuses);
         });
 
-        // Get urgent orders (cached for 30 seconds) – rispettano filtro data/cliente/stati
+        // Get urgent orders (cached for 30 seconds) – respect date/customer/status filter
         $urgentCacheKey = "dashboard_urgent_orders_{$dateFilter}_".($customerUuid ?? 'all').'_'.($statuses ? implode(',', $statuses) : 'all');
         $urgentOrders = Cache::remember($urgentCacheKey, 30, function () use ($dateRange, $customerUuid, $statuses) {
             return $this->dashboardRepository->getUrgentOrders($dateRange, $customerUuid, $statuses);
@@ -67,7 +67,7 @@ class DashboardController extends Controller
             return $this->dashboardRepository->getPerformanceMetrics($dateRange, $customerUuid, $statuses);
         });
 
-        // Get alerts (not cached, always fresh) – rispettano filtro data/cliente/stati; esclusi quelli già acks dall'utente
+        // Get alerts (not cached, always fresh) – respect date/customer/status filter; exclude those already acked by user
         $alerts = $this->dashboardRepository->getAlerts($dateRange, $customerUuid, $statuses, $request->user()?->id);
 
         // Get comparison statistics (previous period)
@@ -94,7 +94,7 @@ class DashboardController extends Controller
             }
         }
 
-        // Get production progress data – rispettano filtro data/cliente/stati
+        // Get production progress data – respect date/customer/status filter
         $productionProgressData = $this->dashboardRepository->getProductionProgressData($dateRange, 10, $customerUuid, $statuses);
 
         // Get filter options

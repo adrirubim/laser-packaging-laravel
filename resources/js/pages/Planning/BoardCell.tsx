@@ -1,3 +1,4 @@
+import { useTranslations } from '@/hooks/use-translations';
 import { memo, type ReactNode } from 'react';
 
 function BoardCell({
@@ -7,10 +8,11 @@ function BoardCell({
     value: number;
     children?: ReactNode;
 }) {
+    const { t } = useTranslations();
     if (value <= 0) {
         return (
             <div className="flex h-10 items-center justify-center rounded-md border border-dashed border-muted bg-background/40 text-xs text-muted-foreground dark:bg-muted/30">
-                {children ?? '-'}
+                {children ?? t('common.empty_value')}
             </div>
         );
     }

@@ -150,7 +150,7 @@ class DashboardRepository
             ->whereNotNull('delivery_requested_date')
             ->whereNotIn('status', [Order::STATUS_EVASO, Order::STATUS_SALDATO]);
 
-        // Applicare filtro data: se il range è specificato usiamo quello, altrimenti
+        // Apply date filter: if range is specified use that, otherwise
         // manteniamo il comportamento "prossimi 7 giorni".
         if ($dateRange['start']) {
             $query->whereBetween('delivery_requested_date', [$dateRange['start'], $dateRange['end']]);
@@ -220,7 +220,7 @@ class DashboardRepository
             });
         }
 
-        // Filtro per stati
+        // Filter by status
         if ($statuses && count($statuses) > 0) {
             $query->whereIn('status', $statuses);
         }
@@ -531,8 +531,8 @@ class DashboardRepository
             $alerts[] = [
                 'type' => 'suspended',
                 'severity' => 'high',
-                'title' => 'Ordini Sospesi',
-                'message' => "Ci sono {$suspendedCount} ordine/i sospeso/i che richiedono attenzione.",
+                'title' => __('dashboard.alert_title_suspended'),
+                'message' => __('dashboard.alert_message_suspended', ['count' => $suspendedCount]),
                 'count' => $suspendedCount,
                 'signature' => $signature,
                 'scope_hash' => $scopeHash,
@@ -570,8 +570,8 @@ class DashboardRepository
             $alerts[] = [
                 'type' => 'overdue',
                 'severity' => 'critical',
-                'title' => 'Ordini in Ritardo',
-                'message' => "Ci sono {$overdueCount} ordine/i con data di consegna scaduta.",
+                'title' => __('dashboard.alert_title_overdue'),
+                'message' => __('dashboard.alert_message_overdue', ['count' => $overdueCount]),
                 'count' => $overdueCount,
                 'first_order_uuid' => $firstUuid,
                 'signature' => $signature,
@@ -606,8 +606,8 @@ class DashboardRepository
             $alerts[] = [
                 'type' => 'autocontrollo',
                 'severity' => 'medium',
-                'title' => 'Autocontrollo Pendente',
-                'message' => "Ci sono {$noAutocontrolloCount} ordine/i con autocontrollo pendente.",
+                'title' => __('dashboard.alert_title_autocontrollo'),
+                'message' => __('dashboard.alert_message_autocontrollo', ['count' => $noAutocontrolloCount]),
                 'count' => $noAutocontrolloCount,
                 'signature' => $signature,
                 'scope_hash' => $scopeHash,

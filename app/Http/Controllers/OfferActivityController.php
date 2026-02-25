@@ -56,11 +56,11 @@ class OfferActivityController extends Controller
     {
         OfferActivity::create($request->validated());
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->offerRepository->clearFormOptionsCache();
 
         return redirect()->route('offer-activities.index')
-            ->with('success', 'Attività creata con successo.');
+            ->with('success', __('flash.offer_activity.created'));
     }
 
     public function show(OfferActivity $offerActivity): Response
@@ -82,24 +82,24 @@ class OfferActivityController extends Controller
         $offerActivity->update($request->validated());
 
         return redirect()->route('offer-activities.index')
-            ->with('success', 'Attività aggiornata con successo.');
+            ->with('success', __('flash.offer_activity.updated'));
     }
 
     public function destroy(OfferActivity $offerActivity)
     {
-        // Verificar si tiene ofertas activas
+        // Verify if has active offers
         if ($offerActivity->offers()->where('removed', false)->exists()) {
             return back()->withErrors([
-                'error' => 'Non è possibile eliminare l\'attività. Ha offerte associate.',
+                'error' => __('flash.cannot_delete_activity'),
             ]);
         }
 
         $offerActivity->update(['removed' => true]);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->offerRepository->clearFormOptionsCache();
 
         return redirect()->route('offer-activities.index')
-            ->with('success', 'Attività eliminata con successo.');
+            ->with('success', __('flash.offer_activity.deleted'));
     }
 }

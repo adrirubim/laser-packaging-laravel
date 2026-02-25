@@ -62,291 +62,6 @@ type PlanningRoutes = {
 const planningNav = planningRoutes as unknown as PlanningRoutes;
 
 type PlanningBoardProps = PageProps<{ today: string }>;
-/* const PlanningMonthSummary = memo(function PlanningMonthSummary({
-    rangeDays,
-    lines,
-    loading,
-    occupancyByLineAndDay,
-    occupancyByOrderAndDay,
-    summaryValuesByDay,
-    editingSummaryKey,
-    editingSummaryValue,
-    setEditingSummaryKey,
-    setEditingSummaryValue,
-    saveSummaryCell,
-    openDay,
-}: PlanningMonthSummaryProps) {
-    return (
-        <div className="overflow-x-auto">
-            <table className="min-w-full border-collapse text-sm">
-                <thead>
-                    <tr>
-                        <th className="sticky left-0 z-10 bg-card px-2 py-2 text-left text-xs font-semibold text-muted-foreground">
-                            Linea
-                        </th>
-                        {rangeDays.map((day) => (
-                            <th
-                                key={day.dateStr}
-                                className="px-2 py-2 text-center text-xs font-semibold text-muted-foreground"
-                            >
-                                <button
-                                    type="button"
-                                    className="rounded px-1 py-0.5 hover:bg-accent/50"
-                                    onClick={() => openDay(day.dateStr, 'hour')}
-                                    disabled={loading}
-                                    title="Apri dettaglio giorno"
-                                >
-                                    {day.label}
-                                </button>
-                            </th>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {lines.length === 0 ? (
-                        <tr>
-                            <td
-                                colSpan={1 + rangeDays.length}
-                                className="px-3 py-6 text-center text-sm text-muted-foreground"
-                            >
-                                {loading
-                                    ? 'Caricamento planning…'
-                                    : 'Nessuna linea LAS attiva nel periodo selezionato.'}
-                            </td>
-                        </tr>
-                    ) : (
-                        <>
-                            {lines.map((line) => {
-                                const lineMap =
-                                    occupancyByLineAndDay[line.uuid] ?? {};
-                                return (
-                                    <Fragment key={line.uuid}>
-                                        <tr className="border-b border-border/60 bg-muted/20 align-top [content-visibility:auto]">
-                                            <td className="sticky left-0 z-10 bg-muted/30 px-2 py-2 text-xs font-semibold text-foreground shadow-sm">
-                                                <div className="flex flex-col">
-                                                    <span>{line.code}</span>
-                                                    <span className="truncate text-[11px] font-normal text-muted-foreground">
-                                                        {line.name}
-                                                    </span>
-                                                </div>
-                                            </td>
-                                            {rangeDays.map((day) => (
-                                                <td
-                                                    key={day.dateStr}
-                                                    className="px-1 py-2 align-middle"
-                                                >
-                                                    <button
-                                                        type="button"
-                                                        className="block w-full"
-                                                        onClick={() =>
-                                                            openDay(
-                                                                day.dateStr,
-                                                                'hour',
-                                                            )
-                                                        }
-                                                        disabled={loading}
-                                                        title="Apri dettaglio giorno"
-                                                    >
-                                                        <BoardCell
-                                                            value={
-                                                                lineMap[
-                                                                    day.dateStr
-                                                                ] ?? 0
-                                                            }
-                                                        />
-                                                    </button>
-                                                </td>
-                                            ))}
-                                        </tr>
-                                        {(line.orders ?? []).map((order) => {
-                                            const orderMap =
-                                                occupancyByOrderAndDay[
-                                                    order.uuid
-                                                ] ?? {};
-                                            return (
-                                                <tr
-                                                    key={order.uuid}
-                                                    className="align-top [content-visibility:auto]"
-                                                >
-                                                    <td className="sticky left-0 z-10 bg-card py-1.5 pr-2 pl-6 text-xs text-muted-foreground shadow-sm">
-                                                        <span
-                                                            className="block truncate"
-                                                            title={`${order.code} - ${order.article_code ?? ''}`}
-                                                        >
-                                                            {order.code}
-                                                            {order.article_code
-                                                                ? ` — ${order.article_code}`
-                                                                : ''}
-                                                        </span>
-                                                    </td>
-                                                    {rangeDays.map((day) => (
-                                                        <td
-                                                            key={day.dateStr}
-                                                            className="px-1 py-1.5 align-middle"
-                                                        >
-                                                            <button
-                                                                type="button"
-                                                                className="block w-full"
-                                                                onClick={() =>
-                                                                    openDay(
-                                                                        day.dateStr,
-                                                                        'hour',
-                                                                    )
-                                                                }
-                                                                disabled={
-                                                                    loading
-                                                                }
-                                                                title="Apri dettaglio giorno"
-                                                            >
-                                                                <BoardCell
-                                                                    value={
-                                                                        orderMap[
-                                                                            day
-                                                                                .dateStr
-                                                                        ] ?? 0
-                                                                    }
-                                                                />
-                                                            </button>
-                                                        </td>
-                                                    ))}
-                                                </tr>
-                                            );
-                                        })}
-                                    </Fragment>
-                                );
-                            })}
-                            {SUMMARY_ROWS.map((row) => (
-                                <tr
-                                    key={`summary_${row.id}`}
-                                    className="border-t-2 border-border bg-muted/40 align-middle [content-visibility:auto]"
-                                >
-                                    <td className="sticky left-0 z-10 bg-muted/50 px-2 py-2 text-xs font-semibold text-foreground shadow-sm">
-                                        {row.label}
-                                    </td>
-                                    {rangeDays.map((day) => {
-                                        if (day.isWeekend) {
-                                            return (
-                                                <td
-                                                    key={day.dateStr}
-                                                    className="px-1 py-2 text-center text-xs text-muted-foreground"
-                                                >
-                                                    —
-                                                </td>
-                                            );
-                                        }
-
-                                        const values =
-                                            summaryValuesByDay[day.dateStr];
-                                        const value = values
-                                            ? (values[row.id] ?? 0)
-                                            : 0;
-                                        const isDisponibiliWarning =
-                                            row.id === 'disponibili' &&
-                                            value !== 0;
-                                        const summaryKeyRiepilogo = `${toTimestamp(day.dateStr, 8, 0)}_${row.id}`;
-                                        const isSummaryEditing =
-                                            editingSummaryKey ===
-                                            summaryKeyRiepilogo;
-
-                                        if (row.editable && isSummaryEditing) {
-                                            return (
-                                                <td
-                                                    key={day.dateStr}
-                                                    className="min-w-[3rem] border border-primary p-0 align-middle"
-                                                >
-                                                    <input
-                                                        type="number"
-                                                        min={0}
-                                                        className="h-8 w-full border-0 bg-primary/10 px-1 text-center text-xs focus:outline-none"
-                                                        value={
-                                                            editingSummaryValue
-                                                        }
-                                                        onChange={(e) =>
-                                                            setEditingSummaryValue(
-                                                                e.target.value,
-                                                            )
-                                                        }
-                                                        onBlur={() => {
-                                                            void saveSummaryCell(
-                                                                summaryKeyRiepilogo,
-                                                                editingSummaryValue,
-                                                            ).then(() => {
-                                                                setEditingSummaryKey(
-                                                                    null,
-                                                                );
-                                                                setEditingSummaryValue(
-                                                                    '',
-                                                                );
-                                                            });
-                                                        }}
-                                                        onKeyDown={(e) => {
-                                                            if (
-                                                                e.key ===
-                                                                'Escape'
-                                                            ) {
-                                                                setEditingSummaryKey(
-                                                                    null,
-                                                                );
-                                                                setEditingSummaryValue(
-                                                                    '',
-                                                                );
-                                                            }
-                                                        }}
-                                                        autoFocus
-                                                    />
-                                                </td>
-                                            );
-                                        }
-
-                                        if (row.editable) {
-                                            return (
-                                                <td
-                                                    key={day.dateStr}
-                                                    className="min-w-[3rem] cursor-pointer px-1 py-2 align-middle"
-                                                >
-                                                    <div
-                                                        className="flex h-8 items-center justify-center rounded-md border border-border bg-background text-xs font-medium text-foreground hover:bg-accent/50"
-                                                        onClick={() => {
-                                                            setEditingSummaryKey(
-                                                                summaryKeyRiepilogo,
-                                                            );
-                                                            setEditingSummaryValue(
-                                                                String(value),
-                                                            );
-                                                        }}
-                                                    >
-                                                        {value > 0 ? value : ''}
-                                                    </div>
-                                                </td>
-                                            );
-                                        }
-
-                                        return (
-                                            <td
-                                                key={day.dateStr}
-                                                className="px-1 py-2 align-middle"
-                                            >
-                                                <div
-                                                    className={`flex h-8 items-center justify-center rounded-md text-xs font-medium ${
-                                                        isDisponibiliWarning
-                                                            ? 'bg-red-500/80 text-red-50 dark:bg-red-600/90 dark:text-white'
-                                                            : 'border border-border bg-background text-foreground'
-                                                    }`}
-                                                >
-                                                    {value}
-                                                </div>
-                                            </td>
-                                        );
-                                    })}
-                                </tr>
-                            ))}
-                        </>
-                    )}
-                </tbody>
-            </table>
-        </div>
-    );
-}); */
 
 export default function PlanningBoard({ today }: PlanningBoardProps) {
     const { t } = useTranslations();
@@ -363,7 +78,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
 
     // Data iniziale = oggi (state.currentDate = moment().startOf('day'))
     const [currentDate, setCurrentDate] = useState<string>(today);
-    // UX moderno: vista iniziale = giornaliera per ore (più leggibile del dettaglio a quarti)
+    // Modern UX: initial view = daily by hours (more readable than quarter detail)
     const [rangeMode, setRangeMode] = useState<RangeMode>('day');
     const [zoomLevel, setZoomLevel] = useState<ZoomLevel>('hour');
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -501,13 +216,18 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                 if (!response.ok) {
                     const text = await response.text();
                     throw new Error(
-                        `Errore caricamento planning (${response.status}): ${text}`,
+                        t('planning.error_load', {
+                            status: response.status,
+                            detail: text,
+                        }),
                     );
                 }
 
                 const json = (await response.json()) as PlanningDataResponse;
                 if (json.error_code !== 0) {
-                    throw new Error(json.message || 'Errore sconosciuto');
+                    throw new Error(
+                        json.message || t('planning.error_unknown'),
+                    );
                 }
 
                 setLines(json.lines ?? []);
@@ -518,8 +238,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                 return;
             } catch (e) {
                 const err = e as Error;
-                const message =
-                    err.message || 'Errore durante il caricamento del planning';
+                const message = err.message || t('planning.error_load_generic');
                 if (attempt === maxRetries) {
                     setError(message);
                     setLoading(false);
@@ -530,7 +249,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                 }
             }
         }
-    }, [startDate, endDate]);
+    }, [startDate, endDate, t]);
 
     useEffect(() => {
         void loadData();
@@ -624,7 +343,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                     const msg =
                         firstErrorFromFields ??
                         data.message ??
-                        'Errore di validazione';
+                        t('planning.error_validation');
                     setError(msg);
                     setCellValidationError({ cellKey, message: msg });
                     return;
@@ -635,7 +354,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                     .json()
                     .catch(() => ({}))) as SavePlanningResponse;
                 if (!response.ok || json.error_code !== 0) {
-                    setError(json.message ?? 'Errore salvataggio');
+                    setError(json.message ?? t('planning.error_save'));
                     return;
                 }
                 const replan = json.replan_result;
@@ -643,7 +362,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                     (replan?.quarters_added ?? 0) > 0 ||
                     (replan?.quarters_removed ?? 0) > 0;
                 // Applicare sempre l'aggiornamento ottimistico; non chiamare loadData() dopo save
-                // altrimenti il replan può far tornare la riga vuota (-).
+                // otherwise replan may return empty row (-).
                 setPlanning((prev) => {
                     // Backend usa hour*100+minute (es. 800, 815); stesso formato della vista classica
                     const timeKey = (h: number, mm: number) =>
@@ -699,9 +418,9 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                 const showUndoToast =
                     !options?.skipUndo && previousWorkers > 0 && newValue <= 0;
                 if (showUndoToast) {
-                    toast.success('Cella svuotata', {
+                    toast.success(t('planning.toast_cell_cleared'), {
                         action: {
-                            label: 'Annulla',
+                            label: t('common.cancel'),
                             onClick: () => {
                                 void savePlanningCell(
                                     cellKey,
@@ -716,17 +435,22 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                 } else {
                     setInfoMessage(
                         hasReplan
-                            ? `Aggiornato: ${newValue} addetti. ${replan?.message ?? ''}`.trim()
-                            : `Aggiornato: ${newValue} addetti`,
+                            ? t('planning.updated_with_replan', {
+                                  count: newValue,
+                                  message: replan?.message ?? '',
+                              }).trim()
+                            : t('planning.updated', { count: newValue }),
                     );
                 }
             } catch (e) {
-                setError((e as Error).message ?? 'Errore di connessione');
+                setError(
+                    (e as Error).message ?? t('planning.error_connection'),
+                );
             } finally {
                 setSavingCellKey(null);
             }
         },
-        [planning, zoomLevel],
+        [planning, zoomLevel, t],
     );
 
     const saveSummaryCell = useCallback(
@@ -773,7 +497,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                     const msg =
                         firstErrorFromFields ??
                         data.message ??
-                        'Errore di validazione summary';
+                        t('planning.error_validation_summary');
                     setError(msg);
                     setSummaryValidationError({
                         key: summaryKey,
@@ -787,7 +511,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                     .json()
                     .catch(() => ({}))) as SaveSummaryResponse;
                 if (!response.ok || json.error_code !== 0) {
-                    setError(json.message ?? 'Errore salvataggio summary');
+                    setError(json.message ?? t('planning.error_save_summary'));
                     return;
                 }
                 setSummaries((prev) => {
@@ -815,14 +539,16 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                     });
                 });
                 setError(null);
-                setInfoMessage('Riepilogo aggiornato');
+                setInfoMessage(t('planning.summary_updated'));
             } catch (e) {
-                setError((e as Error).message ?? 'Errore di connessione');
+                setError(
+                    (e as Error).message ?? t('planning.error_connection'),
+                );
             } finally {
                 setSavingSummaryKey(null);
             }
         },
-        [zoomLevel],
+        [zoomLevel, t],
     );
 
     const occupancyByLineAndDay: BoardOccupancy = useMemo(() => {
@@ -941,7 +667,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                 const dayOfWeek = new Date(dayStr + 'T12:00:00').getDay();
                 const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
                 for (let hour = START_HOUR; hour < END_HOUR; hour++) {
-                    // Solo oggi: non mostrare slot passati
+                    // Today only: do not show past slots
                     if (dayStr === nowStr && hour < nowHour) continue;
                     cols.push({
                         timestamp: toTimestamp(dayStr, hour, 0),
@@ -1184,17 +910,17 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
         >
             <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-6">
                 <h2 className="mb-2 text-lg font-semibold">
-                    Errore nella vista Pianificazione
+                    {t('planning.error_view_title')}
                 </h2>
                 <p className="mb-4 text-sm text-muted-foreground">
-                    Si è verificato un errore. Ricarica la pagina per riprovare.
+                    {t('planning.error_view_description')}
                 </p>
                 <button
                     type="button"
                     onClick={() => window.location.reload()}
                     className="rounded-md border border-border bg-background px-4 py-2 text-sm font-medium shadow-sm hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none"
                 >
-                    Ricarica
+                    {t('planning.reload')}
                 </button>
             </div>
         </div>
@@ -1203,7 +929,9 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head
-                title={`Pianificazione — ${formatDateRangeLabel(currentDate, rangeMode)}`}
+                title={t('planning.page_title_with_range', {
+                    range: formatDateRangeLabel(currentDate, rangeMode),
+                })}
             />
 
             <ErrorBoundary fallback={planningErrorFallback}>
@@ -1217,14 +945,14 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                         id="planning-section-heading"
                         className="text-2xl font-semibold tracking-tight text-foreground"
                     >
-                        Pianificazione produzione
+                        {t('planning.page_title')}
                     </h1>
                     <p className="mt-1 text-sm text-muted-foreground">
                         {rangeMode === 'day'
-                            ? 'Vista giornaliera per linea e ordine.'
+                            ? t('planning.view_description_day')
                             : rangeMode === 'week'
-                              ? 'Vista settimanale per linea e ordine.'
-                              : 'Vista mensile per linea e ordine.'}
+                              ? t('planning.view_description_week')
+                              : t('planning.view_description_month')}
                     </p>
                     <PlanningToolbar
                         currentDate={currentDate}
@@ -1261,9 +989,9 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                                 type="button"
                                 onClick={() => void loadData()}
                                 className="rounded-md border border-destructive/60 bg-destructive/20 px-2.5 py-1 font-medium hover:bg-destructive/30"
-                                aria-label="Riprova caricamento"
+                                aria-label={t('planning.retry_load')}
                             >
-                                Riprova
+                                {t('planning.retry_load')}
                             </button>
                         </div>
                     ) : null}
@@ -1280,7 +1008,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                                 aria-live="polite"
                                 aria-busy="true"
                             >
-                                Caricamento griglia…
+                                {t('planning.loading_grid')}
                             </div>
                         }
                     >
@@ -1363,319 +1091,6 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                                     }
                                     openDay={openDay}
                                 />
-                                {/*
-                    <div className="overflow-x-auto">
-                        <table className="min-w-full border-collapse text-sm">
-                                <thead>
-                                    <tr>
-                                    <th className="sticky left-0 z-10 bg-card px-2 py-2 text-left text-xs font-semibold text-muted-foreground">
-                                            Linea
-                                        </th>
-                                    {rangeDays.map((day) => (
-                                        <th
-                                            key={day.dateStr}
-                                            className="px-2 py-2 text-center text-xs font-semibold text-muted-foreground"
-                                        >
-                                            <button
-                                                type="button"
-                                                className="rounded px-1 py-0.5 hover:bg-accent/50"
-                                                onClick={() =>
-                                                    openDay(day.dateStr, 'hour')
-                                                }
-                                                disabled={loading}
-                                                title="Apri dettaglio giorno"
-                                            >
-                                                {day.label}
-                                            </button>
-                                        </th>
-                                    ))}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                {lines.length === 0 ? (
-                                    <tr>
-                                        <td
-                                            colSpan={1 + rangeDays.length}
-                                            className="px-3 py-6 text-center text-sm text-muted-foreground"
-                                        >
-                                            {loading
-                                                ? 'Caricamento planning…'
-                                                : 'Nessuna linea LAS attiva nel periodo selezionato.'}
-                                        </td>
-                                    </tr>
-                                ) : (
-                                    <>
-                                        {lines.map((line) => {
-                                            const lineMap =
-                                                occupancyByLineAndDay[
-                                                    line.uuid
-                                                ] ?? {};
-                                            return (
-                                                <Fragment key={line.uuid}>
-                                                    <tr className="border-b border-border/60 bg-muted/20 align-top">
-                                                        <td className="sticky left-0 z-10 bg-muted/30 px-2 py-2 text-xs font-semibold text-foreground shadow-sm">
-                                                            <div className="flex flex-col">
-                                                                <span>
-                                                            {line.code}
-                                                                </span>
-                                                                <span className="truncate text-[11px] font-normal text-muted-foreground">
-                                                                {line.name}
-                                                                </span>
-                                                            </div>
-                                                        </td>
-                                                        {rangeDays.map((day) => (
-                                                            <td
-                                                                key={
-                                                                    day.dateStr
-                                                                }
-                                                                className="px-1 py-2 align-middle"
-                                                            >
-                                                                <button
-                                                                    type="button"
-                                                                    className="block w-full"
-                                                                    onClick={() =>
-                                                                        openDay(
-                                                                            day.dateStr,
-                                                                            'hour',
-                                                                        )
-                                                                    }
-                                                                    disabled={
-                                                                        loading
-                                                                    }
-                                                                    title="Apri dettaglio giorno"
-                                                                >
-                                                                    <BoardCell
-                                                                        value={
-                                                                            lineMap[
-                                                                                day
-                                                                                    .dateStr
-                                                                            ] ??
-                                                                            0
-                                                                        }
-                                                                    />
-                                                                </button>
-                                                    </td>
-                                                        ))}
-                                                </tr>
-                                                    {(line.orders ?? []).map(
-                                                        (order) => {
-                                                            const orderMap =
-                                                                occupancyByOrderAndDay[
-                                                                    order.uuid
-                                                                ] ?? {};
-                                                            return (
-                                                                <tr
-                                                                    key={
-                                                                        order.uuid
-                                                                    }
-                                                                    className="align-top"
-                                                                >
-                                                                    <td className="sticky left-0 z-10 bg-card py-1.5 pr-2 pl-6 text-xs text-muted-foreground shadow-sm">
-                                                                        <span
-                                                                            className="block truncate"
-                                                                            title={`${order.code} - ${order.article_code ?? ''}`}
-                                                                        >
-                                                                            {
-                                                                                order.code
-                                                                            }
-                                                                            {order.article_code
-                                                                                ? ` — ${order.article_code}`
-                                                                                : ''}
-                                                                        </span>
-                                            </td>
-                                                                    {rangeDays.map(
-                                                                        (
-                                                                            day,
-                                                                        ) => (
-                                                                            <td
-                                                                                key={
-                                                                                    day.dateStr
-                                                                                }
-                                                                                className="px-1 py-1.5 align-middle"
-                                                                            >
-                                                    <button
-                                                        type="button"
-                                                                                    className="block w-full"
-                                                                                    onClick={() =>
-                                                                                        openDay(
-                                                                                            day.dateStr,
-                                                                                            'hour',
-                                                                                        )
-                                                                                    }
-                                                                                    disabled={
-                                                                                        loading
-                                                                                    }
-                                                                                    title="Apri dettaglio giorno"
-                                                                                >
-                                                                                    <BoardCell
-                                                                                        value={
-                                                                                            orderMap[
-                                                                                                day
-                                                                                                    .dateStr
-                                                                                            ] ??
-                                                                                            0
-                                                                                        }
-                                                                                    />
-                                                                                </button>
-                                                                            </td>
-                                                            ),
-                                                    )}
-                                                </tr>
-                                            );
-                                                        },
-                                                    )}
-                                                </Fragment>
-                                            );
-                                    })}
-                                    {SUMMARY_ROWS.map((row) => (
-                                        <tr
-                                                key={`summary_${row.id}`}
-                                                className="border-t-2 border-border bg-muted/40 align-middle"
-                                            >
-                                                <td className="sticky left-0 z-10 bg-muted/50 px-2 py-2 text-xs font-semibold text-foreground shadow-sm">
-                                                    {row.label}
-                                                </td>
-                                                {rangeDays.map((day) => {
-                                                    if (day.isWeekend) {
-                                                    return (
-                                                        <td
-                                                                key={
-                                                                    day.dateStr
-                                                                }
-                                                                className="px-1 py-2 text-center text-xs text-muted-foreground"
-                                                            >
-                                                                —
-                                                            </td>
-                                                        );
-                                                    }
-                                                    const values =
-                                                        summaryValuesByDay[
-                                                            day.dateStr
-                                                        ];
-                                                    const value = values
-                                                        ? (values[row.id] ?? 0)
-                                                        : 0;
-                                                    const isDisponibiliWarning =
-                                                        row.id ===
-                                                            'disponibili' &&
-                                                        value !== 0;
-                                                    const summaryKeyRiepilogo =
-                                                        `${toTimestamp(day.dateStr, 8, 0)}_${row.id}`;
-                                                    const isSummaryEditing =
-                                                        editingSummaryKey ===
-                                                        summaryKeyRiepilogo;
-                                                    if (
-                                                        row.editable &&
-                                                        isSummaryEditing
-                                                    ) {
-                                                        return (
-                                                            <td
-                                                                key={day.dateStr}
-                                                                className="min-w-[3rem] border border-primary p-0 align-middle"
-                                                            >
-                                                                <input
-                                                                    type="number"
-                                                                    min={0}
-                                                                    className="h-8 w-full border-0 bg-primary/10 px-1 text-center text-xs focus:outline-none"
-                                                                    value={
-                                                                        editingSummaryValue
-                                                                    }
-                                                                    onChange={(
-                                                                        e,
-                                                                    ) =>
-                                                                        setEditingSummaryValue(
-                                                                            e
-                                                                                .target
-                                                                                .value,
-                                                                        )
-                                                                    }
-                                                                    onBlur={() => {
-                                                                            void saveSummaryCell(
-                                                                            summaryKeyRiepilogo,
-                                                                            editingSummaryValue,
-                                                                        ).then(
-                                                                            () => {
-                                                                                setEditingSummaryKey(
-                                                                                    null,
-                                                                                );
-                                                                                setEditingSummaryValue(
-                                                                                    '',
-                                                                                );
-                                                                            },
-                                                                        );
-                                                                    }}
-                                                                    onKeyDown={(
-                                                                        e,
-                                                                    ) => {
-                                                                        if (
-                                                                            e.key ===
-                                                                            'Escape'
-                                                                        ) {
-                                                                            setEditingSummaryKey(
-                                                                                null,
-                                                                            );
-                                                                            setEditingSummaryValue(
-                                                                                '',
-                                                                            );
-                                                                        }
-                                                                    }}
-                                                                    autoFocus
-                                                                />
-                                                            </td>
-                                                        );
-                                                    }
-                                                    if (row.editable) {
-                                                    return (
-                                                        <td
-                                                                key={day.dateStr}
-                                                                className="min-w-[3rem] cursor-pointer px-1 py-2 align-middle"
-                                                            >
-                                                                <div
-                                                                    className="flex h-8 items-center justify-center rounded-md border border-border bg-background text-xs font-medium text-foreground hover:bg-accent/50"
-                                                            onClick={() => {
-                                                                        setEditingSummaryKey(
-                                                                            summaryKeyRiepilogo,
-                                                                        );
-                                                                        setEditingSummaryValue(
-                                                                    String(
-                                                                                value,
-                                                                    ),
-                                                                );
-                                                            }}
-                                                        >
-                                                                    {value >
-                                                                    0
-                                                                        ? value
-                                                                        : ''}
-                                                                </div>
-                                                        </td>
-                                                    );
-                                                }
-                                                    return (
-                                                        <td
-                                                            key={day.dateStr}
-                                                            className="px-1 py-2 align-middle"
-                                                        >
-                                                            <div
-                                                                className={`flex h-8 items-center justify-center rounded-md text-xs font-medium ${
-                                                                    isDisponibiliWarning
-                                                                        ? 'bg-red-500/80 text-red-50 dark:bg-red-600/90 dark:text-white'
-                                                                        : 'border border-border bg-background text-foreground'
-                                                                }`}
-                                                    >
-                                                        {value}
-                                                            </div>
-                                                    </td>
-                                                );
-                                            })}
-                                        </tr>
-                                    ))}
-                                    </>
-                                )}
-                                </tbody>
-                            </table>
-                        </div>
-                        */}
                             </>
                         )}
                     </Suspense>

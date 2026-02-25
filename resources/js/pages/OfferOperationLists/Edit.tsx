@@ -16,6 +16,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import offerOperationLists from '@/routes/offer-operation-lists/index';
 import { type BreadcrumbItem } from '@/types';
@@ -51,21 +52,22 @@ type OfferOperationListsEditProps = {
 export default function OfferOperationListsEdit() {
     const { props } = usePage<OfferOperationListsEditProps>();
     const { operationList, offers, operations, errors: serverErrors } = props;
+    const { t } = useTranslations();
 
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Offerte', href: '/offers' },
+        { title: t('nav.offers'), href: '/offers' },
         {
-            title: 'Liste Operazioni Offerta',
+            title: t('offer_operation_lists.page_title'),
             href: offerOperationLists.index().url,
         },
         {
-            title: 'Assegnazione',
+            title: t('offer_operation_lists.edit.breadcrumb_assign'),
             href: offerOperationLists.show({
                 offerOperationList: operationList.uuid,
             }).url,
         },
         {
-            title: 'Modifica',
+            title: t('common.edit'),
             href: offerOperationLists.edit({
                 offerOperationList: operationList.uuid,
             }).url,
@@ -74,9 +76,7 @@ export default function OfferOperationListsEdit() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head
-                title={`Modifica Assegnazione Operazione ${operationList.uuid}`}
-            />
+            <Head title={t('offer_operation_lists.edit.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
@@ -84,10 +84,12 @@ export default function OfferOperationListsEdit() {
                         <Card>
                             <CardHeader>
                                 <CardTitle>
-                                    Modifica Assegnazione Operazione
+                                    {t('offer_operation_lists.edit.card_title')}
                                 </CardTitle>
                                 <CardDescription>
-                                    Aggiorna le informazioni dell'assegnazione.
+                                    {t(
+                                        'offer_operation_lists.edit.card_description',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -111,7 +113,7 @@ export default function OfferOperationListsEdit() {
                                             <>
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="uuid">
-                                                        UUID
+                                                        {t('common.uuid')}
                                                     </FormLabel>
                                                     <Input
                                                         id="uuid"
@@ -129,7 +131,9 @@ export default function OfferOperationListsEdit() {
                                                         htmlFor="offer_uuid"
                                                         required
                                                     >
-                                                        Offerta
+                                                        {t(
+                                                            'offer_operation_lists.table.offer',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="offer_uuid"
@@ -139,7 +143,11 @@ export default function OfferOperationListsEdit() {
                                                         }
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona un'offerta" />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'offer_operation_lists.edit.select_offer',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {offers.map(
@@ -157,7 +165,9 @@ export default function OfferOperationListsEdit() {
                                                                         }{' '}
                                                                         -{' '}
                                                                         {offer.provisional_description ||
-                                                                            'Nessuna descrizione'}
+                                                                            t(
+                                                                                'offer_operation_lists.edit.no_description',
+                                                                            )}
                                                                     </SelectItem>
                                                                 ),
                                                             )}
@@ -175,7 +185,9 @@ export default function OfferOperationListsEdit() {
                                                         htmlFor="offeroperation_uuid"
                                                         required
                                                     >
-                                                        Operazione
+                                                        {t(
+                                                            'offer_operation_lists.table.operation',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="offeroperation_uuid"
@@ -185,7 +197,11 @@ export default function OfferOperationListsEdit() {
                                                         }
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona un'operazione" />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'offer_operation_lists.edit.select_operation',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {operations.map(
@@ -203,7 +219,9 @@ export default function OfferOperationListsEdit() {
                                                                         }{' '}
                                                                         -{' '}
                                                                         {operation.description ||
-                                                                            'Nessuna descrizione'}
+                                                                            t(
+                                                                                'offer_operation_lists.edit.no_description',
+                                                                            )}
                                                                     </SelectItem>
                                                                 ),
                                                             )}
@@ -221,7 +239,9 @@ export default function OfferOperationListsEdit() {
                                                         htmlFor="num_op"
                                                         required
                                                     >
-                                                        Numero Operazione
+                                                        {t(
+                                                            'offer_operation_lists.show.num_op_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="num_op"
@@ -248,8 +268,10 @@ export default function OfferOperationListsEdit() {
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Aggiornando...'
-                                                            : 'Aggiorna Assegnazione'}
+                                                            ? t('common.saving')
+                                                            : t(
+                                                                  'offer_operation_lists.edit.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -265,7 +287,7 @@ export default function OfferOperationListsEdit() {
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

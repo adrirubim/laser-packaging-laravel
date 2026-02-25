@@ -38,10 +38,10 @@ class ValueTypesController extends Controller
             'uuid' => 'nullable|uuid|unique:valuetypes,uuid',
         ], [
             'uuid.uuid' => 'L\'UUID deve essere un formato UUID valido.',
-            'uuid.unique' => 'Questo UUID è già utilizzato.',
+            'uuid.unique' => __('validation.uuid_unique'),
         ]);
 
-        // Si no se proporciona UUID, el trait HasUuids lo generará automáticamente
+        // If UUID is not provided, the HasUuids trait will generate it automatically
         $data = $validated;
         if (empty($data['uuid'])) {
             unset($data['uuid']);
@@ -50,7 +50,7 @@ class ValueTypesController extends Controller
         ValueTypes::create($data);
 
         return redirect()->route('value-types.index')
-            ->with('success', 'Tipo di valore creato con successo.');
+            ->with('success', __('flash.value_type.created'));
     }
 
     public function show(ValueTypes $valueType): Response
@@ -73,13 +73,13 @@ class ValueTypesController extends Controller
             'uuid' => 'sometimes|uuid|unique:valuetypes,uuid,'.$valueType->id.',id',
         ], [
             'uuid.uuid' => 'L\'UUID deve essere un formato UUID valido.',
-            'uuid.unique' => 'Questo UUID è già utilizzato.',
+            'uuid.unique' => __('validation.uuid_unique'),
         ]);
 
         $valueType->update($validated);
 
         return redirect()->route('value-types.index')
-            ->with('success', 'Tipo di valore aggiornato con successo.');
+            ->with('success', __('flash.value_type.updated'));
     }
 
     public function destroy(ValueTypes $valueType)
@@ -87,6 +87,6 @@ class ValueTypesController extends Controller
         $valueType->update(['removed' => true]);
 
         return redirect()->route('value-types.index')
-            ->with('success', 'Tipo di valore eliminato con successo.');
+            ->with('success', __('flash.value_type.deleted'));
     }
 }

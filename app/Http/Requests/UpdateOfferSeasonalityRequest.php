@@ -38,9 +38,9 @@ class UpdateOfferSeasonalityRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'uuid.uuid' => 'L\'UUID deve essere un formato UUID valido.',
-            'uuid.unique' => 'Questo UUID è già utilizzato.',
-            'name.required' => 'Il Nome è obbligatorio.',
+            'uuid.uuid' => __('validation.uuid_format'),
+            'uuid.unique' => __('validation.uuid_unique'),
+            'name.required' => __('validation.name_required'),
         ];
     }
 }

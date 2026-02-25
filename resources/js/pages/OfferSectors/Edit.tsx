@@ -9,6 +9,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import offerSectors from '@/routes/offer-sectors/index';
 import { type BreadcrumbItem } from '@/types';
@@ -29,13 +30,14 @@ export default function OfferSectorsEdit({
     sector,
     errors: serverErrors,
 }: OfferSectorsEditProps) {
+    const { t } = useTranslations();
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: '/offers',
         },
         {
-            title: 'Settori',
+            title: t('offer_sectors.page_title'),
             href: offerSectors.index().url,
         },
         {
@@ -43,23 +45,29 @@ export default function OfferSectorsEdit({
             href: offerSectors.show({ offerSector: sector.uuid }).url,
         },
         {
-            title: 'Modifica',
+            title: t('offer_sectors.edit.breadcrumb'),
             href: offerSectors.edit({ offerSector: sector.uuid }).url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Modifica Settore ${sector.name}`} />
+            <Head
+                title={t('offer_sectors.edit.page_title', {
+                    name: sector.name,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Modifica Settore</CardTitle>
+                                <CardTitle>
+                                    {t('offer_sectors.edit.card_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Aggiorna le informazioni del settore.
+                                    {t('offer_sectors.edit.card_description')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -100,7 +108,9 @@ export default function OfferSectorsEdit({
                                                         htmlFor="name"
                                                         required
                                                     >
-                                                        Nome
+                                                        {t(
+                                                            'offer_sectors.form.name_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="name"
@@ -109,7 +119,9 @@ export default function OfferSectorsEdit({
                                                             sector.name
                                                         }
                                                         required
-                                                        placeholder="Nome Settore"
+                                                        placeholder={t(
+                                                            'offer_sectors.form.name_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={allErrors.name}
@@ -122,8 +134,12 @@ export default function OfferSectorsEdit({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Aggiornando...'
-                                                            : 'Aggiorna Settore'}
+                                                            ? t(
+                                                                  'offer_sectors.edit.submitting',
+                                                              )
+                                                            : t(
+                                                                  'offer_sectors.edit.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -139,7 +155,7 @@ export default function OfferSectorsEdit({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

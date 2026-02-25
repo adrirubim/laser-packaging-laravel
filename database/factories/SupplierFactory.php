@@ -11,7 +11,7 @@ class SupplierFactory extends Factory
 
     public function definition(): array
     {
-        // Codici provincia italiani (2 lettere)
+        // Italian province codes (2 letters)
         $italianProvinces = [
             'RM', 'MI', 'TO', 'NA', 'FI', 'PA', 'GE', 'BO', 'BA', 'VE',
             'CA', 'TA', 'PD', 'VR', 'VI', 'TS', 'BG', 'BS', 'PV', 'CR',
@@ -27,9 +27,9 @@ class SupplierFactory extends Factory
             'uuid' => \Illuminate\Support\Str::uuid()->toString(),
             'code' => $this->faker->unique()->bothify('SUP-???'),
             'company_name' => $this->faker->company(),
-            // Partita IVA: 11 cifre numeriche (formato italiano corretto)
-            'vat_number' => $this->faker->numerify('###########'), // 11 cifre
-            // Generare sempre C/O (Care Of)
+            // VAT number: 11 numeric digits (correct Italian format)
+            'vat_number' => $this->faker->numerify('###########'), // 11 digits
+            // Always generate C/O (Care Of)
             'co' => $this->faker->randomElement([
                 $this->faker->word(),
                 $this->faker->name(),
@@ -40,15 +40,15 @@ class SupplierFactory extends Factory
                 'Ufficio Commerciale',
                 'Ricevimento Merci',
             ]),
-            // Generare sempre indirizzo completo
+            // Always generate full address
             'street' => $this->faker->streetAddress(),
             'city' => $this->faker->city(),
-            // CAP: 5 cifre numeriche (formato italiano corretto)
-            'postal_code' => $this->faker->numerify('#####'), // 5 cifre
-            // Provincia: codice di 2 lettere (formato italiano corretto)
+            // Postal code: 5 numeric digits (correct Italian format)
+            'postal_code' => $this->faker->numerify('#####'), // 5 digits
+            // Province: 2-letter code (correct Italian format)
             'province' => $this->faker->randomElement($italianProvinces),
             'country' => $this->faker->country(),
-            // Generare sempre contatti con formati diversi
+            // Always generate contacts with different formats
             'contacts' => $this->faker->randomElement([
                 $this->faker->phoneNumber(),
                 $this->faker->phoneNumber().' / '.$this->faker->phoneNumber(),

@@ -37,19 +37,19 @@ class ProductionCalculationService
             ->where('removed', false)
             ->firstOrFail();
 
-        // Ottenere operazioni dell'offerta
+        // Get offer operations
         $operations = OfferOperationList::where('offer_uuid', $offerUuid)
             ->where('removed', false)
             ->with('operation')
             ->get();
 
         if ($operations->isEmpty()) {
-            throw new \Exception('La oferta no tiene operaciones asignadas');
+            throw new \Exception(__('services.production_calculation.offer_no_operations'));
         }
 
         $totalSec = 0;
 
-        // Calcular total de segundos por operación
+        // Calculate total seconds per operation
         foreach ($operations as $operationList) {
             $operation = $operationList->operation;
             if (! $operation) {
@@ -66,19 +66,19 @@ class ProductionCalculationService
         // Calcular imprevistos (5%)
         $unexpected = $totalSec * 0.05;
 
-        // Tiempo teórico total
+        // Total theoretical time
         $totalTheoreticalTime = $totalSec + $unexpected;
 
-        // Tiempo de producción CFZ (ajuste 8/7)
+        // CFZ production time (8/7 adjustment)
         $productionTimeCfz = ($totalTheoreticalTime * 8) / 7;
 
-        // Media CFZ por hora
+        // CFZ average per hour
         $productionAverageCfz = 0;
         if ($productionTimeCfz > 0) {
             $productionAverageCfz = 3600 / $productionTimeCfz; // CFZ/hora
         }
 
-        // Media PZ por hora
+        // PZ average per hour
         $piece = $offer->piece ?? 0;
         $productionAveragePz = $productionAverageCfz * $piece; // PZ/hora
 

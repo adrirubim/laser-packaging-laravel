@@ -8,6 +8,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import valueTypes from '@/routes/value-types/index';
 import { type BreadcrumbItem } from '@/types';
@@ -24,13 +25,14 @@ type ValueTypesEditProps = {
 };
 
 export default function ValueTypesEdit({ valueType }: ValueTypesEditProps) {
+    const { t } = useTranslations();
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Configurazione',
+            title: t('nav.configuration'),
             href: '#',
         },
         {
-            title: 'Tipi di Valore',
+            title: t('nav.value_types'),
             href: valueTypes.index().url,
         },
         {
@@ -38,7 +40,7 @@ export default function ValueTypesEdit({ valueType }: ValueTypesEditProps) {
             href: valueTypes.show({ valueType: valueType.uuid }).url,
         },
         {
-            title: 'Modifica',
+            title: t('value_types.edit.breadcrumb'),
             href: valueTypes.edit({ valueType: valueType.uuid }).url,
         },
     ];
@@ -46,15 +48,17 @@ export default function ValueTypesEdit({ valueType }: ValueTypesEditProps) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head
-                title={`Modifica Tipo di Valore ${valueType.uuid.substring(0, 8)}...`}
+                title={`${t('value_types.edit.page_title')} ${valueType.uuid.substring(0, 8)}...`}
             />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Modifica Tipo di Valore</CardTitle>
+                        <CardTitle>
+                            {t('value_types.edit.card_title')}
+                        </CardTitle>
                         <CardDescription>
-                            Aggiorna le informazioni del tipo di valore.
+                            {t('value_types.edit.card_description')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -70,7 +74,7 @@ export default function ValueTypesEdit({ valueType }: ValueTypesEditProps) {
                                 <>
                                     <div className="grid gap-2">
                                         <FormLabel htmlFor="uuid">
-                                            UUID
+                                            {t('common.uuid')}
                                         </FormLabel>
                                         <Input
                                             id="uuid"
@@ -87,8 +91,10 @@ export default function ValueTypesEdit({ valueType }: ValueTypesEditProps) {
                                             disabled={processing}
                                         >
                                             {processing
-                                                ? 'Aggiornando...'
-                                                : 'Aggiorna Tipo di Valore'}
+                                                ? t(
+                                                      'value_types.edit.submitting',
+                                                  )
+                                                : t('value_types.edit.submit')}
                                         </Button>
                                         <Button
                                             type="button"
@@ -102,7 +108,7 @@ export default function ValueTypesEdit({ valueType }: ValueTypesEditProps) {
                                                 )
                                             }
                                         >
-                                            Annulla
+                                            {t('common.cancel')}
                                         </Button>
                                     </div>
                                 </>

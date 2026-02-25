@@ -61,7 +61,7 @@ class OfferArticleOrderFlowTest extends TestCase
             'removed' => false,
         ]);
 
-        // 1) Crear oferta directamente con factory y familia LAS
+        // 1) Create offer directly with factory and LAS family
         $offer = Offer::factory()->create([
             'customer_uuid' => $customer->uuid,
             'customerdivision_uuid' => $division->uuid,
@@ -69,7 +69,7 @@ class OfferArticleOrderFlowTest extends TestCase
             'removed' => false,
         ]);
 
-        // 2) Creare articolo associato usando ArticleController
+        // 2) Create associated article using ArticleController
         $palletType = PalletType::factory()->create(['removed' => false]);
 
         $articleResponse = $this->post(route('articles.store'), [
@@ -87,7 +87,7 @@ class OfferArticleOrderFlowTest extends TestCase
         $this->assertEquals($offer->uuid, $article->offer_uuid);
         $this->assertStringStartsWith('LAS', $article->cod_article_las);
 
-        // 3) Crear orden asociada usando OrderController
+        // 3) Create associated order using OrderController
         $shippingAddress = CustomerShippingAddress::factory()->create([
             'customerdivision_uuid' => $division->uuid,
             'removed' => false,
@@ -112,7 +112,7 @@ class OfferArticleOrderFlowTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // 1) Creare cliente/divisione/famiglia LAS, offerta, articolo e ordine (riutilizzando il flusso precedente)
+        // 1) Create customer/division/LAS family, offer, article and order (reusing previous flow)
         $customer = Customer::factory()->create(['removed' => false]);
         $division = CustomerDivision::factory()->create([
             'customer_uuid' => $customer->uuid,
@@ -124,7 +124,7 @@ class OfferArticleOrderFlowTest extends TestCase
             'removed' => false,
         ]);
 
-        // Crear oferta directamente con familia LAS asignada
+        // Create offer directly with LAS family assigned
         $offer = Offer::factory()->create([
             'customer_uuid' => $customer->uuid,
             'customerdivision_uuid' => $division->uuid,
@@ -159,7 +159,7 @@ class OfferArticleOrderFlowTest extends TestCase
         $order = Order::latest()->first();
         $this->assertNotNull($order);
 
-        // 2) Creare dipendente portal e token valido
+        // 2) Create portal employee and valid token
         $employee = Employee::factory()->create([
             'portal_enabled' => true,
             'password' => hash('sha512', 'password123'),
@@ -168,7 +168,7 @@ class OfferArticleOrderFlowTest extends TestCase
 
         $token = $this->createValidToken($employee);
 
-        // 3) Simulare elaborazione dal portal: aggiungere quantità pallet
+        // 3) Simulate portal processing: add pallet quantity
         $response = $this->postJson('/api/production/add-pallet-quantity', [
             'order_uuid' => $order->uuid,
             'token' => $token,
@@ -177,7 +177,7 @@ class OfferArticleOrderFlowTest extends TestCase
         $response->assertStatus(200)
             ->assertJson(['ok' => 1]);
 
-        // 4) Verificar efectos en la orden (worked_quantity y posible cambio de estado)
+        // 4) Verify effects on order (worked_quantity and possible state change)
         $order->refresh();
         $this->assertGreaterThan(0, $order->worked_quantity);
         $this->assertTrue(
@@ -190,7 +190,7 @@ class OfferArticleOrderFlowTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        // 1) Creare flusso base: cliente, offerta, articolo, ordine
+        // 1) Create base flow: customer, offer, article, order
         $customer = Customer::factory()->create(['removed' => false]);
         $division = CustomerDivision::factory()->create([
             'customer_uuid' => $customer->uuid,
@@ -233,7 +233,7 @@ class OfferArticleOrderFlowTest extends TestCase
             'removed' => false,
         ]);
 
-        // 2) Empleado y token
+        // 2) Employee and token
         $employee = Employee::factory()->create([
             'portal_enabled' => true,
             'password' => hash('sha512', 'password123'),
@@ -242,7 +242,7 @@ class OfferArticleOrderFlowTest extends TestCase
 
         $token = $this->createValidToken($employee);
 
-        // 3) Aggiungere quantità pallet (10 unità) due volte e verificare worked_quantity
+        // 3) Add pallet quantity (10 units) twice and verify worked_quantity
         $this->postJson('/api/production/add-pallet-quantity', [
             'order_uuid' => $order->uuid,
             'token' => $token,
@@ -260,7 +260,7 @@ class OfferArticleOrderFlowTest extends TestCase
         $order->refresh();
         $this->assertEquals(20, $order->worked_quantity);
 
-        // 4) Suspender la orden
+        // 4) Suspend the order
         $this->postJson('/api/production/suspend-order', [
             'order_uuid' => $order->uuid,
             'token' => $token,
@@ -269,7 +269,7 @@ class OfferArticleOrderFlowTest extends TestCase
         $order->refresh();
         $this->assertEquals(Order::STATUS_SOSPESO, $order->status);
 
-        // 5) Confirmar autocontrollo
+        // 5) Confirm autocontrollo
         $this->postJson('/api/production/confirm-autocontrollo', [
             'order_uuid' => $order->uuid,
             'token' => $token,

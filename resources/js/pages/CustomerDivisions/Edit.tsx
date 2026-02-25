@@ -10,6 +10,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useTranslations } from '@/hooks/use-translations';
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
@@ -44,6 +45,7 @@ export default function CustomerDivisionsEdit({
     customers,
     errors: serverErrors,
 }: CustomerDivisionsEditProps) {
+    const { t } = useTranslations();
     const [email, setEmail] = useState(division.email || '');
 
     const emailValidation = useFieldValidation(email, [
@@ -52,7 +54,7 @@ export default function CustomerDivisionsEdit({
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Divisioni Clienti',
+            title: t('customer_divisions.index.title'),
             href: customerDivisions.index().url,
         },
         {
@@ -61,7 +63,7 @@ export default function CustomerDivisionsEdit({
                 .url,
         },
         {
-            title: 'Modifica',
+            title: t('customers.edit.breadcrumb'),
             href: customerDivisions.edit({ customerDivision: division.uuid })
                 .url,
         },
@@ -69,14 +71,20 @@ export default function CustomerDivisionsEdit({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Modifica Divisione Cliente ${division.name}`} />
+            <Head
+                title={t('customer_divisions.show.page_title', {
+                    name: division.name,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Modifica</CardTitle>
+                                <CardTitle>
+                                    {t('customers.edit.breadcrumb')}
+                                </CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <Form
@@ -116,7 +124,9 @@ export default function CustomerDivisionsEdit({
                                                         htmlFor="customer_uuid"
                                                         required
                                                     >
-                                                        Cliente
+                                                        {t(
+                                                            'customer_divisions.form.customer_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="customer_uuid"
@@ -126,7 +136,11 @@ export default function CustomerDivisionsEdit({
                                                         required
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona il cliente.." />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'customer_divisions.form.customer_placeholder',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {customers.map(
@@ -159,7 +173,9 @@ export default function CustomerDivisionsEdit({
                                                         htmlFor="name"
                                                         required
                                                     >
-                                                        Nome
+                                                        {t(
+                                                            'customer_divisions.form.name_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="name"
@@ -168,7 +184,9 @@ export default function CustomerDivisionsEdit({
                                                             division.name
                                                         }
                                                         required
-                                                        placeholder="Nome"
+                                                        placeholder={t(
+                                                            'customer_divisions.form.name_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="name-help"
                                                     />
@@ -176,9 +194,9 @@ export default function CustomerDivisionsEdit({
                                                         id="name-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci il nome della
-                                                        divisione (massimo 255
-                                                        caratteri).
+                                                        {t(
+                                                            'customer_divisions.form.name_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.name}
@@ -187,7 +205,9 @@ export default function CustomerDivisionsEdit({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="code">
-                                                        Codice
+                                                        {t(
+                                                            'customer_divisions.form.code_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="code"
@@ -195,7 +215,9 @@ export default function CustomerDivisionsEdit({
                                                         defaultValue={
                                                             division.code ?? ''
                                                         }
-                                                        placeholder="Codice"
+                                                        placeholder={t(
+                                                            'customer_divisions.form.code_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="code-help"
                                                     />
@@ -203,10 +225,9 @@ export default function CustomerDivisionsEdit({
                                                         id="code-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci un codice
-                                                        opzionale per la
-                                                        divisione (massimo 255
-                                                        caratteri).
+                                                        {t(
+                                                            'customer_divisions.form.code_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.code}
@@ -215,7 +236,9 @@ export default function CustomerDivisionsEdit({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="email">
-                                                        Email
+                                                        {t(
+                                                            'customer_divisions.form.email_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="email"
@@ -230,7 +253,9 @@ export default function CustomerDivisionsEdit({
                                                         onBlur={
                                                             emailValidation.onBlur
                                                         }
-                                                        placeholder="Email"
+                                                        placeholder={t(
+                                                            'customer_divisions.form.email_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="email-help"
                                                         aria-invalid={
@@ -250,9 +275,9 @@ export default function CustomerDivisionsEdit({
                                                         id="email-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci l'indirizzo
-                                                        email della divisione
-                                                        (massimo 255 caratteri).
+                                                        {t(
+                                                            'customer_divisions.form.email_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -263,7 +288,9 @@ export default function CustomerDivisionsEdit({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="contacts">
-                                                        Contatti
+                                                        {t(
+                                                            'customer_divisions.form.contacts_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="contacts"
@@ -272,7 +299,9 @@ export default function CustomerDivisionsEdit({
                                                             division.contacts ??
                                                             ''
                                                         }
-                                                        placeholder="Contatti"
+                                                        placeholder={t(
+                                                            'customer_divisions.form.contacts_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="contacts-help"
                                                     />
@@ -280,9 +309,9 @@ export default function CustomerDivisionsEdit({
                                                         id="contacts-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci informazioni
-                                                        di contatto opzionali
-                                                        (massimo 255 caratteri).
+                                                        {t(
+                                                            'customer_divisions.form.contacts_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -297,8 +326,8 @@ export default function CustomerDivisionsEdit({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Salvando...'
-                                                            : 'Salva'}
+                                                            ? t('common.saving')
+                                                            : t('common.save')}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -314,7 +343,7 @@ export default function CustomerDivisionsEdit({
                                                             )
                                                         }
                                                     >
-                                                        Chiudi
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

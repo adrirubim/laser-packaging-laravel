@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import offerOrderTypes from '@/routes/offer-order-types/index';
 import { type BreadcrumbItem } from '@/types';
@@ -30,13 +31,14 @@ export default function OfferOrderTypesEdit({
     orderType,
     errors: serverErrors,
 }: OfferOrderTypesEditProps) {
+    const { t } = useTranslations();
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: '/offers',
         },
         {
-            title: 'Tipi ordini',
+            title: t('offer_order_types.page_title'),
             href: offerOrderTypes.index().url,
         },
         {
@@ -44,22 +46,32 @@ export default function OfferOrderTypesEdit({
             href: offerOrderTypes.show({ offerOrderType: orderType.uuid }).url,
         },
         {
-            title: 'Modifica',
+            title: t('offer_order_types.edit.breadcrumb'),
             href: offerOrderTypes.edit({ offerOrderType: orderType.uuid }).url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Modifica Tipo Ordine ${orderType.name}`} />
+            <Head
+                title={t('offer_order_types.edit.page_title', {
+                    name: orderType.name,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Gestione Tipo Ordine</CardTitle>
-                                <CardDescription>Modifica</CardDescription>
+                                <CardTitle>
+                                    {t('offer_order_types.form.card_title')}
+                                </CardTitle>
+                                <CardDescription>
+                                    {t(
+                                        'offer_order_types.edit.card_description',
+                                    )}
+                                </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <Form
@@ -96,7 +108,10 @@ export default function OfferOrderTypesEdit({
 
                                                 <div className="grid gap-2">
                                                     <Label htmlFor="code">
-                                                        Codice *
+                                                        {t(
+                                                            'offer_order_types.form.code_label',
+                                                        )}{' '}
+                                                        *
                                                     </Label>
                                                     <Input
                                                         id="code"
@@ -105,7 +120,9 @@ export default function OfferOrderTypesEdit({
                                                             orderType.code
                                                         }
                                                         required
-                                                        placeholder="Codice Tipo Ordine"
+                                                        placeholder={t(
+                                                            'offer_order_types.form.code_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={allErrors.code}
@@ -114,7 +131,10 @@ export default function OfferOrderTypesEdit({
 
                                                 <div className="grid gap-2">
                                                     <Label htmlFor="name">
-                                                        Nome *
+                                                        {t(
+                                                            'offer_order_types.form.name_label',
+                                                        )}{' '}
+                                                        *
                                                     </Label>
                                                     <Input
                                                         id="name"
@@ -123,7 +143,9 @@ export default function OfferOrderTypesEdit({
                                                             orderType.name
                                                         }
                                                         required
-                                                        placeholder="Nome Tipo Ordine"
+                                                        placeholder={t(
+                                                            'offer_order_types.form.name_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={allErrors.name}
@@ -136,8 +158,12 @@ export default function OfferOrderTypesEdit({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Aggiornando...'
-                                                            : 'Aggiorna Tipo Ordine'}
+                                                            ? t(
+                                                                  'offer_order_types.edit.submitting',
+                                                              )
+                                                            : t(
+                                                                  'offer_order_types.edit.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -153,7 +179,7 @@ export default function OfferOrderTypesEdit({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

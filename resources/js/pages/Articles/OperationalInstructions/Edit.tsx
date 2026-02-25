@@ -16,6 +16,7 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import articles from '@/routes/articles/index';
 import { type BreadcrumbItem } from '@/types';
@@ -38,6 +39,7 @@ type OperationalInstructionsEditProps = {
 export default function OperationalInstructionsEdit({
     errors: serverErrors,
 }: OperationalInstructionsEditProps) {
+    const { t } = useTranslations();
     const { props } = usePage<OperationalInstructionsEditProps>();
     const { instruction } = props;
     const [selectedFileName, setSelectedFileName] = useState<string | null>(
@@ -47,27 +49,33 @@ export default function OperationalInstructionsEdit({
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Articoli',
+            title: t('nav.articles'),
             href: articles.index().url,
         },
         {
-            title: 'Istruzioni Operative',
-            href: '/articles/operational-instructions',
+            title: t('nav.istruzioni_operative'),
+            href: articles.operationalInstructions.index().url,
         },
         {
             title: instruction.code + (instruction.number || ''),
-            href: `/articles/operational-instructions/${instruction.uuid}`,
+            href: articles.operationalInstructions.show({
+                operationalInstruction: instruction.uuid,
+            }).url,
         },
         {
-            title: 'Modifica',
-            href: `/articles/operational-instructions/${instruction.uuid}/edit`,
+            title: t('operational_instructions.edit.breadcrumb'),
+            href: articles.operationalInstructions.edit({
+                operationalInstruction: instruction.uuid,
+            }).url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head
-                title={`Modifica Istruzione ${instruction.code}${instruction.number || ''}`}
+                title={t('operational_instructions.edit.head_title', {
+                    code: instruction.code + (instruction.number || ''),
+                })}
             />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
@@ -76,10 +84,12 @@ export default function OperationalInstructionsEdit({
                         <Card>
                             <CardHeader>
                                 <CardTitle>
-                                    Modifica Istruzione Operativa
+                                    {t('operational_instructions.edit.title')}
                                 </CardTitle>
                                 <CardDescription>
-                                    Modifica i dettagli dell'istruzione
+                                    {t(
+                                        'operational_instructions.edit.description',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -117,7 +127,9 @@ export default function OperationalInstructionsEdit({
                                                             htmlFor="code"
                                                             required
                                                         >
-                                                            Codice
+                                                            {t(
+                                                                'operational_instructions.form.code',
+                                                            )}
                                                         </FormLabel>
                                                         <Tooltip>
                                                             <TooltipTrigger
@@ -127,9 +139,9 @@ export default function OperationalInstructionsEdit({
                                                             </TooltipTrigger>
                                                             <TooltipContent>
                                                                 <p>
-                                                                    Il codice
-                                                                    deve essere
-                                                                    univoco
+                                                                    {t(
+                                                                        'operational_instructions.form.code_tooltip',
+                                                                    )}
                                                                 </p>
                                                             </TooltipContent>
                                                         </Tooltip>
@@ -154,7 +166,9 @@ export default function OperationalInstructionsEdit({
                                                             htmlFor="number"
                                                             required
                                                         >
-                                                            Numero
+                                                            {t(
+                                                                'operational_instructions.form.number',
+                                                            )}
                                                         </FormLabel>
                                                     </div>
                                                     <Input
@@ -175,13 +189,16 @@ export default function OperationalInstructionsEdit({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="filename">
-                                                        Allegato
+                                                        {t(
+                                                            'operational_instructions.form.attachment',
+                                                        )}
                                                     </FormLabel>
                                                     {instruction.filename && (
                                                         <div className="mb-2 rounded-md bg-muted p-2">
                                                             <p className="mb-1 text-xs text-muted-foreground">
-                                                                Allegato
-                                                                attuale:
+                                                                {t(
+                                                                    'operational_instructions.form.current_attachment',
+                                                                )}
                                                             </p>
                                                             <p className="font-mono text-sm">
                                                                 {
@@ -213,13 +230,18 @@ export default function OperationalInstructionsEdit({
                                                         className="text-xs text-muted-foreground"
                                                     >
                                                         {instruction.filename
-                                                            ? 'Carica un nuovo allegato PDF per sostituire quello esistente (opzionale).'
-                                                            : "Seleziona un allegato PDF da associare all'istruzione (opzionale)."}
+                                                            ? t(
+                                                                  'operational_instructions.form.attachment_help_replace',
+                                                              )
+                                                            : t(
+                                                                  'operational_instructions.form.attachment_help',
+                                                              )}
                                                     </p>
                                                     {selectedFileName && (
                                                         <p className="text-xs text-muted-foreground">
-                                                            Nuovo allegato
-                                                            selezionato:{' '}
+                                                            {t(
+                                                                'operational_instructions.form.new_attachment_selected',
+                                                            )}{' '}
                                                             <span className="font-mono">
                                                                 {
                                                                     selectedFileName
@@ -240,8 +262,12 @@ export default function OperationalInstructionsEdit({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Aggiornando...'
-                                                            : 'Aggiorna Istruzione'}
+                                                            ? t(
+                                                                  'operational_instructions.edit.submitting',
+                                                              )
+                                                            : t(
+                                                                  'operational_instructions.edit.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -252,7 +278,9 @@ export default function OperationalInstructionsEdit({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t(
+                                                            'operational_instructions.cancel',
+                                                        )}
                                                     </Button>
                                                 </div>
                                             </>

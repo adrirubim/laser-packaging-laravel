@@ -6,6 +6,8 @@ labels: enhancement
 assignees: ""
 ---
 
+<!-- Search [existing issues](https://github.com/adrirubim/laser-packaging-laravel/issues) first to avoid duplicates. -->
+
 ## Problem or goal
 
 <!-- What problem does this solve, or what capability do you need? Link to a related issue if any. -->

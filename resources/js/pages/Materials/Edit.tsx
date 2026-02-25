@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import materials from '@/routes/materials/index';
 import { type BreadcrumbItem } from '@/types';
@@ -32,10 +33,11 @@ export default function MaterialsEdit({
     material,
     errors: serverErrors,
 }: MaterialsEditProps) {
+    const { t } = useTranslations();
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Materiali',
+            title: t('materials.title'),
             href: materials.index().url,
         },
         {
@@ -43,23 +45,29 @@ export default function MaterialsEdit({
             href: materials.show({ material: material.uuid }).url,
         },
         {
-            title: 'Modifica',
+            title: t('materials.edit.breadcrumb'),
             href: materials.edit({ material: material.uuid }).url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Modifica materiale ${material.cod}`} />
+            <Head
+                title={t('materials.edit.page_title', {
+                    code: material.cod,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Modifica Materiale</CardTitle>
+                                <CardTitle>
+                                    {t('materials.edit.card_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Aggiorna le informazioni del materiale.
+                                    {t('materials.edit.card_description')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -82,7 +90,9 @@ export default function MaterialsEdit({
                                             <>
                                                 <div className="grid gap-2">
                                                     <Label htmlFor="cod">
-                                                        Codice *
+                                                        {t(
+                                                            'materials.form.cod_label',
+                                                        )}
                                                     </Label>
                                                     <Input
                                                         id="cod"
@@ -99,7 +109,9 @@ export default function MaterialsEdit({
 
                                                 <div className="grid gap-2">
                                                     <Label htmlFor="description">
-                                                        Descrizione *
+                                                        {t(
+                                                            'materials.form.description_label',
+                                                        )}
                                                     </Label>
                                                     <Input
                                                         id="description"
@@ -122,8 +134,12 @@ export default function MaterialsEdit({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Aggiornando...'
-                                                            : 'Aggiorna Materiale'}
+                                                            ? t(
+                                                                  'materials.edit.submitting',
+                                                              )
+                                                            : t(
+                                                                  'materials.edit.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -134,7 +150,7 @@ export default function MaterialsEdit({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

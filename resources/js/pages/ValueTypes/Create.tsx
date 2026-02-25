@@ -9,6 +9,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import { generateUUID } from '@/lib/utils/uuid';
 import valueTypes from '@/routes/value-types/index';
@@ -23,6 +24,7 @@ type ValueTypesCreateProps = {
 export default function ValueTypesCreate({
     errors: serverErrors,
 }: ValueTypesCreateProps) {
+    const { t } = useTranslations();
     const [uuid, setUuid] = useState<string>(generateUUID());
     const [regenerateUuid, setRegenerateUuid] = useState(false);
 
@@ -36,33 +38,28 @@ export default function ValueTypesCreate({
     }, [regenerateUuid]);
 
     const breadcrumbs: BreadcrumbItem[] = [
+        { title: t('nav.configuration'), href: '#' },
+        { title: t('value_types.page_title'), href: valueTypes.index().url },
         {
-            title: 'Configurazione',
-            href: '#',
-        },
-        {
-            title: 'Tipi di Valore',
-            href: valueTypes.index().url,
-        },
-        {
-            title: 'Nuovo Tipo di Valore',
+            title: t('value_types.create.breadcrumb'),
             href: valueTypes.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Nuovo Tipo di Valore" />
+            <Head title={t('value_types.create.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Nuovo Tipo di Valore</CardTitle>
+                                <CardTitle>
+                                    {t('value_types.create.card_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Compila i campi per creare un tipo di
-                                    valore.
+                                    {t('value_types.create.card_description')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -85,7 +82,7 @@ export default function ValueTypesCreate({
                                                             htmlFor="uuid"
                                                             required
                                                         >
-                                                            UUID
+                                                            {t('common.uuid')}
                                                         </FormLabel>
                                                         <Button
                                                             type="button"
@@ -98,7 +95,9 @@ export default function ValueTypesCreate({
                                                             }
                                                             className="text-xs"
                                                         >
-                                                            Rigenera UUID
+                                                            {t(
+                                                                'value_types.uuid.regenerate',
+                                                            )}
                                                         </Button>
                                                     </div>
                                                     <Input
@@ -111,7 +110,9 @@ export default function ValueTypesCreate({
                                                             )
                                                         }
                                                         required
-                                                        placeholder="UUID (es. 550e8400-e29b-41d4-a716-446655440000)"
+                                                        placeholder={t(
+                                                            'common.uuid_placeholder',
+                                                        )}
                                                         maxLength={36}
                                                         aria-describedby="uuid-help"
                                                     />
@@ -119,8 +120,9 @@ export default function ValueTypesCreate({
                                                         id="uuid-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci un UUID valido
-                                                        (formato UUID v4).
+                                                        {t(
+                                                            'value_types.uuid.help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.uuid}
@@ -133,8 +135,12 @@ export default function ValueTypesCreate({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Creando...'
-                                                            : 'Crea Tipo di Valore'}
+                                                            ? t(
+                                                                  'value_types.create.submitting',
+                                                              )
+                                                            : t(
+                                                                  'value_types.create.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -146,7 +152,7 @@ export default function ValueTypesCreate({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

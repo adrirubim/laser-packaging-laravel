@@ -54,7 +54,7 @@ class ArticleCodeServiceTest extends TestCase
             'removed' => false,
         ]);
 
-        // Crear artículos existentes con códigos LAS para esa familia
+        // Create existing articles with LAS codes for that family
         Article::factory()->create([
             'offer_uuid' => $offer->uuid,
             'cod_article_las' => 'LAS310001',
@@ -69,7 +69,7 @@ class ArticleCodeServiceTest extends TestCase
 
         $code = $this->service->generateNextLAS($offer->uuid);
 
-        // Debe continuar desde el máximo encontrado (0005 → 0006)
+        // Must continue from max found (0005 → 0006)
         $this->assertSame('LAS310006', $code);
     }
 
@@ -82,7 +82,7 @@ class ArticleCodeServiceTest extends TestCase
         ]);
 
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('La oferta no tiene una familia LAS asignada');
+        $this->expectExceptionMessage(__('services.article_code.offer_no_las_family'));
 
         $this->service->generateNextLAS($offer->uuid);
     }

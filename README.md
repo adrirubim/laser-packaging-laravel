@@ -8,7 +8,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-316192?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4.1-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Tests](https://img.shields.io/badge/Tests-994%20passing-brightgreen?style=flat)](docs/TEST_COVERAGE.md)
+[![Tests](https://img.shields.io/badge/Tests-1041%2B%20passing-brightgreen?style=flat)](docs/TEST_COVERAGE.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat)](LICENSE)
 
 ## 📋 Table of Contents
@@ -44,7 +44,7 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 - **Professional UI/UX:** Skeleton loaders, dashboard charts, real-time search, mobile-responsive, accessibility (WCAG AA)
 - **Enterprise Security:** Form Requests, validation, `.env` handling, test DB isolation
 - **Optimized Performance:** Caching, indexes, Performance test suite (Concurrency, Load, API)
-- **Comprehensive Testing:** 994 tests with 6682+ assertions covering all critical paths
+- **Comprehensive Testing:** 1017+ PHP tests, 24 Vitest tests, covering all critical paths
 - **Documentation:** [docs/README.md](docs/README.md) (index), [test coverage](docs/TEST_COVERAGE.md), [VERSION_STACK](docs/VERSION_STACK.md)
 
 ---
@@ -108,7 +108,7 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 - ✅ **TypeScript** — Full type safety across frontend
 - ✅ **ESLint** — Lint and fix on frontend and scripts
 - ✅ **English Documentation** — Code comments and docblocks in English
-- ✅ **Comprehensive Testing** — 994 tests, Unit/Feature/Performance
+- ✅ **Comprehensive Testing** — 1017+ PHP tests, 24 Vitest tests
 
 ---
 
@@ -143,7 +143,7 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 
 - **PHP** >= 8.4  
   Check in WSL: `php -v`
-- **PostgreSQL** (app and tests; see [README_TEST_DATABASE.md](README_TEST_DATABASE.md))
+- **PostgreSQL** (app and tests; see [docs/DATABASE.md](docs/DATABASE.md))
 - **Node.js** >= 20 (reference env: 20.19.6)  
   Check: `node -v`
 - **Composer** >= 2.0  
@@ -249,7 +249,7 @@ All documentation is in **English**. Single index: **[docs/README.md](docs/READM
 | Section | Links |
 |---------|--------|
 | **Overview** | [VERSION_STACK](docs/VERSION_STACK.md) · [PROJECT_STATUS](docs/PROJECT_STATUS.md) |
-| **Getting started** | [Test DB](README_TEST_DATABASE.md) · [Demo data](README_SEED_TEST_DATA.md) |
+| **Getting started** | [Database setup](docs/DATABASE.md) |
 | **Development** | [Backend](docs/BACKEND_GUIDE.md) · [Frontend](docs/FRONTEND_GUIDE.md) · [i18n](docs/I18N.md) |
 | **Testing** | [Coverage](docs/TEST_COVERAGE.md) |
 | **Policy** | [What to commit](docs/GIT_WHAT_TO_COMMIT.md) · [SECURITY](SECURITY.md) · [CONTRIBUTING](CONTRIBUTING.md) · [LICENSE](LICENSE) |
@@ -259,10 +259,10 @@ All documentation is in **English**. Single index: **[docs/README.md](docs/READM
 <a id="cicd"></a>
 ## 🔄 CI/CD
 
-GitHub Actions runs **tests** and **lint** on every push and pull request to `main`.
+GitHub Actions runs **tests** and **lint** on every push and pull request to `main` and `develop`.
 
-- **Tests** (`.github/workflows/tests.yml`): PHP 8.4, Node 22, `composer install`, `npm ci --legacy-peer-deps`, `npm run build`, PHPUnit
-- **Lint** (`.github/workflows/lint.yml`): `composer install`, `npm install --legacy-peer-deps`, Pint, `npm run format`, `npm run lint` (ESLint 10)
+- **Tests** (`.github/workflows/tests.yml`): PHP 8.4, Node 22, `composer install`, `npm ci --legacy-peer-deps`, `npm run build`, i18n-check, config:clear, TypeScript check, Vitest, `php artisan test`
+- **Lint** (`.github/workflows/lint.yml`): `composer install`, `npm ci --legacy-peer-deps`, Pint, `npm run format:check`, `npm run lint` (ESLint 10)
 
 ---
 
@@ -293,8 +293,8 @@ php artisan test:all
 
 ### Test Coverage
 
-- ✅ **994 tests passing**
-- ✅ **6682+ assertions** across all test suites
+- ✅ **1017+ PHP tests** (Unit, Feature, Performance) plus **24 Vitest tests** (React/Planning)
+- ✅ **6840+ assertions** across all test suites
 - ✅ **Feature tests** for all controllers
 - ✅ **Unit tests** for services and repositories
 - ✅ **Performance tests** (Concurrency, Load, API response time)
@@ -303,10 +303,7 @@ See [docs/TEST_COVERAGE.md](docs/TEST_COVERAGE.md) for details.
 
 ### Test Database
 
-- Configured in `phpunit.xml` (PostgreSQL, database `laser_packaging_test`)
-- CI uses password `postgres`; adjust `phpunit.xml` locally if your test DB uses different credentials
-- Automatically refreshed with `RefreshDatabase` trait
-- Isolated test environment
+See [docs/DATABASE.md](docs/DATABASE.md). Configured in `phpunit.xml`; uses PostgreSQL `laser_packaging_test`; automatically refreshed with `RefreshDatabase` trait.
 
 ---
 
@@ -356,7 +353,7 @@ Backend tree: `app/Http/Controllers/`, `app/Services/`, `app/Actions/`, `app/Rep
 | Performance | ✅ Optimized | 9/10 | Caching, indexes, Performance suite (Concurrency, Load, API) |
 | Code Quality | ✅ Excellent | 10/10 | Service/Repository/Action layers, ESLint, TypeScript, SOLID |
 | UX/UI | ✅ Excellent | 9/10 | Skeleton loaders, charts, mobile-responsive, WCAG AA |
-| Testing | ✅ Excellent | 10/10 | 994 tests, 6682+ assertions, Unit/Feature/Performance |
+| Testing | ✅ Excellent | 10/10 | 1017+ PHP tests, 24 Vitest tests, Unit/Feature/Performance |
 | Documentation | ✅ Complete | 10/10 | `docs/`, test report, DB and seed guides |
 
 ### Core Modules (100% complete)
@@ -371,13 +368,13 @@ Backend tree: `app/Http/Controllers/`, `app/Services/`, `app/Actions/`, `app/Rep
 
 ### Recent improvements (February 2026)
 
-- **Production Planning** (Orders): API and UI for planning data, replan, calculations; full test coverage; docs in `docs/planning/`.
-- **Language selector (IT, ES, GB):** Session-based locale; selector on Welcome and Settings → Appearance only (not in app header); welcome, login, register and settings use `lang/*.json`; `lang/it/`, `lang/es/`, `lang/en/` for auth and validation.
+- **Production Planning** (Orders): API and UI for planning data, replan, calculations; full test coverage.
+- **Language selector (IT, ES, GB):** Session-based locale; selector on Welcome and Settings → Appearance only; `lang/*.json` for UI; `lang/{it,es,en}/` for auth and validation. Articles Create/Show fully internationalized.
 
 <a id="default-users-development"></a>
 ## 👥 Default Users (development)
 
-After running seeders (e.g. `php artisan db:seed` or `TestDataSeeder`), the application may create demo data for local development. See [README_SEED_TEST_DATA.md](README_SEED_TEST_DATA.md) for details. There are no fixed default credentials; configure users as needed for development.
+After running seeders (e.g. `php artisan db:seed` or `TestDataSeeder`), the application may create demo data for local development. See [docs/DATABASE.md](docs/DATABASE.md) for details. There are no fixed default credentials; configure users as needed for development.
 
 **Security:** Change or remove demo users before deploying to production.
 
@@ -460,23 +457,13 @@ php artisan storage:link
 <a id="before-pushing-to-github"></a>
 ## 📤 Before Pushing to GitHub
 
-Ensure dependencies are installed (`composer install`, `npm ci`). Then run locally to avoid CI failures:
+Ensure dependencies are installed (`composer install`, `npm ci`). Run the full pipeline locally to avoid CI failures:
 
 ```bash
-# Linting / formatting
-vendor/bin/pint
-npm run format
-npm run lint
-
-# Ensure test database is migrated
-php artisan migrate:fresh --env=testing
-
-# Build + tests (same as CI)
-npm run build
-./vendor/bin/phpunit
+php scripts/i18n-check.php && ./vendor/bin/pint && npm run format && npm run format:check && npm run lint && npm run types && php artisan config:clear && php artisan test && npm run test -- --run && npm run build
 ```
 
-Optional: `npm run types`.
+Or run each step separately: i18n-check, Pint, format, format:check, lint, types, config:clear, PHP tests, Vitest, build. This matches what GitHub Actions runs.
 
 ---
 

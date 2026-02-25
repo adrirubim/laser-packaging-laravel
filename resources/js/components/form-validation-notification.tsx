@@ -1,3 +1,4 @@
+import { useTranslations } from '@/hooks/use-translations';
 import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -6,12 +7,12 @@ type FormValidationNotificationProps = {
     message?: string;
     autoHideDuration?: number;
     onDismiss?: () => void;
-    showOnSubmit?: boolean; // Se true, mostra solo dopo aver tentato l'invio
-    hasAttemptedSubmit?: boolean; // Stato esterno che indica se è stato tentato l'invio
+    showOnSubmit?: boolean; // If true, show only after submit attempted
+    hasAttemptedSubmit?: boolean; // External state indicating if submit was attempted
 };
 
 /**
- * Componente per mostrare una notifica quando ci sono errori di validazione in un modulo
+ * Component to show notification when there are validation errors in a form
  *
  * @example
  * ```tsx
@@ -23,25 +24,27 @@ type FormValidationNotificationProps = {
  */
 export function FormValidationNotification({
     errors,
-    message = 'Si prega di correggere gli errori nel modulo prima di salvare.',
+    message,
     autoHideDuration = 8000,
     onDismiss,
     showOnSubmit = true,
     hasAttemptedSubmit: externalHasAttemptedSubmit,
 }: FormValidationNotificationProps) {
+    const { t } = useTranslations();
     const [show, setShow] = useState(false);
+    const displayMessage = message ?? t('common.validation_fix_errors');
     const [internalHasAttemptedSubmit, setInternalHasAttemptedSubmit] =
         useState(false);
     const hasErrors = Object.keys(errors).length > 0;
 
-    // Usare lo stato esterno se fornito, altrimenti quello interno
+    // Use external state if provided, otherwise internal
     const hasAttemptedSubmit =
         externalHasAttemptedSubmit !== undefined
             ? externalHasAttemptedSubmit
             : internalHasAttemptedSubmit;
 
     useEffect(() => {
-        // Se showOnSubmit è false, mostrare sempre quando ci sono errori
+        // If showOnSubmit is false, always show when there are errors
         if (!showOnSubmit && hasErrors) {
             queueMicrotask(() => setShow(true));
             if (autoHideDuration > 0) {
@@ -54,7 +57,7 @@ export function FormValidationNotification({
             return;
         }
 
-        // Se showOnSubmit è true, mostrare solo se ci sono errori E si è tentato l'invio
+        // If showOnSubmit is true, show only if there are errors AND submit was attempted
         if (showOnSubmit && hasErrors && hasAttemptedSubmit) {
             queueMicrotask(() => setShow(true));
             if (autoHideDuration > 0) {
@@ -65,7 +68,7 @@ export function FormValidationNotification({
                 return () => clearTimeout(timer);
             }
         } else if (!hasErrors) {
-            // Se non ci sono errori, nascondere
+            // If no errors, hide
             queueMicrotask(() => setShow(false));
             if (externalHasAttemptedSubmit === undefined) {
                 queueMicrotask(() => setInternalHasAttemptedSubmit(false));
@@ -80,7 +83,7 @@ export function FormValidationNotification({
         externalHasAttemptedSubmit,
     ]);
 
-    // Rilevare quando ci sono errori (significa che si è tentato l'invio)
+    // Detect when there are errors (means submit was attempted)
     useEffect(() => {
         if (hasErrors && externalHasAttemptedSubmit === undefined) {
             queueMicrotask(() => setInternalHasAttemptedSubmit(true));
@@ -97,14 +100,14 @@ export function FormValidationNotification({
 
     return (
         <div className="flex animate-in items-center justify-between rounded-md border border-rose-500/40 bg-rose-500/5 px-3 py-2 text-sm text-rose-700 duration-300 fade-in slide-in-from-top-2 dark:text-rose-300">
-            <span>{message}</span>
+            <span>{displayMessage}</span>
             <button
                 onClick={() => {
                     setShow(false);
                     if (onDismiss) onDismiss();
                 }}
                 className="ml-2 transition-opacity hover:opacity-70"
-                aria-label="Chiudi notifica"
+                aria-label={t('common.close_notification')}
             >
                 <X className="h-4 w-4" />
             </button>

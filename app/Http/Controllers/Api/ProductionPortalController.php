@@ -64,7 +64,7 @@ class ProductionPortalController extends Controller
         if ($order) {
             $order->worked_quantity = $processedQuantity;
 
-            // Cambio automatico di stato: se status <= 2 e c'è worked_quantity > 0, impostare a 3
+            // Automatic status change: if status <= 2 and worked_quantity > 0, set to 3
             if ($order->status <= Order::STATUS_LANCIATO && $processedQuantity > 0) {
                 $order->status = Order::STATUS_IN_AVANZAMENTO;
             }
@@ -91,7 +91,7 @@ class ProductionPortalController extends Controller
                 ->first();
 
             if ($foglioPallet && ! empty($foglioPallet->filename)) {
-                // Generare URL di stampa (adattare in base all'implementazione file)
+                // Generate print URL (adapt based on file implementation)
                 return route('api.production.foglio-pallet.print', ['uuid' => $foglioPallet->uuid]);
             }
         } catch (\Exception $e) {
@@ -112,38 +112,38 @@ class ProductionPortalController extends Controller
             'order_number' => 'required|string',
         ]);
 
-        // Rimuovere zeri a sinistra da entrambi gli EAN
+        // Strip leading zeros from both EANs
         $employeeNumber = ltrim($request->get('employee_number'), '0');
         $orderNumber = ltrim($request->get('order_number'), '0');
 
-        // Cercare dipendente per ID
+        // Find employee by ID
         $employee = Employee::where('id', $employeeNumber)
             ->where('removed', false)
             ->where('portal_enabled', true)
             ->first();
 
         if (! $employee) {
-            return response()->json(['error' => 'Dipendente non trovato o non abilitato'], 404);
+            return response()->json(['error' => __('production_portal.employee_not_found')], 404);
         }
 
-        // Cercare ordine per ID
+        // Find order by ID
         $order = Order::where('id', $orderNumber)
             ->where('removed', false)
             ->first();
 
         if (! $order) {
-            return response()->json(['error' => 'Ordine non trovato'], 404);
+            return response()->json(['error' => __('planning.replan.order_not_found')], 404);
         }
 
-        // Verificare: ordine deve essere in stato 2 o 3
+        // Verify: order must be in status 2 or 3
         if ($order->status !== Order::STATUS_LANCIATO && $order->status !== Order::STATUS_IN_AVANZAMENTO) {
-            return response()->json(['error' => 'L\'ordine non è in uno stato valido (deve essere Lanciato o In Avanzamento)'], 400);
+            return response()->json(['error' => __('production_portal.order_invalid_status')], 400);
         }
 
-        // Generare token temporaneo (base64 encoded)
+        // Generate temporary token (base64 encoded)
         $token = base64_encode(Str::random(32).'|'.time());
 
-        // Salvare token in employeeportaltoken
+        // Save token in employeeportaltoken
         EmployeePortalToken::create([
             'employee_uuid' => $employee->uuid,
             'token' => $token,
@@ -180,10 +180,10 @@ class ProductionPortalController extends Controller
             ->first();
 
         if (! $employee || ! $employee->verifyPassword($request->get('password'))) {
-            return response()->json(['error' => 'Credenziali non valide'], 401);
+            return response()->json(['error' => __('production_portal.invalid_credentials')], 401);
         }
 
-        // Generare token temporaneo
+        // Generate temporary token
         $token = base64_encode(Str::random(32).'|'.time());
 
         // Salvare token
@@ -213,13 +213,13 @@ class ProductionPortalController extends Controller
         $token = $request->get('token') ?? $request->input('user_data.token');
 
         if (empty($token)) {
-            return response()->json(['error' => 'Token non fornito'], 400);
+            return response()->json(['error' => __('production_portal.token_not_provided')], 400);
         }
 
         $employee = $this->getEmployeeFromToken($token);
 
         if (! $employee) {
-            return response()->json(['error' => 'Token non valido o scaduto'], 401);
+            return response()->json(['error' => __('production_portal.token_invalid_expired')], 401);
         }
 
         return response()->json(['ok' => 1]);
@@ -238,7 +238,7 @@ class ProductionPortalController extends Controller
 
         $employee = $this->getEmployeeFromToken($request->get('token'));
         if (! $employee) {
-            return response()->json(['error' => 'Token non valido o scaduto'], 401);
+            return response()->json(['error' => __('production_portal.token_invalid_expired')], 401);
         }
 
         return DB::transaction(function () use ($request, $employee) {
@@ -249,19 +249,19 @@ class ProductionPortalController extends Controller
 
             $article = $order->article;
             if (! $article) {
-                return response()->json(['error' => 'L\'ordine non ha articolo associato'], 400);
+                return response()->json(['error' => __('services.pallet.order_has_no_article')], 400);
             }
 
-            // Calcolare quantità per pallet
+            // Calculate quantity per pallet
             $palletQuantity = $this->palletCalculationService->getPalletQuantity($article->uuid);
 
-            // Calcolare quantità processata
+            // Calculate processed quantity
             $processedQuantity = $this->palletCalculationService->getProcessedQuantity($order->uuid);
 
-            // Calcolare quantità da aggiungere: pallet_quantity - (processed % pallet_quantity)
+            // Calculate quantity to add: pallet_quantity - (processed % pallet_quantity)
             $quantityToAdd = $palletQuantity - ((int) $processedQuantity % $palletQuantity);
 
-            // Registrare lavorazione
+            // Record processing
             ProductionOrderProcessing::create([
                 'employee_uuid' => $employee->uuid,
                 'order_uuid' => $order->uuid,
@@ -269,10 +269,10 @@ class ProductionPortalController extends Controller
                 'processed_datetime' => now(),
             ]);
 
-            // Aggiornare worked_quantity e stato
+            // Update worked_quantity and status
             $this->updateOrderWorkedQuantity($order->uuid);
 
-            // Verificare se si completa pallet
+            // Verify if pallet is completed
             $newProcessedQuantity = $processedQuantity + $quantityToAdd;
             $printUrl = null;
 
@@ -303,7 +303,7 @@ class ProductionPortalController extends Controller
 
         $employee = $this->getEmployeeFromToken($request->get('token'));
         if (! $employee) {
-            return response()->json(['error' => 'Token non valido o scaduto'], 401);
+            return response()->json(['error' => __('production_portal.token_invalid_expired')], 401);
         }
 
         return DB::transaction(function () use ($request, $employee) {
@@ -314,10 +314,10 @@ class ProductionPortalController extends Controller
 
             $quantity = (float) $request->get('quantity');
 
-            // Calcolare quantità per completare pallet
+            // Calculate quantity to complete pallet
             $quantityToFinishPallet = $this->palletCalculationService->getQuantityToFinishPallet($order->uuid);
 
-            // Registrare lavorazione
+            // Record processing
             ProductionOrderProcessing::create([
                 'employee_uuid' => $employee->uuid,
                 'order_uuid' => $order->uuid,
@@ -325,10 +325,10 @@ class ProductionPortalController extends Controller
                 'processed_datetime' => now(),
             ]);
 
-            // Aggiornare worked_quantity e stato
+            // Update worked_quantity and status
             $this->updateOrderWorkedQuantity($order->uuid);
 
-            // Se quantity >= quantity_to_finish_pallet e l'articolo ha foglio pallet, generare URL di stampa
+            // If quantity >= quantity_to_finish_pallet and article has pallet sheet, generate print URL
             $printUrl = null;
             if ($quantity >= $quantityToFinishPallet && $order->article && ! empty($order->article->pallet_sheet)) {
                 $printUrl = $this->generatePrintUrl($order->article->pallet_sheet);
@@ -354,7 +354,7 @@ class ProductionPortalController extends Controller
 
         $employee = $this->getEmployeeFromToken($request->get('token'));
         if (! $employee) {
-            return response()->json(['error' => 'Token non valido o scaduto'], 401);
+            return response()->json(['error' => __('production_portal.token_invalid_expired')], 401);
         }
 
         $order = Order::where('uuid', $request->get('order_uuid'))
@@ -382,7 +382,7 @@ class ProductionPortalController extends Controller
 
         $employee = $this->getEmployeeFromToken($request->get('token'));
         if (! $employee) {
-            return response()->json(['error' => 'Token non valido o scaduto'], 401);
+            return response()->json(['error' => __('production_portal.token_invalid_expired')], 401);
         }
 
         $order = Order::where('uuid', $request->get('order_uuid'))
@@ -408,10 +408,10 @@ class ProductionPortalController extends Controller
 
         $employee = $this->getEmployeeFromToken($request->get('token'));
         if (! $employee) {
-            return response()->json(['error' => 'Token non valido o scaduto'], 401);
+            return response()->json(['error' => __('production_portal.token_invalid_expired')], 401);
         }
 
-        // Ottenere ordini con stato 2 o 3
+        // Get orders with status 2 or 3
         $orders = Order::whereIn('status', [Order::STATUS_LANCIATO, Order::STATUS_IN_AVANZAMENTO])
             ->where('removed', false)
             ->with([
@@ -475,7 +475,7 @@ class ProductionPortalController extends Controller
 
         $employee = $this->getEmployeeFromToken($request->get('token'));
         if (! $employee) {
-            return response()->json(['error' => 'Token non valido o scaduto'], 401);
+            return response()->json(['error' => __('production_portal.token_invalid_expired')], 401);
         }
 
         $order = Order::where('uuid', $request->get('order_uuid'))

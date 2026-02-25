@@ -62,15 +62,19 @@ export default function SuppliersCreate({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Crea Fornitore" />
+            <Head title={t('suppliers.create.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Gestione Fornitore</CardTitle>
-                                <CardDescription>Crea</CardDescription>
+                                <CardTitle>
+                                    {t('suppliers.create.card_title')}
+                                </CardTitle>
+                                <CardDescription>
+                                    {t('suppliers.create.card_description')}
+                                </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <Form
@@ -91,13 +95,17 @@ export default function SuppliersCreate({
                                                         htmlFor="code"
                                                         required
                                                     >
-                                                        Codice Fornitore
+                                                        {t(
+                                                            'suppliers.form.code',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="code"
                                                         name="code"
                                                         required
-                                                        placeholder="Codice Fornitore"
+                                                        placeholder={t(
+                                                            'suppliers.form.code',
+                                                        )}
                                                         maxLength={255}
                                                     />
                                                     <InputError
@@ -110,13 +118,17 @@ export default function SuppliersCreate({
                                                         htmlFor="company_name"
                                                         required
                                                     >
-                                                        Ragione Sociale
+                                                        {t(
+                                                            'suppliers.form.company_name',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="company_name"
                                                         name="company_name"
                                                         required
-                                                        placeholder="Ragione Sociale"
+                                                        placeholder={t(
+                                                            'suppliers.form.company_name',
+                                                        )}
                                                         maxLength={255}
                                                     />
                                                     <InputError
@@ -129,7 +141,9 @@ export default function SuppliersCreate({
                                                 <div className="grid gap-2">
                                                     <div className="flex items-center gap-2">
                                                         <FormLabel htmlFor="vat_number">
-                                                            Partita IVA
+                                                            {t(
+                                                                'suppliers.form.vat_label',
+                                                            )}
                                                         </FormLabel>
                                                         <Tooltip>
                                                             <TooltipTrigger
@@ -139,9 +153,9 @@ export default function SuppliersCreate({
                                                             </TooltipTrigger>
                                                             <TooltipContent>
                                                                 <p>
-                                                                    Inserire 11
-                                                                    cifre
-                                                                    numeriche
+                                                                    {t(
+                                                                        'suppliers.form.vat_tooltip',
+                                                                    )}
                                                                 </p>
                                                             </TooltipContent>
                                                         </Tooltip>
@@ -158,11 +172,15 @@ export default function SuppliersCreate({
                                                         onBlur={
                                                             vatNumberValidation.onBlur
                                                         }
-                                                        placeholder="12345678901"
+                                                        placeholder={t(
+                                                            'suppliers.form.vat',
+                                                        )}
                                                         pattern="[0-9]{11}"
                                                         maxLength={11}
                                                         inputMode="numeric"
-                                                        aria-label="Partita IVA (11 cifre)"
+                                                        aria-label={t(
+                                                            'suppliers.form.vat_aria',
+                                                        )}
                                                         aria-invalid={
                                                             vatNumberValidation.error
                                                                 ? 'true'
@@ -190,12 +208,16 @@ export default function SuppliersCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="co">
-                                                        C/O
+                                                        {t(
+                                                            'suppliers.form.c_o',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="co"
                                                         name="co"
-                                                        placeholder="C/O"
+                                                        placeholder={t(
+                                                            'suppliers.form.c_o',
+                                                        )}
                                                         maxLength={255}
                                                     />
                                                     <InputError
@@ -205,12 +227,16 @@ export default function SuppliersCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="street">
-                                                        Via
+                                                        {t(
+                                                            'suppliers.form.street',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="street"
                                                         name="street"
-                                                        placeholder="Via"
+                                                        placeholder={t(
+                                                            'suppliers.form.street',
+                                                        )}
                                                         maxLength={255}
                                                     />
                                                     <InputError
@@ -223,7 +249,9 @@ export default function SuppliersCreate({
                                                 <div className="grid gap-2">
                                                     <div className="flex items-center gap-2">
                                                         <FormLabel htmlFor="postal_code">
-                                                            CAP
+                                                            {t(
+                                                                'suppliers.form.cap_label',
+                                                            )}
                                                         </FormLabel>
                                                         <Tooltip>
                                                             <TooltipTrigger
@@ -253,11 +281,15 @@ export default function SuppliersCreate({
                                                         onBlur={
                                                             postalCodeValidation.onBlur
                                                         }
-                                                        placeholder="00100"
+                                                        placeholder={t(
+                                                            'suppliers.form.postal_code',
+                                                        )}
                                                         pattern="[0-9]{5}"
                                                         maxLength={5}
                                                         inputMode="numeric"
-                                                        aria-label="CAP (Codice di Avviamento Postale - 5 cifre)"
+                                                        aria-label={t(
+                                                            'suppliers.form.postal_code_aria',
+                                                        )}
                                                         aria-invalid={
                                                             postalCodeValidation.error
                                                                 ? 'true'
@@ -285,12 +317,16 @@ export default function SuppliersCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="city">
-                                                        Città
+                                                        {t(
+                                                            'suppliers.form.city',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="city"
                                                         name="city"
-                                                        placeholder="Città"
+                                                        placeholder={t(
+                                                            'suppliers.form.city',
+                                                        )}
                                                         maxLength={255}
                                                     />
                                                     <InputError
@@ -301,7 +337,9 @@ export default function SuppliersCreate({
                                                 <div className="grid gap-2">
                                                     <div className="flex items-center gap-2">
                                                         <FormLabel htmlFor="province">
-                                                            Provincia
+                                                            {t(
+                                                                'suppliers.form.province_label',
+                                                            )}
                                                         </FormLabel>
                                                         <Tooltip>
                                                             <TooltipTrigger
@@ -311,11 +349,9 @@ export default function SuppliersCreate({
                                                             </TooltipTrigger>
                                                             <TooltipContent>
                                                                 <p>
-                                                                    Codice
-                                                                    provincia di
-                                                                    2 lettere
-                                                                    (es: RM, MI,
-                                                                    TO)
+                                                                    {t(
+                                                                        'suppliers.form.province_tooltip',
+                                                                    )}
                                                                 </p>
                                                             </TooltipContent>
                                                         </Tooltip>
@@ -332,7 +368,9 @@ export default function SuppliersCreate({
                                                         onBlur={
                                                             provinceValidation.onBlur
                                                         }
-                                                        placeholder="RM"
+                                                        placeholder={t(
+                                                            'suppliers.form.province',
+                                                        )}
                                                         pattern="[A-Z]{2}"
                                                         maxLength={2}
                                                         style={{
@@ -366,12 +404,16 @@ export default function SuppliersCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="country">
-                                                        Nazione
+                                                        {t(
+                                                            'suppliers.form.country',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="country"
                                                         name="country"
-                                                        placeholder="Nazione"
+                                                        placeholder={t(
+                                                            'suppliers.form.country',
+                                                        )}
                                                         maxLength={255}
                                                     />
                                                     <InputError
@@ -383,12 +425,16 @@ export default function SuppliersCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="contacts">
-                                                        Contatti
+                                                        {t(
+                                                            'suppliers.form.contacts',
+                                                        )}
                                                     </FormLabel>
                                                     <Textarea
                                                         id="contacts"
                                                         name="contacts"
-                                                        placeholder="Contatti"
+                                                        placeholder={t(
+                                                            'suppliers.form.contacts',
+                                                        )}
                                                         rows={3}
                                                     />
                                                     <InputError
@@ -404,8 +450,12 @@ export default function SuppliersCreate({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Creando...'
-                                                            : 'Crea Fornitore'}
+                                                            ? t(
+                                                                  'suppliers.create.submit_creating',
+                                                              )
+                                                            : t(
+                                                                  'suppliers.create.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -417,7 +467,7 @@ export default function SuppliersCreate({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

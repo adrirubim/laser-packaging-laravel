@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Verificar si un índice existe en PostgreSQL.
+     * Check if an index exists in PostgreSQL.
      */
     private function indexExists(string $table, string $indexName): bool
     {
@@ -20,7 +20,7 @@ return new class extends Migration
 
             return isset($result->count) && $result->count > 0;
         } catch (\Exception $e) {
-            // Se c'è un errore nella query, assumere che l'indice non esista
+            // If there's an error in the query, assume the index doesn't exist
             return false;
         }
     }
@@ -30,7 +30,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Indici per orderorder (tabella ordini)
+        // Indexes for orderorder (orders table)
         if (! $this->indexExists('orderorder', 'orderorder_article_uuid_index')) {
             Schema::table('orderorder', function (Blueprint $table) {
                 $table->index('article_uuid', 'orderorder_article_uuid_index');
@@ -57,7 +57,7 @@ return new class extends Migration
             });
         }
 
-        // Índices para articles
+        // Indexes for articles
         if (! $this->indexExists('articles', 'articles_offer_uuid_index')) {
             Schema::table('articles', function (Blueprint $table) {
                 $table->index('offer_uuid', 'articles_offer_uuid_index');
@@ -84,7 +84,7 @@ return new class extends Migration
             });
         }
 
-        // Índices para offer
+        // Indexes for offer
         if (! $this->indexExists('offer', 'offer_customer_uuid_index')) {
             Schema::table('offer', function (Blueprint $table) {
                 $table->index('customer_uuid', 'offer_customer_uuid_index');
@@ -106,7 +106,7 @@ return new class extends Migration
             });
         }
 
-        // Índices para customer
+        // Indexes for customer
         if (! $this->indexExists('customer', 'customer_removed_index')) {
             Schema::table('customer', function (Blueprint $table) {
                 $table->index('removed', 'customer_removed_index');
@@ -118,7 +118,7 @@ return new class extends Migration
             });
         }
 
-        // Índices para customerdivision
+        // Indexes for customerdivision
         if (! $this->indexExists('customerdivision', 'customerdivision_customer_uuid_index')) {
             Schema::table('customerdivision', function (Blueprint $table) {
                 $table->index('customer_uuid', 'customerdivision_customer_uuid_index');
@@ -130,7 +130,7 @@ return new class extends Migration
             });
         }
 
-        // Índices para employee
+        // Indexes for employee
         if (! $this->indexExists('employee', 'employee_removed_index')) {
             Schema::table('employee', function (Blueprint $table) {
                 $table->index('removed', 'employee_removed_index');
@@ -147,7 +147,7 @@ return new class extends Migration
             });
         }
 
-        // Índices para offerorderemployee
+        // Indexes for offerorderemployee
         if (! $this->indexExists('offerorderemployee', 'offerorderemployee_order_uuid_index')) {
             Schema::table('offerorderemployee', function (Blueprint $table) {
                 $table->index('order_uuid', 'offerorderemployee_order_uuid_index');

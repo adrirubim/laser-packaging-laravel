@@ -9,6 +9,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useTranslations } from '@/hooks/use-translations';
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { generateUUID } from '@/lib/utils/uuid';
@@ -25,6 +26,7 @@ type OfferSectorsCreateProps = {
 export default function OfferSectorsCreate({
     errors: serverErrors,
 }: OfferSectorsCreateProps) {
+    const { t } = useTranslations();
     const [uuid, setUuid] = useState<string>(generateUUID());
     const [nameValue, setNameValue] = useState<string>('');
 
@@ -36,37 +38,36 @@ export default function OfferSectorsCreate({
 
     // Validazione in tempo reale per name
     const nameValidation = useFieldValidation(nameValue, [
-        validationRules.required('Il nome è obbligatorio'),
-        validationRules.maxLength(
-            255,
-            'Il nome non può superare 255 caratteri',
-        ),
+        validationRules.required(t('validation.required_name')),
+        validationRules.maxLength(255, t('validation.max_length_name')),
     ]);
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: '/offers',
         },
         {
-            title: 'Settori',
+            title: t('offer_sectors.page_title'),
             href: offerSectors.index().url,
         },
         {
-            title: 'Nuovo Settore',
+            title: t('offer_sectors.create.breadcrumb'),
             href: offerSectors.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Nuovo Settore" />
+            <Head title={t('offer_sectors.create.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Nuovo Settore</CardTitle>
+                        <CardTitle>
+                            {t('offer_sectors.create.card_title')}
+                        </CardTitle>
                         <CardDescription>
-                            Compila i campi per creare un settore.
+                            {t('offer_sectors.create.card_description')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -85,7 +86,7 @@ export default function OfferSectorsCreate({
                                     <>
                                         <div className="grid gap-2">
                                             <FormLabel htmlFor="uuid" required>
-                                                UUID
+                                                {t('common.uuid')}
                                             </FormLabel>
                                             <Input
                                                 id="uuid"
@@ -95,7 +96,9 @@ export default function OfferSectorsCreate({
                                                     setUuid(e.target.value)
                                                 }
                                                 required
-                                                placeholder="UUID (es. 550e8400-e29b-41d4-a716-446655440000)"
+                                                placeholder={t(
+                                                    'common.uuid_placeholder',
+                                                )}
                                             />
                                             <InputError
                                                 message={allErrors.uuid}
@@ -104,7 +107,9 @@ export default function OfferSectorsCreate({
 
                                         <div className="grid gap-2">
                                             <FormLabel htmlFor="name" required>
-                                                Nome
+                                                {t(
+                                                    'offer_sectors.form.name_label',
+                                                )}
                                             </FormLabel>
                                             <Input
                                                 id="name"
@@ -116,7 +121,9 @@ export default function OfferSectorsCreate({
                                                 onBlur={nameValidation.onBlur}
                                                 onFocus={nameValidation.onFocus}
                                                 required
-                                                placeholder="Nome Settore"
+                                                placeholder={t(
+                                                    'offer_sectors.form.name_placeholder',
+                                                )}
                                                 className={
                                                     nameValidation.error
                                                         ? 'border-destructive'
@@ -141,8 +148,12 @@ export default function OfferSectorsCreate({
                                                 disabled={processing}
                                             >
                                                 {processing
-                                                    ? 'Creando...'
-                                                    : 'Crea Settore'}
+                                                    ? t(
+                                                          'offer_sectors.create.submitting',
+                                                      )
+                                                    : t(
+                                                          'offer_sectors.create.submit',
+                                                      )}
                                             </Button>
                                             <Button
                                                 type="button"
@@ -154,7 +165,7 @@ export default function OfferSectorsCreate({
                                                     )
                                                 }
                                             >
-                                                Annulla
+                                                {t('common.cancel')}
                                             </Button>
                                         </div>
                                     </>

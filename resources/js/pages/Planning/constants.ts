@@ -8,12 +8,11 @@ export const PLANNING_CONFIG = {
 export const START_HOUR = PLANNING_CONFIG.startHour;
 export const END_HOUR = PLANNING_CONFIG.endHour;
 
-export const SUMMARY_ROWS: { id: string; label: string; editable?: boolean }[] =
-    [
-        { id: 'totale_impegno', label: 'TOTALE IMPEGNO' },
-        { id: 'da_impiegare', label: 'DA IMPIEGARE' },
-        { id: 'assenze', label: 'ASSENZE', editable: true },
-        { id: 'disponibili', label: 'DISPONIBILI' },
-        { id: 'caporeparto', label: 'CAPOREPARTO', editable: true },
-        { id: 'magazzinieri', label: 'MAGAZZINIERI', editable: true },
-    ];
+export const SUMMARY_ROWS: { id: string; editable?: boolean }[] = [
+    { id: 'totale_impegno' },
+    { id: 'da_impiegare' },
+    { id: 'assenze', editable: true },
+    { id: 'disponibili' },
+    { id: 'caporeparto', editable: true },
+    { id: 'magazzinieri', editable: true },
+];

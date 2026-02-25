@@ -16,7 +16,7 @@ class ModelSCQController extends Controller
     {
         $query = ModelSCQ::active();
 
-        // Validare e applicare filtri
+        // Validate and apply filters
         $validated = $request->validate([
             'search' => 'nullable|string|max:255',
             'per_page' => 'nullable|integer|min:1|max:100',
@@ -24,7 +24,7 @@ class ModelSCQController extends Controller
             'sort_order' => 'nullable|string|in:asc,desc',
         ]);
 
-        // Ricerca
+        // Search
         if (! empty($validated['search'])) {
             $search = $validated['search'];
             $query->where(function ($q) use ($search) {
@@ -77,28 +77,28 @@ class ModelSCQController extends Controller
                 'max:255',
                 function ($attribute, $value, $fail) {
                     if (! empty($value) && ModelSCQ::where('cod_model', $value)->where('removed', false)->exists()) {
-                        $fail('Il codice esiste già.');
+                        $fail(__('validation.code_exists'));
                     }
                 },
             ],
             'description_model' => 'required|string|max:255',
-            // Consentire nome file diretto
+            // Allow direct filename
             'filename' => 'nullable|string|max:255',
         ]);
 
-        // Generar código si no se proporcionó
+        // Generate code if not provided
         if (empty($validated['cod_model'])) {
             $validated['cod_model'] = ModelSCQ::generateNextCQUCode();
         }
 
-        // Verificare file se incluso e sovrascrivere nome
+        // Verify file if included and overwrite name
         if ($request->hasFile('filename')) {
             $request->validate([
                 'filename' => 'file|mimes:pdf|max:10240',
             ], [
-                'filename.file' => 'Il file caricato non è valido.',
+                'filename.file' => __('validation.file_invalid'),
                 'filename.mimes' => 'Il file deve essere un PDF.',
-                'filename.max' => 'Il file non può superare 10MB.',
+                'filename.max' => __('validation.file_max_10mb'),
             ]);
         }
 
@@ -120,7 +120,7 @@ class ModelSCQController extends Controller
         }
 
         return redirect()->route('articles.cq-models.index')
-            ->with('success', 'Modello CQ creato con successo.');
+            ->with('success', __('flash.model_scq.created'));
     }
 
     /**
@@ -160,7 +160,7 @@ class ModelSCQController extends Controller
                             ->where('removed', false)
                             ->exists();
                         if ($exists) {
-                            $fail('Il codice esiste già.');
+                            $fail(__('validation.code_exists'));
                         }
                     }
                 },
@@ -169,7 +169,7 @@ class ModelSCQController extends Controller
             'filename' => 'nullable|string|max:255',
         ]);
 
-        // Generar código si no se proporcionó
+        // Generate code if not provided
         if (empty($validated['cod_model'])) {
             $validated['cod_model'] = ModelSCQ::generateNextCQUCode();
         }
@@ -178,9 +178,9 @@ class ModelSCQController extends Controller
             $request->validate([
                 'filename' => 'file|mimes:pdf|max:10240',
             ], [
-                'filename.file' => 'Il file caricato non è valido.',
+                'filename.file' => __('validation.file_invalid'),
                 'filename.mimes' => 'Il file deve essere un PDF.',
-                'filename.max' => 'Il file non può superare 10MB.',
+                'filename.max' => __('validation.file_max_10mb'),
             ]);
         }
 
@@ -209,7 +209,7 @@ class ModelSCQController extends Controller
         }
 
         return redirect()->route('articles.cq-models.index')
-            ->with('success', 'Modello CQ aggiornato con successo.');
+            ->with('success', __('flash.model_scq.updated'));
     }
 
     /**
@@ -221,7 +221,7 @@ class ModelSCQController extends Controller
         $cqModel->save();
 
         return redirect()->route('articles.cq-models.index')
-            ->with('success', 'Modello CQ eliminato con successo.');
+            ->with('success', __('flash.model_scq.deleted'));
     }
 
     /**
@@ -245,14 +245,14 @@ class ModelSCQController extends Controller
     {
         if (! $cqModel->filename) {
             return redirect()->route('articles.cq-models.index')
-                ->withErrors(['error' => 'Nessun file trovato per questo modello.']);
+                ->withErrors(['error' => __('flash.file_not_found_model')]);
         }
 
         $filePath = $this->getFilePath($cqModel);
 
         if (! file_exists($filePath)) {
             return redirect()->route('articles.cq-models.index')
-                ->withErrors(['error' => 'File non trovato sul server.']);
+                ->withErrors(['error' => __('flash.file_not_found_server')]);
         }
 
         return response()->download($filePath, $cqModel->filename);
@@ -265,7 +265,7 @@ class ModelSCQController extends Controller
     {
         $directory = storage_path('app/modelsCQ/'.$cqModel->uuid);
 
-        // Assicurare che la directory esista
+        // Ensure the directory exists
         if (! file_exists($directory)) {
             mkdir($directory, 0755, true);
         }

@@ -22,7 +22,7 @@ class ArticleCategoryFactory extends Factory
         return [
             'uuid' => \Illuminate\Support\Str::uuid()->toString(),
             'name' => $this->faker->unique()->word(),
-            // Generare sempre descrizione
+            // Always generate description
             'description' => $this->faker->sentence(),
             'removed' => false,
         ];

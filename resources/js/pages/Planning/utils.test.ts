@@ -47,7 +47,7 @@ describe('utils – addDays / addMonths', () => {
 
     it('addMonths mantiene el día cuando es posible y ajusta a fin de mes si no', () => {
         expect(addMonths('2026-01-15', 1)).toBe('2026-02-15');
-        // 31 de enero + 1 mes → 28/29 de febrero según año; comprobamos que sigue siendo febrero
+        // Jan 31 + 1 month → Feb 28/29 depending on year; assert it stays February
         const feb = addMonths('2025-01-31', 1);
         expect(feb.startsWith('2025-02-')).toBe(true);
     });
@@ -181,7 +181,7 @@ describe('utils – countContractsByQualifica', () => {
         const contracts: TestPlanningContract[] = [
             makeContract(1, tsMid - 10_000, null),
             makeContract(2, tsMid - 10_000, tsMid + 10_000),
-            makeContract(3, tsMid + 10_000, null), // empieza después, no cuenta
+            makeContract(3, tsMid + 10_000, null), // starts after, does not count
         ];
         const result = countContractsByQualifica(
             date,

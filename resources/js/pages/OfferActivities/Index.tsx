@@ -8,6 +8,7 @@ import { IndexHeader } from '@/components/IndexHeader';
 import { Pagination } from '@/components/Pagination';
 import { SearchInput } from '@/components/SearchInput';
 import { SortableTableHeader } from '@/components/SortableTableHeader';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import offerActivities from '@/routes/offer-activities';
 import { type BreadcrumbItem } from '@/types';
@@ -39,6 +40,7 @@ type OfferActivitiesIndexProps = {
 };
 
 export default function OfferActivitiesIndex() {
+    const { t } = useTranslations();
     const { props } = usePage<OfferActivitiesIndexProps>();
     const { activities: activitiesPaginated, filters } = props;
     const { flash } = useFlashNotifications();
@@ -54,7 +56,7 @@ export default function OfferActivitiesIndex() {
     });
     const [isDeleting, setIsDeleting] = useState(false);
 
-    // Sincronizzare stato iniziale con i filtri del server
+    // Sync initial state with server filters
     useEffect(() => {
         queueMicrotask(() => setSearchValue(filters.search ?? ''));
     }, [filters.search]);
@@ -137,20 +139,23 @@ export default function OfferActivitiesIndex() {
     };
 
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Offerte', href: '/offers' },
-        { title: 'Attività', href: offerActivities.index().url },
+        { title: t('nav.offers'), href: '/offers' },
+        {
+            title: t('offer_activities.page_title'),
+            href: offerActivities.index().url,
+        },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Attività" />
+            <Head title={t('offer_activities.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="Attività"
-                    subtitle="Elenco delle attività attive con Cerca."
+                    title={t('offer_activities.page_title')}
+                    subtitle={t('offer_activities.index.subtitle')}
                     createHref={offerActivities.create().url}
-                    createLabel="Nuova Attività"
+                    createLabel={t('offer_activities.index.create')}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -158,12 +163,14 @@ export default function OfferActivitiesIndex() {
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="space-y-1">
                         <label className="text-xs font-medium text-muted-foreground">
-                            Cerca
+                            {t('common.search')}
                         </label>
                         <SearchInput
                             value={searchValue}
                             onChange={handleSearchChange}
-                            placeholder="Nome attività..."
+                            placeholder={t(
+                                'offer_activities.search_placeholder',
+                            )}
                             isLoading={isSearching}
                             onClear={clearSearch}
                         />
@@ -174,7 +181,7 @@ export default function OfferActivitiesIndex() {
                 <div className="block space-y-3 p-4 md:hidden">
                     {activitiesPaginated.data.length === 0 ? (
                         <div className="py-8 text-center text-sm text-muted-foreground">
-                            Nessuna attività trovata per i filtri attuali.
+                            {t('offer_activities.index.empty')}
                         </div>
                     ) : (
                         activitiesPaginated.data.map((activity) => (
@@ -230,10 +237,10 @@ export default function OfferActivitiesIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Nome
+                                        {t('offer_activities.form.name_label')}
                                     </SortableTableHeader>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t('common.actions')}
                                     </th>
                                 </tr>
                             </thead>
@@ -244,8 +251,7 @@ export default function OfferActivitiesIndex() {
                                             colSpan={4}
                                             className="px-3 py-6 text-center text-sm text-muted-foreground"
                                         >
-                                            Nessuna attività trovata per i
-                                            filtri attuali.
+                                            {t('offer_activities.index.empty')}
                                         </td>
                                     </tr>
                                 )}
@@ -304,8 +310,8 @@ export default function OfferActivitiesIndex() {
                         })
                     }
                     onConfirm={handleDeleteConfirm}
-                    title="Elimina Attività"
-                    description="Sei sicuro di voler eliminare questa attività? Questa azione non può essere annullata."
+                    title={t('offer_activities.delete.title')}
+                    description={t('offer_activities.delete.description')}
                     itemName={deleteDialog.activity?.name}
                     isLoading={isDeleting}
                 />

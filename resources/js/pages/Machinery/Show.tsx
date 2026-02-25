@@ -8,6 +8,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import machineryRoutes from '@/routes/machinery/index';
 import { type BreadcrumbItem } from '@/types';
@@ -41,11 +42,12 @@ type MachineryShowProps = {
 };
 
 export default function MachineryShow({ machinery }: MachineryShowProps) {
+    const { t } = useTranslations();
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Macchinari',
+            title: t('nav.macchinari'),
             href: machineryRoutes.index().url,
         },
         {
@@ -74,7 +76,11 @@ export default function MachineryShow({ machinery }: MachineryShowProps) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Macchinario ${machinery.cod}`} />
+            <Head
+                title={t('machinery.show.page_title', {
+                    code: machinery.cod,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
@@ -83,7 +89,7 @@ export default function MachineryShow({ machinery }: MachineryShowProps) {
                             {machinery.description}
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Codice: {machinery.cod}
+                            {t('machinery.show.code_label')} {machinery.cod}
                         </p>
                     </div>
                     <div className="flex gap-2">
@@ -95,7 +101,7 @@ export default function MachineryShow({ machinery }: MachineryShowProps) {
                                     }).url
                                 }
                             >
-                                Modifica
+                                {t('common.edit')}
                             </Link>
                         </Button>
                         <Button
@@ -103,7 +109,7 @@ export default function MachineryShow({ machinery }: MachineryShowProps) {
                             onClick={() => setDeleteDialogOpen(true)}
                             disabled={isDeleting}
                         >
-                            Elimina
+                            {t('common.delete')}
                         </Button>
                     </div>
                 </div>
@@ -111,15 +117,17 @@ export default function MachineryShow({ machinery }: MachineryShowProps) {
                 <div className="grid gap-4 md:grid-cols-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Dettagli Macchinario</CardTitle>
+                            <CardTitle>
+                                {t('machinery.show.details_title')}
+                            </CardTitle>
                             <CardDescription>
-                                Informazioni di base sul macchinario
+                                {t('machinery.show.details_subtitle')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    ID
+                                    {t('machinery.show.fields.id')}
                                 </Label>
                                 <p className="text-lg font-semibold">
                                     {machinery.id}
@@ -128,7 +136,7 @@ export default function MachineryShow({ machinery }: MachineryShowProps) {
 
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    UUID
+                                    {t('machinery.show.fields.uuid')}
                                 </Label>
                                 <p className="font-mono text-lg text-xs font-semibold">
                                     {machinery.uuid}
@@ -137,7 +145,7 @@ export default function MachineryShow({ machinery }: MachineryShowProps) {
 
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    Codice
+                                    {t('machinery.show.fields.code')}
                                 </Label>
                                 <p className="font-mono text-lg font-semibold">
                                     {machinery.cod}
@@ -146,7 +154,7 @@ export default function MachineryShow({ machinery }: MachineryShowProps) {
 
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    Descrizione
+                                    {t('machinery.show.fields.description')}
                                 </Label>
                                 <p className="text-lg font-semibold">
                                     {machinery.description}
@@ -155,7 +163,7 @@ export default function MachineryShow({ machinery }: MachineryShowProps) {
 
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    Parametro
+                                    {t('machinery.show.fields.parameter')}
                                 </Label>
                                 <p className="text-lg font-semibold">
                                     {machinery.parameter || (
@@ -168,7 +176,7 @@ export default function MachineryShow({ machinery }: MachineryShowProps) {
 
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    Tipo Valore
+                                    {t('machinery.show.fields.value_type')}
                                 </Label>
                                 <p className="text-lg font-semibold">
                                     {machinery.value_type ? (
@@ -186,9 +194,11 @@ export default function MachineryShow({ machinery }: MachineryShowProps) {
                     {machinery.articles && machinery.articles.length > 0 && (
                         <Card>
                             <CardHeader>
-                                <CardTitle>Articoli Associati</CardTitle>
+                                <CardTitle>
+                                    {t('machinery.show.articles_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Articoli che utilizzano questo macchinario
+                                    {t('machinery.show.articles_subtitle')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -219,9 +229,7 @@ export default function MachineryShow({ machinery }: MachineryShowProps) {
                 {(!machinery.articles || machinery.articles.length === 0) && (
                     <Card>
                         <CardContent className="py-8 text-center text-muted-foreground">
-                            <p>
-                                Nessun articolo associato a questo macchinario.
-                            </p>
+                            <p>{t('machinery.show.articles_empty')}</p>
                         </CardContent>
                     </Card>
                 )}
@@ -231,14 +239,8 @@ export default function MachineryShow({ machinery }: MachineryShowProps) {
                     onOpenChange={setDeleteDialogOpen}
                     onConfirm={handleDeleteConfirm}
                     isDeleting={isDeleting}
-                    title="Conferma eliminazione"
-                    description={
-                        <>
-                            Sei sicuro di voler eliminare questo macchinario?{' '}
-                            Questa azione non può essere annullata. Il
-                            macchinario verrà eliminato definitivamente.
-                        </>
-                    }
+                    title={t('machinery.delete.title')}
+                    description={t('machinery.delete.description')}
                     itemName={`${machinery.description} (Codice: ${machinery.cod})`}
                 />
             </div>

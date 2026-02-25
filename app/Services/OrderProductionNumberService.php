@@ -28,15 +28,15 @@ class OrderProductionNumberService
                 ->lockForUpdate()
                 ->get();
 
-            // Calcolare prossimo numero progressivo
-            $progressive = 1; // Primo ordine dell'anno
+            // Calculate next progressive number (parse part after dot as integer)
+            $progressive = 1;
             if ($orders->isNotEmpty()) {
                 $progressives = [];
                 foreach ($orders as $order) {
-                    if (! empty($order->order_production_number)) {
-                        $last4 = substr($order->order_production_number, -4);
-                        if (is_numeric($last4)) {
-                            $progressives[] = (int) $last4;
+                    if (! empty($order->order_production_number) && str_contains($order->order_production_number, '.')) {
+                        $afterDot = substr($order->order_production_number, strpos($order->order_production_number, '.') + 1);
+                        if (is_numeric($afterDot)) {
+                            $progressives[] = (int) $afterDot;
                         }
                     }
                 }

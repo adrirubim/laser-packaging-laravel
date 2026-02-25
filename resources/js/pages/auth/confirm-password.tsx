@@ -3,27 +3,33 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { PasswordInput } from '@/components/ui/password-input';
 import { Spinner } from '@/components/ui/spinner';
+import { useTranslations } from '@/hooks/use-translations';
 import AuthLayout from '@/layouts/auth-layout';
 import { store } from '@/routes/password/confirm';
 import { Form, Head } from '@inertiajs/react';
 
 export default function ConfirmPassword() {
+    const { t } = useTranslations();
     return (
         <AuthLayout
-            title="Conferma password"
-            description="Area sicura. Conferma la password per continuare."
+            title={t('auth.confirm_password.title')}
+            description={t('auth.confirm_password.description')}
         >
-            <Head title="Conferma password" />
+            <Head title={t('auth.confirm_password.page_title')} />
 
             <Form {...store.form()} resetOnSuccess={['password']}>
                 {({ processing, errors }) => (
                     <div className="space-y-6">
                         <div className="grid gap-2">
-                            <Label htmlFor="password">Password</Label>
+                            <Label htmlFor="password">
+                                {t('auth.confirm_password.password_label')}
+                            </Label>
                             <PasswordInput
                                 id="password"
                                 name="password"
-                                placeholder="Password"
+                                placeholder={t(
+                                    'auth.confirm_password.password_placeholder',
+                                )}
                                 autoComplete="current-password"
                                 autoFocus
                             />
@@ -38,7 +44,7 @@ export default function ConfirmPassword() {
                                 data-test="confirm-password-button"
                             >
                                 {processing && <Spinner />}
-                                Conferma password
+                                {t('auth.confirm_password.submit')}
                             </Button>
                         </div>
                     </div>

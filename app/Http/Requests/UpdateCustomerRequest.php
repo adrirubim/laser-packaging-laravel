@@ -46,15 +46,15 @@ class UpdateCustomerRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'code.required' => 'Il Codice Cliente è obbligatorio.',
-            'code.unique' => 'Questo Codice Cliente è già utilizzato.',
-            'company_name.required' => 'La Ragione Sociale è obbligatoria.',
-            'vat_number.regex' => 'La Partita IVA deve contenere esattamente 11 cifre.',
-            'street.required' => 'La Via è obbligatoria.',
-            'postal_code.size' => 'Il CAP deve contenere esattamente 5 cifre.',
-            'postal_code.regex' => 'Il CAP deve contenere solo numeri (5 cifre).',
-            'province.size' => 'La Provincia deve essere un codice di 2 lettere.',
-            'province.regex' => 'La Provincia deve essere un codice di 2 lettere maiuscole (es: RM, MI).',
+            'code.required' => __('validation.code_customer_required'),
+            'code.unique' => __('validation.code_customer_unique'),
+            'company_name.required' => __('validation.company_name_required'),
+            'vat_number.regex' => __('validation.vat_regex'),
+            'street.required' => __('validation.street_required'),
+            'postal_code.size' => __('validation.postal_code_size'),
+            'postal_code.regex' => __('validation.postal_code_regex'),
+            'province.size' => __('validation.province_size'),
+            'province.regex' => __('validation.province_regex'),
         ];
     }
 }

@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import { generateUUID } from '@/lib/utils/uuid';
 import lasWorkLines from '@/routes/las-work-lines/index';
@@ -23,6 +24,7 @@ type LasWorkLinesCreateProps = {
 export default function LasWorkLinesCreate({
     errors: serverErrors,
 }: LasWorkLinesCreateProps) {
+    const { t } = useTranslations();
     const [uuid, setUuid] = useState<string>(generateUUID());
 
     const regenerateUuid = () => {
@@ -30,28 +32,32 @@ export default function LasWorkLinesCreate({
     };
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: '/offers',
         },
         {
-            title: 'LAS Linee di Lavoro',
+            title: t('offer_las_work_lines.page_title'),
             href: lasWorkLines.index().url,
         },
         {
-            title: 'Crea',
+            title: t('offer_las_work_lines.create.breadcrumb'),
             href: lasWorkLines.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Crea Linea di Lavoro LAS" />
+            <Head title={t('offer_las_work_lines.create.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Gestione Linea di Lavoro LAS</CardTitle>
-                        <CardDescription>Inserimento</CardDescription>
+                        <CardTitle>
+                            {t('offer_las_work_lines.form.card_title')}
+                        </CardTitle>
+                        <CardDescription>
+                            {t('offer_las_work_lines.create.card_description')}
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Form
@@ -70,7 +76,7 @@ export default function LasWorkLinesCreate({
                                         <div className="grid gap-2">
                                             <div className="flex items-center justify-between">
                                                 <Label htmlFor="uuid">
-                                                    UUID *
+                                                    {t('common.uuid')} *
                                                 </Label>
                                                 <Button
                                                     type="button"
@@ -79,7 +85,9 @@ export default function LasWorkLinesCreate({
                                                     onClick={regenerateUuid}
                                                     className="h-7 text-xs"
                                                 >
-                                                    Rigenera
+                                                    {t(
+                                                        'offer_las_work_lines.uuid.regenerate',
+                                                    )}
                                                 </Button>
                                             </div>
                                             <Input
@@ -90,7 +98,9 @@ export default function LasWorkLinesCreate({
                                                     setUuid(e.target.value)
                                                 }
                                                 required
-                                                placeholder="UUID (es. 550e8400-e29b-41d4-a716-446655440000)"
+                                                placeholder={t(
+                                                    'common.uuid_placeholder',
+                                                )}
                                                 maxLength={36}
                                                 aria-describedby="uuid-help"
                                             />
@@ -98,9 +108,9 @@ export default function LasWorkLinesCreate({
                                                 id="uuid-help"
                                                 className="text-xs text-muted-foreground"
                                             >
-                                                UUID generato automaticamente.
-                                                Puoi modificarlo manualmente se
-                                                necessario.
+                                                {t(
+                                                    'offer_las_work_lines.uuid.help',
+                                                )}
                                             </p>
                                             <InputError
                                                 message={allErrors.uuid}
@@ -109,13 +119,15 @@ export default function LasWorkLinesCreate({
 
                                         <div className="grid gap-2">
                                             <Label htmlFor="code">
-                                                Codice *
+                                                {t('common.code')} *
                                             </Label>
                                             <Input
                                                 id="code"
                                                 name="code"
                                                 required
-                                                placeholder="Codice Linea di Lavoro"
+                                                placeholder={t(
+                                                    'offer_las_work_lines.form.code_placeholder',
+                                                )}
                                                 maxLength={255}
                                                 aria-describedby="code-help"
                                             />
@@ -123,9 +135,9 @@ export default function LasWorkLinesCreate({
                                                 id="code-help"
                                                 className="text-xs text-muted-foreground"
                                             >
-                                                Inserisci il codice univoco
-                                                della linea di lavoro (massimo
-                                                255 caratteri).
+                                                {t(
+                                                    'offer_las_work_lines.form.code_help',
+                                                )}
                                             </p>
                                             <InputError
                                                 message={allErrors.code}
@@ -133,12 +145,19 @@ export default function LasWorkLinesCreate({
                                         </div>
 
                                         <div className="grid gap-2">
-                                            <Label htmlFor="name">Nome *</Label>
+                                            <Label htmlFor="name">
+                                                {t(
+                                                    'offer_las_work_lines.form.name_label',
+                                                )}{' '}
+                                                *
+                                            </Label>
                                             <Input
                                                 id="name"
                                                 name="name"
                                                 required
-                                                placeholder="Nome Linea di Lavoro"
+                                                placeholder={t(
+                                                    'offer_las_work_lines.form.name_placeholder',
+                                                )}
                                                 maxLength={255}
                                                 aria-describedby="name-help"
                                             />
@@ -146,8 +165,9 @@ export default function LasWorkLinesCreate({
                                                 id="name-help"
                                                 className="text-xs text-muted-foreground"
                                             >
-                                                Inserisci il nome della linea di
-                                                lavoro (massimo 255 caratteri).
+                                                {t(
+                                                    'offer_las_work_lines.form.name_help',
+                                                )}
                                             </p>
                                             <InputError
                                                 message={allErrors.name}
@@ -160,8 +180,12 @@ export default function LasWorkLinesCreate({
                                                 disabled={processing}
                                             >
                                                 {processing
-                                                    ? 'Creando...'
-                                                    : 'Crea Linea di Lavoro'}
+                                                    ? t(
+                                                          'offer_las_work_lines.create.submitting',
+                                                      )
+                                                    : t(
+                                                          'offer_las_work_lines.create.submit',
+                                                      )}
                                             </Button>
                                             <Button
                                                 type="button"
@@ -173,7 +197,7 @@ export default function LasWorkLinesCreate({
                                                     )
                                                 }
                                             >
-                                                Annulla
+                                                {t('common.cancel')}
                                             </Button>
                                         </div>
                                     </>

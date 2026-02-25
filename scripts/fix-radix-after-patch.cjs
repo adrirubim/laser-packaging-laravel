@@ -1,7 +1,7 @@
 /**
- * Corrige la aplicación errónea del parche de @radix-ui/react-select:
- * patch-package a veces aplica "..." en la línea nativeSelectKey (línea 77) en lugar del array children.
- * Este script deshace ese error y asegura el spread solo en el array children.
+ * Fix incorrect application of @radix-ui/react-select patch:
+ * patch-package sometimes applies "..." on the nativeSelectKey line (line 77) instead of the children array.
+ * This script undoes that error and ensures the spread is only on the children array.
  */
 const fs = require('fs');
 const path = require('path');
@@ -15,14 +15,14 @@ for (const name of files) {
   if (!fs.existsSync(filePath)) continue;
   let c = fs.readFileSync(filePath, 'utf8');
   const orig = c;
-  // Quitar "..." erróneo en la línea nativeSelectKey (no debe ir antes de Array.from ahí)
+  // Remove erroneous "..." on nativeSelectKey line (must not go before Array.from there)
   c = c.replace(
     /nativeSelectKey\s*=\s*\.\.\.Array\.from\(nativeOptionsSet\)\.map/g,
     'nativeSelectKey = Array.from(nativeOptionsSet).map'
   );
-  // Normalizar: nunca más de un "..." antes de Array.from(nativeOptionsSet) (evita ...... por ejecuciones dobles)
+  // Normalize: never more than one "..." before Array.from(nativeOptionsSet) (avoids ...... from double runs)
   c = c.replace(/\.{3,}Array\.from\(nativeOptionsSet\)/g, '...Array.from(nativeOptionsSet)');
-  // Asegurar "..." en el array children solo si no está ya (idempotente)
+  // Ensure "..." on children array only if not already present (idempotent)
   c = c.replace(
     /(\.\.\.)?Array\.from\(nativeOptionsSet\)(\r?\n\s+\])/g,
     (_, existing, bracket) => (existing ? existing : '...') + 'Array.from(nativeOptionsSet)' + bracket

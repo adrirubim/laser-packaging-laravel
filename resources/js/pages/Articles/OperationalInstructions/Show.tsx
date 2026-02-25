@@ -8,6 +8,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import articles from '@/routes/articles/index';
 import { type BreadcrumbItem } from '@/types';
@@ -35,16 +36,17 @@ type OperationalInstructionsShowProps = {
 export default function OperationalInstructionsShow({
     instruction,
 }: OperationalInstructionsShowProps) {
+    const { t } = useTranslations();
     const [isDeleting, setIsDeleting] = useState(false);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Articoli',
+            title: t('nav.articles'),
             href: articles.index().url,
         },
         {
-            title: 'Istruzioni Operative',
+            title: t('nav.istruzioni_operative'),
             href: articles.operationalInstructions.index().url,
         },
         {
@@ -76,7 +78,9 @@ export default function OperationalInstructionsShow({
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head
-                title={`Istruzione ${instruction.code}${instruction.number || ''}`}
+                title={t('operational_instructions.show.head_title', {
+                    code: instruction.code + (instruction.number || ''),
+                })}
             />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
@@ -87,7 +91,7 @@ export default function OperationalInstructionsShow({
                             {instruction.number || ''}
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Dettagli dell'istruzione operativa
+                            {t('operational_instructions.show.subtitle')}
                         </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -100,23 +104,26 @@ export default function OperationalInstructionsShow({
                         >
                             <Button variant="outline" size="sm">
                                 <Edit className="mr-2 h-4 w-4" />
-                                Modifica
+                                {t('operational_instructions.show.edit')}
                             </Button>
                         </Link>
                         <Button
                             variant="destructive"
                             size="sm"
                             onClick={() => setShowDeleteDialog(true)}
+                            aria-label={t(
+                                'operational_instructions.show.delete',
+                            )}
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Elimina
+                            {t('operational_instructions.show.delete')}
                         </Button>
                         <Link
                             href={articles.operationalInstructions.index().url}
                         >
                             <Button variant="ghost" size="sm">
                                 <ArrowLeft className="mr-2 h-4 w-4" />
-                                Indietro
+                                {t('operational_instructions.show.back')}
                             </Button>
                         </Link>
                     </div>
@@ -125,12 +132,16 @@ export default function OperationalInstructionsShow({
                 <div className="grid gap-4 md:grid-cols-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Informazioni Generali</CardTitle>
+                            <CardTitle>
+                                {t(
+                                    'operational_instructions.show.general_info',
+                                )}
+                            </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    Codice
+                                    {t('operational_instructions.show.th_code')}
                                 </Label>
                                 <p className="mt-1 text-sm font-medium">
                                     {instruction.code}
@@ -139,7 +150,9 @@ export default function OperationalInstructionsShow({
                             {instruction.number && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Numero
+                                        {t(
+                                            'operational_instructions.show.th_number',
+                                        )}
                                     </Label>
                                     <p className="mt-1 text-sm font-medium">
                                         {instruction.number}
@@ -149,7 +162,9 @@ export default function OperationalInstructionsShow({
                             {instruction.filename && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Filename
+                                        {t(
+                                            'operational_instructions.show.th_filename',
+                                        )}
                                     </Label>
                                     <div className="mt-1 flex items-center gap-2">
                                         <p className="text-sm font-medium">
@@ -167,6 +182,9 @@ export default function OperationalInstructionsShow({
                                                         },
                                                     ).url;
                                             }}
+                                            aria-label={t(
+                                                'operational_instructions.index.download',
+                                            )}
                                         >
                                             <Download className="h-4 w-4" />
                                         </Button>
@@ -180,10 +198,15 @@ export default function OperationalInstructionsShow({
                         instruction.articles.length > 0 && (
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Articoli Associati</CardTitle>
+                                    <CardTitle>
+                                        {t(
+                                            'operational_instructions.show.associated_articles',
+                                        )}
+                                    </CardTitle>
                                     <CardDescription>
-                                        Articoli che utilizzano questa
-                                        istruzione
+                                        {t(
+                                            'operational_instructions.show.associated_articles_desc',
+                                        )}
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
@@ -214,21 +237,15 @@ export default function OperationalInstructionsShow({
                     onOpenChange={setShowDeleteDialog}
                     onConfirm={handleDelete}
                     isDeleting={isDeleting}
-                    title="Conferma eliminazione"
-                    description={
-                        <>
-                            Sei sicuro di voler eliminare l'istruzione{' '}
-                            <strong>
-                                {instruction.code}
-                                {instruction.number || ''}
-                            </strong>
-                            ?
-                            <br />
-                            <br />
-                            Questa azione non può essere annullata. L'istruzione
-                            verrà eliminata definitivamente.
-                        </>
-                    }
+                    title={t(
+                        'operational_instructions.show.delete_confirm_title',
+                    )}
+                    description={t(
+                        'operational_instructions.show.delete_confirm_description',
+                        {
+                            code: instruction.code + (instruction.number || ''),
+                        },
+                    )}
                 />
             </div>
         </AppLayout>

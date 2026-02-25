@@ -89,7 +89,7 @@ class OrderModelTest extends TestCase
             'employee_uuid' => $employee->uuid,
         ]);
 
-        // Nos centramos en la relación hasMany processings, que usa UUID correctamente
+        // Focus on hasMany processings relation, which uses UUID correctly
         $this->assertTrue($order->processings->contains($processing));
     }
 }

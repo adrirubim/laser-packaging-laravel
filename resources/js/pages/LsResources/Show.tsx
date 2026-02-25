@@ -8,6 +8,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import lsResources from '@/routes/ls-resources/index';
 import { type BreadcrumbItem } from '@/types';
@@ -27,16 +28,17 @@ type LsResourcesShowProps = {
 };
 
 export default function LsResourcesShow({ resource }: LsResourcesShowProps) {
+    const { t } = useTranslations();
     const [isDeleting, setIsDeleting] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: '/offers',
         },
         {
-            title: 'L&S Risorse',
+            title: t('offer_ls_resources.page_title'),
             href: lsResources.index().url,
         },
         {
@@ -62,14 +64,18 @@ export default function LsResourcesShow({ resource }: LsResourcesShowProps) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Risorsa L&S ${resource.name}`} />
+            <Head
+                title={t('offer_ls_resources.show.page_title', {
+                    name: resource.name,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
                     <div className="flex-1">
                         <h1 className="text-2xl font-bold">{resource.name}</h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Codice:{' '}
+                            {t('common.code')}:{' '}
                             <span className="font-mono">{resource.code}</span> |
                             UUID:{' '}
                             <span className="font-mono">{resource.uuid}</span>
@@ -85,7 +91,7 @@ export default function LsResourcesShow({ resource }: LsResourcesShowProps) {
                                 }
                             >
                                 <Edit className="mr-2 h-4 w-4" />
-                                Modifica
+                                {t('common.edit')}
                             </Link>
                         </Button>
                         <Button
@@ -94,22 +100,24 @@ export default function LsResourcesShow({ resource }: LsResourcesShowProps) {
                             onClick={() => setDeleteDialogOpen(true)}
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Elimina
+                            {t('common.delete')}
                         </Button>
                     </div>
                 </div>
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Dettagli Risorsa L&S</CardTitle>
+                        <CardTitle>
+                            {t('offer_ls_resources.show.details_title')}
+                        </CardTitle>
                         <CardDescription>
-                            Informazioni su questa risorsa
+                            {t('offer_ls_resources.show.details_subtitle')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div>
                             <Label className="text-sm font-medium text-muted-foreground">
-                                Codice
+                                {t('common.code')}
                             </Label>
                             <p className="font-mono text-lg font-semibold">
                                 {resource.code}
@@ -118,7 +126,7 @@ export default function LsResourcesShow({ resource }: LsResourcesShowProps) {
 
                         <div>
                             <Label className="text-sm font-medium text-muted-foreground">
-                                Nome
+                                {t('offer_ls_resources.form.name_label')}
                             </Label>
                             <p className="text-lg font-semibold">
                                 {resource.name}
@@ -146,17 +154,12 @@ export default function LsResourcesShow({ resource }: LsResourcesShowProps) {
                     onOpenChange={setDeleteDialogOpen}
                     onConfirm={handleDeleteConfirm}
                     isDeleting={isDeleting}
-                    title="Conferma eliminazione"
-                    description={
-                        <>
-                            Sei sicuro di voler eliminare la risorsa L&S{' '}
-                            <strong>{resource.name}</strong> (Codice:{' '}
-                            {resource.code})? Questa azione non può essere
-                            annullata. La risorsa verrà eliminata
-                            definitivamente.
-                        </>
-                    }
-                    itemName={`${resource.name} (Codice: ${resource.code})`}
+                    title={t('offer_ls_resources.delete.title')}
+                    description={t('offer_ls_resources.delete.description', {
+                        name: resource.name,
+                        code: resource.code,
+                    })}
+                    itemName={`${resource.name} (${t('common.code')}: ${resource.code})`}
                 />
             </div>
         </AppLayout>

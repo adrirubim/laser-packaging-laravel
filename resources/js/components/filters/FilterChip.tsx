@@ -1,3 +1,4 @@
+import { useTranslations } from '@/hooks/use-translations';
 import { cn } from '@/lib/utils';
 import { X } from 'lucide-react';
 
@@ -17,6 +18,7 @@ export function FilterChip({
     onRemove,
     className,
 }: FilterChipProps) {
+    const { t } = useTranslations();
     return (
         <span
             className={cn(
@@ -28,7 +30,7 @@ export function FilterChip({
             <button
                 onClick={onRemove}
                 className="transition-opacity hover:opacity-70"
-                aria-label={`Rimuovi filtro ${label}`}
+                aria-label={t('common.remove_filter', { label })}
             >
                 <X className="h-3 w-3" />
             </button>

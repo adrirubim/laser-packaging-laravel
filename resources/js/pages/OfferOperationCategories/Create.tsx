@@ -9,6 +9,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import { generateUUID } from '@/lib/utils/uuid';
 import offerOperationCategories from '@/routes/offer-operation-categories/index';
@@ -23,6 +24,7 @@ type OfferOperationCategoriesCreateProps = {
 export default function OfferOperationCategoriesCreate({
     errors: serverErrors,
 }: OfferOperationCategoriesCreateProps) {
+    const { t } = useTranslations();
     const [uuid, setUuid] = useState<string>(generateUUID());
 
     const regenerateUuid = () => {
@@ -30,22 +32,22 @@ export default function OfferOperationCategoriesCreate({
     };
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: '/offers',
         },
         {
-            title: 'Categorie Operazioni',
+            title: t('offer_operations.categories.breadcrumb'),
             href: offerOperationCategories.index().url,
         },
         {
-            title: 'Nuova Categoria Operazione',
+            title: t('offer_operations.categories.create.breadcrumb'),
             href: offerOperationCategories.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Nuova Categoria Operazione" />
+            <Head title={t('offer_operations.categories.create.page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
@@ -53,11 +55,14 @@ export default function OfferOperationCategoriesCreate({
                         <Card>
                             <CardHeader>
                                 <CardTitle>
-                                    Nuova Categoria Operazione
+                                    {t(
+                                        'offer_operations.categories.create.card_title',
+                                    )}
                                 </CardTitle>
                                 <CardDescription>
-                                    Compila i campi per creare una categoria
-                                    operazione.
+                                    {t(
+                                        'offer_operations.categories.create.card_description',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -82,7 +87,7 @@ export default function OfferOperationCategoriesCreate({
                                                             htmlFor="uuid"
                                                             required
                                                         >
-                                                            UUID
+                                                            {t('common.uuid')}
                                                         </FormLabel>
                                                         <Button
                                                             type="button"
@@ -93,7 +98,9 @@ export default function OfferOperationCategoriesCreate({
                                                             }
                                                             className="h-7 text-xs"
                                                         >
-                                                            Rigenera
+                                                            {t(
+                                                                'offer_operations.categories.uuid.regenerate',
+                                                            )}
                                                         </Button>
                                                     </div>
                                                     <Input
@@ -106,7 +113,9 @@ export default function OfferOperationCategoriesCreate({
                                                             )
                                                         }
                                                         required
-                                                        placeholder="UUID (es. 550e8400-e29b-41d4-a716-446655440000)"
+                                                        placeholder={t(
+                                                            'common.uuid_placeholder',
+                                                        )}
                                                         maxLength={36}
                                                         aria-describedby="uuid-help"
                                                     />
@@ -114,10 +123,9 @@ export default function OfferOperationCategoriesCreate({
                                                         id="uuid-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        UUID generato
-                                                        automaticamente. Puoi
-                                                        modificarlo manualmente
-                                                        se necessario.
+                                                        {t(
+                                                            'offer_operations.categories.uuid.help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.uuid}
@@ -129,13 +137,15 @@ export default function OfferOperationCategoriesCreate({
                                                         htmlFor="code"
                                                         required
                                                     >
-                                                        Codice
+                                                        {t('common.code')}
                                                     </FormLabel>
                                                     <Input
                                                         id="code"
                                                         name="code"
                                                         required
-                                                        placeholder="Codice Categoria"
+                                                        placeholder={t(
+                                                            'offer_operations.categories.code_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="code-help"
                                                     />
@@ -143,9 +153,9 @@ export default function OfferOperationCategoriesCreate({
                                                         id="code-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci il codice
-                                                        univoco della categoria
-                                                        (massimo 255 caratteri).
+                                                        {t(
+                                                            'offer_operations.categories.code_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.code}
@@ -157,13 +167,17 @@ export default function OfferOperationCategoriesCreate({
                                                         htmlFor="name"
                                                         required
                                                     >
-                                                        Nome
+                                                        {t(
+                                                            'offer_operations.categories.name_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="name"
                                                         name="name"
                                                         required
-                                                        placeholder="Nome Categoria"
+                                                        placeholder={t(
+                                                            'offer_operations.categories.name_placeholder',
+                                                        )}
                                                         maxLength={255}
                                                         aria-describedby="name-help"
                                                     />
@@ -171,9 +185,9 @@ export default function OfferOperationCategoriesCreate({
                                                         id="name-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        Inserisci il nome della
-                                                        categoria (massimo 255
-                                                        caratteri).
+                                                        {t(
+                                                            'offer_operations.categories.name_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={allErrors.name}
@@ -186,8 +200,12 @@ export default function OfferOperationCategoriesCreate({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Creando...'
-                                                            : 'Crea Categoria'}
+                                                            ? t(
+                                                                  'offer_operations.categories.create.submitting',
+                                                              )
+                                                            : t(
+                                                                  'offer_operations.categories.create.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -199,7 +217,7 @@ export default function OfferOperationCategoriesCreate({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

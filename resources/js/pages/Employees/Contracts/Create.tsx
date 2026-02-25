@@ -18,6 +18,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useTranslations } from '@/hooks/use-translations';
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
@@ -57,17 +58,7 @@ type ContractsCreateProps = {
     errors?: Record<string, string>;
 };
 
-const PAY_LEVEL_OPTIONS: { value: string; label: string }[] = [
-    { value: '0', label: 'D1 (ex 2a)' },
-    { value: '1', label: 'D2 (ex 3a)' },
-    { value: '2', label: 'C1 (ex 3a Super)' },
-    { value: '3', label: 'C2 (ex 4a)' },
-    { value: '4', label: 'C3 (ex 5a)' },
-    { value: '5', label: 'B1 (ex 5a Super)' },
-    { value: '6', label: 'B2 (ex 6a)' },
-    { value: '7', label: 'B3 (ex 7a)' },
-    { value: '8', label: 'A1 (ex 8a Quadri)' },
-];
+const PAY_LEVEL_VALUES = ['0', '1', '2', '3', '4', '5', '6', '7', '8'];
 
 export default function ContractsCreate({
     employees,
@@ -75,6 +66,7 @@ export default function ContractsCreate({
     prorogaContract,
     errors: serverErrors = {},
 }: ContractsCreateProps) {
+    const { t } = useTranslations();
     const [employeeUuid, setEmployeeUuid] = useState(
         prorogaContract?.employee_uuid ?? '',
     );
@@ -105,35 +97,35 @@ export default function ContractsCreate({
         payLevel !== '0';
 
     const employeeValidation = useFieldValidation(employeeUuid, [
-        validationRules.required('Il dipendente è obbligatorio'),
+        validationRules.required(t('validation.employee_required')),
     ]);
 
     const supplierValidation = useFieldValidation(supplierUuid, [
-        validationRules.required('Il datore di lavoro è obbligatorio'),
+        validationRules.required(t('validation.employer_required')),
     ]);
 
     const startDateValidation = useFieldValidation(startDate, [
-        validationRules.required('La data di inizio è obbligatoria'),
+        validationRules.required(t('validation.start_date_required')),
     ]);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Personale',
+            title: t('common.personnel'),
             href: employeesRoutes.index().url,
         },
         {
-            title: 'Contratti',
+            title: t('employees.contracts.breadcrumb_contracts'),
             href: employeesContractsRoutes.index().url,
         },
         {
-            title: 'Nuovo Contratto',
+            title: t('employees.contracts.create_page_title'),
             href: employeesContractsRoutes.create().url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Nuovo Contratto" />
+            <Head title={t('employees.contracts.create_page_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
@@ -142,35 +134,46 @@ export default function ContractsCreate({
                             <Button
                                 variant="outline"
                                 onClick={() => setShowCloseConfirm(true)}
-                                aria-label="Torna indietro"
+                                aria-label={t('employees.create.back_aria')}
                             >
                                 <ArrowLeft className="mr-2 h-4 w-4" />
-                                Indietro
+                                {t('common.back')}
                             </Button>
                         </div>
 
                         <FormValidationNotification
                             errors={validationErrors}
-                            message="Correggi gli errori nel modulo prima di salvare."
+                            message={t('common.validation_fix_errors')}
                             showOnSubmit={false}
                         />
 
                         <Card>
                             <CardHeader>
-                                <CardTitle>Nuovo Contratto</CardTitle>
+                                <CardTitle>
+                                    {t('employees.contracts.create_page_title')}
+                                </CardTitle>
                                 <CardDescription>
                                     {prorogaContract ? (
                                         <>
-                                            Nuovo contratto in proroga di{' '}
+                                            {t(
+                                                'employees.contracts.create_proroga_prefix',
+                                            )}{' '}
                                             {prorogaContract.employee_name ??
-                                                'dipendente'}
+                                                t(
+                                                    'employees.contracts.employee_fallback',
+                                                )}
                                             {prorogaContract.supplier_name &&
                                                 ` – ${prorogaContract.supplier_name}`}
-                                            . Data inizio suggerita:{' '}
+                                            .{' '}
+                                            {t(
+                                                'employees.contracts.create_proroga_suggested_start',
+                                            )}{' '}
                                             {prorogaContract.start_date}.
                                         </>
                                     ) : (
-                                        'Crea un nuovo contratto per un dipendente'
+                                        t(
+                                            'employees.contracts.create_card_description',
+                                        )
                                     )}
                                 </CardDescription>
                             </CardHeader>
@@ -195,7 +198,9 @@ export default function ContractsCreate({
                                                         htmlFor="employee_uuid"
                                                         required
                                                     >
-                                                        Dipendente
+                                                        {t(
+                                                            'employees.contracts.employee_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         value={employeeUuid}
@@ -221,7 +226,11 @@ export default function ContractsCreate({
                                                                     : 'false'
                                                             }
                                                         >
-                                                            <SelectValue placeholder="Seleziona un dipendente" />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'employees.contracts.edit_employee_placeholder',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {employees
@@ -272,7 +281,9 @@ export default function ContractsCreate({
                                                         htmlFor="supplier_uuid"
                                                         required
                                                     >
-                                                        Datore di Lavoro
+                                                        {t(
+                                                            'employees.contracts.edit_employer_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         value={supplierUuid}
@@ -298,7 +309,11 @@ export default function ContractsCreate({
                                                                     : 'false'
                                                             }
                                                         >
-                                                            <SelectValue placeholder="Seleziona un datore di lavoro" />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'employees.contracts.edit_employer_placeholder',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {suppliers
@@ -347,7 +362,9 @@ export default function ContractsCreate({
                                                             htmlFor="start_date"
                                                             required
                                                         >
-                                                            Data Inizio
+                                                            {t(
+                                                                'employees.contracts.edit_start_date_label',
+                                                            )}
                                                         </FormLabel>
                                                         <Input
                                                             id="start_date"
@@ -391,7 +408,9 @@ export default function ContractsCreate({
                                                     </div>
                                                     <div>
                                                         <FormLabel htmlFor="end_date">
-                                                            Data Fine
+                                                            {t(
+                                                                'employees.contracts.edit_end_date_label',
+                                                            )}
                                                         </FormLabel>
                                                         <Input
                                                             id="end_date"
@@ -414,10 +433,9 @@ export default function ContractsCreate({
                                                             id="end_date_help"
                                                             className="text-xs text-muted-foreground"
                                                         >
-                                                            Opzionale. Se non
-                                                            indicata, il
-                                                            contratto è a tempo
-                                                            indeterminato.
+                                                            {t(
+                                                                'employees.contracts.end_date_optional_help',
+                                                            )}
                                                         </p>
                                                         <InputError
                                                             message={
@@ -429,7 +447,9 @@ export default function ContractsCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="pay_level">
-                                                        Livello Retributivo
+                                                        {t(
+                                                            'employees.contracts.edit_pay_level_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         value={payLevel}
@@ -439,24 +459,26 @@ export default function ContractsCreate({
                                                     >
                                                         <SelectTrigger
                                                             id="pay_level"
-                                                            aria-label="Livello retributivo"
+                                                            aria-label={t(
+                                                                'employees.show.pay_level_label',
+                                                            )}
                                                         >
                                                             <SelectValue />
                                                         </SelectTrigger>
                                                         <SelectContent>
-                                                            {PAY_LEVEL_OPTIONS.map(
-                                                                (opt) => (
+                                                            {PAY_LEVEL_VALUES.map(
+                                                                (val) => (
                                                                     <SelectItem
                                                                         key={
-                                                                            opt.value
+                                                                            val
                                                                         }
                                                                         value={
-                                                                            opt.value
+                                                                            val
                                                                         }
                                                                     >
-                                                                        {
-                                                                            opt.label
-                                                                        }
+                                                                        {t(
+                                                                            `employees.contracts.pay_level_${val}`,
+                                                                        )}
                                                                     </SelectItem>
                                                                 ),
                                                             )}
@@ -491,8 +513,12 @@ export default function ContractsCreate({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Creando...'
-                                                            : 'Crea Contratto'}
+                                                            ? t(
+                                                                  'employees.contracts.create_saving',
+                                                              )
+                                                            : t(
+                                                                  'employees.contracts.create_submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -508,7 +534,7 @@ export default function ContractsCreate({
                                                                   )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>
@@ -528,8 +554,8 @@ export default function ContractsCreate({
                     setShowCloseConfirm(false);
                     router.visit(employeesContractsRoutes.index().url);
                 }}
-                title="Conferma chiusura"
-                description="Sei sicuro di voler uscire? I dati non salvati andranno persi."
+                title={t('common.confirm_close.title')}
+                description={t('common.confirm_close.description')}
             />
         </AppLayout>
     );

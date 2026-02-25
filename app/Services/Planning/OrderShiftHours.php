@@ -33,8 +33,8 @@ class OrderShiftHours
     public static function shiftModeLabels(): array
     {
         return [
-            self::SHIFT_MODE_GIORNATA => 'Giornata (8-16)',
-            self::SHIFT_MODE_TURNI => 'Turni (6-22)',
+            self::SHIFT_MODE_GIORNATA => __('planning.shift_mode.giornata'),
+            self::SHIFT_MODE_TURNI => __('planning.shift_mode.turni'),
         ];
     }
 

@@ -39,7 +39,7 @@ class ProductionPortalControllerTest extends TestCase
     {
         parent::setUp();
 
-        // Crear datos de prueba
+        // Create test data
         $this->customer = Customer::factory()->create(['removed' => false]);
         $this->division = CustomerDivision::factory()->create([
             'customer_uuid' => $this->customer->uuid,
@@ -58,7 +58,7 @@ class ProductionPortalControllerTest extends TestCase
         $this->article = Article::factory()->create([
             'offer_uuid' => $this->offer->uuid,
             'pallet_uuid' => $this->palletType->uuid,
-            'plan_packaging' => 10, // 10 piezas por pallet
+            'plan_packaging' => 10, // 10 pieces per pallet
             'pallet_plans' => 1,
             'removed' => false,
         ]);
@@ -72,7 +72,7 @@ class ProductionPortalControllerTest extends TestCase
         ]);
         $this->employee = Employee::factory()->create([
             'portal_enabled' => true,
-            'password' => hash('sha512', 'password123'), // SHA512 como espera verifyPassword()
+            'password' => hash('sha512', 'password123'), // SHA512 as expected by verifyPassword()
             'removed' => false,
         ]);
     }
@@ -118,7 +118,7 @@ class ProductionPortalControllerTest extends TestCase
                 'autocontrollo' => 0,
             ]);
 
-        // Verificar que se creó el token
+        // Verify the token was created
         $this->assertDatabaseHas('employeeportaltoken', [
             'employee_uuid' => $this->employee->uuid,
         ]);
@@ -198,7 +198,7 @@ class ProductionPortalControllerTest extends TestCase
                 'ok' => 1,
             ]);
 
-        // Verificar que se creó el token
+        // Verify the token was created
         $this->assertDatabaseHas('employeeportaltoken', [
             'employee_uuid' => $this->employee->uuid,
         ]);
@@ -272,13 +272,13 @@ class ProductionPortalControllerTest extends TestCase
             ])
             ->assertJson(['ok' => 1]);
 
-        // Verificar que se creó el procesamiento
+        // Verify the processing was created
         $this->assertDatabaseHas('productionorderprocessing', [
             'employee_uuid' => $this->employee->uuid,
             'order_uuid' => $this->order->uuid,
         ]);
 
-        // Verificar que se actualizó worked_quantity
+        // Verify worked_quantity was updated
         $this->order->refresh();
         $this->assertGreaterThan(0, $this->order->worked_quantity);
     }
@@ -297,7 +297,7 @@ class ProductionPortalControllerTest extends TestCase
 
         $response->assertStatus(200);
 
-        // Verificar que el estado cambió a IN_AVANZAMENTO
+        // Verify state changed to IN_AVANZAMENTO
         $this->order->refresh();
         $this->assertEquals(Order::STATUS_IN_AVANZAMENTO, $this->order->status);
     }
@@ -320,7 +320,7 @@ class ProductionPortalControllerTest extends TestCase
             ])
             ->assertJson(['ok' => 1]);
 
-        // Verificar que se creó el procesamiento
+        // Verify the processing was created
         $this->assertDatabaseHas('productionorderprocessing', [
             'employee_uuid' => $this->employee->uuid,
             'order_uuid' => $this->order->uuid,
@@ -355,7 +355,7 @@ class ProductionPortalControllerTest extends TestCase
         $response->assertStatus(200)
             ->assertJson(['ok' => 1]);
 
-        // Verificar que el estado cambió a SOSPESO
+        // Verify state changed to SOSPESO
         $this->order->refresh();
         $this->assertEquals(Order::STATUS_SOSPESO, $this->order->status);
         $this->assertEquals('Autocontrollo Non Superato', $this->order->motivazione);
@@ -376,7 +376,7 @@ class ProductionPortalControllerTest extends TestCase
         $response->assertStatus(200)
             ->assertJson(['ok' => 1]);
 
-        // Verificar que autocontrollo se marcó como true
+        // Verify autocontrollo was set to true
         $this->order->refresh();
         $this->assertTrue($this->order->autocontrollo);
     }
@@ -386,7 +386,7 @@ class ProductionPortalControllerTest extends TestCase
     {
         $token = $this->createValidToken();
 
-        // Crear otra orden en estado válido
+        // Create another order in valid state
         $order2 = Order::factory()->create([
             'article_uuid' => $this->article->uuid,
             'customershippingaddress_uuid' => $this->shippingAddress->uuid,
@@ -417,7 +417,7 @@ class ProductionPortalControllerTest extends TestCase
             ->assertJson(['ok' => 1]);
 
         $orders = $response->json('order');
-        $this->assertCount(2, $orders); // Debe incluir ambas órdenes
+        $this->assertCount(2, $orders); // Should include both orders
     }
 
     #[Test]
@@ -425,7 +425,7 @@ class ProductionPortalControllerTest extends TestCase
     {
         $token = $this->createValidToken();
 
-        // Crear orden en estado no válido
+        // Create order in invalid state
         $order2 = Order::factory()->create([
             'article_uuid' => $this->article->uuid,
             'customershippingaddress_uuid' => $this->shippingAddress->uuid,
@@ -440,7 +440,7 @@ class ProductionPortalControllerTest extends TestCase
         $response->assertStatus(200);
         $orders = $response->json('order');
 
-        // Solo debe incluir órdenes con status 2 o 3
+        // Should only include orders with status 2 or 3
         $orderUuids = collect($orders)->pluck('uuid')->toArray();
         $this->assertContains($this->order->uuid, $orderUuids);
         $this->assertNotContains($order2->uuid, $orderUuids);
@@ -491,7 +491,7 @@ class ProductionPortalControllerTest extends TestCase
             'order_uuid' => $this->order->uuid,
         ]);
 
-        // Laravel valida primero y devuelve 422 (validation error)
+        // Laravel validates first and returns 422 (validation error)
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['token']);
     }
@@ -499,11 +499,11 @@ class ProductionPortalControllerTest extends TestCase
     #[Test]
     public function it_rejects_requests_with_expired_token()
     {
-        // Crear token expirado (más de 6 meses)
-        $expiredTimestamp = time() - (7 * 30 * 24 * 60 * 60); // 7 meses atrás
+        // Create expired token (more than 6 months)
+        $expiredTimestamp = time() - (7 * 30 * 24 * 60 * 60); // 7 months ago
         $token = base64_encode(\Illuminate\Support\Str::random(32).'|'.$expiredTimestamp);
 
-        // Insertar directamente en la base de datos con fecha expirada (más de 6 meses)
+        // Insert directly into database with expired date (more than 6 months)
         $expiredDate = now()->subMonths(7);
         \Illuminate\Support\Facades\DB::table('employeeportaltoken')->insert([
             'uuid' => \Illuminate\Support\Str::uuid()->toString(),

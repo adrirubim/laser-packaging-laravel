@@ -21,6 +21,7 @@ Artisan::command('test:all', function () {
 
     if ($result->failed()) {
         $this->error('PHP tests failed.');
+
         return $result->exitCode();
     }
 
@@ -33,10 +34,12 @@ Artisan::command('test:all', function () {
 
     if ($resultFrontend->failed()) {
         $this->error('Frontend tests failed.');
+
         return $resultFrontend->exitCode();
     }
 
     $this->newLine();
     $this->info('All tests passed.');
+
     return 0;
 })->purpose('Run PHPUnit and Vitest (Planning/frontend tests)');

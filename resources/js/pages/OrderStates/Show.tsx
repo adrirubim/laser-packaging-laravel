@@ -8,6 +8,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import orderStates from '@/routes/order-states/index';
 import { type BreadcrumbItem } from '@/types';
@@ -29,12 +30,13 @@ type OrderStatesShowProps = {
 };
 
 export default function OrderStatesShow({ orderState }: OrderStatesShowProps) {
+    const { t } = useTranslations();
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Stati Ordine',
+            title: t('order_states.page_title'),
             href: orderStates.index().url,
         },
         {
@@ -61,7 +63,11 @@ export default function OrderStatesShow({ orderState }: OrderStatesShowProps) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Stato Ordine ${orderState.name}`} />
+            <Head
+                title={t('order_states.show.page_title', {
+                    name: orderState.name,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
@@ -80,7 +86,7 @@ export default function OrderStatesShow({ orderState }: OrderStatesShowProps) {
                                 }
                             >
                                 <Edit className="mr-2 h-4 w-4" />
-                                Modifica
+                                {t('common.edit')}
                             </Link>
                         </Button>
                         <Button
@@ -89,7 +95,7 @@ export default function OrderStatesShow({ orderState }: OrderStatesShowProps) {
                             disabled={isDeleting}
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Elimina
+                            {t('common.delete')}
                         </Button>
                     </div>
                 </div>
@@ -97,15 +103,17 @@ export default function OrderStatesShow({ orderState }: OrderStatesShowProps) {
                 <div className="grid gap-4 md:grid-cols-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Dettagli Stato Ordine</CardTitle>
+                            <CardTitle>
+                                {t('order_states.show.card_title')}
+                            </CardTitle>
                             <CardDescription>
-                                Informazioni su questo stato ordine
+                                {t('order_states.show.card_description')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    Nome
+                                    {t('order_states.name')}
                                 </Label>
                                 <p className="text-lg font-semibold">
                                     {orderState.name}
@@ -114,7 +122,7 @@ export default function OrderStatesShow({ orderState }: OrderStatesShowProps) {
 
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    Ordinamento
+                                    {t('order_states.sorting')}
                                 </Label>
                                 <p className="text-lg font-semibold">
                                     {orderState.sorting}
@@ -123,16 +131,16 @@ export default function OrderStatesShow({ orderState }: OrderStatesShowProps) {
 
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    Stato Iniziale
+                                    {t('order_states.initial_state_label')}
                                 </Label>
                                 <p>
                                     {orderState.initial ? (
                                         <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-300">
-                                            Sì
+                                            {t('common.yes')}
                                         </span>
                                     ) : (
                                         <span className="text-muted-foreground">
-                                            No
+                                            {t('common.no')}
                                         </span>
                                     )}
                                 </p>
@@ -140,16 +148,16 @@ export default function OrderStatesShow({ orderState }: OrderStatesShowProps) {
 
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    Stato Produzione
+                                    {t('order_states.production_state_label')}
                                 </Label>
                                 <p>
                                     {orderState.production ? (
                                         <span className="inline-flex items-center rounded-full bg-blue-500/10 px-2 py-1 text-xs font-medium text-blue-700 dark:text-blue-300">
-                                            Sì
+                                            {t('common.yes')}
                                         </span>
                                     ) : (
                                         <span className="text-muted-foreground">
-                                            No
+                                            {t('common.no')}
                                         </span>
                                     )}
                                 </p>
@@ -157,7 +165,7 @@ export default function OrderStatesShow({ orderState }: OrderStatesShowProps) {
 
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    UUID
+                                    {t('order_states.uuid_column')}
                                 </Label>
                                 <p className="font-mono text-sm">
                                     {orderState.uuid}
@@ -166,7 +174,7 @@ export default function OrderStatesShow({ orderState }: OrderStatesShowProps) {
 
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    ID
+                                    {t('common.id')}
                                 </Label>
                                 <p className="text-sm">{orderState.id}</p>
                             </div>
@@ -179,14 +187,8 @@ export default function OrderStatesShow({ orderState }: OrderStatesShowProps) {
                 onOpenChange={setDeleteDialogOpen}
                 onConfirm={handleDeleteConfirm}
                 isDeleting={isDeleting}
-                title="Conferma eliminazione"
-                description={
-                    <>
-                        Sei sicuro di voler eliminare questo stato ordine?
-                        Questa azione non può essere annullata. Lo stato verrà
-                        eliminato definitivamente.
-                    </>
-                }
+                title={t('common.confirm_delete')}
+                description={t('order_states.show.delete_description')}
                 itemName={orderState.name}
             />
         </AppLayout>

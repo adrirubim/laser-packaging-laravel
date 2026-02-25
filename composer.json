@@ -62,6 +62,13 @@
             "@php artisan config:clear --ansi",
             "@php artisan test"
         ],
+        "test:parallel": [
+            "@php artisan config:clear --ansi",
+            "@php artisan test --parallel --exclude-group=load"
+        ],
+        "test:load": [
+            "@php artisan test --group=load"
+        ],
         "i18n:check": [
             "@php scripts/i18n-check.php"
         ],

@@ -57,7 +57,7 @@ class OrderController extends Controller
     public function index(Request $request): Response
     {
         $orders = $this->orderRepository->getForIndex($request);
-        // Para el filtro, solo mostrar artículos que tienen órdenes
+        // For filter, only show articles that have orders
         $formOptions = $this->orderRepository->getFormOptions(onlyWithOrders: true);
 
         return Inertia::render('Orders/Index', [
@@ -79,10 +79,10 @@ class OrderController extends Controller
         $article = $this->orderRepository->getArticleForForm($articleUuid);
         $shippingAddresses = $this->orderRepository->getShippingAddressesForArticle($articleUuid);
 
-        // Generare numero di produzione automaticamente
+        // Generate production number automatically
         $productionNumber = $this->orderProductionNumberService->generateNext();
 
-        // Precompilare indirizzo di consegna quando ce n'è solo uno (flusso Crea Ordine da Articoli)
+        // Prefill delivery address when there is only one (Create Order from Articles flow)
         $initialShippingAddressUuid = $shippingAddresses->count() === 1
             ? $shippingAddresses->first()->uuid
             : null;
@@ -109,7 +109,7 @@ class OrderController extends Controller
     {
         $result = $this->createOrderAction->execute($request->validated());
 
-        // Se l'action restituisce un errore, reindirizzare con errori
+        // If action returns error, redirect with errors
         if (is_array($result) && isset($result['error']) && $result['error']) {
             return back()->withErrors([
                 $result['field'] => $result['message'],
@@ -117,7 +117,7 @@ class OrderController extends Controller
         }
 
         return redirect()->route('orders.index')
-            ->with('success', 'Ordine creato con successo.');
+            ->with('success', __('flash.order.created'));
     }
 
     /**
@@ -136,7 +136,7 @@ class OrderController extends Controller
             'shippingAddress.customerDivision.customer',
         ]);
 
-        // Calcolare remain_quantity
+        // Calculate remain_quantity
         $order->remain_quantity = $order->quantity - ($order->worked_quantity ?? 0);
 
         return Inertia::render('Orders/Show', [
@@ -188,7 +188,7 @@ class OrderController extends Controller
         }
 
         return redirect()->route('orders.index')
-            ->with('success', 'Ordine aggiornato con successo.');
+            ->with('success', __('flash.order.updated'));
     }
 
     /**
@@ -199,7 +199,7 @@ class OrderController extends Controller
         $order->update(['removed' => true]);
 
         return redirect()->route('orders.index')
-            ->with('success', 'Ordine eliminato con successo.');
+            ->with('success', __('flash.order.deleted'));
     }
 
     /**
@@ -208,7 +208,7 @@ class OrderController extends Controller
     public function productionAdvancements(Request $request): Response
     {
         $orders = $this->orderRepository->getForProductionAdvancements($request);
-        // Para el filtro, solo mostrar artículos que tienen órdenes en estado 2 (Lanciato) o 3 (In Avanzamento)
+        // For filter, only show articles with orders in status 2 (Lanciato) or 3 (In Avanzamento)
         $formOptions = $this->orderRepository->getFormOptions(onlyWithOrders: true, statusFilter: [OrderStatus::LANCIATO->value, OrderStatus::IN_AVANZAMENTO->value]);
 
         return Inertia::render('Orders/ProductionAdvancements', [
@@ -287,7 +287,7 @@ class OrderController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Semaforo salvato con successo.',
+                'message' => __('flash.semaforo_saved'),
                 'all_green' => $allGreen,
                 'can_change_to_lanciato' => $allGreen && $order->status === OrderStatus::IN_ALLESTIMENTO->value,
             ]);
@@ -299,7 +299,7 @@ class OrderController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nel salvataggio del semaforo.',
+                'message' => __('flash.semaforo_error'),
             ], 500);
         }
     }
@@ -318,7 +318,7 @@ class OrderController extends Controller
             if (! $validTransition) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Transizione di stato non valida.',
+                    'message' => __('flash.invalid_state_transition'),
                 ], 400);
             }
 
@@ -338,7 +338,7 @@ class OrderController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Stato ordine aggiornato con successo.',
+                'message' => __('flash.order_state_updated'),
                 'order' => $order->fresh(),
             ]);
         } catch (\Exception $e) {
@@ -350,7 +350,7 @@ class OrderController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Errore nell\'aggiornamento dello stato.',
+                'message' => __('flash.order_state_error'),
             ], 500);
         }
     }
@@ -360,7 +360,7 @@ class OrderController extends Controller
      */
     protected function isValidStatusTransition(int $currentStatus, int $newStatus): bool
     {
-        // Si la orden ya está en SALDATO, no se permite ningún cambio de estado
+        // If order is already SALDATO, no status change is allowed
         if ($currentStatus === OrderStatus::SALDATO->value) {
             return false;
         }
@@ -439,7 +439,7 @@ class OrderController extends Controller
             $pdf = shell_exec($command);
 
             if (empty($pdf)) {
-                throw new \Exception('Errore nella generazione del PDF. Verifica che wkhtmltopdf sia installato correttamente.');
+                throw new \Exception(__('flash.wkhtmltopdf_error'));
             }
 
             // Clean up temporary file
@@ -459,7 +459,7 @@ class OrderController extends Controller
             ]);
 
             return response()->json([
-                'error' => 'Errore nella generazione del codice a barre: '.$e->getMessage(),
+                'error' => __('flash.barcode_error').': '.$e->getMessage(),
             ], 500);
         }
     }
@@ -484,7 +484,7 @@ class OrderController extends Controller
             ]);
 
             if (! $order->article) {
-                throw new \Exception('Articolo non trovato per questo ordine.');
+                throw new \Exception(__('flash.article_not_found_for_order'));
             }
 
             $article = $order->article;
@@ -561,7 +561,7 @@ class OrderController extends Controller
             $pdf = shell_exec($command);
 
             if (empty($pdf)) {
-                throw new \Exception('Errore nella generazione del PDF. Verifica che wkhtmltopdf sia installato correttamente.');
+                throw new \Exception(__('flash.wkhtmltopdf_error'));
             }
 
             // Clean up temporary file
@@ -581,7 +581,7 @@ class OrderController extends Controller
             ]);
 
             return response()->json([
-                'error' => 'Errore nella generazione del PDF di autocontrollo: '.$e->getMessage(),
+                'error' => __('flash.autocontrollo_pdf_error').': '.$e->getMessage(),
             ], 500);
         }
     }
@@ -609,9 +609,9 @@ class OrderController extends Controller
 
         // Map values to labels (simplified - adjust based on your actual enum/constants)
         $labels = [
-            0 => 'No',
-            1 => 'Sì',
-            2 => 'Parziale',
+            0 => __('common.no'),
+            1 => __('common.yes'),
+            2 => __('common.partial'),
         ];
 
         return $labels[$value] ?? (string) $value;

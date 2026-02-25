@@ -6,6 +6,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { useTranslations } from '@/hooks/use-translations';
 import { regenerateRecoveryCodes } from '@/routes/two-factor/index';
 import { Form } from '@inertiajs/react';
 import { Eye, EyeOff, LockKeyhole, RefreshCw } from 'lucide-react';
@@ -23,6 +24,7 @@ export default function TwoFactorRecoveryCodes({
     fetchRecoveryCodes,
     errors,
 }: TwoFactorRecoveryCodesProps) {
+    const { t } = useTranslations();
     const [codesAreVisible, setCodesAreVisible] = useState<boolean>(false);
     const codesSectionRef = useRef<HTMLDivElement | null>(null);
     const canRegenerateCodes = recoveryCodesList.length > 0 && codesAreVisible;
@@ -57,12 +59,10 @@ export default function TwoFactorRecoveryCodes({
             <CardHeader>
                 <CardTitle className="flex gap-3">
                     <LockKeyhole className="size-4" aria-hidden="true" />
-                    Codici di recupero 2FA
+                    {t('auth.two_factor.recovery_codes_title')}
                 </CardTitle>
                 <CardDescription>
-                    I codici di recupero permettono di riottenere l'accesso se
-                    perdi il dispositivo 2FA. Conservali in un gestore di
-                    password sicuro.
+                    {t('auth.two_factor.recovery_codes_description')}
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -77,8 +77,9 @@ export default function TwoFactorRecoveryCodes({
                             className="size-4"
                             aria-hidden="true"
                         />
-                        {codesAreVisible ? 'Nascondi' : 'Mostra'} codici di
-                        recupero
+                        {codesAreVisible
+                            ? t('auth.two_factor.hide_recovery_codes')
+                            : t('auth.two_factor.show_recovery_codes')}
                     </Button>
 
                     {canRegenerateCodes && (
@@ -94,7 +95,10 @@ export default function TwoFactorRecoveryCodes({
                                     disabled={processing}
                                     aria-describedby="regenerate-warning"
                                 >
-                                    <RefreshCw /> Rigenera codici
+                                    <RefreshCw />{' '}
+                                    {t(
+                                        'auth.two_factor.regenerate_recovery_codes',
+                                    )}
                                 </Button>
                             )}
                         </Form>
@@ -114,7 +118,9 @@ export default function TwoFactorRecoveryCodes({
                                     ref={codesSectionRef}
                                     className="grid gap-1 rounded-lg bg-muted p-4 font-mono text-sm"
                                     role="list"
-                                    aria-label="Codici di recupero"
+                                    aria-label={t(
+                                        'auth.two_factor.recovery_codes_list_aria',
+                                    )}
                                 >
                                     {recoveryCodesList.length ? (
                                         recoveryCodesList.map((code, index) => (
@@ -129,7 +135,9 @@ export default function TwoFactorRecoveryCodes({
                                     ) : (
                                         <div
                                             className="space-y-2"
-                                            aria-label="Caricamento codici di recupero"
+                                            aria-label={t(
+                                                'auth.two_factor.recovery_codes_loading_aria',
+                                            )}
                                         >
                                             {Array.from(
                                                 { length: 8 },
@@ -147,14 +155,9 @@ export default function TwoFactorRecoveryCodes({
 
                                 <div className="text-xs text-muted-foreground select-none">
                                     <p id="regenerate-warning">
-                                        Ogni codice di recupero può essere usato
-                                        una sola volta per accedere al tuo
-                                        account e verrà rimosso dopo l'uso. Se
-                                        ne servono altri, clicca su{' '}
-                                        <span className="font-bold">
-                                            Rigenera codici
-                                        </span>{' '}
-                                        sopra.
+                                        {t(
+                                            'auth.two_factor.recovery_codes_warning',
+                                        )}
                                     </p>
                                 </div>
                             </>

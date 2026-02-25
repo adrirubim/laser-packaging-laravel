@@ -34,7 +34,7 @@ class UpdateEmployeeRequest extends FormRequest
                         ->where('removed', false)
                         ->exists();
                     if ($exists) {
-                        $fail('Il numero di matricola esiste già.');
+                        $fail(__('validation.matriculation_exists'));
                     }
                 },
             ],

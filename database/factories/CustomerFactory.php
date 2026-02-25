@@ -47,12 +47,12 @@ class CustomerFactory extends Factory
                 'Reparto Vendite',
                 'Ufficio Commerciale',
             ]),
-            // Generare sempre indirizzo completo
+            // Always generate full address
             'street' => $this->faker->streetAddress(),
             // CAP: 5 cifre numeriche (formato italiano corretto)
             'postal_code' => $this->faker->numerify('#####'), // 5 cifre
             'city' => $this->faker->city(),
-            // Provincia: codice di 2 lettere (formato italiano corretto)
+            // Province: 2-letter code (correct Italian format)
             'province' => $this->faker->randomElement($italianProvinces),
             'country' => $this->faker->country(),
             'removed' => false,

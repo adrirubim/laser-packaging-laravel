@@ -22,10 +22,10 @@ class MachineryFactory extends Factory
         return [
             'uuid' => \Illuminate\Support\Str::uuid()->toString(),
             'cod' => $this->faker->unique()->bothify('MCH-???'),
-            // Generare sempre descrizione
+            // Always generate description
             'description' => $this->faker->sentence(),
             'parameter' => $this->faker->word(),
-            'value_type_uuid' => null, // Verrà assegnato nel seeder
+            'value_type_uuid' => null, // Will be assigned in seeder
             'removed' => false,
         ];
     }

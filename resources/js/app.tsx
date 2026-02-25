@@ -24,10 +24,21 @@ createInertiaApp({
     },
     setup({ el, App, props }) {
         const root = createRoot(el);
+        const translations =
+            (
+                props as {
+                    initialPage?: {
+                        props?: { translations?: Record<string, string> };
+                    };
+                }
+            )?.initialPage?.props?.translations ??
+            (props as { translations?: Record<string, string> })
+                ?.translations ??
+            {};
 
         root.render(
             <StrictMode>
-                <ErrorBoundary>
+                <ErrorBoundary translations={translations}>
                     <>
                         <App {...props} />
                         <Toaster richColors closeButton position="top-right" />

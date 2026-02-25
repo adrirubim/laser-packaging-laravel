@@ -50,17 +50,17 @@ class LsResourceController extends Controller
             'code' => 'required|string|max:255|unique:offerlsresource,code',
             'name' => 'nullable|string|max:255',
         ], [
-            'uuid.required' => 'L\'UUID è obbligatorio.',
-            'uuid.uuid' => 'L\'UUID deve essere un formato UUID valido.',
-            'uuid.unique' => 'Questo UUID è già utilizzato.',
-            'code.required' => 'Il Codice è obbligatorio.',
-            'code.unique' => 'Questo Codice è già utilizzato.',
+            'uuid.required' => __('validation.uuid_required'),
+            'uuid.uuid' => __('validation.uuid_format'),
+            'uuid.unique' => __('validation.uuid_unique'),
+            'code.required' => __('validation.code_required'),
+            'code.unique' => __('validation.code_unique'),
         ]);
 
         LsResource::create($validated);
 
         return redirect()->route('ls-resources.index')
-            ->with('success', 'Risorsa L&S creata con successo.');
+            ->with('success', __('flash.ls_resource.created'));
     }
 
     public function show(LsResource $lsResource): Response
@@ -84,19 +84,19 @@ class LsResourceController extends Controller
             'code' => 'required|string|max:255|unique:offerlsresource,code,'.$lsResource->id,
             'name' => 'nullable|string|max:255',
         ], [
-            'uuid.uuid' => 'L\'UUID deve essere un formato UUID valido.',
-            'uuid.unique' => 'Questo UUID è già utilizzato.',
-            'code.required' => 'Il Codice è obbligatorio.',
-            'code.unique' => 'Questo Codice è già utilizzato.',
+            'uuid.uuid' => __('validation.uuid_format'),
+            'uuid.unique' => __('validation.uuid_unique'),
+            'code.required' => __('validation.code_required'),
+            'code.unique' => __('validation.code_unique'),
         ]);
 
         $lsResource->update($validated);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->offerRepository->clearFormOptionsCache();
 
         return redirect()->route('ls-resources.index')
-            ->with('success', 'Risorsa L&S aggiornata con successo.');
+            ->with('success', __('flash.ls_resource.updated'));
     }
 
     public function destroy(LsResource $lsResource)
@@ -104,6 +104,6 @@ class LsResourceController extends Controller
         $lsResource->update(['removed' => true]);
 
         return redirect()->route('ls-resources.index')
-            ->with('success', 'Risorsa L&S eliminata con successo.');
+            ->with('success', __('flash.ls_resource.deleted'));
     }
 }

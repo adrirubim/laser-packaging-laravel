@@ -65,7 +65,7 @@ class SupplierController extends Controller
         $supplier = Supplier::create($validated);
 
         return redirect()->route('suppliers.index')
-            ->with('success', 'Fornitore creato con successo.');
+            ->with('success', __('flash.supplier.created'));
     }
 
     /**
@@ -96,7 +96,7 @@ class SupplierController extends Controller
         $supplier->update($request->validated());
 
         return redirect()->route('suppliers.index')
-            ->with('success', 'Fornitore aggiornato con successo.');
+            ->with('success', __('flash.supplier.updated'));
     }
 
     /**
@@ -107,6 +107,6 @@ class SupplierController extends Controller
         $supplier->update(['removed' => true]);
 
         return redirect()->route('suppliers.index')
-            ->with('success', 'Fornitore eliminato con successo.');
+            ->with('success', __('flash.supplier.deleted'));
     }
 }

@@ -61,11 +61,11 @@ class CustomerDivisionController extends Controller
     {
         $division = CustomerDivision::create($request->validated());
 
-        // Invalidare cache
+        // Invalidate cache
         $this->repository->clearCache($division->customer_uuid);
 
         return redirect()->route('customer-divisions.index')
-            ->with('success', 'Divisione creata con successo.');
+            ->with('success', __('flash.customer_division.created'));
     }
 
     /**
@@ -103,14 +103,14 @@ class CustomerDivisionController extends Controller
         $oldCustomerUuid = $customerDivision->customer_uuid;
         $customerDivision->update($request->validated());
 
-        // Invalidare cache (sia del cliente precedente che del nuovo se è cambiato)
+        // Invalidate cache (both previous and new customer if changed)
         $this->repository->clearCache($oldCustomerUuid);
         if ($oldCustomerUuid !== $customerDivision->customer_uuid) {
             $this->repository->clearCache($customerDivision->customer_uuid);
         }
 
         return redirect()->route('customer-divisions.index')
-            ->with('success', 'Divisione aggiornata con successo.');
+            ->with('success', __('flash.customer_division.updated'));
     }
 
     /**
@@ -118,27 +118,27 @@ class CustomerDivisionController extends Controller
      */
     public function destroy(CustomerDivision $customerDivision)
     {
-        // Verificare se ha indirizzi di spedizione attivi
+        // Verify if has active shipping addresses
         if ($customerDivision->shippingAddresses()->where('removed', false)->exists()) {
             return back()->withErrors([
-                'error' => 'Non è possibile eliminare la divisione. Ha indirizzi di spedizione associati.',
+                'error' => __('flash.cannot_delete_division_addresses'),
             ]);
         }
 
-        // Verificare se ha offerte attive
+        // Verify if has active offers
         if ($customerDivision->offers()->where('removed', false)->exists()) {
             return back()->withErrors([
-                'error' => 'Non è possibile eliminare la divisione. Ha offerte associate.',
+                'error' => __('flash.cannot_delete_division_offers'),
             ]);
         }
 
         $customerUuid = $customerDivision->customer_uuid;
         $customerDivision->update(['removed' => true]);
 
-        // Invalidare cache
+        // Invalidate cache
         $this->repository->clearCache($customerUuid);
 
         return redirect()->route('customer-divisions.index')
-            ->with('success', 'Divisione eliminata con successo.');
+            ->with('success', __('flash.customer_division.deleted'));
     }
 }

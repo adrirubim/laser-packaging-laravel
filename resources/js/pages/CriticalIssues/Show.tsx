@@ -18,6 +18,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import criticalIssues from '@/routes/critical-issues/index';
 import { type BreadcrumbItem } from '@/types';
@@ -46,11 +47,12 @@ type CriticalIssuesShowProps = {
 export default function CriticalIssuesShow({
     criticalIssue,
 }: CriticalIssuesShowProps) {
+    const { t } = useTranslations();
     const [isDeleting, setIsDeleting] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Criticità',
+            title: t('critical_issues.breadcrumb'),
             href: criticalIssues.index().url,
         },
         {
@@ -77,7 +79,11 @@ export default function CriticalIssuesShow({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Criticità: ${criticalIssue.name}`} />
+            <Head
+                title={t('critical_issues.show.page_title', {
+                    name: criticalIssue.name,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between gap-3">
@@ -87,7 +93,7 @@ export default function CriticalIssuesShow({
                             {criticalIssue.name}
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Dettagli della criticità
+                            {t('critical_issues.show.subtitle')}
                         </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -100,7 +106,7 @@ export default function CriticalIssuesShow({
                         >
                             <Button variant="outline" size="sm">
                                 <Edit className="mr-2 h-4 w-4" />
-                                Modifica
+                                {t('common.edit')}
                             </Button>
                         </Link>
                         <AlertDialog>
@@ -111,36 +117,40 @@ export default function CriticalIssuesShow({
                                     disabled={isDeleting}
                                 >
                                     <Trash2 className="mr-2 h-4 w-4" />
-                                    {isDeleting ? 'Eliminando...' : 'Elimina'}
+                                    {isDeleting
+                                        ? t('common.deleting')
+                                        : t('common.delete')}
                                 </Button>
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                                 <AlertDialogHeader>
                                     <AlertDialogTitle>
-                                        Elimina Criticità
+                                        {t('critical_issues.show.delete_title')}
                                     </AlertDialogTitle>
                                     <AlertDialogDescription>
-                                        Sei sicuro di voler eliminare la
-                                        criticità "{criticalIssue.name}"? Questa
-                                        azione non può essere annullata.
+                                        {t(
+                                            'critical_issues.show.delete_description',
+                                            { name: criticalIssue.name },
+                                        )}
                                         {criticalIssue.articles &&
                                             criticalIssue.articles.length >
                                                 0 && (
                                                 <span className="mt-2 block text-amber-600 dark:text-amber-400">
-                                                    Attenzione: questa criticità
-                                                    è associata a{' '}
-                                                    {
-                                                        criticalIssue.articles
-                                                            .length
-                                                    }{' '}
-                                                    articolo/i.
+                                                    {t(
+                                                        'critical_issues.show.delete_warning_articles',
+                                                        {
+                                                            count: criticalIssue
+                                                                .articles
+                                                                .length,
+                                                        },
+                                                    )}
                                                 </span>
                                             )}
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
                                     <AlertDialogCancel>
-                                        Annulla
+                                        {t('common.cancel')}
                                     </AlertDialogCancel>
                                     <AlertDialogAction
                                         onClick={handleDelete}
@@ -148,8 +158,8 @@ export default function CriticalIssuesShow({
                                         disabled={isDeleting}
                                     >
                                         {isDeleting
-                                            ? 'Eliminando...'
-                                            : 'Elimina'}
+                                            ? t('common.deleting')
+                                            : t('common.delete')}
                                     </AlertDialogAction>
                                 </AlertDialogFooter>
                             </AlertDialogContent>
@@ -160,15 +170,17 @@ export default function CriticalIssuesShow({
                 <div className="grid gap-4 md:grid-cols-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Informazioni Generali</CardTitle>
+                            <CardTitle>
+                                {t('critical_issues.show.details_title')}
+                            </CardTitle>
                             <CardDescription>
-                                Dati principali della criticità
+                                {t('critical_issues.show.details_subtitle')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="grid gap-2">
                                 <Label className="text-xs text-muted-foreground">
-                                    ID
+                                    {t('critical_issues.show.fields.id')}
                                 </Label>
                                 <div className="font-mono text-sm">
                                     {criticalIssue.id}
@@ -176,7 +188,7 @@ export default function CriticalIssuesShow({
                             </div>
                             <div className="grid gap-2">
                                 <Label className="text-xs text-muted-foreground">
-                                    UUID
+                                    {t('critical_issues.show.fields.uuid')}
                                 </Label>
                                 <div className="font-mono text-sm break-all">
                                     {criticalIssue.uuid}
@@ -184,7 +196,7 @@ export default function CriticalIssuesShow({
                             </div>
                             <div className="grid gap-2">
                                 <Label className="text-xs text-muted-foreground">
-                                    Nome
+                                    {t('critical_issues.show.fields.name')}
                                 </Label>
                                 <div className="text-sm font-medium">
                                     {criticalIssue.name}
@@ -197,10 +209,19 @@ export default function CriticalIssuesShow({
                         criticalIssue.articles.length > 0 && (
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Articoli Associati</CardTitle>
+                                    <CardTitle>
+                                        {t(
+                                            'critical_issues.show.articles_title',
+                                        )}
+                                    </CardTitle>
                                     <CardDescription>
-                                        {criticalIssue.articles.length}{' '}
-                                        articolo/i con questa criticità
+                                        {t(
+                                            'critical_issues.show.articles_count',
+                                            {
+                                                count: criticalIssue.articles
+                                                    .length,
+                                            },
+                                        )}
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>

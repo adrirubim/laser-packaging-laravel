@@ -56,11 +56,11 @@ class OfferTypeController extends Controller
     {
         OfferType::create($request->validated());
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->offerRepository->clearFormOptionsCache();
 
         return redirect()->route('offer-types.index')
-            ->with('success', 'Tipo di offerta creato con successo.');
+            ->with('success', __('flash.offer_type.created'));
     }
 
     public function show(OfferType $offerType): Response
@@ -81,28 +81,28 @@ class OfferTypeController extends Controller
     {
         $offerType->update($request->validated());
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->offerRepository->clearFormOptionsCache();
 
         return redirect()->route('offer-types.index')
-            ->with('success', 'Tipo di offerta aggiornato con successo.');
+            ->with('success', __('flash.offer_type.updated'));
     }
 
     public function destroy(OfferType $offerType)
     {
-        // Verificar si tiene ofertas activas
+        // Verify if has active offers
         if ($offerType->offers()->where('removed', false)->exists()) {
             return back()->withErrors([
-                'error' => 'Non è possibile eliminare il tipo di offerta. Ha offerte associate.',
+                'error' => __('flash.cannot_delete_offer_type'),
             ]);
         }
 
         $offerType->update(['removed' => true]);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->offerRepository->clearFormOptionsCache();
 
         return redirect()->route('offer-types.index')
-            ->with('success', 'Tipo di offerta eliminato con successo.');
+            ->with('success', __('flash.offer_type.deleted'));
     }
 }

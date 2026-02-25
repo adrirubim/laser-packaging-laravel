@@ -24,7 +24,7 @@ class ArticleICController extends Controller
     {
         $query = ArticleIC::active();
 
-        // Ricerca
+        // Search
         if ($request->has('search')) {
             $search = $request->get('search');
             $query->where(function ($q) use ($search) {
@@ -69,18 +69,18 @@ class ArticleICController extends Controller
         $validated = $request->validate([
             'code' => 'required|string|max:255|unique:articlesic,code',
             'number' => 'nullable|string|max:255',
-            // Consentire anche di assegnare direttamente un nome file (tests)
+            // Allow assigning filename directly (tests)
             'filename' => 'nullable|string|max:255',
         ]);
 
-        // Si se sube un archivo, validarlo y sobreescribir el nombre
+        // If a file is uploaded, validate it and overwrite the name
         if ($request->hasFile('filename')) {
             $request->validate([
                 'filename' => 'file|mimes:pdf|max:10240',
             ], [
-                'filename.file' => 'Il file caricato non è valido.',
+                'filename.file' => __('validation.file_invalid'),
                 'filename.mimes' => 'Il file deve essere un PDF.',
-                'filename.max' => 'Il file non può superare 10MB.',
+                'filename.max' => __('validation.file_max_10mb'),
             ]);
 
             $file = $request->file('filename');
@@ -91,11 +91,11 @@ class ArticleICController extends Controller
 
         $instruction = ArticleIC::create($validated);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->articleRepository->clearFormOptionsCache();
 
         return redirect()->route('articles.packaging-instructions.index')
-            ->with('success', 'Istruzione di confezionamento creata con successo.');
+            ->with('success', __('flash.article_ic.created'));
     }
 
     /**
@@ -136,23 +136,23 @@ class ArticleICController extends Controller
                         ->where('removed', false)
                         ->exists();
                     if ($exists) {
-                        $fail('Il codice esiste già.');
+                        $fail(__('validation.code_exists'));
                     }
                 },
             ],
             'number' => 'nullable|string|max:255',
-            // Consentire di cambiare il nome del file senza caricarne uno nuovo (tests)
+            // Allow changing filename without uploading a new file (tests)
             'filename' => 'nullable|string|max:255',
         ]);
 
-        // Si viene un archivo, lo validamos y sustituimos el nombre
+        // If a file is sent, validate it and replace the name
         if ($request->hasFile('filename')) {
             $request->validate([
                 'filename' => 'file|mimes:pdf|max:10240',
             ], [
-                'filename.file' => 'Il file caricato non è valido.',
+                'filename.file' => __('validation.file_invalid'),
                 'filename.mimes' => 'Il file deve essere un PDF.',
-                'filename.max' => 'Il file non può superare 10MB.',
+                'filename.max' => __('validation.file_max_10mb'),
             ]);
 
             if ($packagingInstruction->filename) {
@@ -170,11 +170,11 @@ class ArticleICController extends Controller
 
         $packagingInstruction->update($validated);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->articleRepository->clearFormOptionsCache();
 
         return redirect()->route('articles.packaging-instructions.index')
-            ->with('success', 'Istruzione di confezionamento aggiornata con successo.');
+            ->with('success', __('flash.article_ic.updated'));
     }
 
     /**
@@ -184,11 +184,11 @@ class ArticleICController extends Controller
     {
         $packagingInstruction->update(['removed' => true]);
 
-        // Invalidare cache opzioni formulari
+        // Invalidate form options cache
         $this->articleRepository->clearFormOptionsCache();
 
         return redirect()->route('articles.packaging-instructions.index')
-            ->with('success', 'Istruzione di confezionamento eliminata con successo.');
+            ->with('success', __('flash.article_ic.deleted'));
     }
 
     /**
@@ -197,13 +197,13 @@ class ArticleICController extends Controller
     public function download(ArticleIC $packagingInstruction)
     {
         if (! $packagingInstruction->filename) {
-            return redirect()->back()->with('error', 'Nessun file disponibile per questa istruzione di confezionamento.');
+            return redirect()->back()->with('error', __('flash.article_ic.no_file'));
         }
 
         $path = storage_path('app/packaging-instructions/'.$packagingInstruction->filename);
 
         if (! file_exists($path)) {
-            return redirect()->back()->with('error', 'File non trovato sul server.');
+            return redirect()->back()->with('error', __('flash.article_ic.file_not_found'));
         }
 
         return response()->download($path, $packagingInstruction->filename);

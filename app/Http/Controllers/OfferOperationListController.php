@@ -82,7 +82,7 @@ class OfferOperationListController extends Controller
 
         if ($exists) {
             return redirect()->back()
-                ->withErrors(['offeroperation_uuid' => 'Questa operazione è già assegnata a questa offerta.'])
+                ->withErrors(['offeroperation_uuid' => __('flash.offer_operation_list.already_assigned')])
                 ->withInput();
         }
 
@@ -90,7 +90,7 @@ class OfferOperationListController extends Controller
         OfferOperationList::create($validated);
 
         return redirect()->route('offer-operation-lists.index', ['offer_uuid' => $validated['offer_uuid']])
-            ->with('success', 'Operazione aggiunta all\'offerta con successo.');
+            ->with('success', __('flash.offer_operation_list.operation_added'));
     }
 
     /**
@@ -145,14 +145,14 @@ class OfferOperationListController extends Controller
 
         if ($exists) {
             return redirect()->back()
-                ->withErrors(['offeroperation_uuid' => 'Questa operazione è già assegnata a questa offerta.'])
+                ->withErrors(['offeroperation_uuid' => __('flash.offer_operation_list.already_assigned')])
                 ->withInput();
         }
 
         $offerOperationList->update($validated);
 
         return redirect()->route('offer-operation-lists.index', ['offer_uuid' => $validated['offer_uuid']])
-            ->with('success', 'Lista operazioni aggiornata con successo.');
+            ->with('success', __('flash.offer_operation_list.updated'));
     }
 
     /**
@@ -164,6 +164,6 @@ class OfferOperationListController extends Controller
         $offerOperationList->update(['removed' => true]);
 
         return redirect()->route('offer-operation-lists.index', ['offer_uuid' => $offerUuid])
-            ->with('success', 'Operazione rimossa dall\'offerta con successo.');
+            ->with('success', __('flash.offer_operation_list.operation_removed'));
     }
 }

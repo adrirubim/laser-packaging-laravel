@@ -16,6 +16,7 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import articles from '@/routes/articles/index';
 import { type BreadcrumbItem } from '@/types';
@@ -48,8 +49,10 @@ type PalletizationInstructionsEditProps = {
 export default function PalletizationInstructionsEdit({
     errors: serverErrors,
 }: PalletizationInstructionsEditProps) {
+    const { t } = useTranslations();
     const { props } = usePage<PalletizationInstructionsEditProps>();
     const { instruction } = props;
+    const instructionCode = instruction.code + (instruction.number || '');
 
     const [lengthCm, setLengthCm] = useState<string>(
         instruction.length_cm?.toString() || '',
@@ -83,7 +86,7 @@ export default function PalletizationInstructionsEdit({
     );
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
 
-    // Calcolare volume al cambio dimensioni
+    // Calculate volume on dimension change
     useEffect(() => {
         const length = parseFloat(lengthCm) || 0;
         const depth = parseFloat(depthCm) || 0;
@@ -97,7 +100,7 @@ export default function PalletizationInstructionsEdit({
         }
     }, [lengthCm, depthCm, heightCm]);
 
-    // Calcolare colli per pallet
+    // Calculate cases per pallet
     useEffect(() => {
         const plan = parseInt(planPackaging) || 0;
         const plans = parseInt(palletPlans) || 0;
@@ -109,7 +112,7 @@ export default function PalletizationInstructionsEdit({
         }
     }, [planPackaging, palletPlans]);
 
-    // Calcolare unità per pallet
+    // Calculate units per pallet
     useEffect(() => {
         const qty = parseInt(qtyPallet) || 0;
         const units = parseInt(unitsPerNeck) || 0;
@@ -123,27 +126,34 @@ export default function PalletizationInstructionsEdit({
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Articoli',
+            title: t('nav.articles'),
             href: articles.index().url,
         },
         {
-            title: 'Istruzioni di Pallettizzazione',
-            href: '/articles/palletization-instructions',
+            title: t('articles.palletization_instructions.index.title'),
+            href: articles.palletizationInstructions.index().url,
         },
         {
-            title: instruction.code + (instruction.number || ''),
-            href: `/articles/palletization-instructions/${instruction.uuid}`,
+            title: instructionCode,
+            href: articles.palletizationInstructions.show({
+                palletizationInstruction: instruction.uuid,
+            }).url,
         },
         {
-            title: 'Modifica',
-            href: `/articles/palletization-instructions/${instruction.uuid}/edit`,
+            title: t('articles.palletization_instructions.edit.breadcrumb'),
+            href: articles.palletizationInstructions.edit({
+                palletizationInstruction: instruction.uuid,
+            }).url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head
-                title={`Modifica Istruzione ${instruction.code}${instruction.number || ''}`}
+                title={t(
+                    'articles.palletization_instructions.edit.page_title',
+                    { code: instructionCode },
+                )}
             />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
@@ -152,10 +162,14 @@ export default function PalletizationInstructionsEdit({
                         <Card>
                             <CardHeader>
                                 <CardTitle>
-                                    Modifica Istruzione di Pallettizzazione
+                                    {t(
+                                        'articles.palletization_instructions.edit.card_title',
+                                    )}
                                 </CardTitle>
                                 <CardDescription>
-                                    Modifica i dettagli dell'istruzione
+                                    {t(
+                                        'articles.palletization_instructions.edit.card_description',
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -193,7 +207,9 @@ export default function PalletizationInstructionsEdit({
                                                             htmlFor="code"
                                                             required
                                                         >
-                                                            Codice
+                                                            {t(
+                                                                'articles.palletization_instructions.form.code_label',
+                                                            )}
                                                         </FormLabel>
                                                         <Tooltip>
                                                             <TooltipTrigger
@@ -203,9 +219,9 @@ export default function PalletizationInstructionsEdit({
                                                             </TooltipTrigger>
                                                             <TooltipContent>
                                                                 <p>
-                                                                    Il codice
-                                                                    deve essere
-                                                                    univoco
+                                                                    {t(
+                                                                        'articles.palletization_instructions.form.code_tooltip',
+                                                                    )}
                                                                 </p>
                                                             </TooltipContent>
                                                         </Tooltip>
@@ -227,7 +243,9 @@ export default function PalletizationInstructionsEdit({
                                                 <div className="grid gap-2">
                                                     <div className="flex items-center gap-2">
                                                         <FormLabel htmlFor="number">
-                                                            Numero
+                                                            {t(
+                                                                'articles.palletization_instructions.form.number_label',
+                                                            )}
                                                         </FormLabel>
                                                     </div>
                                                     <Input
@@ -249,7 +267,9 @@ export default function PalletizationInstructionsEdit({
                                                 <div className="grid gap-4 md:grid-cols-3">
                                                     <div className="grid gap-2">
                                                         <FormLabel htmlFor="length_cm">
-                                                            Larghezza collo (cm)
+                                                            {t(
+                                                                'articles.palletization_instructions.form.length_cm',
+                                                            )}
                                                         </FormLabel>
                                                         <Input
                                                             id="length_cm"
@@ -273,8 +293,9 @@ export default function PalletizationInstructionsEdit({
                                                     </div>
                                                     <div className="grid gap-2">
                                                         <FormLabel htmlFor="depth_cm">
-                                                            Profondità collo
-                                                            (cm)
+                                                            {t(
+                                                                'articles.palletization_instructions.form.depth_cm',
+                                                            )}
                                                         </FormLabel>
                                                         <Input
                                                             id="depth_cm"
@@ -298,7 +319,9 @@ export default function PalletizationInstructionsEdit({
                                                     </div>
                                                     <div className="grid gap-2">
                                                         <FormLabel htmlFor="height_cm">
-                                                            Altezza collo (cm)
+                                                            {t(
+                                                                'articles.palletization_instructions.form.height_cm',
+                                                            )}
                                                         </FormLabel>
                                                         <Input
                                                             id="height_cm"
@@ -324,7 +347,9 @@ export default function PalletizationInstructionsEdit({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="volume_dmc">
-                                                        Volume collo (dm³)
+                                                        {t(
+                                                            'articles.palletization_instructions.form.volume_dmc',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="volume_dmc"
@@ -337,9 +362,9 @@ export default function PalletizationInstructionsEdit({
                                                         className="bg-muted"
                                                     />
                                                     <p className="text-xs text-muted-foreground">
-                                                        Calcolato
-                                                        automaticamente dalle
-                                                        dimensioni
+                                                        {t(
+                                                            'articles.palletization_instructions.form.volume_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -351,7 +376,9 @@ export default function PalletizationInstructionsEdit({
                                                 <div className="grid gap-4 md:grid-cols-2">
                                                     <div className="grid gap-2">
                                                         <FormLabel htmlFor="plan_packaging">
-                                                            Colli per piano
+                                                            {t(
+                                                                'articles.palletization_instructions.form.plan_packaging',
+                                                            )}
                                                         </FormLabel>
                                                         <Input
                                                             id="plan_packaging"
@@ -376,7 +403,9 @@ export default function PalletizationInstructionsEdit({
                                                     </div>
                                                     <div className="grid gap-2">
                                                         <FormLabel htmlFor="pallet_plans">
-                                                            Piani per pallet
+                                                            {t(
+                                                                'articles.palletization_instructions.form.pallet_plans',
+                                                            )}
                                                         </FormLabel>
                                                         <Input
                                                             id="pallet_plans"
@@ -401,7 +430,9 @@ export default function PalletizationInstructionsEdit({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="qty_pallet">
-                                                        Colli per pallet
+                                                        {t(
+                                                            'articles.palletization_instructions.form.qty_pallet',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="qty_pallet"
@@ -413,10 +444,9 @@ export default function PalletizationInstructionsEdit({
                                                         className="bg-muted"
                                                     />
                                                     <p className="text-xs text-muted-foreground">
-                                                        Calcolato
-                                                        automaticamente (Colli
-                                                        per piano × Piani per
-                                                        pallet)
+                                                        {t(
+                                                            'articles.palletization_instructions.form.qty_pallet_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -428,7 +458,9 @@ export default function PalletizationInstructionsEdit({
                                                 <div className="grid gap-4 md:grid-cols-2">
                                                     <div className="grid gap-2">
                                                         <FormLabel htmlFor="units_per_neck">
-                                                            Unità per collo
+                                                            {t(
+                                                                'articles.palletization_instructions.form.units_per_neck',
+                                                            )}
                                                         </FormLabel>
                                                         <Input
                                                             id="units_per_neck"
@@ -451,7 +483,9 @@ export default function PalletizationInstructionsEdit({
                                                     </div>
                                                     <div className="grid gap-2">
                                                         <FormLabel htmlFor="units_pallet">
-                                                            Unità per pallet
+                                                            {t(
+                                                                'articles.palletization_instructions.form.units_pallet',
+                                                            )}
                                                         </FormLabel>
                                                         <Input
                                                             id="units_pallet"
@@ -463,10 +497,9 @@ export default function PalletizationInstructionsEdit({
                                                             className="bg-muted"
                                                         />
                                                         <p className="text-xs text-muted-foreground">
-                                                            Calcolato
-                                                            automaticamente
-                                                            (Colli per pallet ×
-                                                            Unità per collo)
+                                                            {t(
+                                                                'articles.palletization_instructions.form.units_pallet_help',
+                                                            )}
                                                         </p>
                                                         <InputError
                                                             message={
@@ -478,7 +511,9 @@ export default function PalletizationInstructionsEdit({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="interlayer_every_floors">
-                                                        Interfalda ogni (piani)
+                                                        {t(
+                                                            'articles.palletization_instructions.form.interlayer_every_floors',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="interlayer_every_floors"
@@ -501,13 +536,16 @@ export default function PalletizationInstructionsEdit({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="filename">
-                                                        Allegato
+                                                        {t(
+                                                            'articles.palletization_instructions.form.attachment_label',
+                                                        )}
                                                     </FormLabel>
                                                     {instruction.filename && (
                                                         <div className="mb-2 rounded-md bg-muted p-2">
                                                             <p className="mb-1 text-xs text-muted-foreground">
-                                                                Allegato
-                                                                attuale:
+                                                                {t(
+                                                                    'articles.palletization_instructions.edit.current_attachment',
+                                                                )}
                                                             </p>
                                                             <p className="font-mono text-sm">
                                                                 {
@@ -539,13 +577,18 @@ export default function PalletizationInstructionsEdit({
                                                         className="text-xs text-muted-foreground"
                                                     >
                                                         {instruction.filename
-                                                            ? 'Carica un nuovo allegato PDF per sostituire quello esistente (opzionale).'
-                                                            : "Seleziona un allegato PDF da associare all'istruzione (opzionale)."}
+                                                            ? t(
+                                                                  'articles.palletization_instructions.edit.attachment_replace_help',
+                                                              )
+                                                            : t(
+                                                                  'articles.palletization_instructions.edit.attachment_help',
+                                                              )}
                                                     </p>
                                                     {selectedFileName && (
                                                         <p className="text-xs text-muted-foreground">
-                                                            Nuovo allegato
-                                                            selezionato:{' '}
+                                                            {t(
+                                                                'articles.palletization_instructions.edit.new_attachment_selected',
+                                                            )}{' '}
                                                             <span className="font-mono">
                                                                 {
                                                                     selectedFileName
@@ -566,8 +609,12 @@ export default function PalletizationInstructionsEdit({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Aggiornando...'
-                                                            : 'Aggiorna Istruzione'}
+                                                            ? t(
+                                                                  'articles.palletization_instructions.edit.submitting',
+                                                              )
+                                                            : t(
+                                                                  'articles.palletization_instructions.edit.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -578,7 +625,7 @@ export default function PalletizationInstructionsEdit({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

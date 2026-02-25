@@ -22,7 +22,7 @@ class SyncOrderEmployeesActionTest extends TestCase
         $employeeB = Employee::factory()->create();
         $employeeC = Employee::factory()->create();
 
-        // Asignación inicial: A y B
+        // Initial assignment: A and B
         OfferOrderEmployee::create([
             'order_uuid' => $order->uuid,
             'employee_uuid' => $employeeA->uuid,
@@ -37,7 +37,7 @@ class SyncOrderEmployeesActionTest extends TestCase
         /** @var SyncOrderEmployeesAction $action */
         $action = $this->app->make(SyncOrderEmployeesAction::class);
 
-        // Nueva lista: B y C (A debe marcarse como removed, C añadirse)
+        // New list: B and C (A must be marked removed, C added)
         $action->execute($order->uuid, [
             $employeeB->uuid,
             $employeeC->uuid,

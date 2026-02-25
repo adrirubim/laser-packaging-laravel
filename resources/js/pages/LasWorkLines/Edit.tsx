@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import lasWorkLines from '@/routes/las-work-lines/index';
 import { type BreadcrumbItem } from '@/types';
@@ -30,13 +31,14 @@ export default function LasWorkLinesEdit({
     workLine,
     errors: serverErrors,
 }: LasWorkLinesEditProps) {
+    const { t } = useTranslations();
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Offerte',
+            title: t('nav.offers'),
             href: '/offers',
         },
         {
-            title: 'LAS Linee di Lavoro',
+            title: t('offer_las_work_lines.page_title'),
             href: lasWorkLines.index().url,
         },
         {
@@ -44,14 +46,18 @@ export default function LasWorkLinesEdit({
             href: lasWorkLines.show({ lasWorkLine: workLine.uuid }).url,
         },
         {
-            title: 'Modifica',
+            title: t('offer_las_work_lines.edit.breadcrumb'),
             href: lasWorkLines.edit({ lasWorkLine: workLine.uuid }).url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Modifica Linea di Lavoro LAS ${workLine.name}`} />
+            <Head
+                title={t('offer_las_work_lines.edit.page_title', {
+                    name: workLine.name,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
@@ -59,9 +65,13 @@ export default function LasWorkLinesEdit({
                         <Card>
                             <CardHeader>
                                 <CardTitle>
-                                    Gestione Linea di Lavoro LAS
+                                    {t('offer_las_work_lines.form.card_title')}
                                 </CardTitle>
-                                <CardDescription>Modifica</CardDescription>
+                                <CardDescription>
+                                    {t(
+                                        'offer_las_work_lines.edit.card_description',
+                                    )}
+                                </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <Form
@@ -98,7 +108,7 @@ export default function LasWorkLinesEdit({
 
                                                 <div className="grid gap-2">
                                                     <Label htmlFor="code">
-                                                        Codice *
+                                                        {t('common.code')} *
                                                     </Label>
                                                     <Input
                                                         id="code"
@@ -107,7 +117,9 @@ export default function LasWorkLinesEdit({
                                                             workLine.code
                                                         }
                                                         required
-                                                        placeholder="Codice Linea di Lavoro"
+                                                        placeholder={t(
+                                                            'offer_las_work_lines.form.code_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={allErrors.code}
@@ -116,7 +128,10 @@ export default function LasWorkLinesEdit({
 
                                                 <div className="grid gap-2">
                                                     <Label htmlFor="name">
-                                                        Nome *
+                                                        {t(
+                                                            'offer_las_work_lines.form.name_label',
+                                                        )}{' '}
+                                                        *
                                                     </Label>
                                                     <Input
                                                         id="name"
@@ -125,7 +140,9 @@ export default function LasWorkLinesEdit({
                                                             workLine.name
                                                         }
                                                         required
-                                                        placeholder="Nome Linea di Lavoro"
+                                                        placeholder={t(
+                                                            'offer_las_work_lines.form.name_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={allErrors.name}
@@ -138,8 +155,12 @@ export default function LasWorkLinesEdit({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Aggiornando...'
-                                                            : 'Aggiorna Linea di Lavoro'}
+                                                            ? t(
+                                                                  'offer_las_work_lines.edit.submitting',
+                                                              )
+                                                            : t(
+                                                                  'offer_las_work_lines.edit.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -155,7 +176,7 @@ export default function LasWorkLinesEdit({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

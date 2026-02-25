@@ -39,7 +39,7 @@ class UpdateOfferAction
      */
     public function execute(Offer $offer, array $validated)
     {
-        // Verificare unicità numero offerta (escludendo il record attuale) prima della transazione
+        // Verify offer number uniqueness (excluding current record) before transaction
         if ($validated['offer_number'] !== $offer->offer_number) {
             if ($this->offerNumberService->exists($validated['offer_number'], $offer->id)) {
                 $this->logWarning('UpdateOfferAction::execute', 'Offer number already exists', [
@@ -56,7 +56,7 @@ class UpdateOfferAction
         }
 
         return DB::transaction(function () use ($validated, $offer) {
-            // Convertire stringhe vuote in null per campi nullable
+            // Convert empty strings to null for nullable fields
             $nullableFields = [
                 'customerdivision_uuid',
                 'validity_date',
@@ -83,43 +83,43 @@ class UpdateOfferAction
 
             $offer->update($validated);
 
-            // Elaborare operazioni se presenti nei dati validati
+            // Process operations if present in validated data
             if (isset($validated['operations']) && is_array($validated['operations'])) {
-                // Ottenere tutte le operazioni esistenti per questa offerta
+                // Get all existing operations for this offer
                 $existingOperations = OfferOperationList::where('offer_uuid', $offer->uuid)
                     ->where('removed', false)
                     ->get()
                     ->keyBy('offeroperation_uuid');
 
-                // Ottenere UUID delle operazioni inviate
+                // Get UUIDs of sent operations
                 $sentOperationUuids = collect($validated['operations'])
                     ->pluck('offeroperation_uuid')
                     ->filter()
                     ->toArray();
 
-                // Rimuovere operazioni che non sono nella lista inviata
+                // Remove operations not in the sent list
                 foreach ($existingOperations as $existingOp) {
                     if (! in_array($existingOp->offeroperation_uuid, $sentOperationUuids)) {
                         $existingOp->update(['removed' => true]);
                     }
                 }
 
-                // Creare o aggiornare operazioni inviate
+                // Create or update sent operations
                 foreach ($validated['operations'] as $operationData) {
                     if (empty($operationData['offeroperation_uuid']) || empty($operationData['num_op'])) {
                         continue;
                     }
 
-                    // Cercare se esiste già un'operazione con questo offeroperation_uuid
+                    // Search if operation with this offeroperation_uuid already exists
                     $operationList = $existingOperations->get($operationData['offeroperation_uuid']);
 
                     if ($operationList) {
-                        // Aggiornare operazione esistente
+                        // Update existing operation
                         $operationList->update([
                             'num_op' => $operationData['num_op'],
                         ]);
                     } else {
-                        // Creare nuova operazione
+                        // Create new operation
                         OfferOperationList::create([
                             'offer_uuid' => $offer->uuid,
                             'offeroperation_uuid' => $operationData['offeroperation_uuid'],
@@ -129,17 +129,17 @@ class UpdateOfferAction
                     }
                 }
             } else {
-                // Se non sono state inviate operazioni, rimuovere tutte le esistenti
+                // If no operations were sent, remove all existing ones
                 OfferOperationList::where('offer_uuid', $offer->uuid)
                     ->where('removed', false)
                     ->update(['removed' => true]);
             }
 
-            // Invalidare cache opzioni formulari (le offerte sono in cache)
+            // Invalidate form options cache (offers are cached)
             $this->articleRepository->clearFormOptionsCache();
-            // Invalidare cache ordini (gli articoli sono in cache ordini)
+            // Invalidate orders cache (articles are in orders cache)
             $this->orderRepository->clearFormOptionsCache();
-            // Invalidare cache indirizzi di spedizione per tutti gli articoli di questa offerta
+            // Invalidate shipping address cache for all articles of this offer
             $offer->articles()->each(function ($article) {
                 $this->orderRepository->clearShippingAddressesCache($article->uuid);
             });

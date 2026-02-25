@@ -122,10 +122,10 @@ type Alert = {
     title: string;
     message: string;
     count: number;
-    first_order_uuid?: string; // UUID prima ordine in ritardo (alert tipo 'overdue')
-    /** Firma della situazione (es. count|first_uuid); usata per ack persistente in backend. */
+    first_order_uuid?: string; // UUID of first overdue order (alert type 'overdue')
+    /** Situation signature (e.g. count|first_uuid); used for persistent ack in backend. */
     signature?: string;
-    /** Hash dello scope (filtri); usato per ack persistente in backend. */
+    /** Scope hash (filters); used for persistent ack in backend. */
     scope_hash?: string;
 };
 
@@ -229,7 +229,7 @@ function getOrderStatusLabelKey(status: number): string {
     return 'dashboard.export_nd';
 }
 
-/** Ordine di gravità per mostrare gli avvisi (prima i più gravi). */
+/** Severity order for displaying alerts (most severe first). */
 const ALERT_SEVERITY_ORDER: Record<string, number> = {
     critical: 0,
     high: 1,
@@ -237,18 +237,18 @@ const ALERT_SEVERITY_ORDER: Record<string, number> = {
     low: 3,
 };
 
-/** Animazioni avvisi stile iOS: ingresso scalettato (uno dopo l'altro). */
+/** iOS-style alert animations: staggered entrance (one after another). */
 const ALERT_ENTER_DURATION_MS = 320;
 const ALERT_EXIT_DURATION_MS = 260;
-/** Ritardo tra un avviso e il successo (effetto scalettato tipo iOS). */
+/** Delay between one alert and the next (iOS-style staggered effect). */
 const ALERT_STAGGER_DELAY_MS = 120;
 
-/** Intervalo de auto-refresh (ms). */
+/** Auto-refresh interval (ms). */
 const DASHBOARD_AUTO_REFRESH_INTERVAL_MS = 60_000;
 
 /**
- * Construye los query params del dashboard a partir de los filtros.
- * Fuente única de verdad para todas las peticiones (filtros, refresh manual y auto).
+ * Build dashboard query params from filters.
+ * Single source of truth for all requests (filters, manual and auto refresh).
  */
 function buildDashboardParams(
     dateFilter: string,
@@ -297,21 +297,21 @@ export default function Dashboard({
     const [customStartDate, setCustomStartDate] = useState<string>('');
     const [customEndDate, setCustomEndDate] = useState<string>('');
     const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null);
-    /** Avisos chiusi dall'utente in questa sessione (non persisten dopo ricarica). */
+    /** Alerts dismissed by user in this session (do not persist after reload). */
     const [dismissedAlertIds, setDismissedAlertIds] = useState<Set<string>>(
         () => new Set(),
     );
-    /** Per animazione di ingresso della sezione avvisi. */
+    /** For alerts section entrance animation. */
     const [alertsSectionVisible, setAlertsSectionVisible] = useState(false);
-    /** Avisi in uscita (animazione di chiusura prima di rimuoverli dal DOM). */
+    /** Exiting alerts (close animation before removing from DOM). */
     const [exitingAlertIds, setExitingAlertIds] = useState<Set<string>>(
         () => new Set(),
     );
-    /** Avviso espanso (stile iOS: tap per aprire, poi Accetta / Chiudi). */
+    /** Expanded alert (iOS style: tap to open, then Accept / Close). */
     const [expandedAlertId, setExpandedAlertId] = useState<string | null>(null);
 
-    // Sincronizar estado local con los props cuando cambian (p. ej. URL con filtros).
-    // Diferido para evitar setState síncrono en el effect (react-hooks/set-state-in-effect).
+    // Sync local state with props when they change (e.g. URL with filters).
+    // Deferred to avoid synchronous setState in the effect (react-hooks/set-state-in-effect).
     useEffect(() => {
         const id = setTimeout(() => {
             setDateFilter(initialDateFilter);
@@ -321,15 +321,15 @@ export default function Dashboard({
         return () => clearTimeout(id);
     }, [initialDateFilter, initialCustomerFilter, initialStatusFilter]);
 
-    // Animazione di ingresso avvisi (un solo run al mount).
+    // Alerts entrance animation (single run on mount).
     useEffect(() => {
         const t = setTimeout(() => setAlertsSectionVisible(true), 80);
         return () => clearTimeout(t);
     }, []);
 
     /**
-     * Petición al backend con los params dados. Usado por filtros, refresh manual y auto-refresh.
-     * Opciones: only (partial reload), onStart/onFinish para loading/refreshing.
+     * Backend request with given params. Used by filters, manual and auto refresh.
+     * Options: only (partial reload), onStart/onFinish for loading/refreshing.
      */
     const fetchDashboard = useCallback(
         (
@@ -354,7 +354,7 @@ export default function Dashboard({
         [],
     );
 
-    // Auto-refresh: solo cuando está activado y la pestaña está visible; usa siempre los filtros actuales
+    // Auto-refresh: only when enabled and tab is visible; always uses current filters
     useEffect(() => {
         if (!autoRefreshEnabled) return;
         if (typeof document === 'undefined') return;
@@ -655,13 +655,13 @@ export default function Dashboard({
 
     return (
         <AppLayout breadcrumbs={breadcrumbsMemo}>
-            {/* Head: titolo dinamico con conteggio avvisi visibili (tab del browser + accessibilità) */}
+            {/* Head: dynamic title with visible alerts count (browser tab + accessibility) */}
             <Head title={pageTitle} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 {/* Header + Filters en dos filas para mayor claridad */}
                 <div className="flex flex-col gap-3">
-                    {/* Fila 1: título + acciones principales */}
+                    {/* Row 1: title + main actions */}
                     <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
                         <div className="flex-1">
                             <h1 className="text-2xl font-bold tracking-tight">
@@ -707,9 +707,9 @@ export default function Dashboard({
                         </div>
                     </div>
 
-                    {/* Fila 2: filtros + azioni secundarias (auto/refresh/export) */}
+                    {/* Row 2: filters + secondary actions (auto/refresh/export) */}
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                        {/* Grupo de filtros */}
+                        {/* Filter group */}
                         <div className="flex flex-wrap items-center gap-2">
                             <div className="flex items-center gap-2">
                                 <Select
@@ -883,7 +883,7 @@ export default function Dashboard({
                                 </Dialog>
                             </div>
 
-                            {/* Filtro cliente */}
+                            {/* Customer filter */}
                             <Select
                                 value={customerFilter || 'all'}
                                 onValueChange={handleCustomerFilterChange}
@@ -914,7 +914,7 @@ export default function Dashboard({
                                 </SelectContent>
                             </Select>
 
-                            {/* Filtro stato */}
+                            {/* Status filter */}
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button
@@ -1102,7 +1102,7 @@ export default function Dashboard({
                     </div>
                 </div>
 
-                {/* Avvisi stile iOS: riga compatta (icona + numero + titolo) → tap espande → Accetta (Vai) o Chiudi */}
+                {/* iOS-style alerts: compact row (icon + count + title) → tap expands → Accept (Go) or Close */}
                 {(() => {
                     const displayedAlerts = alerts
                         .filter(
@@ -1228,7 +1228,7 @@ export default function Dashboard({
                                         }`}
                                         style={cardStyle}
                                     >
-                                        {/* Riga compatta: icona + titolo + numero + chevron */}
+                                        {/* Compact row: icon + title + count + chevron */}
                                         <button
                                             type="button"
                                             onClick={() =>
@@ -1271,7 +1271,7 @@ export default function Dashboard({
                                             </span>
                                         </button>
 
-                                        {/* Corpo espanso: messaggio + Azioni Accetta / Chiudi */}
+                                        {/* Expanded body: message + Accept / Close actions */}
                                         <div
                                             className="grid transition-[grid-template-rows] duration-300 ease-out"
                                             style={{
@@ -1329,7 +1329,7 @@ export default function Dashboard({
                     );
                 })()}
 
-                {/* Riga di riepilogo: a rischio · ordini attivi · in pianificazione (ordine per importanza) */}
+                {/* Summary row: at risk · active orders · in planning (order by importance) */}
                 {(statistics.orders.total > 0 ||
                     alerts.some((a) => a.type === 'overdue')) && (
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
@@ -2056,7 +2056,7 @@ export default function Dashboard({
                         previousPeriodData={previousTrend || undefined}
                         groupBy="day"
                         onPointClick={(period) => {
-                            // Filtrare ordini per periodo selezionato (giorno)
+                            // Filter orders by selected period (day)
                             router.get(
                                 orders.index().url,
                                 { date_filter: 'day', day: period },
@@ -2068,7 +2068,7 @@ export default function Dashboard({
                     />
                 )}
 
-                {/* Order Status Chart - Grafico distribuzione stati */}
+                {/* Order Status Chart - status distribution */}
                 {isLoading ? (
                     <Card>
                         <CardHeader>
@@ -2083,7 +2083,7 @@ export default function Dashboard({
                     <OrderStatusChart
                         data={statistics.orders}
                         onStatusClick={(status) => {
-                            // Mappatura chiave stato grafico -> parametro filtro in Orders Index
+                            // Chart status key -> Orders Index filter param mapping
                             let statusParam: string;
                             switch (status) {
                                 case 'lanciato':
@@ -2097,7 +2097,7 @@ export default function Dashboard({
                                     break;
                                 case 'completato':
                                 default:
-                                    statusParam = 'completed'; // stesso filtro della card performance
+                                    statusParam = 'completed'; // same filter as performance card
                                     break;
                             }
 

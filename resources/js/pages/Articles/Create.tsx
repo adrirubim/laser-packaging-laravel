@@ -21,6 +21,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { useTranslations } from '@/hooks/use-translations';
 import { useFieldValidation } from '@/hooks/useFieldValidation';
 import AppLayout from '@/layouts/app-layout';
 import { validationRules } from '@/lib/validation/rules';
@@ -52,7 +53,7 @@ type Machinery = {
     cod: string;
     description?: string | null;
     parameter?: string | null;
-    valuetype?: string | null; // "testo", "numero", o lista separada por comas
+    valuetype?: string | null; // "text", "number", or comma-separated list
 };
 
 type Material = {
@@ -229,7 +230,7 @@ type ArticlesCreateProps = {
     lasCode?: string | null;
     selectedOfferUuid?: string | null;
     sourceArticle?: SourceArticle | null;
-    /** Converti in Articolo: dati dell'offerta per precompilare (senza sourceArticle) */
+    /** Convert to Article: offer data for prefill (without sourceArticle) */
     articleDescrFromOffer?: string | null;
     codArticleClientFromOffer?: string | null;
     additionalDescrFromOffer?: string | null;
@@ -271,6 +272,7 @@ export default function ArticlesCreate({
     errors: serverErrors,
 }: ArticlesCreateProps) {
     const { props } = usePage<ArticlesCreateProps>();
+    const { t } = useTranslations();
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
     const actualSourceArticle = sourceArticle || props.sourceArticle;
     const actualSelectedOfferUuid =
@@ -415,17 +417,17 @@ export default function ArticlesCreate({
         actualSourceArticle?.media_reale_cfz_h_pz?.toString() || '',
     );
 
-    // Convertire data ISO in yyyy-MM-dd per input date
+    // Convert ISO date to yyyy-MM-dd for date input
     const formatDateForInput = (
         dateString: string | null | undefined,
     ): string => {
         if (!dateString) return '';
         try {
-            // Se è già in formato yyyy-MM-dd, restituire così com'è
+            // If already in yyyy-MM-dd format, return as is
             if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
                 return dateString;
             }
-            // Se è in formato ISO, estrarre solo la parte data
+            // If in ISO format, extract only the date part
             const date = new Date(dateString);
             if (isNaN(date.getTime())) return '';
             const year = date.getFullYear();
@@ -482,7 +484,7 @@ export default function ArticlesCreate({
         actualSourceArticle?.client_approval_notes || '',
     );
 
-    // Stato per relazioni many-to-many
+    // State for many-to-many relations
     const actualMachinery =
         machinery && machinery.length > 0 ? machinery : props.machinery || [];
     const actualMaterials =
@@ -639,31 +641,33 @@ export default function ArticlesCreate({
 
     const codArticleLasValidation = useFieldValidation(codArticleLas, [
         (value) => {
-            if (!value) return null; // Opzionale
+            if (!value) return null;
             if (value.length > 255) {
-                return 'Il codice LAS non può superare i 255 caratteri';
+                return t('articles.edit.validation_cod_las_max');
             }
             return null;
         },
     ]);
 
     const articleDescrValidation = useFieldValidation(articleDescr, [
-        validationRules.required('La descrizione è obbligatoria'),
+        validationRules.required(
+            t('articles.edit.validation_description_required'),
+        ),
         validationRules.maxLength(
             255,
-            'La descrizione non può superare i 255 caratteri',
+            t('articles.edit.validation_description_max'),
         ),
     ]);
 
     const planPackagingValidation = useFieldValidation(planPackaging, [
         (value) => {
-            if (!value) return null; // Opzionale
+            if (!value) return null;
             const num = parseFloat(value);
             if (isNaN(num)) {
-                return 'Il valore deve essere un numero';
+                return t('articles.edit.validation_must_be_number');
             }
             if (num < 0) {
-                return 'Il valore deve essere positivo o zero';
+                return t('articles.edit.validation_positive_or_zero');
             }
             return null;
         },
@@ -671,13 +675,13 @@ export default function ArticlesCreate({
 
     const palletPlansValidation = useFieldValidation(palletPlans, [
         (value) => {
-            if (!value) return null; // Opzionale
+            if (!value) return null;
             const num = parseFloat(value);
             if (isNaN(num)) {
-                return 'Il valore deve essere un numero';
+                return t('articles.edit.validation_must_be_number');
             }
             if (num < 0) {
-                return 'Il valore deve essere positivo o zero';
+                return t('articles.edit.validation_positive_or_zero');
             }
             return null;
         },
@@ -685,16 +689,16 @@ export default function ArticlesCreate({
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Articoli',
+            title: t('nav.articles'),
             href: articles.index().url,
         },
         {
-            title: 'Crea',
+            title: t('articles.create.breadcrumb'),
             href: articles.create().url,
         },
     ];
 
-    // Aggiornare valori quando cambia l'offerta da props
+    // Update values when offer changes from props
     useEffect(() => {
         if (
             props.selectedOfferUuid &&
@@ -704,10 +708,10 @@ export default function ArticlesCreate({
             queueMicrotask(() => setSelectedOffer(uuid));
         }
         if (props.um && props.um !== actualUm) {
-            // um si aggiorna automaticamente da props
+            // um updates automatically from props
         }
         if (props.mediaValues && props.mediaValues !== actualMediaValues) {
-            // mediaValues si aggiorna automaticamente da props
+            // mediaValues updates automatically from props
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps -- sync from props only, avoid loops
     }, [props.selectedOfferUuid, props.um, props.mediaValues]);
@@ -733,7 +737,7 @@ export default function ArticlesCreate({
         }
     };
 
-    // Aggiungere/rimuovere righe dinamiche
+    // Add/remove dynamic rows
     const addMachineryRow = () => {
         const newRow: MachineryRow = {
             id: `machinery-${Date.now()}`,
@@ -934,7 +938,7 @@ export default function ArticlesCreate({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Crea Articolo" />
+            <Head title={t('articles.create.title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
@@ -943,15 +947,12 @@ export default function ArticlesCreate({
                             <Alert>
                                 <Info className="h-4 w-4" />
                                 <AlertDescription>
-                                    <strong>
-                                        Duplicazione di{' '}
-                                        {actualSourceArticle.cod_article_las}
-                                    </strong>
-                                    {actualSourceArticle.article_descr
-                                        ? ` – ${actualSourceArticle.article_descr}`
-                                        : ''}
-                                    . I dati sono precompilati; modificali se
-                                    necessario e salva come nuovo articolo.
+                                    {t('articles.create.duplicate_alert', {
+                                        code: actualSourceArticle.cod_article_las,
+                                        description:
+                                            actualSourceArticle.article_descr ??
+                                            '',
+                                    })}
                                 </AlertDescription>
                             </Alert>
                         )}
@@ -959,13 +960,15 @@ export default function ArticlesCreate({
                             <CardHeader>
                                 <CardTitle>
                                     {actualSourceArticle
-                                        ? 'Duplicazione articolo'
-                                        : 'Crea Nuovo Articolo'}
+                                        ? t('articles.create.duplicate_title')
+                                        : t('articles.create.new_title')}
                                 </CardTitle>
                                 <CardDescription>
                                     {actualSourceArticle
-                                        ? 'Salva come nuevo articolo con un nuovo codice LAS.'
-                                        : 'Compila i dettagli per creare un nuovo articolo'}
+                                        ? t(
+                                              'articles.create.duplicate_description',
+                                          )
+                                        : t('articles.create.new_description')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -1000,7 +1003,7 @@ export default function ArticlesCreate({
                                                         }
                                                     />
                                                 )}
-                                                {/* Input nascosti per checkbox (per inviare 0 se non selezionati) */}
+                                                {/* Hidden inputs for checkboxes (to send 0 if not selected) */}
                                                 <input
                                                     type="hidden"
                                                     name="visibility_cod"
@@ -1055,7 +1058,7 @@ export default function ArticlesCreate({
                                                     }
                                                 />
 
-                                                {/* Input nascosti per relazioni many-to-many */}
+                                                {/* Hidden inputs for many-to-many relationships */}
                                                 {machineryRows
                                                     .filter(
                                                         (row) =>
@@ -1208,7 +1211,9 @@ export default function ArticlesCreate({
                                                         htmlFor="offer_uuid"
                                                         required
                                                     >
-                                                        Offerta
+                                                        {t(
+                                                            'articles.edit.offer',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="offer_uuid"
@@ -1219,7 +1224,11 @@ export default function ArticlesCreate({
                                                         required
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona un'offerta" />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'articles.edit.placeholder_offer',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {offers.map(
@@ -1237,7 +1246,9 @@ export default function ArticlesCreate({
                                                                         }{' '}
                                                                         -{' '}
                                                                         {offer.description ||
-                                                                            'Senza descrizione'}
+                                                                            t(
+                                                                                'common.no_description',
+                                                                            )}
                                                                     </SelectItem>
                                                                 ),
                                                             )}
@@ -1252,7 +1263,9 @@ export default function ArticlesCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="cod_article_las">
-                                                        Codice LAS
+                                                        {t(
+                                                            'articles.edit.cod_las',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="cod_article_las"
@@ -1266,7 +1279,9 @@ export default function ArticlesCreate({
                                                         onBlur={
                                                             codArticleLasValidation.onBlur
                                                         }
-                                                        placeholder="Lascia vuoto per generazione automatica"
+                                                        placeholder={t(
+                                                            'articles.create.placeholder_cod_las_optional',
+                                                        )}
                                                         maxLength={255}
                                                         aria-invalid={
                                                             codArticleLasValidation.error
@@ -1298,7 +1313,9 @@ export default function ArticlesCreate({
                                                         htmlFor="article_descr"
                                                         required
                                                     >
-                                                        Descrizione
+                                                        {t(
+                                                            'articles.edit.description',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="article_descr"
@@ -1313,7 +1330,9 @@ export default function ArticlesCreate({
                                                             articleDescrValidation.onBlur
                                                         }
                                                         required
-                                                        placeholder="Descrizione articolo"
+                                                        placeholder={t(
+                                                            'articles.edit.placeholder_description',
+                                                        )}
                                                         maxLength={255}
                                                         aria-invalid={
                                                             articleDescrValidation.error
@@ -1342,7 +1361,9 @@ export default function ArticlesCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="cod_article_client">
-                                                        Codice Cliente
+                                                        {t(
+                                                            'articles.edit.cod_client',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="cod_article_client"
@@ -1353,7 +1374,9 @@ export default function ArticlesCreate({
                                                             props.codArticleClientFromOffer ||
                                                             ''
                                                         }
-                                                        placeholder="Codice articolo cliente"
+                                                        placeholder={t(
+                                                            'articles.edit.placeholder_cod_client',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={
@@ -1364,7 +1387,9 @@ export default function ArticlesCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="additional_descr">
-                                                        Descrizione Aggiuntiva
+                                                        {t(
+                                                            'articles.edit.additional_descr',
+                                                        )}
                                                     </FormLabel>
                                                     <Textarea
                                                         id="additional_descr"
@@ -1375,7 +1400,9 @@ export default function ArticlesCreate({
                                                             props.additionalDescrFromOffer ||
                                                             ''
                                                         }
-                                                        placeholder="Descrizione aggiuntiva dell'articolo"
+                                                        placeholder={t(
+                                                            'articles.edit.placeholder_additional',
+                                                        )}
                                                         rows={3}
                                                     />
                                                     <InputError
@@ -1403,8 +1430,9 @@ export default function ArticlesCreate({
                                                         htmlFor="visibility_cod"
                                                         className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                                     >
-                                                        Visibilità codice LAS su
-                                                        ordine
+                                                        {t(
+                                                            'articles.edit.visibility_cod',
+                                                        )}
                                                     </label>
                                                 </div>
 
@@ -1426,15 +1454,18 @@ export default function ArticlesCreate({
                                                         htmlFor="stock_managed"
                                                         className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                                     >
-                                                        Articolo gestito a
-                                                        magazzino
+                                                        {t(
+                                                            'articles.edit.stock_managed',
+                                                        )}
                                                     </label>
                                                 </div>
 
                                                 {actualUm && (
                                                     <div className="grid gap-2">
                                                         <FormLabel htmlFor="um">
-                                                            U.m.
+                                                            {t(
+                                                                'articles.edit.um',
+                                                            )}
                                                         </FormLabel>
                                                         <Input
                                                             id="um"
@@ -1451,7 +1482,9 @@ export default function ArticlesCreate({
                                                         htmlFor="lot_attribution"
                                                         required
                                                     >
-                                                        Attribuzione lotto
+                                                        {t(
+                                                            'articles.edit.lot_attribution',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="lot_attribution"
@@ -1462,7 +1495,11 @@ export default function ArticlesCreate({
                                                         required
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona attribuzione lotto" />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'articles.edit.placeholder_lot',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {actualLotAttributionList.map(
@@ -1490,7 +1527,9 @@ export default function ArticlesCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="expiration_attribution">
-                                                        Attribuzione scadenza
+                                                        {t(
+                                                            'articles.edit.expiration_attribution',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="expiration_attribution"
@@ -1502,7 +1541,11 @@ export default function ArticlesCreate({
                                                         }
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona attribuzione scadenza" />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'articles.edit.placeholder_expiration',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {actualExpirationAttributionList.map(
@@ -1530,7 +1573,7 @@ export default function ArticlesCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="ean">
-                                                        EAN
+                                                        {t('articles.edit.ean')}
                                                     </FormLabel>
                                                     <Input
                                                         id="ean"
@@ -1541,7 +1584,9 @@ export default function ArticlesCreate({
                                                                 e.target.value,
                                                             )
                                                         }
-                                                        placeholder="EAN"
+                                                        placeholder={t(
+                                                            'articles.edit.placeholder_ean',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={allErrors.ean}
@@ -1550,7 +1595,7 @@ export default function ArticlesCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="db">
-                                                        DB
+                                                        {t('articles.edit.db')}
                                                     </FormLabel>
                                                     <Select
                                                         name="db"
@@ -1558,7 +1603,11 @@ export default function ArticlesCreate({
                                                         onValueChange={setDb}
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona DB" />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'articles.edit.placeholder_db',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {actualDbList.map(
@@ -1584,7 +1633,9 @@ export default function ArticlesCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="article_category">
-                                                        Categoria
+                                                        {t(
+                                                            'articles.edit.category',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="article_category"
@@ -1594,7 +1645,11 @@ export default function ArticlesCreate({
                                                         }
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona una categoria" />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'articles.edit.placeholder_category',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {categories.map(
@@ -1624,7 +1679,9 @@ export default function ArticlesCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="pallet_uuid">
-                                                        Tipo di Pallet
+                                                        {t(
+                                                            'articles.edit.pallet_type',
+                                                        )}
                                                     </FormLabel>
                                                     <Select
                                                         name="pallet_uuid"
@@ -1634,7 +1691,11 @@ export default function ArticlesCreate({
                                                         }
                                                     >
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Seleziona un tipo di pallet" />
+                                                            <SelectValue
+                                                                placeholder={t(
+                                                                    'articles.edit.placeholder_pallet_type',
+                                                                )}
+                                                            />
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {palletTypes.map(
@@ -1652,7 +1713,9 @@ export default function ArticlesCreate({
                                                                         }{' '}
                                                                         -{' '}
                                                                         {pallet.description ||
-                                                                            'Senza descrizione'}
+                                                                            t(
+                                                                                'common.no_description',
+                                                                            )}
                                                                     </SelectItem>
                                                                 ),
                                                             )}
@@ -1667,7 +1730,9 @@ export default function ArticlesCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="plan_packaging">
-                                                        Piano Imballaggio
+                                                        {t(
+                                                            'articles.edit.plan_packaging',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="plan_packaging"
@@ -1684,7 +1749,9 @@ export default function ArticlesCreate({
                                                         onBlur={
                                                             planPackagingValidation.onBlur
                                                         }
-                                                        placeholder="0"
+                                                        placeholder={t(
+                                                            'articles.edit.placeholder_plan',
+                                                        )}
                                                         aria-invalid={
                                                             planPackagingValidation.error
                                                                 ? 'true'
@@ -1704,8 +1771,9 @@ export default function ArticlesCreate({
                                                         </p>
                                                     )}
                                                     <p className="text-xs text-muted-foreground">
-                                                        Numero di pezzi per
-                                                        confezione.
+                                                        {t(
+                                                            'articles.edit.plan_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -1716,7 +1784,9 @@ export default function ArticlesCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="pallet_plans">
-                                                        Piani Pallet
+                                                        {t(
+                                                            'articles.edit.pallet_plans',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="pallet_plans"
@@ -1733,7 +1803,9 @@ export default function ArticlesCreate({
                                                         onBlur={
                                                             palletPlansValidation.onBlur
                                                         }
-                                                        placeholder="0"
+                                                        placeholder={t(
+                                                            'articles.edit.placeholder_plan',
+                                                        )}
                                                         aria-invalid={
                                                             palletPlansValidation.error
                                                                 ? 'true'
@@ -1753,8 +1825,9 @@ export default function ArticlesCreate({
                                                         </p>
                                                     )}
                                                     <p className="text-xs text-muted-foreground">
-                                                        Numero di piani per
-                                                        pallet.
+                                                        {t(
+                                                            'articles.edit.pallet_plans_help',
+                                                        )}
                                                     </p>
                                                     <InputError
                                                         message={
@@ -1765,7 +1838,9 @@ export default function ArticlesCreate({
 
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="line_layout_file">
-                                                        Allegato Layout Linea
+                                                        {t(
+                                                            'articles.edit.line_layout',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="line_layout_file"
@@ -1785,19 +1860,26 @@ export default function ArticlesCreate({
                                                     />
                                                     {actualSourceArticle?.line_layout && (
                                                         <p className="text-xs text-muted-foreground">
-                                                            Allegato attuale:{' '}
+                                                            {t(
+                                                                'articles.edit.current_attachment',
+                                                            )}
+                                                            :{' '}
                                                             {
                                                                 actualSourceArticle.line_layout
                                                             }{' '}
-                                                            (verrà copiato se
-                                                            non selezioni un
-                                                            nuovo allegato)
+                                                            (
+                                                            {t(
+                                                                'articles.edit.current_attachment_copied_if_no_new',
+                                                            )}
+                                                            )
                                                         </p>
                                                     )}
                                                     {lineLayoutFileName && (
                                                         <p className="text-xs text-muted-foreground">
-                                                            Nuovo allegato
-                                                            selezionato:{' '}
+                                                            {t(
+                                                                'articles.edit.new_attachment_selected',
+                                                            )}
+                                                            :{' '}
                                                             <span className="font-mono">
                                                                 {
                                                                     lineLayoutFileName
@@ -1816,8 +1898,9 @@ export default function ArticlesCreate({
                                                 <Card>
                                                     <CardHeader>
                                                         <CardTitle className="text-lg">
-                                                            Elenco macchinari e
-                                                            parametri
+                                                            {t(
+                                                                'articles.create.section_machinery_list',
+                                                            )}
                                                         </CardTitle>
                                                     </CardHeader>
                                                     <CardContent className="space-y-4">
@@ -1884,7 +1967,11 @@ export default function ArticlesCreate({
                                                                                     }
                                                                                 >
                                                                                     <SelectTrigger>
-                                                                                        <SelectValue placeholder="Seleziona macchinario..." />
+                                                                                        <SelectValue
+                                                                                            placeholder={t(
+                                                                                                'articles.create.placeholder_machinery',
+                                                                                            )}
+                                                                                        />
                                                                                     </SelectTrigger>
                                                                                     <SelectContent>
                                                                                         {actualMachinery.map(
@@ -1918,7 +2005,9 @@ export default function ArticlesCreate({
                                                                                 {!row.machineryUuid ? (
                                                                                     <Input
                                                                                         readOnly
-                                                                                        placeholder="Valore"
+                                                                                        placeholder={t(
+                                                                                            'articles.edit.value_label',
+                                                                                        )}
                                                                                         className="bg-muted"
                                                                                     />
                                                                                 ) : valueType ===
@@ -1938,7 +2027,9 @@ export default function ArticlesCreate({
                                                                                                     .value,
                                                                                             )
                                                                                         }
-                                                                                        placeholder="Valore"
+                                                                                        placeholder={t(
+                                                                                            'articles.edit.value_label',
+                                                                                        )}
                                                                                     />
                                                                                 ) : valueType ===
                                                                                   'numero' ? (
@@ -1959,7 +2050,9 @@ export default function ArticlesCreate({
                                                                                                     .value,
                                                                                             )
                                                                                         }
-                                                                                        placeholder="Valore"
+                                                                                        placeholder={t(
+                                                                                            'articles.edit.value_label',
+                                                                                        )}
                                                                                     />
                                                                                 ) : isListType ? (
                                                                                     <Select
@@ -1977,7 +2070,11 @@ export default function ArticlesCreate({
                                                                                         }
                                                                                     >
                                                                                         <SelectTrigger>
-                                                                                            <SelectValue placeholder="Seleziona un valore" />
+                                                                                            <SelectValue
+                                                                                                placeholder={t(
+                                                                                                    'articles.edit.placeholder_select_value',
+                                                                                                )}
+                                                                                            />
                                                                                         </SelectTrigger>
                                                                                         <SelectContent>
                                                                                             {listOptions.map(
@@ -2001,7 +2098,9 @@ export default function ArticlesCreate({
                                                                                 ) : (
                                                                                     <Input
                                                                                         readOnly
-                                                                                        placeholder="Valore"
+                                                                                        placeholder={t(
+                                                                                            'articles.edit.value_label',
+                                                                                        )}
                                                                                         className="bg-muted"
                                                                                     />
                                                                                 )}
@@ -2033,7 +2132,9 @@ export default function ArticlesCreate({
                                                             }
                                                         >
                                                             <Plus className="mr-2 h-4 w-4" />
-                                                            Aggiungi macchinario
+                                                            {t(
+                                                                'articles.create.add_machinery',
+                                                            )}
                                                         </Button>
                                                     </CardContent>
                                                 </Card>
@@ -2042,8 +2143,9 @@ export default function ArticlesCreate({
                                                 <Card>
                                                     <CardHeader>
                                                         <CardTitle className="text-lg">
-                                                            Istruzioni di
-                                                            confezionamento
+                                                            {t(
+                                                                'articles.create.section_packaging_instructions',
+                                                            )}
                                                         </CardTitle>
                                                     </CardHeader>
                                                     <CardContent className="space-y-4">
@@ -2071,7 +2173,11 @@ export default function ArticlesCreate({
                                                                                 }
                                                                             >
                                                                                 <SelectTrigger>
-                                                                                    <SelectValue placeholder="Seleziona istruzioni di confezionamento..." />
+                                                                                    <SelectValue
+                                                                                        placeholder={t(
+                                                                                            'articles.create.placeholder_packaging_instructions',
+                                                                                        )}
+                                                                                    />
                                                                                 </SelectTrigger>
                                                                                 <SelectContent>
                                                                                     {actualPackagingInstructions.map(
@@ -2124,8 +2230,9 @@ export default function ArticlesCreate({
                                                             }
                                                         >
                                                             <Plus className="mr-2 h-4 w-4" />
-                                                            Aggiungi istruzioni
-                                                            di confezionamento
+                                                            {t(
+                                                                'articles.create.add_packaging_instructions',
+                                                            )}
                                                         </Button>
                                                     </CardContent>
                                                 </Card>
@@ -2134,8 +2241,9 @@ export default function ArticlesCreate({
                                                 <Card>
                                                     <CardHeader>
                                                         <CardTitle className="text-lg">
-                                                            Istruzioni di
-                                                            pallettizzazione
+                                                            {t(
+                                                                'articles.create.section_palletization_instructions',
+                                                            )}
                                                         </CardTitle>
                                                     </CardHeader>
                                                     <CardContent className="space-y-4">
@@ -2163,7 +2271,11 @@ export default function ArticlesCreate({
                                                                                 }
                                                                             >
                                                                                 <SelectTrigger>
-                                                                                    <SelectValue placeholder="Seleziona istruzioni di pallettizzazione..." />
+                                                                                    <SelectValue
+                                                                                        placeholder={t(
+                                                                                            'articles.create.placeholder_palletization_instructions',
+                                                                                        )}
+                                                                                    />
                                                                                 </SelectTrigger>
                                                                                 <SelectContent>
                                                                                     {actualPalletizingInstructions.map(
@@ -2216,8 +2328,9 @@ export default function ArticlesCreate({
                                                             }
                                                         >
                                                             <Plus className="mr-2 h-4 w-4" />
-                                                            Aggiungi istruzioni
-                                                            di pallettizzazione
+                                                            {t(
+                                                                'articles.create.add_palletization_instructions',
+                                                            )}
                                                         </Button>
                                                     </CardContent>
                                                 </Card>
@@ -2226,7 +2339,9 @@ export default function ArticlesCreate({
                                                 <Card>
                                                     <CardHeader>
                                                         <CardTitle className="text-lg">
-                                                            Istruzioni operative
+                                                            {t(
+                                                                'articles.create.section_operational_instructions',
+                                                            )}
                                                         </CardTitle>
                                                     </CardHeader>
                                                     <CardContent className="space-y-4">
@@ -2254,7 +2369,11 @@ export default function ArticlesCreate({
                                                                                 }
                                                                             >
                                                                                 <SelectTrigger>
-                                                                                    <SelectValue placeholder="Seleziona istruzioni operative..." />
+                                                                                    <SelectValue
+                                                                                        placeholder={t(
+                                                                                            'articles.create.placeholder_operational_instructions',
+                                                                                        )}
+                                                                                    />
                                                                                 </SelectTrigger>
                                                                                 <SelectContent>
                                                                                     {actualOperatingInstructions.map(
@@ -2307,8 +2426,9 @@ export default function ArticlesCreate({
                                                             }
                                                         >
                                                             <Plus className="mr-2 h-4 w-4" />
-                                                            Aggiungi istruzioni
-                                                            operative
+                                                            {t(
+                                                                'articles.create.add_operational_instructions',
+                                                            )}
                                                         </Button>
                                                     </CardContent>
                                                 </Card>
@@ -2317,8 +2437,9 @@ export default function ArticlesCreate({
                                                 <Card>
                                                     <CardHeader>
                                                         <CardTitle className="text-lg">
-                                                            Materiali di consumo
-                                                            non a DB
+                                                            {t(
+                                                                'articles.create.section_materials',
+                                                            )}
                                                         </CardTitle>
                                                     </CardHeader>
                                                     <CardContent className="space-y-4">
@@ -2346,7 +2467,11 @@ export default function ArticlesCreate({
                                                                                 }
                                                                             >
                                                                                 <SelectTrigger>
-                                                                                    <SelectValue placeholder="Seleziona materiali di consumo non a DB..." />
+                                                                                    <SelectValue
+                                                                                        placeholder={t(
+                                                                                            'articles.create.placeholder_materials',
+                                                                                        )}
+                                                                                    />
                                                                                 </SelectTrigger>
                                                                                 <SelectContent>
                                                                                     {actualMaterials.map(
@@ -2366,7 +2491,9 @@ export default function ArticlesCreate({
                                                                                                 }{' '}
                                                                                                 -{' '}
                                                                                                 {material.description ||
-                                                                                                    'Senza descrizione'}
+                                                                                                    t(
+                                                                                                        'common.no_description',
+                                                                                                    )}
                                                                                             </SelectItem>
                                                                                         ),
                                                                                     )}
@@ -2399,16 +2526,20 @@ export default function ArticlesCreate({
                                                             }
                                                         >
                                                             <Plus className="mr-2 h-4 w-4" />
-                                                            Aggiungi materiali
+                                                            {t(
+                                                                'articles.create.add_materials',
+                                                            )}
                                                         </Button>
                                                     </CardContent>
                                                 </Card>
 
-                                                {/* Criticità */}
+                                                {/* Criticality */}
                                                 <Card>
                                                     <CardHeader>
                                                         <CardTitle className="text-lg">
-                                                            Criticità
+                                                            {t(
+                                                                'articles.create.section_critical_issues',
+                                                            )}
                                                         </CardTitle>
                                                     </CardHeader>
                                                     <CardContent className="space-y-4">
@@ -2436,7 +2567,11 @@ export default function ArticlesCreate({
                                                                                 }
                                                                             >
                                                                                 <SelectTrigger>
-                                                                                    <SelectValue placeholder="Seleziona criticità..." />
+                                                                                    <SelectValue
+                                                                                        placeholder={t(
+                                                                                            'articles.create.placeholder_critical_issues',
+                                                                                        )}
+                                                                                    />
                                                                                 </SelectTrigger>
                                                                                 <SelectContent>
                                                                                     {actualCriticalIssues.map(
@@ -2486,7 +2621,9 @@ export default function ArticlesCreate({
                                                             }
                                                         >
                                                             <Plus className="mr-2 h-4 w-4" />
-                                                            Aggiungi criticità
+                                                            {t(
+                                                                'articles.create.add_critical_issues',
+                                                            )}
                                                         </Button>
                                                     </CardContent>
                                                 </Card>
@@ -2495,8 +2632,9 @@ export default function ArticlesCreate({
                                                 <Card>
                                                     <CardHeader>
                                                         <CardTitle className="text-lg">
-                                                            Verifica consumi
-                                                            materiali o prodotti
+                                                            {t(
+                                                                'articles.create.section_check_materials',
+                                                            )}
                                                         </CardTitle>
                                                     </CardHeader>
                                                     <CardContent className="space-y-4">
@@ -2525,7 +2663,11 @@ export default function ArticlesCreate({
                                                                                 }
                                                                             >
                                                                                 <SelectTrigger>
-                                                                                    <SelectValue placeholder="Materiale..." />
+                                                                                    <SelectValue
+                                                                                        placeholder={t(
+                                                                                            'articles.create.placeholder_material',
+                                                                                        )}
+                                                                                    />
                                                                                 </SelectTrigger>
                                                                                 <SelectContent>
                                                                                     {actualMaterials.map(
@@ -2545,7 +2687,9 @@ export default function ArticlesCreate({
                                                                                                 }{' '}
                                                                                                 -{' '}
                                                                                                 {material.description ||
-                                                                                                    'Senza descrizione'}
+                                                                                                    t(
+                                                                                                        'common.no_description',
+                                                                                                    )}
                                                                                             </SelectItem>
                                                                                         ),
                                                                                     )}
@@ -2568,7 +2712,9 @@ export default function ArticlesCreate({
                                                                                             .value,
                                                                                     )
                                                                                 }
-                                                                                placeholder="U.M."
+                                                                                placeholder={t(
+                                                                                    'articles.create.placeholder_um',
+                                                                                )}
                                                                             />
                                                                         </div>
                                                                         <div className="col-span-2">
@@ -2589,7 +2735,9 @@ export default function ArticlesCreate({
                                                                                             .value,
                                                                                     )
                                                                                 }
-                                                                                placeholder="q.tà prev"
+                                                                                placeholder={t(
+                                                                                    'articles.create.placeholder_qty_expected',
+                                                                                )}
                                                                             />
                                                                         </div>
                                                                         <div className="col-span-2">
@@ -2610,7 +2758,9 @@ export default function ArticlesCreate({
                                                                                             .value,
                                                                                     )
                                                                                 }
-                                                                                placeholder="q.tà effett"
+                                                                                placeholder={t(
+                                                                                    'articles.create.placeholder_qty_effective',
+                                                                                )}
                                                                             />
                                                                         </div>
                                                                         <div className="col-span-1">
@@ -2639,23 +2789,28 @@ export default function ArticlesCreate({
                                                             }
                                                         >
                                                             <Plus className="mr-2 h-4 w-4" />
-                                                            Aggiungi verifica
+                                                            {t(
+                                                                'articles.create.add_check',
+                                                            )}
                                                         </Button>
                                                     </CardContent>
                                                 </Card>
 
-                                                {/* Sezione Etichette */}
+                                                {/* Labels Section */}
                                                 <Card>
                                                     <CardHeader>
                                                         <CardTitle className="text-lg">
-                                                            Etichette
+                                                            {t(
+                                                                'articles.edit.section_labels',
+                                                            )}
                                                         </CardTitle>
                                                     </CardHeader>
                                                     <CardContent className="space-y-4">
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="labels_external">
-                                                                Etichette
-                                                                esterne
+                                                                {t(
+                                                                    'articles.edit.labels_external',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="labels_external"
@@ -2667,7 +2822,11 @@ export default function ArticlesCreate({
                                                                 }
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona etichette esterne" />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'articles.create.placeholders.labels_external',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {actualLabelsExternalList.map(
@@ -2692,7 +2851,9 @@ export default function ArticlesCreate({
 
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="labels_pvp">
-                                                                Etichette pvp
+                                                                {t(
+                                                                    'articles.edit.labels_pvp',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="labels_pvp"
@@ -2704,7 +2865,11 @@ export default function ArticlesCreate({
                                                                 }
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona etichetta pvp" />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'articles.create.placeholders.labels_pvp',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {actualLabelsPvpList.map(
@@ -2729,7 +2894,9 @@ export default function ArticlesCreate({
 
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="value_pvp">
-                                                                Valore pvp
+                                                                {t(
+                                                                    'articles.edit.value_pvp',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex items-center gap-2">
                                                                 <Input
@@ -2760,8 +2927,9 @@ export default function ArticlesCreate({
 
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="labels_ingredient">
-                                                                Etichette
-                                                                ingredienti
+                                                                {t(
+                                                                    'articles.edit.labels_ingredient',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="labels_ingredient"
@@ -2773,7 +2941,11 @@ export default function ArticlesCreate({
                                                                 }
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona etichetta ingrediente" />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'articles.create.placeholders.labels_ingredient',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {actualLabelsIngredientList.map(
@@ -2798,8 +2970,9 @@ export default function ArticlesCreate({
 
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="labels_data_variable">
-                                                                Etichette dati
-                                                                variabili
+                                                                {t(
+                                                                    'articles.edit.labels_data_variable',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="labels_data_variable"
@@ -2811,7 +2984,11 @@ export default function ArticlesCreate({
                                                                 }
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona etichetta dati variabili" />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'articles.create.placeholders.labels_data_variable',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {actualLabelsDataVariableList.map(
@@ -2836,8 +3013,9 @@ export default function ArticlesCreate({
 
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="label_of_jumpers">
-                                                                Etichetta
-                                                                cavallotti
+                                                                {t(
+                                                                    'articles.edit.label_jumpers',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="label_of_jumpers"
@@ -2849,7 +3027,11 @@ export default function ArticlesCreate({
                                                                 }
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona etichetta cavallotto" />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'articles.create.placeholders.label_of_jumpers',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {actualLabelOfJumpersList.map(
@@ -2874,17 +3056,21 @@ export default function ArticlesCreate({
                                                     </CardContent>
                                                 </Card>
 
-                                                {/* Sezione Peso e Controllo */}
+                                                {/* Weight and Control Section */}
                                                 <Card>
                                                     <CardHeader>
                                                         <CardTitle className="text-lg">
-                                                            Peso e Controllo
+                                                            {t(
+                                                                'articles.edit.section_weight',
+                                                            )}
                                                         </CardTitle>
                                                     </CardHeader>
                                                     <CardContent className="space-y-4">
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="weight_kg">
-                                                                Peso collo
+                                                                {t(
+                                                                    'articles.edit.weight_kg',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex items-center gap-2">
                                                                 <Input
@@ -2915,7 +3101,9 @@ export default function ArticlesCreate({
 
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="nominal_weight_control">
-                                                                Controllo peso
+                                                                {t(
+                                                                    'articles.edit.nominal_weight_control',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="nominal_weight_control"
@@ -2927,7 +3115,11 @@ export default function ArticlesCreate({
                                                                 }
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona controllo peso" />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'articles.create.placeholders.nominal_weight_control',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {actualNominalWeightControlList.map(
@@ -2952,7 +3144,9 @@ export default function ArticlesCreate({
 
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="weight_unit_of_measur">
-                                                                Unità di misura
+                                                                {t(
+                                                                    'articles.edit.unit_of_measure',
+                                                                )}
                                                             </FormLabel>
                                                             <Input
                                                                 id="weight_unit_of_measur"
@@ -2966,13 +3160,17 @@ export default function ArticlesCreate({
                                                                             .value,
                                                                     )
                                                                 }
-                                                                placeholder="Unità di misura"
+                                                                placeholder={t(
+                                                                    'articles.edit.unit_of_measure',
+                                                                )}
                                                             />
                                                         </div>
 
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="weight_value">
-                                                                Valore
+                                                                {t(
+                                                                    'articles.edit.value_label',
+                                                                )}
                                                             </FormLabel>
                                                             <Input
                                                                 id="weight_value"
@@ -2995,8 +3193,9 @@ export default function ArticlesCreate({
 
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="object_control_weight">
-                                                                Oggetto del
-                                                                controllo
+                                                                {t(
+                                                                    'articles.edit.object_control',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="object_control_weight"
@@ -3008,7 +3207,11 @@ export default function ArticlesCreate({
                                                                 }
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona oggetto del controllo" />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'articles.create.placeholders.object_control_weight',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {actualObjectControlWeightList.map(
@@ -3033,11 +3236,13 @@ export default function ArticlesCreate({
                                                     </CardContent>
                                                 </Card>
 
-                                                {/* Sezione Campi Aggiuntivi */}
+                                                {/* Additional Fields Section */}
                                                 <Card>
                                                     <CardHeader>
                                                         <CardTitle className="text-lg">
-                                                            Altri Campi
+                                                            {t(
+                                                                'articles.edit.section_other',
+                                                            )}
                                                         </CardTitle>
                                                     </CardHeader>
                                                     <CardContent className="space-y-4">
@@ -3061,15 +3266,17 @@ export default function ArticlesCreate({
                                                                 htmlFor="allergens"
                                                                 className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                                             >
-                                                                Allergeni
+                                                                {t(
+                                                                    'articles.edit.allergens',
+                                                                )}
                                                             </label>
                                                         </div>
 
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="pallet_sheet">
-                                                                Foglio pallet
-                                                                richiesto da
-                                                                cliente
+                                                                {t(
+                                                                    'articles.edit.pallet_sheet',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="pallet_sheet"
@@ -3081,7 +3288,11 @@ export default function ArticlesCreate({
                                                                 }
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona foglio pallet" />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'articles.create.placeholders.pallet_sheet',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {actualPalletSheets.map(
@@ -3101,7 +3312,9 @@ export default function ArticlesCreate({
                                                                                 }{' '}
                                                                                 -{' '}
                                                                                 {sheet.description ||
-                                                                                    'Senza descrizione'}
+                                                                                    t(
+                                                                                        'common.no_description',
+                                                                                    )}
                                                                             </SelectItem>
                                                                         ),
                                                                     )}
@@ -3114,7 +3327,9 @@ export default function ArticlesCreate({
                                                                 htmlFor="model_uuid"
                                                                 required
                                                             >
-                                                                Modello CQ
+                                                                {t(
+                                                                    'articles.edit.model_cq',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="model_uuid"
@@ -3127,7 +3342,11 @@ export default function ArticlesCreate({
                                                                 required
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona modello CQ" />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'articles.create.placeholders.model_cq',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {actualCqModels.map(
@@ -3147,7 +3366,9 @@ export default function ArticlesCreate({
                                                                                 }{' '}
                                                                                 -{' '}
                                                                                 {model.description_model ||
-                                                                                    'Senza descrizione'}
+                                                                                    t(
+                                                                                        'common.no_description',
+                                                                                    )}
                                                                             </SelectItem>
                                                                         ),
                                                                     )}
@@ -3162,7 +3383,9 @@ export default function ArticlesCreate({
 
                                                         <div className="grid gap-2">
                                                             <FormLabel htmlFor="customer_samples_list">
-                                                                Campioni cliente
+                                                                {t(
+                                                                    'articles.edit.customer_samples',
+                                                                )}
                                                             </FormLabel>
                                                             <Select
                                                                 name="customer_samples_list"
@@ -3174,7 +3397,11 @@ export default function ArticlesCreate({
                                                                 }
                                                             >
                                                                 <SelectTrigger>
-                                                                    <SelectValue placeholder="Seleziona campione cliente" />
+                                                                    <SelectValue
+                                                                        placeholder={t(
+                                                                            'articles.create.placeholders.customer_samples',
+                                                                        )}
+                                                                    />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {actualCustomerSamplesList.map(
@@ -3199,22 +3426,23 @@ export default function ArticlesCreate({
                                                     </CardContent>
                                                 </Card>
 
-                                                {/* Sezione Media Produttività */}
+                                                {/* Average Productivity Section */}
                                                 {actualMediaValues && (
                                                     <Card>
                                                         <CardHeader>
                                                             <CardTitle className="text-lg">
-                                                                Media
-                                                                Produttività
+                                                                {t(
+                                                                    'articles.edit.section_media',
+                                                                )}
                                                             </CardTitle>
                                                         </CardHeader>
                                                         <CardContent className="space-y-4">
                                                             <div className="grid grid-cols-2 gap-4">
                                                                 <div className="grid gap-2">
                                                                     <FormLabel htmlFor="media_prevista_cfz_h_pz">
-                                                                        Media
-                                                                        prevista
-                                                                        cfz/h/pz
+                                                                        {t(
+                                                                            'articles.edit.media_prevista_cfz',
+                                                                        )}
                                                                     </FormLabel>
                                                                     <div className="flex items-center gap-2">
                                                                         <Input
@@ -3234,9 +3462,9 @@ export default function ArticlesCreate({
 
                                                                 <div className="grid gap-2">
                                                                     <FormLabel htmlFor="media_reale_cfz_h_pz">
-                                                                        Media
-                                                                        reale
-                                                                        cfz/h/pz
+                                                                        {t(
+                                                                            'articles.edit.media_reale_cfz',
+                                                                        )}
                                                                     </FormLabel>
                                                                     <div className="flex items-center gap-2">
                                                                         <Input
@@ -3267,9 +3495,9 @@ export default function ArticlesCreate({
 
                                                                 <div className="grid gap-2">
                                                                     <FormLabel htmlFor="media_prevista_pz_h_ps">
-                                                                        Media
-                                                                        prevista
-                                                                        pz/h/ps
+                                                                        {t(
+                                                                            'articles.edit.media_prevista_pz',
+                                                                        )}
                                                                     </FormLabel>
                                                                     <div className="flex items-center gap-2">
                                                                         <Input
@@ -3289,9 +3517,9 @@ export default function ArticlesCreate({
 
                                                                 <div className="grid gap-2">
                                                                     <FormLabel htmlFor="media_reale_pz_h_ps">
-                                                                        Media
-                                                                        reale
-                                                                        pz/h/ps
+                                                                        {t(
+                                                                            'articles.edit.media_reale_pz',
+                                                                        )}
                                                                     </FormLabel>
                                                                     <div className="flex items-center gap-2">
                                                                         <Input
@@ -3327,15 +3555,18 @@ export default function ArticlesCreate({
                                                 <Card>
                                                     <CardHeader>
                                                         <CardTitle className="text-lg">
-                                                            Approvazioni
+                                                            {t(
+                                                                'articles.edit.section_approvals',
+                                                            )}
                                                         </CardTitle>
                                                     </CardHeader>
                                                     <CardContent className="space-y-6">
-                                                        {/* Approvazione Produzione */}
+                                                        {/* Production Approval */}
                                                         <div className="space-y-3 border-b pb-4">
                                                             <FormLabel htmlFor="production_approval_checkbox">
-                                                                Approvazione
-                                                                Produzione
+                                                                {t(
+                                                                    'articles.edit.approval_production',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex items-center space-x-2">
                                                                 <Checkbox
@@ -3357,12 +3588,16 @@ export default function ArticlesCreate({
                                                                     htmlFor="production_approval_checkbox"
                                                                     className="text-sm font-medium"
                                                                 >
-                                                                    Approvato
+                                                                    {t(
+                                                                        'articles.edit.approved',
+                                                                    )}
                                                                 </label>
                                                             </div>
                                                             <div className="grid gap-2">
                                                                 <FormLabel htmlFor="production_approval_employee">
-                                                                    Addetto
+                                                                    {t(
+                                                                        'articles.edit.employee',
+                                                                    )}
                                                                 </FormLabel>
                                                                 <Input
                                                                     id="production_approval_employee"
@@ -3379,12 +3614,16 @@ export default function ArticlesCreate({
                                                                                 .value,
                                                                         )
                                                                     }
-                                                                    placeholder="Addetto"
+                                                                    placeholder={t(
+                                                                        'articles.edit.placeholder_employee',
+                                                                    )}
                                                                 />
                                                             </div>
                                                             <div className="grid gap-2">
                                                                 <FormLabel htmlFor="production_approval_date">
-                                                                    Data
+                                                                    {t(
+                                                                        'articles.edit.date',
+                                                                    )}
                                                                 </FormLabel>
                                                                 <Input
                                                                     id="production_approval_date"
@@ -3408,7 +3647,9 @@ export default function ArticlesCreate({
                                                             </div>
                                                             <div className="grid gap-2">
                                                                 <FormLabel htmlFor="production_approval_notes">
-                                                                    Note
+                                                                    {t(
+                                                                        'articles.edit.notes',
+                                                                    )}
                                                                 </FormLabel>
                                                                 <Textarea
                                                                     id="production_approval_notes"
@@ -3430,11 +3671,12 @@ export default function ArticlesCreate({
                                                             </div>
                                                         </div>
 
-                                                        {/* Approvazione Qualità */}
+                                                        {/* Quality Approval */}
                                                         <div className="space-y-3 border-b pb-4">
                                                             <FormLabel htmlFor="approv_quality_checkbox">
-                                                                Approvazione
-                                                                Qualità
+                                                                {t(
+                                                                    'articles.edit.approval_quality',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex items-center space-x-2">
                                                                 <Checkbox
@@ -3456,12 +3698,16 @@ export default function ArticlesCreate({
                                                                     htmlFor="approv_quality_checkbox"
                                                                     className="text-sm font-medium"
                                                                 >
-                                                                    Approvato
+                                                                    {t(
+                                                                        'articles.edit.approved',
+                                                                    )}
                                                                 </label>
                                                             </div>
                                                             <div className="grid gap-2">
                                                                 <FormLabel htmlFor="approv_quality_employee">
-                                                                    Addetto
+                                                                    {t(
+                                                                        'articles.edit.employee',
+                                                                    )}
                                                                 </FormLabel>
                                                                 <Input
                                                                     id="approv_quality_employee"
@@ -3478,12 +3724,16 @@ export default function ArticlesCreate({
                                                                                 .value,
                                                                         )
                                                                     }
-                                                                    placeholder="Addetto"
+                                                                    placeholder={t(
+                                                                        'articles.edit.placeholder_employee',
+                                                                    )}
                                                                 />
                                                             </div>
                                                             <div className="grid gap-2">
                                                                 <FormLabel htmlFor="approv_quality_date">
-                                                                    Data
+                                                                    {t(
+                                                                        'articles.edit.date',
+                                                                    )}
                                                                 </FormLabel>
                                                                 <Input
                                                                     id="approv_quality_date"
@@ -3507,7 +3757,9 @@ export default function ArticlesCreate({
                                                             </div>
                                                             <div className="grid gap-2">
                                                                 <FormLabel htmlFor="approv_quality_notes">
-                                                                    Note
+                                                                    {t(
+                                                                        'articles.edit.notes',
+                                                                    )}
                                                                 </FormLabel>
                                                                 <Textarea
                                                                     id="approv_quality_notes"
@@ -3529,11 +3781,12 @@ export default function ArticlesCreate({
                                                             </div>
                                                         </div>
 
-                                                        {/* Approvazione Commerciale */}
+                                                        {/* Commercial Approval */}
                                                         <div className="space-y-3 border-b pb-4">
                                                             <FormLabel htmlFor="commercial_approval_checkbox">
-                                                                Approvazione
-                                                                Commerciale
+                                                                {t(
+                                                                    'articles.edit.approval_commercial',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex items-center space-x-2">
                                                                 <Checkbox
@@ -3555,12 +3808,16 @@ export default function ArticlesCreate({
                                                                     htmlFor="commercial_approval_checkbox"
                                                                     className="text-sm font-medium"
                                                                 >
-                                                                    Approvato
+                                                                    {t(
+                                                                        'articles.edit.approved',
+                                                                    )}
                                                                 </label>
                                                             </div>
                                                             <div className="grid gap-2">
                                                                 <FormLabel htmlFor="commercial_approval_employee">
-                                                                    Addetto
+                                                                    {t(
+                                                                        'articles.edit.employee',
+                                                                    )}
                                                                 </FormLabel>
                                                                 <Input
                                                                     id="commercial_approval_employee"
@@ -3577,12 +3834,16 @@ export default function ArticlesCreate({
                                                                                 .value,
                                                                         )
                                                                     }
-                                                                    placeholder="Addetto"
+                                                                    placeholder={t(
+                                                                        'articles.edit.placeholder_employee',
+                                                                    )}
                                                                 />
                                                             </div>
                                                             <div className="grid gap-2">
                                                                 <FormLabel htmlFor="commercial_approval_date">
-                                                                    Data
+                                                                    {t(
+                                                                        'articles.edit.date',
+                                                                    )}
                                                                 </FormLabel>
                                                                 <Input
                                                                     id="commercial_approval_date"
@@ -3606,7 +3867,9 @@ export default function ArticlesCreate({
                                                             </div>
                                                             <div className="grid gap-2">
                                                                 <FormLabel htmlFor="commercial_approval_notes">
-                                                                    Note
+                                                                    {t(
+                                                                        'articles.edit.notes',
+                                                                    )}
                                                                 </FormLabel>
                                                                 <Textarea
                                                                     id="commercial_approval_notes"
@@ -3628,11 +3891,12 @@ export default function ArticlesCreate({
                                                             </div>
                                                         </div>
 
-                                                        {/* Approvazione Cliente */}
+                                                        {/* Customer Approval */}
                                                         <div className="space-y-3">
                                                             <FormLabel htmlFor="client_approval_checkbox">
-                                                                Approvazione
-                                                                Cliente
+                                                                {t(
+                                                                    'articles.edit.approval_client',
+                                                                )}
                                                             </FormLabel>
                                                             <div className="flex items-center space-x-2">
                                                                 <Checkbox
@@ -3648,19 +3912,23 @@ export default function ArticlesCreate({
                                                                             checked ===
                                                                                 true,
                                                                         );
-                                                                        // Sincronizzare check_approval (anche in backend)
+                                                                        // Sync check_approval (also in backend)
                                                                     }}
                                                                 />
                                                                 <label
                                                                     htmlFor="client_approval_checkbox"
                                                                     className="text-sm font-medium"
                                                                 >
-                                                                    Approvato
+                                                                    {t(
+                                                                        'articles.edit.approved',
+                                                                    )}
                                                                 </label>
                                                             </div>
                                                             <div className="grid gap-2">
                                                                 <FormLabel htmlFor="client_approval_employee">
-                                                                    Addetto
+                                                                    {t(
+                                                                        'articles.edit.employee',
+                                                                    )}
                                                                 </FormLabel>
                                                                 <Input
                                                                     id="client_approval_employee"
@@ -3677,12 +3945,16 @@ export default function ArticlesCreate({
                                                                                 .value,
                                                                         )
                                                                     }
-                                                                    placeholder="Addetto"
+                                                                    placeholder={t(
+                                                                        'articles.edit.placeholder_employee',
+                                                                    )}
                                                                 />
                                                             </div>
                                                             <div className="grid gap-2">
                                                                 <FormLabel htmlFor="client_approval_date">
-                                                                    Data
+                                                                    {t(
+                                                                        'articles.edit.date',
+                                                                    )}
                                                                 </FormLabel>
                                                                 <Input
                                                                     id="client_approval_date"
@@ -3706,7 +3978,9 @@ export default function ArticlesCreate({
                                                             </div>
                                                             <div className="grid gap-2">
                                                                 <FormLabel htmlFor="client_approval_notes">
-                                                                    Note
+                                                                    {t(
+                                                                        'articles.edit.notes',
+                                                                    )}
                                                                 </FormLabel>
                                                                 <Textarea
                                                                     id="client_approval_notes"
@@ -3736,17 +4010,29 @@ export default function ArticlesCreate({
                                                         disabled={processing}
                                                         aria-label={
                                                             actualSourceArticle
-                                                                ? 'Salva come nuovo articolo'
-                                                                : 'Crea articolo'
+                                                                ? t(
+                                                                      'articles.create.save_as_new_article',
+                                                                  )
+                                                                : t(
+                                                                      'articles.create.create_article_button',
+                                                                  )
                                                         }
                                                     >
                                                         {processing
                                                             ? actualSourceArticle
-                                                                ? 'Salvando...'
-                                                                : 'Creando...'
+                                                                ? t(
+                                                                      'common.saving',
+                                                                  )
+                                                                : t(
+                                                                      'articles.create.creating',
+                                                                  )
                                                             : actualSourceArticle
-                                                              ? 'Salva come nuovo articolo'
-                                                              : 'Crea Articolo'}
+                                                              ? t(
+                                                                    'articles.create.save_as_new_article',
+                                                                )
+                                                              : t(
+                                                                    'articles.create.create_article_button',
+                                                                )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -3757,7 +4043,7 @@ export default function ArticlesCreate({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>

@@ -3,6 +3,37 @@ import { describe, expect, it, vi } from 'vitest';
 import PlanningToolbar from './PlanningToolbar';
 import type { RangeMode, ZoomLevel } from './types';
 
+vi.mock('@/hooks/use-translations', () => {
+    const itTranslations: Record<string, string> = {
+        'planning.toolbar_aria': 'Controlli pianificazione',
+        'planning.prev_day': 'Giorno precedente',
+        'planning.prev_week': 'Settimana precedente',
+        'planning.prev_month': 'Mese precedente',
+        'planning.next_day': 'Giorno successivo',
+        'planning.next_week': 'Settimana successiva',
+        'planning.next_month': 'Mese successivo',
+        'planning.go_today': 'Vai a oggi',
+        'planning.today': 'Oggi',
+        'planning.date_label': 'Data:',
+        'planning.range_label': 'Range:',
+        'planning.zoom': 'Zoom',
+        'planning.zoom_aria': 'Zoom temporale',
+        'planning.hours': 'Ore',
+        'planning.quarters': 'Quarti',
+        'planning.period': 'Periodo',
+        'planning.period_aria': 'Periodo di visualizzazione',
+        'planning.range_day': 'Giornaliera',
+        'planning.range_week': 'Settimanale',
+        'planning.range_month': 'Mensile',
+        'planning.updating': 'Aggiornamento…',
+    };
+    return {
+        useTranslations: () => ({
+            t: (key: string) => itTranslations[key] ?? key,
+        }),
+    };
+});
+
 const noop = () => {};
 
 const baseProps = {

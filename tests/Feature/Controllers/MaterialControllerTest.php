@@ -207,7 +207,7 @@ class MaterialControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $response = $this->post(route('materials.store'), [
-            'cod' => str_repeat('a', 256), // Più di 255 caratteri
+            'cod' => str_repeat('a', 256), // More than 255 characters
             'description' => 'Test Description',
         ]);
 
@@ -221,7 +221,7 @@ class MaterialControllerTest extends TestCase
 
         $response = $this->post(route('materials.store'), [
             'cod' => 'MAT-001',
-            'description' => str_repeat('a', 256), // Più di 255 caratteri
+            'description' => str_repeat('a', 256), // More than 255 characters
         ]);
 
         $response->assertSessionHasErrors(['description']);

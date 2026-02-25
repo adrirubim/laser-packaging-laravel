@@ -162,7 +162,7 @@ export function TopArticlesChart({ data, onBarClick }: TopArticlesChartProps) {
         payload?: { value?: string };
     }) => {
         const { x, y, payload } = props;
-        // Cercare l'indice dal codice articolo mostrato
+        // Find index from displayed article code
         const payloadValue = payload?.value;
         if (!payloadValue) {
             return (
@@ -224,7 +224,7 @@ export function TopArticlesChart({ data, onBarClick }: TopArticlesChartProps) {
                 data={chartData}
                 layout="vertical"
                 // Margen coherente con TopClientes y Progresso Produzione,
-                // optimizado para móvil.
+                // optimized for mobile.
                 margin={{ top: 5, right: 30, left: 4, bottom: 5 }}
             >
                 <CartesianGrid

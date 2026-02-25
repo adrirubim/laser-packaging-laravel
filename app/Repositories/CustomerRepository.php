@@ -26,14 +26,14 @@ class CustomerRepository
             'vat_number',
         ]);
 
-        // Filtro per provincia
+        // Filter by province
         $this->applyFilter($query, $request, 'province');
 
         // Ordinamento (unificato: sort_by/sort_order)
         $sortColumn = $request->get('sort_by', $request->get('sort', 'company_name')); // Compatibilidad con sort antiguo
         $sortDirection = $request->get('sort_order', $request->get('direction', 'asc')); // Compatibilidad con direction antiguo
 
-        // Verificare che la colonna di ordinamento sia valida
+        // Verify that sort column is valid
         $allowedSorts = ['code', 'company_name', 'city', 'province'];
         if (! in_array($sortColumn, $allowedSorts)) {
             $sortColumn = 'company_name';

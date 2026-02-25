@@ -154,14 +154,16 @@ export default function OperationalInstructionsIndex() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Istruzioni Operative" />
+            <Head title={t('operational_instructions.index.head_title')} />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <IndexHeader
-                    title="Istruzioni Operative"
-                    subtitle="Elenco delle istruzioni operative attive con Cerca e filtri."
+                    title={t('operational_instructions.index.title')}
+                    subtitle={t('operational_instructions.index.subtitle')}
                     createHref={articles.operationalInstructions.create().url}
-                    createLabel="Nuova Istruzione"
+                    createLabel={t(
+                        'operational_instructions.index.create_label',
+                    )}
                 />
 
                 <FlashNotifications flash={flash} />
@@ -169,12 +171,14 @@ export default function OperationalInstructionsIndex() {
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <div className="space-y-1">
                         <label className="text-xs font-medium text-muted-foreground">
-                            Cerca
+                            {t('operational_instructions.index.search_label')}
                         </label>
                         <SearchInput
                             value={searchValue}
                             onChange={handleSearchChange}
-                            placeholder="Codice, numero o nome allegato..."
+                            placeholder={t(
+                                'operational_instructions.index.search_placeholder',
+                            )}
                             isLoading={isSearching}
                             onClear={clearSearch}
                         />
@@ -187,8 +191,9 @@ export default function OperationalInstructionsIndex() {
                             {instructionsPaginated.data.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center gap-4 py-12 text-center">
                                     <p className="text-sm text-muted-foreground">
-                                        Nessuna istruzione operativa. Aggiungi
-                                        la prima.
+                                        {t(
+                                            'operational_instructions.index.empty',
+                                        )}
                                     </p>
                                     <Button asChild>
                                         <Link
@@ -197,7 +202,9 @@ export default function OperationalInstructionsIndex() {
                                                     .url
                                             }
                                         >
-                                            Aggiungi
+                                            {t(
+                                                'operational_instructions.index.add',
+                                            )}
                                         </Link>
                                     </Button>
                                 </div>
@@ -217,7 +224,10 @@ export default function OperationalInstructionsIndex() {
                                                         </h3>
                                                         {instruction.number && (
                                                             <p className="text-xs text-muted-foreground">
-                                                                Numero:{' '}
+                                                                {t(
+                                                                    'operational_instructions.index.th_number',
+                                                                )}
+                                                                :{' '}
                                                                 {
                                                                     instruction.number
                                                                 }
@@ -251,7 +261,9 @@ export default function OperationalInstructionsIndex() {
                                             </div>
                                             {instruction.filename && (
                                                 <div className="text-xs text-muted-foreground">
-                                                    Allegato:{' '}
+                                                    {t(
+                                                        'operational_instructions.index.attachment_prefix',
+                                                    )}{' '}
                                                     {instruction.filename}{' '}
                                                     <button
                                                         type="button"
@@ -265,8 +277,13 @@ export default function OperationalInstructionsIndex() {
                                                                     },
                                                                 ).url;
                                                         }}
+                                                        aria-label={t(
+                                                            'operational_instructions.index.download',
+                                                        )}
                                                     >
-                                                        Scarica
+                                                        {t(
+                                                            'operational_instructions.index.download',
+                                                        )}
                                                     </button>
                                                 </div>
                                             )}
@@ -279,10 +296,14 @@ export default function OperationalInstructionsIndex() {
                             <thead className="sticky top-0 z-10 bg-muted/80 backdrop-blur">
                                 <tr className="text-xs tracking-wide text-muted-foreground uppercase">
                                     <th className="border-b px-3 py-2 font-medium">
-                                        ID
+                                        {t(
+                                            'operational_instructions.index.th_id',
+                                        )}
                                     </th>
                                     <th className="border-b px-3 py-2 font-medium">
-                                        UUID
+                                        {t(
+                                            'operational_instructions.index.th_uuid',
+                                        )}
                                     </th>
                                     <SortableTableHeader
                                         column="code"
@@ -290,7 +311,9 @@ export default function OperationalInstructionsIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Codice
+                                        {t(
+                                            'operational_instructions.index.th_code',
+                                        )}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="number"
@@ -298,7 +321,9 @@ export default function OperationalInstructionsIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Numero
+                                        {t(
+                                            'operational_instructions.index.th_number',
+                                        )}
                                     </SortableTableHeader>
                                     <SortableTableHeader
                                         column="filename"
@@ -306,10 +331,14 @@ export default function OperationalInstructionsIndex() {
                                         currentDirection={filters.sort_order}
                                         onSort={handleSort}
                                     >
-                                        Filename
+                                        {t(
+                                            'operational_instructions.index.th_filename',
+                                        )}
                                     </SortableTableHeader>
                                     <th className="border-b px-3 py-2 text-right font-medium">
-                                        Azioni
+                                        {t(
+                                            'operational_instructions.index.th_actions',
+                                        )}
                                     </th>
                                 </tr>
                             </thead>
@@ -322,9 +351,9 @@ export default function OperationalInstructionsIndex() {
                                         >
                                             <div className="flex flex-col items-center justify-center gap-3">
                                                 <p>
-                                                    Nessuna istruzione
-                                                    operativa. Aggiungi la
-                                                    prima.
+                                                    {t(
+                                                        'operational_instructions.index.empty',
+                                                    )}
                                                 </p>
                                                 <Button asChild size="sm">
                                                     <Link
@@ -333,7 +362,9 @@ export default function OperationalInstructionsIndex() {
                                                                 .url
                                                         }
                                                     >
-                                                        Aggiungi
+                                                        {t(
+                                                            'operational_instructions.index.add',
+                                                        )}
                                                     </Link>
                                                 </Button>
                                             </div>
@@ -401,7 +432,9 @@ export default function OperationalInstructionsIndex() {
                                                             }}
                                                         >
                                                             <Download className="mr-2 h-4 w-4" />
-                                                            Scarica
+                                                            {t(
+                                                                'operational_instructions.index.download',
+                                                            )}
                                                         </DropdownMenuItem>
                                                     }
                                                     onDelete={() =>
@@ -436,8 +469,10 @@ export default function OperationalInstructionsIndex() {
                     }
                     onConfirm={handleDeleteConfirm}
                     isLoading={isDeleting}
-                    title="Conferma eliminazione"
-                    description={`Sei sicuro di voler eliminare l'istruzione? Questa azione non può essere annullata. L'istruzione verrà eliminata definitivamente.`}
+                    title={t('operational_instructions.delete_confirm_title')}
+                    description={t(
+                        'operational_instructions.delete_confirm_description',
+                    )}
                     itemName={deleteDialog.instruction?.code}
                 />
             </div>

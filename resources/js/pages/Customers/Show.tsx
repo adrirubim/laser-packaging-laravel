@@ -9,6 +9,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import customerDivisions from '@/routes/customer-divisions/index';
 import customers from '@/routes/customers/index';
@@ -54,12 +55,13 @@ type CustomersShowProps = {
 };
 
 export default function CustomersShow({ customer }: CustomersShowProps) {
+    const { t } = useTranslations();
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Clienti',
+            title: t('nav.customers'),
             href: customers.index().url,
         },
         {
@@ -83,7 +85,11 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Cliente ${customer.code}`} />
+            <Head
+                title={t('customers.show.page_title', {
+                    code: customer.code,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex items-center justify-between">
@@ -102,8 +108,12 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
                                             <Building2 className="h-3 w-3" />
                                             {customer.divisions.length}{' '}
                                             {customer.divisions.length === 1
-                                                ? 'Divisione'
-                                                : 'Divisioni'}
+                                                ? t(
+                                                      'customers.show.division_singular',
+                                                  )
+                                                : t(
+                                                      'customers.show.division_plural',
+                                                  )}
                                         </Badge>
                                     )}
                                 {customer.offers &&
@@ -115,14 +125,18 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
                                             <FileText className="h-3 w-3" />
                                             {customer.offers.length}{' '}
                                             {customer.offers.length === 1
-                                                ? 'Offerta'
-                                                : 'Offerte'}
+                                                ? t(
+                                                      'customers.show.offer_singular',
+                                                  )
+                                                : t(
+                                                      'customers.show.offer_plural',
+                                                  )}
                                         </Badge>
                                     )}
                             </div>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                            Codice:{' '}
+                            {t('customers.show.code_label')}{' '}
                             <span className="font-mono">{customer.code}</span>
                         </p>
                     </div>
@@ -135,7 +149,7 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
                                 }
                             >
                                 <Edit className="mr-2 h-4 w-4" />
-                                Modifica
+                                {t('common.edit')}
                             </Link>
                         </Button>
                         <Button
@@ -144,7 +158,7 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
                             onClick={() => setDeleteDialogOpen(true)}
                         >
                             <Trash2 className="mr-2 h-4 w-4" />
-                            Elimina
+                            {t('common.delete')}
                         </Button>
                     </div>
                 </div>
@@ -152,15 +166,17 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
                 <div className="grid gap-4 md:grid-cols-2">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Dettagli Cliente</CardTitle>
+                            <CardTitle>
+                                {t('customers.show.details_title')}
+                            </CardTitle>
                             <CardDescription>
-                                Informazioni di base su questo cliente
+                                {t('customers.show.details_subtitle')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    Codice
+                                    {t('common.code')}
                                 </Label>
                                 <p className="font-mono text-lg font-semibold">
                                     {customer.code}
@@ -169,7 +185,7 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
 
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
-                                    Ragione Sociale
+                                    {t('customers.table.company_name')}
                                 </Label>
                                 <p className="text-lg font-semibold">
                                     {customer.company_name}
@@ -179,7 +195,7 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
                             {customer.vat_number && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Partita IVA
+                                        {t('customers.table.vat')}
                                     </Label>
                                     <p>{customer.vat_number}</p>
                                 </div>
@@ -189,16 +205,18 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
 
                     <Card>
                         <CardHeader>
-                            <CardTitle>Indirizzo</CardTitle>
+                            <CardTitle>
+                                {t('customers.show.address_title')}
+                            </CardTitle>
                             <CardDescription>
-                                Indirizzo completo del cliente
+                                {t('customers.show.address_subtitle')}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             {customer.street && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Via
+                                        {t('customers.table.street')}
                                     </Label>
                                     <p className="text-lg font-semibold">
                                         {customer.street}
@@ -209,7 +227,7 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
                             {customer.co && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        C/O
+                                        {t('customers.table.co')}
                                     </Label>
                                     <p>{customer.co}</p>
                                 </div>
@@ -220,7 +238,7 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
                                 customer.province) && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Località
+                                        {t('customers.show.location_label')}
                                     </Label>
                                     <p className="flex items-center gap-2">
                                         <MapPin className="h-4 w-4 text-muted-foreground" />
@@ -240,7 +258,7 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
                             {customer.country && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
-                                        Nazione
+                                        {t('customers.table.country')}
                                     </Label>
                                     <p>{customer.country}</p>
                                 </div>
@@ -253,9 +271,11 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
                     <CardHeader>
                         <div className="flex items-center justify-between">
                             <div>
-                                <CardTitle>Divisioni</CardTitle>
+                                <CardTitle>
+                                    {t('customers.show.divisions_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Divisioni del cliente
+                                    {t('customers.show.divisions_subtitle')}
                                 </CardDescription>
                             </div>
                             <Button asChild size="sm" variant="outline">
@@ -269,7 +289,7 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
                                     }
                                 >
                                     <Plus className="mr-2 h-4 w-4" />
-                                    Nuova Divisione
+                                    {t('customers.show.divisions_new_button')}
                                 </Link>
                             </Button>
                         </div>
@@ -303,10 +323,7 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
                         ) : (
                             <div className="py-8 text-center text-muted-foreground">
                                 <Building2 className="mx-auto mb-2 h-8 w-8 opacity-50" />
-                                <p>
-                                    Nessuna divisione associata a questo
-                                    cliente.
-                                </p>
+                                <p>{t('customers.show.divisions_empty')}</p>
                             </div>
                         )}
                     </CardContent>
@@ -316,9 +333,11 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
                     <CardHeader>
                         <div className="flex items-center justify-between">
                             <div>
-                                <CardTitle>Offerte Associate</CardTitle>
+                                <CardTitle>
+                                    {t('customers.show.offers_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Offerte collegate a questo cliente
+                                    {t('customers.show.offers_subtitle')}
                                 </CardDescription>
                             </div>
                             <Button asChild size="sm" variant="outline">
@@ -332,7 +351,7 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
                                     }
                                 >
                                     <Plus className="mr-2 h-4 w-4" />
-                                    Nuova Offerta
+                                    {t('customers.show.offers_new_button')}
                                 </Link>
                             </Button>
                         </div>
@@ -360,7 +379,9 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
                                             )}
                                             {offer.offer_date && (
                                                 <p className="text-xs text-muted-foreground">
-                                                    Data:{' '}
+                                                    {t(
+                                                        'customers.show.offer_date_label',
+                                                    )}{' '}
                                                     {new Date(
                                                         offer.offer_date,
                                                     ).toLocaleDateString()}
@@ -373,9 +394,7 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
                         ) : (
                             <div className="py-8 text-center text-muted-foreground">
                                 <FileText className="mx-auto mb-2 h-8 w-8 opacity-50" />
-                                <p>
-                                    Nessuna offerta associata a questo cliente.
-                                </p>
+                                <p>{t('customers.show.offers_empty')}</p>
                             </div>
                         )}
                     </CardContent>
@@ -387,15 +406,11 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
                 onOpenChange={setDeleteDialogOpen}
                 onConfirm={handleDeleteConfirm}
                 isDeleting={isDeleting}
-                title="Conferma eliminazione"
-                description={
-                    <>
-                        Sei sicuro di voler eliminare il cliente? Questa azione
-                        non può essere annullata. Tutti i dati associati a
-                        questo cliente verranno eliminati definitivamente.
-                    </>
-                }
-                itemName={`${customer.company_name} (Codice: ${customer.code})`}
+                title={t('customers.delete_title')}
+                description={t('customers.delete_description')}
+                itemName={`${customer.company_name} (${t(
+                    'customers.show.code_label',
+                )} ${customer.code})`}
             />
         </AppLayout>
     );

@@ -2,6 +2,7 @@
  * Griglia giorno/settimana — slot orari, celle pianificazione e riepilogo.
  * Header sticky, navigazione Tab/Enter, Shift+rueda scroll orizzontale.
  */
+import { useTranslations } from '@/hooks/use-translations';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SUMMARY_ROWS } from './constants';
 import type { PlanningContract, PlanningLine, SlotColumn } from './types';
@@ -75,6 +76,7 @@ const PlanningDayGridView = memo(function PlanningDayGridView({
     cellValidationError,
     summaryValidationError,
 }: DayGridViewProps) {
+    const { t } = useTranslations();
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [hasHorizontalOverflow, setHasHorizontalOverflow] = useState(false);
 
@@ -445,7 +447,7 @@ const PlanningDayGridView = memo(function PlanningDayGridView({
     if (slotColumns.length === 0) {
         return (
             <div className="rounded-md border border-border bg-muted/20 px-4 py-8 text-center text-sm text-muted-foreground">
-                Nessuna colonna disponibile per il periodo selezionato.
+                {t('planning.no_columns')}
             </div>
         );
     }
@@ -455,15 +457,14 @@ const PlanningDayGridView = memo(function PlanningDayGridView({
             <div
                 ref={scrollContainerRef}
                 className="max-h-[calc(100vh-14rem)] overflow-x-auto overflow-y-auto"
-                title="Scroll orizzontale: Shift + rotella del mouse. Rotella senza Shift = scroll verticale (su/giù)."
+                title={t('planning.scroll_hint')}
             >
                 <table
                     className="min-w-full border-collapse text-sm"
                     aria-describedby="planning-grid-caption"
                 >
                     <caption id="planning-grid-caption" className="sr-only">
-                        Griglia di pianificazione per linea di lavoro, ordine e
-                        slot orari.
+                        {t('planning.grid_caption')}
                     </caption>
                     <thead className="sticky top-0 z-20 border-b-2 border-border bg-card shadow-[0_1px_0_0_rgba(0,0,0,0.05)]">
                         <tr>
@@ -472,14 +473,14 @@ const PlanningDayGridView = memo(function PlanningDayGridView({
                                 scope="col"
                                 className="sticky left-0 z-30 w-32 border-r border-border/60 bg-muted/40 px-2 py-2.5 text-left text-xs font-semibold text-muted-foreground"
                             >
-                                Linea
+                                {t('planning.column_line')}
                             </th>
                             <th
                                 rowSpan={3}
                                 scope="col"
                                 className="sticky left-[8rem] z-30 w-40 border-r border-border/60 bg-muted/40 px-2 py-2.5 text-left text-xs font-semibold text-muted-foreground"
                             >
-                                Ordine
+                                {t('common.order')}
                             </th>
                             {headerGroups.weeks.map((w) => (
                                 <th
@@ -510,7 +511,9 @@ const PlanningDayGridView = memo(function PlanningDayGridView({
                                             <button
                                                 type="button"
                                                 className="inline-flex size-5 min-h-[22px] min-w-[22px] items-center justify-center rounded border border-border bg-background text-muted-foreground shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:outline-none"
-                                                title="Zoom quarti"
+                                                title={t(
+                                                    'planning.zoom_quarters',
+                                                )}
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     onZoomDay?.(d.dateStr);
@@ -572,10 +575,7 @@ const PlanningDayGridView = memo(function PlanningDayGridView({
                                     className="px-4 py-8 text-center text-muted-foreground"
                                 >
                                     <div className="space-y-3">
-                                        <p>
-                                            Nessuna linea nel periodo
-                                            selezionato.
-                                        </p>
+                                        <p>{t('planning.no_lines_period')}</p>
                                         <div className="flex justify-center gap-3">
                                             {onEmptyGoToday ? (
                                                 <button
@@ -583,7 +583,7 @@ const PlanningDayGridView = memo(function PlanningDayGridView({
                                                     className="rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium shadow-sm hover:bg-accent hover:text-accent-foreground"
                                                     onClick={onEmptyGoToday}
                                                 >
-                                                    Vai a oggi
+                                                    {t('planning.go_today')}
                                                 </button>
                                             ) : null}
                                             {onEmptyChangeRange ? (
@@ -592,7 +592,9 @@ const PlanningDayGridView = memo(function PlanningDayGridView({
                                                     className="rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium shadow-sm hover:bg-accent hover:text-accent-foreground"
                                                     onClick={onEmptyChangeRange}
                                                 >
-                                                    Cambia periodo
+                                                    {t(
+                                                        'planning.change_period',
+                                                    )}
                                                 </button>
                                             ) : null}
                                         </div>
@@ -953,7 +955,9 @@ const PlanningDayGridView = memo(function PlanningDayGridView({
                                                                         : value >
                                                                             0
                                                                           ? value
-                                                                          : '—'}
+                                                                          : t(
+                                                                                'common.empty_value',
+                                                                            )}
                                                                 </td>
                                                             );
                                                         },
@@ -974,7 +978,9 @@ const PlanningDayGridView = memo(function PlanningDayGridView({
                                                 colSpan={2}
                                                 className="sticky left-0 z-10 bg-muted/50 px-2 py-2 text-xs font-semibold text-foreground"
                                             >
-                                                {row.label}
+                                                {t(
+                                                    `planning.summary.${row.id}`,
+                                                )}
                                             </td>
                                             {slotColumns.map((col) => {
                                                 const summaryDayEndClass =
@@ -990,7 +996,9 @@ const PlanningDayGridView = memo(function PlanningDayGridView({
                                                                 summaryDayEndClass
                                                             }
                                                         >
-                                                            —
+                                                            {t(
+                                                                'common.empty_value',
+                                                            )}
                                                         </td>
                                                     );
                                                 }
@@ -1218,7 +1226,7 @@ const PlanningDayGridView = memo(function PlanningDayGridView({
                     role="status"
                     aria-live="polite"
                 >
-                    Scorri per vedere più colonne
+                    {t('planning.scroll_more_columns')}
                 </p>
             ) : null}
         </div>

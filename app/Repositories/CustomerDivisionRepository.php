@@ -30,13 +30,13 @@ class CustomerDivisionRepository
         $sortColumn = $request->get('sort_by', 'name');
         $sortDirection = $request->get('sort_order', 'asc');
 
-        // Verificare che la colonna di ordinamento sia valida
+        // Verify that sort column is valid
         $allowedSorts = ['name', 'code', 'email'];
         if (! in_array($sortColumn, $allowedSorts)) {
             $sortColumn = 'name';
         }
 
-        // Verificare indirizzo
+        // Verify address
         if (! in_array($sortDirection, ['asc', 'desc'])) {
             $sortDirection = 'asc';
         }

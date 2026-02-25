@@ -1,22 +1,25 @@
 /**
- * Opzioni per i campi labels (etichette) in Orders
+ * Options for label fields (labels) in Orders.
+ * Use translation keys; resolve with t(getLabelOptionKey(value)) in components.
  *
- * Valori secondo legacy order.php:
- * - 0 = "Non presenti"
- * - 1 = "Da stampare"
- * - 2 = "Da ricevere"
+ * Values per legacy order.php:
+ * - 0 = "Not present"
+ * - 1 = "To print"
+ * - 2 = "To receive"
  */
-export const LABEL_OPTIONS = [
-    { value: 0, label: 'Non presenti' },
-    { value: 1, label: 'Da stampare' },
-    { value: 2, label: 'Da ricevere' },
+export const LABEL_OPTION_KEYS = [
+    { value: 0, labelKey: 'orders.labels.not_present' },
+    { value: 1, labelKey: 'orders.labels.to_print' },
+    { value: 2, labelKey: 'orders.labels.to_receive' },
 ] as const;
 
 /**
- * Restituisce l'etichetta per un valore di etichetta
+ * Returns the translation key for a label value
  */
-export function getLabelText(value: number | null | undefined): string {
-    if (value === null || value === undefined) return '';
-    const option = LABEL_OPTIONS.find((opt) => opt.value === value);
-    return option?.label || String(value);
+export function getLabelOptionKey(
+    value: number | null | undefined,
+): string | null {
+    if (value === null || value === undefined) return null;
+    const option = LABEL_OPTION_KEYS.find((opt) => opt.value === value);
+    return option?.labelKey ?? null;
 }

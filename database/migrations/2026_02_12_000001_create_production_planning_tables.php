@@ -11,19 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Tabella di planning principale (legacy: productionplanning)
+        // Main planning table (legacy: productionplanning)
         if (! Schema::hasTable('productionplanning')) {
             Schema::create('productionplanning', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->uuid('order_uuid')->index();
                 $table->uuid('lasworkline_uuid')->index();
                 $table->date('date')->index();
-                // In legacy è un array associativo HHmm => workers
+                // In legacy it's an associative array HHmm => workers
                 $table->json('hours')->nullable();
             });
         }
 
-        // Tabella di riepilogo (legacy: productionplanning_summary)
+        // Summary table (legacy: productionplanning_summary)
         if (! Schema::hasTable('productionplanning_summary')) {
             Schema::create('productionplanning_summary', function (Blueprint $table) {
                 $table->bigIncrements('id');

@@ -9,6 +9,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import palletTypes from '@/routes/pallet-types/index';
 import { type BreadcrumbItem } from '@/types';
@@ -30,9 +31,10 @@ export default function PalletTypesEdit({
     palletType,
     errors: serverErrors,
 }: PalletTypesEditProps) {
+    const { t } = useTranslations();
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: 'Tipi di Pallet',
+            title: t('pallet_types.title'),
             href: palletTypes.index().url,
         },
         {
@@ -40,23 +42,29 @@ export default function PalletTypesEdit({
             href: palletTypes.show({ palletType: palletType.uuid }).url,
         },
         {
-            title: 'Modifica',
+            title: t('pallet_types.edit.breadcrumb'),
             href: palletTypes.edit({ palletType: palletType.uuid }).url,
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={`Modifica Tipo di Pallet ${palletType.cod}`} />
+            <Head
+                title={t('pallet_types.edit.page_title', {
+                    code: palletType.cod,
+                })}
+            />
 
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="flex w-full justify-center">
                     <div className="w-full max-w-4xl space-y-5">
                         <Card>
                             <CardHeader>
-                                <CardTitle>Modifica Tipo di Pallet</CardTitle>
+                                <CardTitle>
+                                    {t('pallet_types.edit.card_title')}
+                                </CardTitle>
                                 <CardDescription>
-                                    Aggiorna le informazioni del tipo di pallet.
+                                    {t('pallet_types.edit.card_description')}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -79,7 +87,9 @@ export default function PalletTypesEdit({
                                             <>
                                                 <div className="grid gap-2">
                                                     <FormLabel htmlFor="uuid">
-                                                        UUID
+                                                        {t(
+                                                            'pallet_types.show.fields.uuid',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="uuid"
@@ -97,7 +107,9 @@ export default function PalletTypesEdit({
                                                         htmlFor="cod"
                                                         required
                                                     >
-                                                        Codice
+                                                        {t(
+                                                            'pallet_types.form.cod_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="cod"
@@ -106,7 +118,9 @@ export default function PalletTypesEdit({
                                                             palletType.cod
                                                         }
                                                         required
-                                                        placeholder="Codice Tipo di Pallet"
+                                                        placeholder={t(
+                                                            'pallet_types.form.cod_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={allErrors.cod}
@@ -118,7 +132,9 @@ export default function PalletTypesEdit({
                                                         htmlFor="description"
                                                         required
                                                     >
-                                                        Descrizione
+                                                        {t(
+                                                            'pallet_types.form.description_label',
+                                                        )}
                                                     </FormLabel>
                                                     <Input
                                                         id="description"
@@ -127,7 +143,9 @@ export default function PalletTypesEdit({
                                                             palletType.description
                                                         }
                                                         required
-                                                        placeholder="Descrizione Tipo di Pallet"
+                                                        placeholder={t(
+                                                            'pallet_types.form.description_placeholder',
+                                                        )}
                                                     />
                                                     <InputError
                                                         message={
@@ -142,8 +160,12 @@ export default function PalletTypesEdit({
                                                         disabled={processing}
                                                     >
                                                         {processing
-                                                            ? 'Aggiornando...'
-                                                            : 'Aggiorna Tipo di Pallet'}
+                                                            ? t(
+                                                                  'pallet_types.edit.submitting',
+                                                              )
+                                                            : t(
+                                                                  'pallet_types.edit.submit',
+                                                              )}
                                                     </Button>
                                                     <Button
                                                         type="button"
@@ -159,7 +181,7 @@ export default function PalletTypesEdit({
                                                             )
                                                         }
                                                     >
-                                                        Annulla
+                                                        {t('common.cancel')}
                                                     </Button>
                                                 </div>
                                             </>
