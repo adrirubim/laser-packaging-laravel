@@ -361,7 +361,7 @@ export default function Welcome({ canRegister = true, url }: WelcomePageProps) {
                             <div className="grid grid-cols-1 gap-8 text-center sm:grid-cols-3">
                                 <div>
                                     <div className="mb-2 text-3xl font-bold text-primary md:text-4xl">
-                                        994
+                                        1017+
                                     </div>
                                     <div className="text-sm text-muted-foreground">
                                         {t('welcome.stats.tests')}

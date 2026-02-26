@@ -36,7 +36,7 @@
     "welcome.cta_section.title": "¿Listo para empezar?",
     "welcome.cta_section.desc": "Únete a nuestro sistema y optimiza la gestión de tu producción",
     "welcome.footer.copyright": "Sistema de Gestión",
-    "welcome.footer.stack": "Laravel 12.48.1 + React 19.2.0",
+    "welcome.footer.stack": "Laravel 12.48 + React 19.2",
     "welcome.page_title": "Laser Packaging - Sistema de Gestión",
     "welcome.meta_description": "Sistema moderno para la gestión completa de ofertas, artículos, pedidos y producción. Optimiza tus procesos operativos con herramientas potentes y fáciles de usar.",
     "welcome.skip_to_content": "Saltar al contenido principal",
