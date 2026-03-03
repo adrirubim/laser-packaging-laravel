@@ -3,11 +3,11 @@
 > A modern, enterprise-grade application for managing offers, articles, orders and a production portal (web + API). Built with Laravel 12, React 19 (Inertia.js), and PostgreSQL. Featuring a professional UI/UX, comprehensive security, and optimized performance.
 
 [![PHP](https://img.shields.io/badge/PHP-8.4+-777BB4?style=flat&logo=php&logoColor=white)](https://www.php.net/)
-[![Laravel](https://img.shields.io/badge/Laravel-12.48-FF2D20?style=flat&logo=laravel&logoColor=white)](https://laravel.com/)
+[![Laravel](https://img.shields.io/badge/Laravel-12.53-FF2D20?style=flat&logo=laravel&logoColor=white)](https://laravel.com/)
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-316192?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4.1-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4.2-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Tests](https://img.shields.io/badge/Tests-1041%2B%20passing-brightgreen?style=flat)](docs/TEST_COVERAGE.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat)](LICENSE)
 
@@ -303,7 +303,7 @@ See [docs/TEST_COVERAGE.md](docs/TEST_COVERAGE.md) for details.
 
 ### Test Database
 
-See [docs/DATABASE.md](docs/DATABASE.md). Configured in `phpunit.xml`; uses PostgreSQL `laser_packaging_test`; automatically refreshed with `RefreshDatabase` trait.
+See [docs/DATABASE.md](docs/DATABASE.md). Tests run against a **separate PostgreSQL database** (`laser_packaging_test`) configured via `phpunit.xml` and `.env.testing`. Artisan commands for tests must always use `--env=testing` (for example `php artisan migrate:fresh --env=testing`) to avoid touching the development database.
 
 ---
 
@@ -401,11 +401,15 @@ npm run build
 ### Database
 
 ```bash
-# Run migrations
+# Run migrations on the development database
 php artisan migrate
 
-# Reset and seed (optional)
-# php artisan migrate:fresh --seed
+# Seed demo data on the development database (optional)
+# php artisan db:seed --class=TestDataSeeder
+
+# Reset ONLY the test database and run tests
+php artisan migrate:fresh --env=testing
+php artisan test
 ```
 
 ### Testing
@@ -506,4 +510,4 @@ See **[CONTRIBUTING.md](CONTRIBUTING.md)** for local checks, branch/commit conve
 
 ---
 
-**Last Updated:** February 2026 · **Status:** Production Ready ✅ · **Stack:** [docs/VERSION_STACK.md](docs/VERSION_STACK.md)
+**Last Updated:** March 2026 · **Status:** Production Ready ✅ · **Stack:** [docs/VERSION_STACK.md](docs/VERSION_STACK.md)

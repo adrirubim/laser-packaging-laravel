@@ -89,7 +89,10 @@ class CustomerShippingAddressRepository
      */
     public function getByCustomerUuid(string $customerUuid): Collection
     {
-        return $this->getDivisionsForForm($customerUuid);
+        return CustomerDivision::active()
+            ->where('customer_uuid', $customerUuid)
+            ->orderBy('name')
+            ->get(['uuid', 'customer_uuid', 'name']);
     }
 
     /**
