@@ -8,7 +8,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-316192?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4.2-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Tests](https://img.shields.io/badge/Tests-1041%2B%20passing-brightgreen?style=flat)](docs/TEST_COVERAGE.md)
+[![Tests](https://img.shields.io/badge/Tests-1017%2B%20passing-brightgreen?style=flat)](docs/TEST_COVERAGE.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat)](LICENSE)
 
 ## 📋 Table of Contents
@@ -40,7 +40,7 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 
 ### Key Highlights
 
-- **Modern Stack:** Laravel 12.48.x, React 19.2.x, Inertia.js 2.3.x, TypeScript 5.9.x, Vite 7.3.x, Tailwind CSS 4.1.x, Radix UI
+- **Modern Stack:** Laravel 12.53.x, React 19.2.x, Inertia.js 2.3.x, TypeScript 5.9.x, Vite 7.3.x, Tailwind CSS 4.2.x, Radix UI
 - **Professional UI/UX:** Skeleton loaders, dashboard charts, real-time search, mobile-responsive, accessibility (WCAG AA)
 - **Enterprise Security:** Form Requests, validation, `.env` handling, test DB isolation
 - **Optimized Performance:** Caching, indexes, Performance test suite (Concurrency, Load, API)
@@ -132,7 +132,7 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 
 ### Development Tools
 
-- **Testing:** PHPUnit 12
+- **Testing:** PHPUnit 13
 - **Code Quality:** ESLint 10, Prettier 3
 - **Package Manager:** Composer, NPM (npm uses `.npmrc` with `legacy-peer-deps` for install/ci)
 
@@ -294,7 +294,7 @@ php artisan test:all
 ### Test Coverage
 
 - ✅ **1017+ PHP tests** (Unit, Feature, Performance) plus **24 Vitest tests** (React/Planning)
-- ✅ **6840+ assertions** across all test suites
+- ✅ **6841+ assertions** across all test suites
 - ✅ **Feature tests** for all controllers
 - ✅ **Unit tests** for services and repositories
 - ✅ **Performance tests** (Concurrency, Load, API response time)

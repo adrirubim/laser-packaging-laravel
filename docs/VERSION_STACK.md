@@ -13,7 +13,7 @@ Versions are resolved in `package-lock.json` and `composer.lock`. Check locally 
 | **inertiajs/inertia-laravel** | 2.0.21 | `^2.0` |
 | **laravel/fortify** | (see composer.lock) | `^1.30` |
 | **laravel/wayfinder** | 0.1.14 | `^0.1.9` |
-| **phpunit/phpunit** | 12.5.14 | `^12.5.8` |
+| **phpunit/phpunit** | 13.0.5 | `^13.0` |
 
 ---
 
