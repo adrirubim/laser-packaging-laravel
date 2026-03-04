@@ -1,27 +1,62 @@
-# Contributing
+# Contributing to Laser Packaging Laravel
 
-Thank you for your interest in contributing. **Repository:** [github.com/adrirubim/laser-packaging-laravel](https://github.com/adrirubim/laser-packaging-laravel). Please read the [README](README.md) first (installation, code standards, and **Before Pushing to GitHub**).
+Thank you for your interest in contributing to Laser Packaging Laravel.  
+Please read this guide and the main `README` before opening pull requests.
 
-## Before You Submit
-
-1. **Run locally** (same as CI): `php scripts/i18n-check.php`, `./vendor/bin/pint`, `npm run format`, `npm run format:check`, `npm run lint`, `npm run types`, `php artisan config:clear`, `php artisan test`, `npm run test -- --run`, `npm run build`. See [docs/TEST_COVERAGE.md](docs/TEST_COVERAGE.md) and [README Before Pushing](README.md#-before-pushing-to-github).
-2. Follow **PSR-12** (PHP) and project conventions (TypeScript/React).
-3. Add or update tests for new behavior where relevant.
-4. **Documentation:** Any documentation you add or change must be in **English**, professional in tone, and aligned with current best practices (see [docs/GIT_WHAT_TO_COMMIT.md](docs/GIT_WHAT_TO_COMMIT.md)).
+---
 
 ## Branching and Commits
 
-- Branch from `main` (or `develop` if that’s the project’s default). Use short, descriptive names: `fix/issue-123`, `feature/planning-export`, `docs/readme`.
-- Prefer clear commit messages; optional: [Conventional Commits](https://www.conventionalcommits.org/) (`fix:`, `feat:`, `docs:`).
+- Branch from `main` (or `develop` if that’s the project’s default).
+- Use short, descriptive branch names: `fix/issue-123`, `feature/planning-export`, `docs/readme`.
+- Prefer clear commit messages; optionally follow [Conventional Commits](https://www.conventionalcommits.org/) (`fix:`, `feat:`, `docs:`, etc.).
 
-## Pull Requests
+---
 
-Open a PR against the base branch. Use the pull request template checklist; CI must pass before merge. Link the related issue in the description (e.g. `Fixes #123`).
+## Local Validation (Before You Submit)
 
-## Issues
+Run the same steps as CI before opening a pull request:
 
-When opening a new issue, use **Bug report** or **Feature request** from the issue template dropdown so we have the right context.
+1. **Formatting and static checks**
+   - `php scripts/i18n-check.php`
+   - `./vendor/bin/pint`
+   - `npm run format`
+   - `npm run format:check`
+   - `npm run lint`
+   - `npm run types`
+2. **Application checks**
+   - `php artisan config:clear`
+   - `php artisan test`
+   - `npm run test -- --run`
+   - `npm run build`
+
+See `docs/TEST_COVERAGE.md` and the README “Before Pushing” section for details.
+
+---
+
+## Code Standards and Tests
+
+- Follow **PSR-12** for PHP and project conventions for TypeScript/React.
+- Add or update tests for new behavior where relevant.
+
+---
+
+## Documentation
+
+- Any documentation you add or change must be in **English**, professional in tone, and aligned with current best practices.
+- See `docs/GIT_WHAT_TO_COMMIT.md` for guidance on what belongs in the repo.
+
+---
+
+## Pull Requests and Issues
+
+- Open pull requests against the base branch (usually `main`); CI must be green before merge.
+- Clearly describe the scope of the change and areas of the codebase touched.
+- Use the PR template checklist and link related issues (for example, `Fixes #123`).
+- When opening a new issue, use the **Bug report** or **Feature request** templates so the context is clear.
+
+---
 
 ## Questions
 
-For questions or coordination, contact the maintainer (see [Author](README.md#-author) in the README).
+For questions or coordination, contact the maintainer (see `README` → Author).
