@@ -110,10 +110,17 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 - ✅ **English Documentation** — Code comments and docblocks in English
 - ✅ **Comprehensive Testing** — 1017+ PHP tests, 24 Vitest tests
 
+### 👥 Target users & use cases
+
+- **Enterprise internal platforms (offers & production)**: companies that need a robust back-office to manage offers, articles, orders and production planning with a clear audit trail and multi-language support.
+- **Manufacturing / packaging teams**: operations teams that require a single source of truth for master data (customers, materials, machinery, critical issues) and a production portal that aligns business logic with factory workflows.
+- **SaaS-style B2B tools**: products that expose a production portal or API to external partners and need hard guarantees on validation, security, and performance under real concurrency.
+- **Engineering teams (Laravel + React)**: teams that want a reference implementation of a **Laravel 12 + React 19 + Inertia** stack with professional UX patterns (skeleton loaders, charts, filters) and a large, well-tested codebase.
+
 ---
 
 <a id="tech-stack"></a>
-## 🛠️ Tech Stack
+## 🛠 Tech Stack
 
 ### Backend
 
@@ -343,7 +350,7 @@ Backend tree: `app/Http/Controllers/`, `app/Services/`, `app/Actions/`, `app/Rep
 ---
 
 <a id="project-status"></a>
-## 📊 Project Status
+## 📊 Project status
 
 **Overall Score: 10/10** — Production-ready, optimized, well-structured, fully tested, and professionally documented.
 
@@ -374,7 +381,7 @@ Backend tree: `app/Http/Controllers/`, `app/Services/`, `app/Actions/`, `app/Rep
 - **i18n:** Locale persisted in `user_preferences`; selector on Welcome and Settings → Appearance; `lang/*.json` for UI; `lang/{it,es,en}/` for auth and validation.
 
 <a id="default-users-development"></a>
-## 👥 Default Users (development)
+## ⚠️ Default users (development)
 
 After running seeders (e.g. `php artisan db:seed` or `TestDataSeeder`), the application may create demo data for local development. See [docs/DATABASE.md](docs/DATABASE.md) for details. There are no fixed default credentials; configure users as needed for development.
 
@@ -383,7 +390,7 @@ After running seeders (e.g. `php artisan db:seed` or `TestDataSeeder`), the appl
 ---
 
 <a id="useful-commands"></a>
-## 🛠️ Useful Commands
+## 🛠 Useful Commands
 
 ### Development
 
