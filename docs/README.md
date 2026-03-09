@@ -52,3 +52,4 @@ Single entry point for repository documentation. All docs are in **English** and
 | [../SECURITY.md](../SECURITY.md) | Security policy and vulnerability reporting |
 | [../CONTRIBUTING.md](../CONTRIBUTING.md) | Contributing guidelines |
 | [BRANCH_POLICY.md](BRANCH_POLICY.md) | Branch workflow, protection rules and PR process |
+| [../CHANGELOG.md](../CHANGELOG.md) | Version history (Keep a Changelog + SemVer) |
