@@ -259,7 +259,7 @@ All documentation is in **English**. Single index: **[docs/README.md](docs/READM
 | **Getting started** | [Database setup](docs/DATABASE.md) |
 | **Development** | [Backend](docs/BACKEND_GUIDE.md) · [Frontend](docs/FRONTEND_GUIDE.md) · [i18n](docs/I18N.md) |
 | **Testing** | [Coverage](docs/TEST_COVERAGE.md) |
-| **Policy** | [What to commit](docs/GIT_WHAT_TO_COMMIT.md) · [SECURITY](SECURITY.md) · [CONTRIBUTING](CONTRIBUTING.md) · [LICENSE](LICENSE) |
+| **Policy** | [What to commit](docs/GIT_WHAT_TO_COMMIT.md) · [Branch policy](docs/BRANCH_POLICY.md) · [SECURITY](SECURITY.md) · [CONTRIBUTING](CONTRIBUTING.md) · [LICENSE](LICENSE) · [Changelog](CHANGELOG.md) |
 
 ---
 
@@ -517,4 +517,4 @@ See **[CONTRIBUTING.md](CONTRIBUTING.md)** for local checks, branch/commit conve
 
 ---
 
-**Last Updated:** March 2026 · **Status:** Production Ready ✅ · **Stack:** [docs/VERSION_STACK.md](docs/VERSION_STACK.md)
+**Last Updated:** March 2026 · **Status:** Production Ready ✅ · **Version:** v1.0.0 · **Stack:** [docs/VERSION_STACK.md](docs/VERSION_STACK.md)
