@@ -51,3 +51,4 @@ Single entry point for repository documentation. All docs are in **English** and
 | [GIT_WHAT_TO_COMMIT.md](GIT_WHAT_TO_COMMIT.md) | Commit policy; complements `.gitignore` |
 | [../SECURITY.md](../SECURITY.md) | Security policy and vulnerability reporting |
 | [../CONTRIBUTING.md](../CONTRIBUTING.md) | Contributing guidelines |
+| [BRANCH_POLICY.md](BRANCH_POLICY.md) | Branch workflow, protection rules and PR process |

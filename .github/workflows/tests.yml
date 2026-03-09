@@ -14,6 +14,7 @@ on:
 
 jobs:
   ci:
+    timeout-minutes: 25
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -84,4 +85,4 @@ jobs:
       - name: PHP Tests
         env:
           DB_PASSWORD: postgres
-        run: php artisan test
+        run: php artisan test --compact
