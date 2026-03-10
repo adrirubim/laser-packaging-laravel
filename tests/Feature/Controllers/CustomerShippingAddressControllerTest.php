@@ -359,7 +359,11 @@ class CustomerShippingAddressControllerTest extends TestCase
             // We only require that at least one result is the expected street.
             $this->assertNotEmpty($data);
 
-            $streets = array_column($data, 'street');
+            $addressesArray = is_object($data) && method_exists($data, 'toArray')
+                ? $data->toArray()
+                : (array) $data;
+
+            $streets = array_column($addressesArray, 'street');
             $this->assertContains('Via Roma 1', $streets);
 
             return true;
