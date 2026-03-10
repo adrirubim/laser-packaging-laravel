@@ -15,12 +15,12 @@
         "test": "npm exec -- vitest"
     },
     "devDependencies": {
-        "@eslint/compat": "^2.0.0",
+        "@eslint/compat": "^2.0.3",
         "@eslint/js": "^10.0.0",
         "@laravel/vite-plugin-wayfinder": "^0.1.3",
         "@types/node": "^25.4.0",
         "babel-plugin-react-compiler": "^1.0.0",
-        "eslint": "^10.0.2",
+        "eslint": "^10.0.3",
         "eslint-config-prettier": "^10.0.1",
         "eslint-plugin-react": "^7.22.0",
         "eslint-plugin-react-hooks": "^7.0.0",
@@ -59,13 +59,13 @@
         "globals": "^17.4.0",
         "input-otp": "^1.4.2",
         "laravel-vite-plugin": "^2.0",
-        "lucide-react": "^0.576.0",
+        "lucide-react": "^0.577.0",
         "primeicons": "^7.0.0",
         "primereact": "^10.9.7",
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
         "react-is": "^19.0.0",
-        "recharts": "^3.6.0",
+        "recharts": "^3.8.0",
         "sonner": "^2.0.7",
         "tailwind-merge": "^3.4.1",
         "tailwindcss": "^4.2.1",
@@ -81,7 +81,7 @@
         "@rollup/rollup-win32-x64-msvc": "^4.59.0",
         "@tailwindcss/oxide-linux-x64-gnu": "^4.2.1",
         "@tailwindcss/oxide-win32-x64-msvc": "^4.2.1",
-        "lightningcss-linux-x64-gnu": "^1.29.1",
+        "lightningcss-linux-x64-gnu": "^1.32.0",
         "lightningcss-win32-x64-msvc": "^1.31.1"
     }
 }
