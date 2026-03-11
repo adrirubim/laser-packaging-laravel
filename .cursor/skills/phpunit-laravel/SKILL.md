@@ -33,7 +33,7 @@ Run the **minimum set** of tests that proves the change does not break anything.
 ## Project conventions
 
 - **TestCase:** `Tests\TestCase` with `RefreshDatabase` where needed.
-- **Attributes:** use `#[Test]` to mark tests (PHPUnit 12).
+- **Attributes:** use `#[Test]` to mark tests (PHPUnit 13).
 - **Inertia:** `$response->assertInertia(fn ($page) => $page->component('...')->has('...'))`.
 - **API JSON:** `assertJsonPath('error_code', 0)`, `assertJsonStructure([...])`, `assertJsonValidationErrors([...])`.
 - **Factories:** `User::factory()->create()`, states when they exist (e.g. `Offer::factory()->create([...])`).

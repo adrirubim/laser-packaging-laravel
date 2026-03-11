@@ -3,7 +3,7 @@
 > A modern, enterprise-grade application for managing offers, articles, orders and a production portal (web + API). Built with Laravel 12, React 19 (Inertia.js), and PostgreSQL. Featuring a professional UI/UX, comprehensive security, and optimized performance.
 
 [![PHP](https://img.shields.io/badge/PHP-8.4+-777BB4?style=flat&logo=php&logoColor=white)](https://www.php.net/)
-[![Laravel](https://img.shields.io/badge/Laravel-12.53-FF2D20?style=flat&logo=laravel&logoColor=white)](https://laravel.com/)
+[![Laravel](https://img.shields.io/badge/Laravel-12.54-FF2D20?style=flat&logo=laravel&logoColor=white)](https://laravel.com/)
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-316192?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
@@ -40,7 +40,7 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 
 ### Key Highlights
 
-- **Modern Stack:** Laravel 12.53.x, React 19.2.x, Inertia.js 2.3.x, TypeScript 5.9.x, Vite 7.3.x, Tailwind CSS 4.2.x, Radix UI
+- **Modern Stack:** Laravel 12.54.x, React 19.2.x, Inertia.js 2.3.x, TypeScript 5.9.x, Vite 7.3.x, Tailwind CSS 4.2.x, Radix UI
 - **Professional UI/UX:** Skeleton loaders, dashboard charts, real-time search, mobile-responsive, accessibility (WCAG AA)
 - **Enterprise Security:** Form Requests, validation, `.env` handling, test DB isolation
 - **Optimized Performance:** Caching, indexes, Performance test suite (Concurrency, Load, API)
@@ -134,7 +134,7 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 
 - **Framework:** React 19 with Inertia.js
 - **Language:** TypeScript 5.9
-- **Styling:** Tailwind CSS 4.1 · Radix UI
+- **Styling:** Tailwind CSS 4.2 · Radix UI
 - **Build Tool:** Vite 7
 
 ### Development Tools
@@ -151,11 +151,11 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 - **PHP** >= 8.4  
   Check in WSL: `php -v`
 - **PostgreSQL** (app and tests; see [docs/DATABASE.md](docs/DATABASE.md))
-- **Node.js** >= 20 (reference env: 20.19.6)  
+- **Node.js** >= 20.19.0 (reference env: 20.19.6; CI uses Node 22)  
   Check: `node -v`
-- **Composer** >= 2.0  
+- **Composer** >= 2.0 (reference env: 2.8.12)  
   Check: `composer -V`
-- **NPM** >= 10.0  
+- **NPM** >= 10.0 (reference env: 11.11.0)  
   Check: `npm -v`
 
 ---

@@ -2,7 +2,7 @@
 
 Single entry point for repository documentation. All docs are in **English** and reflect the current project state.
 
-**Last updated:** February 2026
+**Last updated:** March 2026
 
 ---
 

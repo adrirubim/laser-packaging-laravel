@@ -9,9 +9,9 @@ Versions are resolved in `package-lock.json` and `composer.lock`. Check locally 
 | Package | Exact version (composer.lock) | Require in composer.json |
 |---------|-------------------------------|---------------------------|
 | **PHP** | 8.4.x (environment; minimum 8.2) | `^8.2` |
-| **laravel/framework** | 12.53.0 | `^12.0` |
+| **laravel/framework** | 12.54.0 | `^12.0` |
 | **inertiajs/inertia-laravel** | 2.0.21 | `^2.0` |
-| **laravel/fortify** | (see composer.lock) | `^1.30` |
+| **laravel/fortify** | 1.36.0 | `^1.30` |
 | **laravel/wayfinder** | 0.1.14 | `^0.1.9` |
 | **phpunit/phpunit** | 13.0.5 | `^13.0` |
 
@@ -21,7 +21,9 @@ Versions are resolved in `package-lock.json` and `composer.lock`. Check locally 
 
 | Tool | Version (reference environment) | Note |
 |------|----------------------------------|------|
-| **Node.js** | 20.x (e.g. 20.19.6) | Minimum 18; check: `node -v` |
+| **Node.js** | 20.19.x (e.g. 20.19.6) | Minimum 20.19.0 (or >= 22.12.0); check: `node -v` |
+| **npm** | 11.11.0 | Reference environment; check: `npm -v` |
+| **Composer** | 2.8.x (e.g. 2.8.12) | Reference environment; check: `composer -V` |
 
 ---
 
@@ -47,7 +49,7 @@ Versions are resolved in `package-lock.json` and `composer.lock`. Check locally 
 
 To cite the stack in other documentation:
 
-- **Backend:** PHP 8.2+, Laravel 12.53.x, Inertia Laravel 2.0.x, Wayfinder 0.1.x  
+- **Backend:** PHP 8.2+, Laravel 12.54.x, Inertia Laravel 2.0.x, Wayfinder 0.1.x  
 - **Frontend:** React 19.2.x, Inertia.js React 2.3.x, TypeScript 5.9.x, Vite 7.3.x, Tailwind CSS 4.2.x  
 
 Reference: **March 2026**. Full detail: this file.
