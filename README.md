@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="public/logo.svg" alt="Laser Packaging Laravel logo" width="96" />
+</p>
+
 # Laser Packaging Laravel
 
 > A modern, enterprise-grade application for managing offers, articles, orders and a production portal (web + API). Built with Laravel 12, React 19 (Inertia.js), and PostgreSQL. Featuring a professional UI/UX, comprehensive security, and optimized performance.
@@ -251,7 +255,7 @@ Then open **http://localhost:8000**. For full dev (Laravel + Vite): `npm run dev
 <a id="documentation"></a>
 ## 📚 Documentation
 
-All documentation is in **English**. Single index: **[docs/README.md](docs/README.md)**.
+All documentation is in **English** and lives under `docs/`. The main index is **[docs/README.md](docs/README.md)**.
 
 | Section | Links |
 |---------|--------|
@@ -260,6 +264,8 @@ All documentation is in **English**. Single index: **[docs/README.md](docs/READM
 | **Development** | [Backend](docs/BACKEND_GUIDE.md) · [Frontend](docs/FRONTEND_GUIDE.md) · [i18n](docs/I18N.md) |
 | **Testing** | [Coverage](docs/TEST_COVERAGE.md) |
 | **Policy** | [What to commit](docs/GIT_WHAT_TO_COMMIT.md) · [Branch policy](docs/BRANCH_POLICY.md) · [SECURITY](SECURITY.md) · [CONTRIBUTING](CONTRIBUTING.md) · [LICENSE](LICENSE) · [Changelog](CHANGELOG.md) |
+
+For a navigable, high-level overview, you can also use the [GitHub Wiki](https://github.com/adrirubim/laser-packaging-laravel/wiki).
 
 ---
 
@@ -357,11 +363,11 @@ Backend tree: `app/Http/Controllers/`, `app/Services/`, `app/Actions/`, `app/Rep
 | Aspect | Status | Score | Notes |
 |--------|--------|-------|-------|
 | Security | ✅ Excellent | 9/10 | Form Requests, validation, `.env` handling, test DB isolation |
-| Performance | ✅ Optimized | 9/10 | Caching, indexes, Performance suite (Concurrency, Load, API) |
+| Performance | ✅ Excellent | 9/10 | Caching, indexes, Performance suite (Concurrency, Load, API) |
 | Code Quality | ✅ Excellent | 10/10 | Service/Repository/Action layers, ESLint, TypeScript, SOLID |
 | UX/UI | ✅ Excellent | 9/10 | Skeleton loaders, charts, mobile-responsive, WCAG AA |
 | Testing | ✅ Excellent | 10/10 | 1017+ PHP tests, 24 Vitest tests, Unit/Feature/Performance |
-| Documentation | ✅ Complete | 10/10 | `docs/`, test report, DB and seed guides |
+| Documentation | ✅ Excellent | 10/10 | `docs/`, test report, DB and seed guides |
 
 ### Core Modules (100% complete)
 
