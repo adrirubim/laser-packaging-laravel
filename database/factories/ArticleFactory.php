@@ -23,7 +23,7 @@ class ArticleFactory extends Factory
         return [
             'uuid' => \Illuminate\Support\Str::uuid()->toString(),
             'offer_uuid' => fn () => Offer::factory()->create()->uuid,
-            'cod_article_las' => 'LAS'.$this->faker->numerify('####').str_pad($this->faker->numberBetween(1, 9999), 4, '0', STR_PAD_LEFT),
+            'cod_article_las' => $this->faker->unique()->bothify('LAS########'),
             'visibility_cod' => $this->faker->boolean(80),
             'stock_managed' => $this->faker->boolean(50),
             'cod_article_client' => $this->faker->bothify('CLI-???-####'),
