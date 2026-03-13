@@ -155,7 +155,7 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 - **PHP** >= 8.4  
   Check in WSL: `php -v`
 - **PostgreSQL** (app and tests; see [docs/DATABASE.md](docs/DATABASE.md))
-- **Node.js** >= 20.19.0 (reference env: 20.19.6; CI uses Node 22)  
+- **Node.js** >= 22.0.0 (reference env: 22.22.1; CI uses Node 22)  
   Check: `node -v`
 - **Composer** >= 2.0 (reference env: 2.8.12)  
   Check: `composer -V`
