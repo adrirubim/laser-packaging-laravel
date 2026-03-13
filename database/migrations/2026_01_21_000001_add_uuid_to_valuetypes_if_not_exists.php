@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 return new class extends Migration
 {
@@ -25,7 +26,7 @@ return new class extends Migration
             foreach ($valueTypes as $valueType) {
                 DB::table('valuetypes')
                     ->where('id', $valueType->id)
-                    ->update(['uuid' => \Illuminate\Support\Str::uuid()->toString()]);
+                    ->update(['uuid' => Str::uuid()->toString()]);
             }
         }
     }

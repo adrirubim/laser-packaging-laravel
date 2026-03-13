@@ -11,6 +11,7 @@ use App\Models\Order;
 use App\Models\PalletType;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -741,7 +742,7 @@ class OrderControllerTest extends TestCase
         ]);
 
         // Use a valid UUID not present in database
-        $nonExistentUuid = \Illuminate\Support\Str::uuid()->toString();
+        $nonExistentUuid = Str::uuid()->toString();
 
         $response = $this->get(route('orders.index', ['article_uuid' => $nonExistentUuid]));
 

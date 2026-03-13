@@ -7,12 +7,14 @@ use App\Http\Controllers\Concerns\HandlesActionErrors;
 use App\Http\Resources\Api\ApiResponseResource;
 use App\Models\Article;
 use App\Models\Offer;
+use App\Models\OfferOperationList;
 use App\Repositories\ArticleRepository;
 use App\Repositories\OrderRepository;
 use App\Services\ArticleCodeService;
 use Domain\Articles\Actions\CreateArticleAction;
 use Domain\Articles\Actions\UpdateArticleAction;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -89,7 +91,7 @@ class ArticleController extends Controller
             ]);
 
             return Inertia::render('Articles/Index', [
-                'articles' => new \Illuminate\Pagination\LengthAwarePaginator([], 0, 15),
+                'articles' => new LengthAwarePaginator([], 0, 15),
                 'offers' => [],
                 'categories' => [],
                 'filters' => $request->only(['search', 'offer_uuid', 'article_category']),
@@ -570,7 +572,7 @@ class ArticleController extends Controller
      */
     private function calculateMediaFromOffer(Offer $offer): array
     {
-        $operationLists = \App\Models\OfferOperationList::withoutGlobalScopes()
+        $operationLists = OfferOperationList::withoutGlobalScopes()
             ->where('offer_uuid', $offer->uuid)
             ->where('removed', false)
             ->with('operation')

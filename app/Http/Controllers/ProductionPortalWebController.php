@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Api\ProductionPortalController;
 use App\Models\Employee;
 use App\Models\Order;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -156,7 +157,7 @@ class ProductionPortalWebController extends Controller
     /**
      * Logout
      */
-    public function logout(): \Illuminate\Http\RedirectResponse
+    public function logout(): RedirectResponse
     {
         session()->forget([
             'production_portal_token',

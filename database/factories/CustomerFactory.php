@@ -4,9 +4,10 @@ namespace Database\Factories;
 
 use App\Models\Customer;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Customer>
+ * @extends Factory<Customer>
  */
 class CustomerFactory extends Factory
 {
@@ -32,7 +33,7 @@ class CustomerFactory extends Factory
         ];
 
         return [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'code' => $this->faker->unique()->bothify('CUST-???-####'),
             'company_name' => $this->faker->company(),
             // Partita IVA: 11 cifre numeriche (formato italiano corretto)

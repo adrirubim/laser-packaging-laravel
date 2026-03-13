@@ -5,6 +5,7 @@ namespace Tests\Feature\Controllers;
 use App\Models\LasFamily;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -40,7 +41,7 @@ class LasFamilyControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $response = $this->post(route('las-families.store'), [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'code' => 'LAS-001',
             'name' => 'Nuova Famiglia LAS',
         ]);
@@ -231,7 +232,7 @@ class LasFamilyControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $response = $this->post(route('las-families.store'), [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'code' => str_repeat('a', 256),
             'name' => 'Test Family',
         ]);
@@ -245,7 +246,7 @@ class LasFamilyControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $response = $this->post(route('las-families.store'), [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'code' => 'LAS-001',
             'name' => str_repeat('a', 256),
         ]);

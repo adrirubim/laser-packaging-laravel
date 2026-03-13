@@ -3,8 +3,9 @@
 require __DIR__.'/../vendor/autoload.php';
 
 $app = require_once __DIR__.'/../bootstrap/app.php';
-$app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+$app->make(Kernel::class)->bootstrap();
 
+use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\DB;
 
 echo "🔍 Verificando columnas en la tabla machinery...\n\n";
@@ -20,7 +21,7 @@ if (! in_array('parameter', $columnNames)) {
     try {
         DB::statement('ALTER TABLE machinery ADD COLUMN parameter VARCHAR(255) NULL');
         echo "✅ Columna 'parameter' agregada exitosamente\n\n";
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         echo "❌ Error al agregar 'parameter': ".$e->getMessage()."\n\n";
     }
 } else {
@@ -39,10 +40,10 @@ if (! in_array('value_type_uuid', $columnNames)) {
         try {
             DB::statement('CREATE INDEX IF NOT EXISTS machinery_value_type_uuid_index ON machinery(value_type_uuid)');
             echo "✅ Índice agregado exitosamente\n\n";
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             echo '⚠️  Advertencia al agregar índice: '.$e->getMessage()."\n\n";
         }
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         echo "❌ Error al agregar 'value_type_uuid': ".$e->getMessage()."\n\n";
     }
 } else {

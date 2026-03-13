@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\OfferSeasonalityFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,7 @@ class OfferSeasonality extends Model
 
     protected static function newFactory()
     {
-        return \Database\Factories\OfferSeasonalityFactory::new();
+        return OfferSeasonalityFactory::new();
     }
 
     protected $table = 'offerseasonality';

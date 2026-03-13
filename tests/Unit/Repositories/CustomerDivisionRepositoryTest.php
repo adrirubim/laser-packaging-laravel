@@ -7,6 +7,7 @@ use App\Models\CustomerDivision;
 use App\Repositories\CustomerDivisionRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -32,7 +33,7 @@ class CustomerDivisionRepositoryTest extends TestCase
         $request = Request::create('/customer-divisions', 'GET');
         $result = $this->repository->getForIndex($request);
 
-        $this->assertInstanceOf(\Illuminate\Pagination\LengthAwarePaginator::class, $result);
+        $this->assertInstanceOf(LengthAwarePaginator::class, $result);
         $this->assertCount(3, $result->items());
     }
 

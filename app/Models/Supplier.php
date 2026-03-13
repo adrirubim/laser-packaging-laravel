@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\SupplierFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,7 +15,7 @@ class Supplier extends Model
      */
     protected static function newFactory()
     {
-        return \Database\Factories\SupplierFactory::new();
+        return SupplierFactory::new();
     }
 
     protected $table = 'supplier';

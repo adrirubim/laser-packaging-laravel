@@ -2,7 +2,12 @@
 
 namespace Tests\Feature\Controllers;
 
+use App\Models\Article;
+use App\Models\Customer;
+use App\Models\CustomerDivision;
+use App\Models\CustomerShippingAddress;
 use App\Models\Employee;
+use App\Models\Offer;
 use App\Models\Order;
 use App\Models\ProductionOrderProcessing;
 use App\Models\User;
@@ -33,20 +38,20 @@ class ProductionOrderProcessingControllerTest extends TestCase
             'removed' => false,
         ]);
 
-        $customer = \App\Models\Customer::factory()->create(['removed' => false]);
-        $division = \App\Models\CustomerDivision::factory()->create([
+        $customer = Customer::factory()->create(['removed' => false]);
+        $division = CustomerDivision::factory()->create([
             'customer_uuid' => $customer->uuid,
             'removed' => false,
         ]);
-        $shippingAddress = \App\Models\CustomerShippingAddress::factory()->create([
+        $shippingAddress = CustomerShippingAddress::factory()->create([
             'customerdivision_uuid' => $division->uuid,
             'removed' => false,
         ]);
-        $offer = \App\Models\Offer::factory()->create([
+        $offer = Offer::factory()->create([
             'customer_uuid' => $customer->uuid,
             'removed' => false,
         ]);
-        $article = \App\Models\Article::factory()->create([
+        $article = Article::factory()->create([
             'offer_uuid' => $offer->uuid,
             'removed' => false,
         ]);

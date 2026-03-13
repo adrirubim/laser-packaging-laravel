@@ -4,9 +4,10 @@ namespace Database\Factories;
 
 use App\Models\OfferOperationCategory;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\OfferOperationCategory>
+ * @extends Factory<OfferOperationCategory>
  */
 class OfferOperationCategoryFactory extends Factory
 {
@@ -20,7 +21,7 @@ class OfferOperationCategoryFactory extends Factory
     public function definition(): array
     {
         return [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'code' => $this->faker->unique()->bothify('CAT-???'),
             'name' => $this->faker->words(3, true),
             'removed' => false,

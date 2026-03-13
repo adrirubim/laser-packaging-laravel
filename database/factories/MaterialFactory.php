@@ -4,9 +4,10 @@ namespace Database\Factories;
 
 use App\Models\Material;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Material>
+ * @extends Factory<Material>
  */
 class MaterialFactory extends Factory
 {
@@ -20,7 +21,7 @@ class MaterialFactory extends Factory
     public function definition(): array
     {
         return [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'cod' => $this->faker->unique()->bothify('MAT-???'),
             // Always generate description
             'description' => $this->faker->sentence(),

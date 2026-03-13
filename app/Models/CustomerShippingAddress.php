@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\CustomerShippingAddressFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ class CustomerShippingAddress extends Model
 
     protected static function newFactory()
     {
-        return \Database\Factories\CustomerShippingAddressFactory::new();
+        return CustomerShippingAddressFactory::new();
     }
 
     protected $table = 'customershippingaddress';

@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
 use App\Models\Order;
 use App\Models\ProductionOrderProcessing;
 use App\Services\Planning\PlanningReplanService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -106,7 +108,7 @@ class ProductionOrderProcessingController extends Controller
         });
 
         // Get filter options
-        $employees = \App\Models\Employee::active()
+        $employees = Employee::active()
             ->whereHas('orderProcessings', function ($query) {
                 $query->where('removed', false);
             })
@@ -114,7 +116,7 @@ class ProductionOrderProcessingController extends Controller
             ->orderBy('name')
             ->get(['uuid', 'name', 'surname', 'matriculation_number']);
 
-        $orders = \App\Models\Order::active()
+        $orders = Order::active()
             ->whereHas('processings', function ($query) {
                 $query->where('removed', false);
             })
@@ -146,13 +148,13 @@ class ProductionOrderProcessingController extends Controller
     public function create(): Response
     {
         // Get active employees
-        $employees = \App\Models\Employee::active()
+        $employees = Employee::active()
             ->orderBy('surname')
             ->orderBy('name')
             ->get(['uuid', 'name', 'surname', 'matriculation_number']);
 
         // Get active orders with article relation
-        $orders = \App\Models\Order::active()
+        $orders = Order::active()
             ->with('article:id,uuid,article_descr')
             ->orderBy('order_production_number', 'desc')
             ->get(['uuid', 'order_production_number', 'article_uuid'])
@@ -193,7 +195,7 @@ class ProductionOrderProcessingController extends Controller
         ]);
 
         $processing = ProductionOrderProcessing::create([
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'employee_uuid' => $validated['employee_uuid'],
             'order_uuid' => $validated['order_uuid'],
             'quantity' => $validated['quantity'],
@@ -202,7 +204,7 @@ class ProductionOrderProcessingController extends Controller
         ]);
 
         // Update order worked_quantity
-        $order = \App\Models\Order::where('uuid', $validated['order_uuid'])->first();
+        $order = Order::where('uuid', $validated['order_uuid'])->first();
         if ($order) {
             $totalProcessed = ProductionOrderProcessing::loadProcessedQuantity($validated['order_uuid']);
             $order->update(['worked_quantity' => $totalProcessed]);

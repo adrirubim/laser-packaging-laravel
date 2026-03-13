@@ -5,6 +5,7 @@ namespace Tests\Feature\Controllers;
 use App\Models\LsResource;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -40,7 +41,7 @@ class LsResourceControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $response = $this->post(route('ls-resources.store'), [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'code' => 'LSR-001',
             'name' => 'Nuova Risorsa L&S',
         ]);
@@ -194,7 +195,7 @@ class LsResourceControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $response = $this->post(route('ls-resources.store'), [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'code' => str_repeat('a', 256),
             'name' => 'Test Resource',
         ]);
@@ -208,7 +209,7 @@ class LsResourceControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $response = $this->post(route('ls-resources.store'), [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'code' => 'LSR-001',
             'name' => str_repeat('a', 256),
         ]);

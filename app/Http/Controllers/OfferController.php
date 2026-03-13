@@ -12,6 +12,14 @@ use App\Http\Resources\Offers\OfferIndexResource;
 use App\Models\Customer;
 use App\Models\CustomerDivision;
 use App\Models\Offer;
+use App\Models\OfferActivity;
+use App\Models\OfferLasFamily;
+use App\Models\OfferLasWorkLine;
+use App\Models\OfferLsResource;
+use App\Models\OfferOperationList;
+use App\Models\OfferSeasonality;
+use App\Models\OfferSector;
+use App\Models\OfferTypeOrder;
 use App\Repositories\ArticleRepository;
 use App\Repositories\OfferRepository;
 use App\Repositories\OrderRepository;
@@ -24,6 +32,7 @@ use Domain\Offers\Actions\UpdateOfferAction;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -306,35 +315,35 @@ class OfferController extends Controller
         // Load relations manually without applying scope that filters by removed
         // So they load even when marked as removed
         if ($offer->order_type_uuid) {
-            $typeOrder = \App\Models\OfferTypeOrder::withoutGlobalScopes()
+            $typeOrder = OfferTypeOrder::withoutGlobalScopes()
                 ->where('uuid', $offer->order_type_uuid)
                 ->first();
             $offer->setRelation('typeOrder', $typeOrder);
         }
 
         if ($offer->lasfamily_uuid) {
-            $lasFamily = \App\Models\OfferLasFamily::withoutGlobalScopes()
+            $lasFamily = OfferLasFamily::withoutGlobalScopes()
                 ->where('uuid', $offer->lasfamily_uuid)
                 ->first();
             $offer->setRelation('lasFamily', $lasFamily);
         }
 
         if ($offer->lasworkline_uuid) {
-            $lasWorkLine = \App\Models\OfferLasWorkLine::withoutGlobalScopes()
+            $lasWorkLine = OfferLasWorkLine::withoutGlobalScopes()
                 ->where('uuid', $offer->lasworkline_uuid)
                 ->first();
             $offer->setRelation('lasWorkLine', $lasWorkLine);
         }
 
         if ($offer->lsresource_uuid) {
-            $lsResource = \App\Models\OfferLsResource::withoutGlobalScopes()
+            $lsResource = OfferLsResource::withoutGlobalScopes()
                 ->where('uuid', $offer->lsresource_uuid)
                 ->first();
             $offer->setRelation('lsResource', $lsResource);
         }
 
         if ($offer->customerdivision_uuid && ! $offer->customerDivision) {
-            $customerDivision = \App\Models\CustomerDivision::withoutGlobalScopes()
+            $customerDivision = CustomerDivision::withoutGlobalScopes()
                 ->where('uuid', $offer->customerdivision_uuid)
                 ->first();
             $offer->setRelation('customerDivision', $customerDivision);
@@ -383,56 +392,56 @@ class OfferController extends Controller
         // Load relations manually without applying scope that filters by removed
         // So they load even when marked as removed
         if ($offer->order_type_uuid) {
-            $typeOrder = \App\Models\OfferTypeOrder::withoutGlobalScopes()
+            $typeOrder = OfferTypeOrder::withoutGlobalScopes()
                 ->where('uuid', $offer->order_type_uuid)
                 ->first();
             $offer->setRelation('typeOrder', $typeOrder);
         }
 
         if ($offer->lasfamily_uuid) {
-            $lasFamily = \App\Models\OfferLasFamily::withoutGlobalScopes()
+            $lasFamily = OfferLasFamily::withoutGlobalScopes()
                 ->where('uuid', $offer->lasfamily_uuid)
                 ->first();
             $offer->setRelation('lasFamily', $lasFamily);
         }
 
         if ($offer->lasworkline_uuid) {
-            $lasWorkLine = \App\Models\OfferLasWorkLine::withoutGlobalScopes()
+            $lasWorkLine = OfferLasWorkLine::withoutGlobalScopes()
                 ->where('uuid', $offer->lasworkline_uuid)
                 ->first();
             $offer->setRelation('lasWorkLine', $lasWorkLine);
         }
 
         if ($offer->lsresource_uuid) {
-            $lsResource = \App\Models\OfferLsResource::withoutGlobalScopes()
+            $lsResource = OfferLsResource::withoutGlobalScopes()
                 ->where('uuid', $offer->lsresource_uuid)
                 ->first();
             $offer->setRelation('lsResource', $lsResource);
         }
 
         if ($offer->customerdivision_uuid && ! $offer->customerDivision) {
-            $customerDivision = \App\Models\CustomerDivision::withoutGlobalScopes()
+            $customerDivision = CustomerDivision::withoutGlobalScopes()
                 ->where('uuid', $offer->customerdivision_uuid)
                 ->first();
             $offer->setRelation('customerDivision', $customerDivision);
         }
 
         if ($offer->activity_uuid && ! $offer->activity) {
-            $activity = \App\Models\OfferActivity::withoutGlobalScopes()
+            $activity = OfferActivity::withoutGlobalScopes()
                 ->where('uuid', $offer->activity_uuid)
                 ->first();
             $offer->setRelation('activity', $activity);
         }
 
         if ($offer->sector_uuid && ! $offer->sector) {
-            $sector = \App\Models\OfferSector::withoutGlobalScopes()
+            $sector = OfferSector::withoutGlobalScopes()
                 ->where('uuid', $offer->sector_uuid)
                 ->first();
             $offer->setRelation('sector', $sector);
         }
 
         if ($offer->seasonality_uuid && ! $offer->seasonality) {
-            $seasonality = \App\Models\OfferSeasonality::withoutGlobalScopes()
+            $seasonality = OfferSeasonality::withoutGlobalScopes()
                 ->where('uuid', $offer->seasonality_uuid)
                 ->first();
             $offer->setRelation('seasonality', $seasonality);
@@ -452,7 +461,7 @@ class OfferController extends Controller
         if ($offer->activity_uuid) {
             $activityInOptions = collect($formOptions['activities'])->pluck('uuid')->contains($offer->activity_uuid);
             if (! $activityInOptions) {
-                $activity = \App\Models\OfferActivity::withoutGlobalScopes()
+                $activity = OfferActivity::withoutGlobalScopes()
                     ->where('uuid', $offer->activity_uuid)
                     ->first(['uuid', 'name']);
                 if ($activity) {
@@ -464,7 +473,7 @@ class OfferController extends Controller
         if ($offer->sector_uuid) {
             $sectorInOptions = collect($formOptions['sectors'])->pluck('uuid')->contains($offer->sector_uuid);
             if (! $sectorInOptions) {
-                $sector = \App\Models\OfferSector::withoutGlobalScopes()
+                $sector = OfferSector::withoutGlobalScopes()
                     ->where('uuid', $offer->sector_uuid)
                     ->first(['uuid', 'name']);
                 if ($sector) {
@@ -476,7 +485,7 @@ class OfferController extends Controller
         if ($offer->seasonality_uuid) {
             $seasonalityInOptions = collect($formOptions['seasonalities'])->pluck('uuid')->contains($offer->seasonality_uuid);
             if (! $seasonalityInOptions) {
-                $seasonality = \App\Models\OfferSeasonality::withoutGlobalScopes()
+                $seasonality = OfferSeasonality::withoutGlobalScopes()
                     ->where('uuid', $offer->seasonality_uuid)
                     ->first(['uuid', 'name']);
                 if ($seasonality) {
@@ -488,7 +497,7 @@ class OfferController extends Controller
         if ($offer->order_type_uuid) {
             $orderTypeInOptions = collect($formOptions['orderTypes'])->pluck('uuid')->contains($offer->order_type_uuid);
             if (! $orderTypeInOptions) {
-                $orderType = \App\Models\OfferTypeOrder::withoutGlobalScopes()
+                $orderType = OfferTypeOrder::withoutGlobalScopes()
                     ->where('uuid', $offer->order_type_uuid)
                     ->first(['uuid', 'name']);
                 if ($orderType) {
@@ -500,7 +509,7 @@ class OfferController extends Controller
         if ($offer->lasfamily_uuid) {
             $lasFamilyInOptions = collect($formOptions['lasFamilies'])->pluck('uuid')->contains($offer->lasfamily_uuid);
             if (! $lasFamilyInOptions) {
-                $lasFamily = \App\Models\OfferLasFamily::withoutGlobalScopes()
+                $lasFamily = OfferLasFamily::withoutGlobalScopes()
                     ->where('uuid', $offer->lasfamily_uuid)
                     ->first(['uuid', 'code', 'name']);
                 if ($lasFamily) {
@@ -512,7 +521,7 @@ class OfferController extends Controller
         if ($offer->lasworkline_uuid) {
             $lasWorkLineInOptions = collect($formOptions['lasWorkLines'])->pluck('uuid')->contains($offer->lasworkline_uuid);
             if (! $lasWorkLineInOptions) {
-                $lasWorkLine = \App\Models\OfferLasWorkLine::withoutGlobalScopes()
+                $lasWorkLine = OfferLasWorkLine::withoutGlobalScopes()
                     ->where('uuid', $offer->lasworkline_uuid)
                     ->first(['uuid', 'code', 'name']);
                 if ($lasWorkLine) {
@@ -524,7 +533,7 @@ class OfferController extends Controller
         if ($offer->lsresource_uuid) {
             $lsResourceInOptions = collect($formOptions['lsResources'])->pluck('uuid')->contains($offer->lsresource_uuid);
             if (! $lsResourceInOptions) {
-                $lsResource = \App\Models\OfferLsResource::withoutGlobalScopes()
+                $lsResource = OfferLsResource::withoutGlobalScopes()
                     ->where('uuid', $offer->lsresource_uuid)
                     ->first(['uuid', 'code', 'name']);
                 if ($lsResource) {
@@ -535,7 +544,7 @@ class OfferController extends Controller
 
         // Preparare operazioni esistenti per il modulo
         // Load operationList without applying scope that filters by removed
-        $operationLists = \App\Models\OfferOperationList::withoutGlobalScopes()
+        $operationLists = OfferOperationList::withoutGlobalScopes()
             ->where('offer_uuid', $offer->uuid)
             ->where('removed', false)
             ->with(['operation.category'])
@@ -606,7 +615,7 @@ class OfferController extends Controller
 
             return redirect()->route('offers.show', $offer->uuid)
                 ->with('success', __('flash.offer.updated'));
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return back()->withErrors($e->errors())->withInput();
         }
     }

@@ -4,9 +4,10 @@ namespace Database\Factories;
 
 use App\Models\ArticleIC;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ArticleIC>
+ * @extends Factory<ArticleIC>
  */
 class ArticleICFactory extends Factory
 {
@@ -20,7 +21,7 @@ class ArticleICFactory extends Factory
     public function definition(): array
     {
         return [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'code' => $this->faker->unique()->bothify('IC-???'),
             // Siempre generar todos los campos
             'number' => $this->faker->numerify('####'),

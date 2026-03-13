@@ -5,9 +5,10 @@ namespace Database\Factories;
 use App\Models\Customer;
 use App\Models\CustomerDivision;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CustomerDivision>
+ * @extends Factory<CustomerDivision>
  */
 class CustomerDivisionFactory extends Factory
 {
@@ -21,7 +22,7 @@ class CustomerDivisionFactory extends Factory
     public function definition(): array
     {
         return [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'customer_uuid' => fn () => Customer::factory()->create()->uuid,
             // Always generate division code
             'code' => $this->faker->unique()->bothify('DIV-???'),

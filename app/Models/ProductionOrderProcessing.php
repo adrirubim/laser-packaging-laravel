@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\ProductionOrderProcessingFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,7 +15,7 @@ class ProductionOrderProcessing extends Model
      */
     protected static function newFactory()
     {
-        return \Database\Factories\ProductionOrderProcessingFactory::new();
+        return ProductionOrderProcessingFactory::new();
     }
 
     protected $table = 'productionorderprocessing';

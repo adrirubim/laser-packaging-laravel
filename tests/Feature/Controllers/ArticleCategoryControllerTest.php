@@ -4,6 +4,7 @@ namespace Tests\Feature\Controllers;
 
 use App\Models\Article;
 use App\Models\ArticleCategory;
+use App\Models\Offer;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
@@ -206,7 +207,7 @@ class ArticleCategoryControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $category = ArticleCategory::factory()->create(['removed' => false]);
-        $offer = \App\Models\Offer::factory()->create(['removed' => false]);
+        $offer = Offer::factory()->create(['removed' => false]);
 
         $article = Article::factory()->create([
             'offer_uuid' => $offer->uuid,

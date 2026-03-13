@@ -5,6 +5,7 @@ namespace Tests\Feature\Controllers;
 use App\Models\LasWorkLine;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -40,7 +41,7 @@ class LasWorkLineControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $response = $this->post(route('las-work-lines.store'), [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'code' => 'LWL-001',
             'name' => 'Nuova Linea di Lavoro',
         ]);
@@ -194,7 +195,7 @@ class LasWorkLineControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $response = $this->post(route('las-work-lines.store'), [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'code' => str_repeat('a', 256),
             'name' => 'Test Work Line',
         ]);
@@ -208,7 +209,7 @@ class LasWorkLineControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $response = $this->post(route('las-work-lines.store'), [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'code' => 'LWL-001',
             'name' => str_repeat('a', 256),
         ]);

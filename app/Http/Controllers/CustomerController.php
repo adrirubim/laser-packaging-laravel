@@ -86,7 +86,7 @@ class CustomerController extends Controller
     /**
      * Update the specified customer.
      */
-    public function update(UpdateCustomerRequest $request, \App\Models\Customer $customer)
+    public function update(UpdateCustomerRequest $request, Customer $customer)
     {
         $this->updateCustomer->execute($customer, $request->validated());
 
@@ -100,7 +100,7 @@ class CustomerController extends Controller
     /**
      * Remove the specified customer (soft delete).
      */
-    public function destroy(\App\Models\Customer $customer)
+    public function destroy(Customer $customer)
     {
         $result = $this->softDeleteCustomer->execute($customer);
         if ($result->canDelete === false) {

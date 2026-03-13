@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\OrderFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -57,7 +58,7 @@ class Order extends Model
      */
     protected static function newFactory()
     {
-        return \Database\Factories\OrderFactory::new();
+        return OrderFactory::new();
     }
 
     protected $table = 'orderorder';

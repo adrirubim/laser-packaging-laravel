@@ -5,6 +5,7 @@ namespace Tests\Feature\Controllers;
 use App\Models\OfferOperationCategory;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -40,7 +41,7 @@ class OfferOperationCategoryControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $response = $this->post(route('offer-operation-categories.store'), [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'code' => 'CAT-001',
             'name' => 'Nuova Categoria',
         ]);
@@ -215,7 +216,7 @@ class OfferOperationCategoryControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $response = $this->post(route('offer-operation-categories.store'), [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'code' => str_repeat('a', 256),
             'name' => 'Test Category',
         ]);
@@ -229,7 +230,7 @@ class OfferOperationCategoryControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $response = $this->post(route('offer-operation-categories.store'), [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'code' => 'CAT-001',
             'name' => str_repeat('a', 256),
         ]);
@@ -245,7 +246,7 @@ class OfferOperationCategoryControllerTest extends TestCase
         OfferOperationCategory::factory()->create(['code' => 'CAT-001', 'removed' => false]);
 
         $response = $this->post(route('offer-operation-categories.store'), [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'code' => 'CAT-001',
             'name' => 'Test Category',
         ]);
@@ -272,7 +273,7 @@ class OfferOperationCategoryControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        $uuid = \Illuminate\Support\Str::uuid()->toString();
+        $uuid = Str::uuid()->toString();
         OfferOperationCategory::factory()->create(['uuid' => $uuid]);
 
         $response = $this->post(route('offer-operation-categories.store'), [

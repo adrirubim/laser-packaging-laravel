@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -17,12 +18,12 @@ return new class extends Migration
         }
 
         // Use raw SQL for PostgreSQL compatibility
-        \Illuminate\Support\Facades\DB::statement('ALTER TABLE offer ADD COLUMN seasonality_uuid UUID NULL');
+        DB::statement('ALTER TABLE offer ADD COLUMN seasonality_uuid UUID NULL');
 
         // Add foreign key constraint if needed
         try {
-            \Illuminate\Support\Facades\DB::statement('ALTER TABLE offer ADD CONSTRAINT offer_seasonality_uuid_foreign FOREIGN KEY (seasonality_uuid) REFERENCES offerseasonality(uuid)');
-        } catch (\Exception $e) {
+            DB::statement('ALTER TABLE offer ADD CONSTRAINT offer_seasonality_uuid_foreign FOREIGN KEY (seasonality_uuid) REFERENCES offerseasonality(uuid)');
+        } catch (Exception $e) {
             // Constraint might already exist, ignore
         }
     }

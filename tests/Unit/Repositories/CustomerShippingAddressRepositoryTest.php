@@ -8,6 +8,7 @@ use App\Models\CustomerShippingAddress;
 use App\Repositories\CustomerShippingAddressRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -34,7 +35,7 @@ class CustomerShippingAddressRepositoryTest extends TestCase
         $request = Request::create('/customer-shipping-addresses', 'GET');
         $result = $this->repository->getForIndex($request);
 
-        $this->assertInstanceOf(\Illuminate\Pagination\LengthAwarePaginator::class, $result);
+        $this->assertInstanceOf(LengthAwarePaginator::class, $result);
         $this->assertCount(3, $result->items());
     }
 

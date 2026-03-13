@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\ArticleIPFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ class ArticleIP extends Model
 
     protected static function newFactory()
     {
-        return \Database\Factories\ArticleIPFactory::new();
+        return ArticleIPFactory::new();
     }
 
     protected $table = 'articlesip';

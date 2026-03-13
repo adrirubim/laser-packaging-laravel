@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\OfferOrderStateFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,7 +15,7 @@ class OfferOrderState extends Model
      */
     protected static function newFactory()
     {
-        return \Database\Factories\OfferOrderStateFactory::new();
+        return OfferOrderStateFactory::new();
     }
 
     protected $table = 'offerorderstate';

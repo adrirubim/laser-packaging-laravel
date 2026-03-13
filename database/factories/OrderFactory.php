@@ -5,9 +5,10 @@ namespace Database\Factories;
 use App\Models\Article;
 use App\Models\Order;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Order>
+ * @extends Factory<Order>
  */
 class OrderFactory extends Factory
 {
@@ -21,7 +22,7 @@ class OrderFactory extends Factory
     public function definition(): array
     {
         return [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'article_uuid' => fn () => Article::factory()->create()->uuid,
             'order_production_number' => date('Y').'.'.str_pad($this->faker->unique()->numberBetween(1, 99999), 5, '0', STR_PAD_LEFT),
             'number_customer_reference_order' => $this->faker->optional()->numerify('REF-#####'),

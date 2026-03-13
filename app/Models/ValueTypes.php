@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\ValueTypesFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ class ValueTypes extends Model
 
     protected static function newFactory()
     {
-        return \Database\Factories\ValueTypesFactory::new();
+        return ValueTypesFactory::new();
     }
 
     protected $table = 'valuetypes';

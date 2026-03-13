@@ -45,7 +45,7 @@ class GenerateOrderAutocontrolloPdfAction
             $palletizingInstruct = $article->palletizingInstructions->pluck('description')->implode(' - ');
         }
 
-        $labelData = app(\Domain\Orders\Actions\GetOrderLabelDataAction::class)->execute($article);
+        $labelData = app(GetOrderLabelDataAction::class)->execute($article);
 
         $data = [
             'order' => $order,

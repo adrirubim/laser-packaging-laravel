@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\AlertAcknowledgement;
 use App\Models\Article;
 use App\Models\Customer;
 use App\Models\Offer;
@@ -615,7 +616,7 @@ class DashboardRepository
         }
 
         if ($userId !== null && count($alerts) > 0) {
-            $acks = \App\Models\AlertAcknowledgement::query()
+            $acks = AlertAcknowledgement::query()
                 ->where('user_id', $userId)
                 ->where('scope_hash', $scopeHash)
                 ->get(['alert_key', 'signature']);

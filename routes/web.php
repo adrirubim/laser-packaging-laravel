@@ -1,6 +1,42 @@
 <?php
 
+use App\Http\Controllers\ArticleCategoryController;
+use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\ArticleICController;
+use App\Http\Controllers\ArticleIOController;
+use App\Http\Controllers\ArticleIPController;
+use App\Http\Controllers\CriticalIssueController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CustomerDivisionController;
+use App\Http\Controllers\CustomerShippingAddressController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\LasFamilyController;
+use App\Http\Controllers\LasWorkLineController;
+use App\Http\Controllers\LsResourceController;
+use App\Http\Controllers\MachineryController;
+use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\ModelSCQController;
+use App\Http\Controllers\OfferActivityController;
+use App\Http\Controllers\OfferController;
+use App\Http\Controllers\OfferOperationCategoryController;
+use App\Http\Controllers\OfferOperationController;
+use App\Http\Controllers\OfferOperationListController;
+use App\Http\Controllers\OfferOrderTypeController;
+use App\Http\Controllers\OfferSeasonalityController;
+use App\Http\Controllers\OfferSectorController;
+use App\Http\Controllers\OfferTypeController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderEmployeeController;
+use App\Http\Controllers\OrderStateController;
+use App\Http\Controllers\PalletSheetController;
+use App\Http\Controllers\PalletTypeController;
 use App\Http\Controllers\Planning\PlanningController;
+use App\Http\Controllers\ProductionOrderProcessingController;
+use App\Http\Controllers\ProductionPortalWebController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\ValueTypesController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -12,7 +48,7 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-Route::post('/locale', function (\Illuminate\Http\Request $request) {
+Route::post('/locale', function (Request $request) {
     $request->validate(['locale' => 'required|string|in:it,es,en']);
     $request->session()->put('locale', $request->input('locale'));
 
@@ -20,38 +56,38 @@ Route::post('/locale', function (\Illuminate\Http\Request $request) {
 })->name('locale.update');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
-    Route::get('dashboard/stats', [\App\Http\Controllers\DashboardController::class, 'stats'])->name('dashboard.stats');
-    Route::post('dashboard/alerts/acknowledge', [\App\Http\Controllers\DashboardController::class, 'acknowledgeAlert'])->name('dashboard.alerts.acknowledge');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('dashboard/stats', [DashboardController::class, 'stats'])->name('dashboard.stats');
+    Route::post('dashboard/alerts/acknowledge', [DashboardController::class, 'acknowledgeAlert'])->name('dashboard.alerts.acknowledge');
 
     // Resource routes for main modules
     // Specific routes must be defined BEFORE resource routes to avoid conflicts
-    Route::get('orders/production-advancements', [\App\Http\Controllers\OrderController::class, 'productionAdvancements'])->name('orders.production-advancements');
-    Route::get('orders/get-shipping-addresses', [\App\Http\Controllers\OrderController::class, 'getShippingAddresses'])->name('orders.get-shipping-addresses');
-    Route::get('orders/{order}/manage-employees', [\App\Http\Controllers\OrderEmployeeController::class, 'manageOrder'])->name('orders.manage-employees');
-    Route::get('orders/{order}/manage-status', [\App\Http\Controllers\OrderController::class, 'manageStatus'])->name('orders.manage-status');
-    Route::post('orders/{order}/save-semaforo', [\App\Http\Controllers\OrderController::class, 'saveSemaforo'])->name('orders.save-semaforo');
-    Route::post('orders/{order}/change-status', [\App\Http\Controllers\OrderController::class, 'changeStatus'])->name('orders.change-status');
-    Route::get('orders/{order}/download-barcode', [\App\Http\Controllers\OrderController::class, 'downloadBarcode'])->name('orders.download-barcode');
-    Route::get('orders/{order}/download-autocontrollo', [\App\Http\Controllers\OrderController::class, 'downloadAutocontrollo'])->name('orders.download-autocontrollo');
-    Route::resource('orders', \App\Http\Controllers\OrderController::class);
-    Route::resource('production-order-processing', \App\Http\Controllers\ProductionOrderProcessingController::class)->parameters([
+    Route::get('orders/production-advancements', [OrderController::class, 'productionAdvancements'])->name('orders.production-advancements');
+    Route::get('orders/get-shipping-addresses', [OrderController::class, 'getShippingAddresses'])->name('orders.get-shipping-addresses');
+    Route::get('orders/{order}/manage-employees', [OrderEmployeeController::class, 'manageOrder'])->name('orders.manage-employees');
+    Route::get('orders/{order}/manage-status', [OrderController::class, 'manageStatus'])->name('orders.manage-status');
+    Route::post('orders/{order}/save-semaforo', [OrderController::class, 'saveSemaforo'])->name('orders.save-semaforo');
+    Route::post('orders/{order}/change-status', [OrderController::class, 'changeStatus'])->name('orders.change-status');
+    Route::get('orders/{order}/download-barcode', [OrderController::class, 'downloadBarcode'])->name('orders.download-barcode');
+    Route::get('orders/{order}/download-autocontrollo', [OrderController::class, 'downloadAutocontrollo'])->name('orders.download-autocontrollo');
+    Route::resource('orders', OrderController::class);
+    Route::resource('production-order-processing', ProductionOrderProcessingController::class)->parameters([
         'production-order-processing' => 'productionOrderProcessing',
     ]);
-    Route::resource('order-states', \App\Http\Controllers\OrderStateController::class)->parameters([
+    Route::resource('order-states', OrderStateController::class)->parameters([
         'order-states' => 'orderState',
     ]);
-    Route::get('order-employees/get-assignments', [\App\Http\Controllers\OrderEmployeeController::class, 'getEmployeeAssignments'])->name('order-employees.get-assignments');
-    Route::post('order-employees/save-assignments', [\App\Http\Controllers\OrderEmployeeController::class, 'saveEmployeeAssignments'])->name('order-employees.save-assignments');
-    Route::get('order-employees/check-assignment', [\App\Http\Controllers\OrderEmployeeController::class, 'checkEmployeeOrder'])->name('order-employees.check-assignment');
-    Route::resource('order-employees', \App\Http\Controllers\OrderEmployeeController::class)->parameters([
+    Route::get('order-employees/get-assignments', [OrderEmployeeController::class, 'getEmployeeAssignments'])->name('order-employees.get-assignments');
+    Route::post('order-employees/save-assignments', [OrderEmployeeController::class, 'saveEmployeeAssignments'])->name('order-employees.save-assignments');
+    Route::get('order-employees/check-assignment', [OrderEmployeeController::class, 'checkEmployeeOrder'])->name('order-employees.check-assignment');
+    Route::resource('order-employees', OrderEmployeeController::class)->parameters([
         'order-employees' => 'orderEmployee',
     ]);
 
     // Articles sub-routes (must be defined BEFORE the main 'articles' route)
-    Route::get('articles/packaging-instructions/generate-ic-number', [\App\Http\Controllers\ArticleICController::class, 'generateICNumber'])->name('articles.packaging-instructions.generate-ic-number');
-    Route::get('articles/packaging-instructions/{packagingInstruction}/download', [\App\Http\Controllers\ArticleICController::class, 'download'])->name('articles.packaging-instructions.download');
-    Route::resource('articles/packaging-instructions', \App\Http\Controllers\ArticleICController::class)->parameters([
+    Route::get('articles/packaging-instructions/generate-ic-number', [ArticleICController::class, 'generateICNumber'])->name('articles.packaging-instructions.generate-ic-number');
+    Route::get('articles/packaging-instructions/{packagingInstruction}/download', [ArticleICController::class, 'download'])->name('articles.packaging-instructions.download');
+    Route::resource('articles/packaging-instructions', ArticleICController::class)->parameters([
         'packaging-instructions' => 'packagingInstruction',
     ])->names([
         'index' => 'articles.packaging-instructions.index',
@@ -63,9 +99,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'destroy' => 'articles.packaging-instructions.destroy',
     ]);
 
-    Route::get('articles/palletization-instructions/generate-ip-number', [\App\Http\Controllers\ArticleIPController::class, 'generateIPNumber'])->name('articles.palletization-instructions.generate-ip-number');
-    Route::get('articles/palletization-instructions/{palletizationInstruction}/download', [\App\Http\Controllers\ArticleIPController::class, 'download'])->name('articles.palletization-instructions.download');
-    Route::resource('articles/palletization-instructions', \App\Http\Controllers\ArticleIPController::class)->parameters([
+    Route::get('articles/palletization-instructions/generate-ip-number', [ArticleIPController::class, 'generateIPNumber'])->name('articles.palletization-instructions.generate-ip-number');
+    Route::get('articles/palletization-instructions/{palletizationInstruction}/download', [ArticleIPController::class, 'download'])->name('articles.palletization-instructions.download');
+    Route::resource('articles/palletization-instructions', ArticleIPController::class)->parameters([
         'palletization-instructions' => 'palletizationInstruction',
     ])->names([
         'index' => 'articles.palletization-instructions.index',
@@ -77,9 +113,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'destroy' => 'articles.palletization-instructions.destroy',
     ]);
 
-    Route::get('articles/operational-instructions/generate-io-number', [\App\Http\Controllers\ArticleIOController::class, 'generateIONumber'])->name('articles.operational-instructions.generate-io-number');
-    Route::get('articles/operational-instructions/{operationalInstruction}/download', [\App\Http\Controllers\ArticleIOController::class, 'download'])->name('articles.operational-instructions.download');
-    Route::resource('articles/operational-instructions', \App\Http\Controllers\ArticleIOController::class)->parameters([
+    Route::get('articles/operational-instructions/generate-io-number', [ArticleIOController::class, 'generateIONumber'])->name('articles.operational-instructions.generate-io-number');
+    Route::get('articles/operational-instructions/{operationalInstruction}/download', [ArticleIOController::class, 'download'])->name('articles.operational-instructions.download');
+    Route::resource('articles/operational-instructions', ArticleIOController::class)->parameters([
         'operational-instructions' => 'operationalInstruction',
     ])->names([
         'index' => 'articles.operational-instructions.index',
@@ -92,9 +128,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     ]);
 
     // Specific routes must be defined BEFORE resource routes to avoid conflicts
-    Route::get('articles/cq-models/generate-cqu-number', [\App\Http\Controllers\ModelSCQController::class, 'generateCQUNumber'])->name('articles.cq-models.generate-cqu-number');
-    Route::get('articles/cq-models/{cqModel}/download-file', [\App\Http\Controllers\ModelSCQController::class, 'downloadFile'])->name('articles.cq-models.download-file');
-    Route::resource('articles/cq-models', \App\Http\Controllers\ModelSCQController::class)->parameters([
+    Route::get('articles/cq-models/generate-cqu-number', [ModelSCQController::class, 'generateCQUNumber'])->name('articles.cq-models.generate-cqu-number');
+    Route::get('articles/cq-models/{cqModel}/download-file', [ModelSCQController::class, 'downloadFile'])->name('articles.cq-models.download-file');
+    Route::resource('articles/cq-models', ModelSCQController::class)->parameters([
         'cq-models' => 'cqModel',
     ])->names([
         'index' => 'articles.cq-models.index',
@@ -106,8 +142,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'destroy' => 'articles.cq-models.destroy',
     ]);
 
-    Route::get('articles/pallet-sheets/{palletSheet}/download-file', [\App\Http\Controllers\PalletSheetController::class, 'downloadFile'])->name('articles.pallet-sheets.download-file');
-    Route::resource('articles/pallet-sheets', \App\Http\Controllers\PalletSheetController::class)->parameters([
+    Route::get('articles/pallet-sheets/{palletSheet}/download-file', [PalletSheetController::class, 'downloadFile'])->name('articles.pallet-sheets.download-file');
+    Route::resource('articles/pallet-sheets', PalletSheetController::class)->parameters([
         'pallet-sheets' => 'palletSheet',
     ])->names([
         'index' => 'articles.pallet-sheets.index',
@@ -119,47 +155,47 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'destroy' => 'articles.pallet-sheets.destroy',
     ]);
 
-    Route::get('articles/get-las-code', [\App\Http\Controllers\ArticleController::class, 'getLasCode'])->name('articles.get-las-code');
-    Route::get('articles/{article}/download-line-layout', [\App\Http\Controllers\ArticleController::class, 'downloadLineLayoutFile'])->name('articles.download-line-layout');
-    Route::resource('articles', \App\Http\Controllers\ArticleController::class);
-    Route::resource('customers', \App\Http\Controllers\CustomerController::class);
-    Route::resource('customer-divisions', \App\Http\Controllers\CustomerDivisionController::class)->parameters([
+    Route::get('articles/get-las-code', [ArticleController::class, 'getLasCode'])->name('articles.get-las-code');
+    Route::get('articles/{article}/download-line-layout', [ArticleController::class, 'downloadLineLayoutFile'])->name('articles.download-line-layout');
+    Route::resource('articles', ArticleController::class);
+    Route::resource('customers', CustomerController::class);
+    Route::resource('customer-divisions', CustomerDivisionController::class)->parameters([
         'customer-divisions' => 'customerDivision',
     ]);
-    Route::get('customer-shipping-addresses/load-divisions', [\App\Http\Controllers\CustomerShippingAddressController::class, 'loadDivisions'])->name('customer-shipping-addresses.load-divisions');
-    Route::resource('customer-shipping-addresses', \App\Http\Controllers\CustomerShippingAddressController::class)->parameters([
+    Route::get('customer-shipping-addresses/load-divisions', [CustomerShippingAddressController::class, 'loadDivisions'])->name('customer-shipping-addresses.load-divisions');
+    Route::resource('customer-shipping-addresses', CustomerShippingAddressController::class)->parameters([
         'customer-shipping-addresses' => 'customerShippingAddress',
     ]);
-    Route::resource('suppliers', \App\Http\Controllers\SupplierController::class);
-    Route::resource('materials', \App\Http\Controllers\MaterialController::class);
-    Route::resource('machinery', \App\Http\Controllers\MachineryController::class);
-    Route::resource('pallet-types', \App\Http\Controllers\PalletTypeController::class)->parameters([
+    Route::resource('suppliers', SupplierController::class);
+    Route::resource('materials', MaterialController::class);
+    Route::resource('machinery', MachineryController::class);
+    Route::resource('pallet-types', PalletTypeController::class)->parameters([
         'pallet-types' => 'palletType',
     ]);
-    Route::resource('critical-issues', \App\Http\Controllers\CriticalIssueController::class)->parameters([
+    Route::resource('critical-issues', CriticalIssueController::class)->parameters([
         'critical-issues' => 'criticalIssue',
     ]);
-    Route::resource('article-categories', \App\Http\Controllers\ArticleCategoryController::class)->parameters([
+    Route::resource('article-categories', ArticleCategoryController::class)->parameters([
         'article-categories' => 'articleCategory',
     ]);
     // Specific routes must be defined BEFORE resource routes to avoid conflicts
-    Route::get('employees/contracts', [\App\Http\Controllers\EmployeeController::class, 'contractsIndex'])->name('employees.contracts.index');
-    Route::get('employees/contracts/create', [\App\Http\Controllers\EmployeeController::class, 'createContract'])->name('employees.contracts.create');
-    Route::post('employees/contracts', [\App\Http\Controllers\EmployeeController::class, 'storeContract'])->name('employees.contracts.store');
-    Route::get('employees/contracts/{contract}/edit', [\App\Http\Controllers\EmployeeController::class, 'editContract'])->name('employees.contracts.edit');
-    Route::put('employees/contracts/{contract}', [\App\Http\Controllers\EmployeeController::class, 'updateContract'])->name('employees.contracts.update');
-    Route::delete('employees/contracts/{contract}', [\App\Http\Controllers\EmployeeController::class, 'destroyContract'])->name('employees.contracts.destroy');
-    Route::get('employees/{employee}/contracts', [\App\Http\Controllers\EmployeeController::class, 'contracts'])->name('employees.contracts');
-    Route::get('employees/{employee}/download-barcode', [\App\Http\Controllers\EmployeeController::class, 'downloadBarcode'])->name('employees.download-barcode');
-    Route::put('employees/{employee}/update-password', [\App\Http\Controllers\EmployeeController::class, 'updatePassword'])->name('employees.update-password');
-    Route::post('employees/{employee}/store-contract', [\App\Http\Controllers\EmployeeController::class, 'storeContractLegacy'])->name('employees.store-contract');
-    Route::put('employees/{employee}/contracts/{contract}', [\App\Http\Controllers\EmployeeController::class, 'updateContractLegacy'])->name('employees.update-contract');
-    Route::delete('employees/{employee}/contracts/{contract}', [\App\Http\Controllers\EmployeeController::class, 'destroyContractLegacy'])->name('employees.destroy-contract');
-    Route::post('employees/{employee}/toggle-portal', [\App\Http\Controllers\EmployeeController::class, 'togglePortal'])->name('employees.toggle-portal');
-    Route::resource('employees', \App\Http\Controllers\EmployeeController::class);
+    Route::get('employees/contracts', [EmployeeController::class, 'contractsIndex'])->name('employees.contracts.index');
+    Route::get('employees/contracts/create', [EmployeeController::class, 'createContract'])->name('employees.contracts.create');
+    Route::post('employees/contracts', [EmployeeController::class, 'storeContract'])->name('employees.contracts.store');
+    Route::get('employees/contracts/{contract}/edit', [EmployeeController::class, 'editContract'])->name('employees.contracts.edit');
+    Route::put('employees/contracts/{contract}', [EmployeeController::class, 'updateContract'])->name('employees.contracts.update');
+    Route::delete('employees/contracts/{contract}', [EmployeeController::class, 'destroyContract'])->name('employees.contracts.destroy');
+    Route::get('employees/{employee}/contracts', [EmployeeController::class, 'contracts'])->name('employees.contracts');
+    Route::get('employees/{employee}/download-barcode', [EmployeeController::class, 'downloadBarcode'])->name('employees.download-barcode');
+    Route::put('employees/{employee}/update-password', [EmployeeController::class, 'updatePassword'])->name('employees.update-password');
+    Route::post('employees/{employee}/store-contract', [EmployeeController::class, 'storeContractLegacy'])->name('employees.store-contract');
+    Route::put('employees/{employee}/contracts/{contract}', [EmployeeController::class, 'updateContractLegacy'])->name('employees.update-contract');
+    Route::delete('employees/{employee}/contracts/{contract}', [EmployeeController::class, 'destroyContractLegacy'])->name('employees.destroy-contract');
+    Route::post('employees/{employee}/toggle-portal', [EmployeeController::class, 'togglePortal'])->name('employees.toggle-portal');
+    Route::resource('employees', EmployeeController::class);
 
     // Offerte sub-modules (must be defined BEFORE the main 'offers' route)
-    Route::resource('offers/activities', \App\Http\Controllers\OfferActivityController::class)->parameters([
+    Route::resource('offers/activities', OfferActivityController::class)->parameters([
         'activities' => 'offerActivity',
     ])->names([
         'index' => 'offer-activities.index',
@@ -171,7 +207,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'destroy' => 'offer-activities.destroy',
     ]);
 
-    Route::resource('offers/types', \App\Http\Controllers\OfferTypeController::class)->parameters([
+    Route::resource('offers/types', OfferTypeController::class)->parameters([
         'types' => 'offerType',
     ])->names([
         'index' => 'offer-types.index',
@@ -183,7 +219,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'destroy' => 'offer-types.destroy',
     ]);
 
-    Route::resource('offers/sectors', \App\Http\Controllers\OfferSectorController::class)->parameters([
+    Route::resource('offers/sectors', OfferSectorController::class)->parameters([
         'sectors' => 'offerSector',
     ])->names([
         'index' => 'offer-sectors.index',
@@ -195,7 +231,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'destroy' => 'offer-sectors.destroy',
     ]);
 
-    Route::resource('offers/seasonality', \App\Http\Controllers\OfferSeasonalityController::class)->parameters([
+    Route::resource('offers/seasonality', OfferSeasonalityController::class)->parameters([
         'seasonality' => 'offerSeasonality',
     ])->names([
         'index' => 'offer-seasonalities.index',
@@ -207,7 +243,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'destroy' => 'offer-seasonalities.destroy',
     ]);
 
-    Route::resource('offers/las-families', \App\Http\Controllers\LasFamilyController::class)->parameters([
+    Route::resource('offers/las-families', LasFamilyController::class)->parameters([
         'las-families' => 'lasFamily',
     ])->names([
         'index' => 'las-families.index',
@@ -219,7 +255,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'destroy' => 'las-families.destroy',
     ]);
 
-    Route::resource('offers/las-work-lines', \App\Http\Controllers\LasWorkLineController::class)->parameters([
+    Route::resource('offers/las-work-lines', LasWorkLineController::class)->parameters([
         'las-work-lines' => 'lasWorkLine',
     ])->names([
         'index' => 'las-work-lines.index',
@@ -231,7 +267,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'destroy' => 'las-work-lines.destroy',
     ]);
 
-    Route::resource('offers/ls-resources', \App\Http\Controllers\LsResourceController::class)->parameters([
+    Route::resource('offers/ls-resources', LsResourceController::class)->parameters([
         'ls-resources' => 'lsResource',
     ])->names([
         'index' => 'ls-resources.index',
@@ -243,7 +279,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'destroy' => 'ls-resources.destroy',
     ]);
 
-    Route::resource('offers/order-types', \App\Http\Controllers\OfferOrderTypeController::class)->parameters([
+    Route::resource('offers/order-types', OfferOrderTypeController::class)->parameters([
         'order-types' => 'offerOrderType',
     ])->names([
         'index' => 'offer-order-types.index',
@@ -255,8 +291,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'destroy' => 'offer-order-types.destroy',
     ]);
 
-    Route::get('offers/operation-categories/load-categories', [\App\Http\Controllers\OfferOperationCategoryController::class, 'loadCategories'])->name('offer-operation-categories.load-categories');
-    Route::resource('offers/operation-categories', \App\Http\Controllers\OfferOperationCategoryController::class)->parameters([
+    Route::get('offers/operation-categories/load-categories', [OfferOperationCategoryController::class, 'loadCategories'])->name('offer-operation-categories.load-categories');
+    Route::resource('offers/operation-categories', OfferOperationCategoryController::class)->parameters([
         'operation-categories' => 'offerOperationCategory',
     ])->names([
         'index' => 'offer-operation-categories.index',
@@ -268,9 +304,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'destroy' => 'offer-operation-categories.destroy',
     ]);
 
-    Route::get('offers/operations/load-category-operations', [\App\Http\Controllers\OfferOperationController::class, 'loadCategoryOperations'])->name('offer-operations.load-category-operations');
-    Route::get('offers/operations/{offerOperation}/download-file', [\App\Http\Controllers\OfferOperationController::class, 'downloadFile'])->name('offer-operations.download-file');
-    Route::resource('offers/operations', \App\Http\Controllers\OfferOperationController::class)->parameters([
+    Route::get('offers/operations/load-category-operations', [OfferOperationController::class, 'loadCategoryOperations'])->name('offer-operations.load-category-operations');
+    Route::get('offers/operations/{offerOperation}/download-file', [OfferOperationController::class, 'downloadFile'])->name('offer-operations.download-file');
+    Route::resource('offers/operations', OfferOperationController::class)->parameters([
         'operations' => 'offerOperation',
     ])->names([
         'index' => 'offer-operations.index',
@@ -282,7 +318,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'destroy' => 'offer-operations.destroy',
     ]);
 
-    Route::resource('offers/operation-lists', \App\Http\Controllers\OfferOperationListController::class)->parameters([
+    Route::resource('offers/operation-lists', OfferOperationListController::class)->parameters([
         'operation-lists' => 'offerOperationList',
     ])->names([
         'index' => 'offer-operation-lists.index',
@@ -295,12 +331,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     ]);
 
     // Main offers route (must be defined AFTER nested routes)
-    Route::get('offers/get-divisions', [\App\Http\Controllers\OfferController::class, 'getDivisions'])->name('offers.get-divisions');
-    Route::get('offers/{offer}/download-pdf', [\App\Http\Controllers\OfferController::class, 'downloadPdf'])->name('offers.download-pdf');
-    Route::resource('offers', \App\Http\Controllers\OfferController::class);
+    Route::get('offers/get-divisions', [OfferController::class, 'getDivisions'])->name('offers.get-divisions');
+    Route::get('offers/{offer}/download-pdf', [OfferController::class, 'downloadPdf'])->name('offers.download-pdf');
+    Route::resource('offers', OfferController::class);
 
     // Value Types
-    Route::resource('value-types', \App\Http\Controllers\ValueTypesController::class)->parameters([
+    Route::resource('value-types', ValueTypesController::class)->parameters([
         'value-types' => 'valueType',
     ])->names([
         'index' => 'value-types.index',
@@ -318,11 +354,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // Production Portal Web Frontend (public routes, uses session tokens)
 Route::prefix('production-portal')->name('production-portal.')->group(function () {
-    Route::get('/login', [\App\Http\Controllers\ProductionPortalWebController::class, 'login'])->name('login');
-    Route::post('/authenticate', [\App\Http\Controllers\ProductionPortalWebController::class, 'authenticate'])->name('authenticate');
-    Route::post('/logout', [\App\Http\Controllers\ProductionPortalWebController::class, 'logout'])->name('logout');
-    Route::get('/dashboard', [\App\Http\Controllers\ProductionPortalWebController::class, 'dashboard'])->name('dashboard');
-    Route::get('/order/{order}', [\App\Http\Controllers\ProductionPortalWebController::class, 'showOrder'])->name('order');
+    Route::get('/login', [ProductionPortalWebController::class, 'login'])->name('login');
+    Route::post('/authenticate', [ProductionPortalWebController::class, 'authenticate'])->name('authenticate');
+    Route::post('/logout', [ProductionPortalWebController::class, 'logout'])->name('logout');
+    Route::get('/dashboard', [ProductionPortalWebController::class, 'dashboard'])->name('dashboard');
+    Route::get('/order/{order}', [ProductionPortalWebController::class, 'showOrder'])->name('order');
 });
 
 require __DIR__.'/settings.php';

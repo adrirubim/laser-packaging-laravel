@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\ArticleCategoryFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ class ArticleCategory extends Model
 
     protected static function newFactory()
     {
-        return \Database\Factories\ArticleCategoryFactory::new();
+        return ArticleCategoryFactory::new();
     }
 
     protected $table = 'articlecategory';

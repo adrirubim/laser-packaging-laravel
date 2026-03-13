@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\EmployeeFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,7 +15,7 @@ class Employee extends Model
      */
     protected static function newFactory()
     {
-        return \Database\Factories\EmployeeFactory::new();
+        return EmployeeFactory::new();
     }
 
     protected $table = 'employee';

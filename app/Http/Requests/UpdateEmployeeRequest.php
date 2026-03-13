@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Employee;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateEmployeeRequest extends FormRequest
@@ -29,7 +30,7 @@ class UpdateEmployeeRequest extends FormRequest
                 'string',
                 'max:255',
                 function ($attribute, $value, $fail) use ($employee) {
-                    $exists = \App\Models\Employee::where('matriculation_number', $value)
+                    $exists = Employee::where('matriculation_number', $value)
                         ->where('id', '!=', $employee->id)
                         ->where('removed', false)
                         ->exists();

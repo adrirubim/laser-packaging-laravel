@@ -12,9 +12,12 @@ use App\Models\Machinery;
 use App\Models\Material;
 use App\Models\Offer;
 use App\Models\OfferLasFamily;
+use App\Models\Order;
 use App\Models\PalletType;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -571,7 +574,7 @@ class ArticleControllerTest extends TestCase
         ]);
 
         // Create associated order
-        $order = \App\Models\Order::factory()->create([
+        $order = Order::factory()->create([
             'article_uuid' => $article->uuid,
             'removed' => false,
         ]);
@@ -641,13 +644,13 @@ class ArticleControllerTest extends TestCase
         ]);
 
         // Assign relationships to source article
-        $sourceArticle->materials()->attach($material1->uuid, ['uuid' => \Illuminate\Support\Str::uuid(), 'removed' => false]);
-        $sourceArticle->materials()->attach($material2->uuid, ['uuid' => \Illuminate\Support\Str::uuid(), 'removed' => false]);
-        $sourceArticle->machinery()->attach($machinery1->uuid, ['uuid' => \Illuminate\Support\Str::uuid(), 'removed' => false]);
-        $sourceArticle->criticalIssues()->attach($criticalIssue->uuid, ['uuid' => \Illuminate\Support\Str::uuid(), 'removed' => false]);
-        $sourceArticle->packagingInstructions()->attach($packagingInstruction->uuid, ['uuid' => \Illuminate\Support\Str::uuid(), 'removed' => false]);
-        $sourceArticle->operatingInstructions()->attach($operatingInstruction->uuid, ['uuid' => \Illuminate\Support\Str::uuid(), 'removed' => false]);
-        $sourceArticle->palletizingInstructions()->attach($palletizingInstruction->uuid, ['uuid' => \Illuminate\Support\Str::uuid(), 'removed' => false]);
+        $sourceArticle->materials()->attach($material1->uuid, ['uuid' => Str::uuid(), 'removed' => false]);
+        $sourceArticle->materials()->attach($material2->uuid, ['uuid' => Str::uuid(), 'removed' => false]);
+        $sourceArticle->machinery()->attach($machinery1->uuid, ['uuid' => Str::uuid(), 'removed' => false]);
+        $sourceArticle->criticalIssues()->attach($criticalIssue->uuid, ['uuid' => Str::uuid(), 'removed' => false]);
+        $sourceArticle->packagingInstructions()->attach($packagingInstruction->uuid, ['uuid' => Str::uuid(), 'removed' => false]);
+        $sourceArticle->operatingInstructions()->attach($operatingInstruction->uuid, ['uuid' => Str::uuid(), 'removed' => false]);
+        $sourceArticle->palletizingInstructions()->attach($palletizingInstruction->uuid, ['uuid' => Str::uuid(), 'removed' => false]);
 
         $response = $this->post(route('articles.store'), [
             'offer_uuid' => $this->offer->uuid,
@@ -732,7 +735,7 @@ class ArticleControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        $file = \Illuminate\Http\UploadedFile::fake()->create('test-layout.pdf', 100);
+        $file = UploadedFile::fake()->create('test-layout.pdf', 100);
 
         $response = $this->post(route('articles.store'), [
             'offer_uuid' => $this->offer->uuid,
@@ -768,7 +771,7 @@ class ArticleControllerTest extends TestCase
             'removed' => false,
         ]);
 
-        $file = \Illuminate\Http\UploadedFile::fake()->create('new-layout.pdf', 100);
+        $file = UploadedFile::fake()->create('new-layout.pdf', 100);
 
         $response = $this->put(route('articles.update', $article), [
             'offer_uuid' => $this->offer->uuid,

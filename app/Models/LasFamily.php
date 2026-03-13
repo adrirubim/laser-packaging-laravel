@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\OfferLasFamilyFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ class LasFamily extends Model
 
     protected static function newFactory()
     {
-        return \Database\Factories\OfferLasFamilyFactory::new();
+        return OfferLasFamilyFactory::new();
     }
 
     protected $table = 'offerlasfamily';

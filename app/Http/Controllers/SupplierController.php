@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreSupplierRequest;
 use App\Http\Requests\UpdateSupplierRequest;
 use App\Http\Resources\SupplierResource;
+use App\Models\Supplier;
 use Domain\Suppliers\Actions\CreateSupplierAction;
 use Domain\Suppliers\Actions\ListSuppliersAction;
 use Domain\Suppliers\Actions\SoftDeleteSupplierAction;
@@ -61,7 +62,7 @@ class SupplierController extends Controller
     /**
      * Display the specified supplier.
      */
-    public function show(\App\Models\Supplier $supplier): Response
+    public function show(Supplier $supplier): Response
     {
         $supplierResource = SupplierResource::make($supplier)->toArray(request());
 
@@ -73,7 +74,7 @@ class SupplierController extends Controller
     /**
      * Show the form for editing the specified supplier.
      */
-    public function edit(\App\Models\Supplier $supplier): Response
+    public function edit(Supplier $supplier): Response
     {
         $supplierResource = SupplierResource::make($supplier)->toArray(request());
 
@@ -85,7 +86,7 @@ class SupplierController extends Controller
     /**
      * Update the specified supplier.
      */
-    public function update(UpdateSupplierRequest $request, \App\Models\Supplier $supplier)
+    public function update(UpdateSupplierRequest $request, Supplier $supplier)
     {
         $this->updateSupplier->execute($supplier, $request->validated());
 
@@ -96,7 +97,7 @@ class SupplierController extends Controller
     /**
      * Remove the specified supplier (soft delete).
      */
-    public function destroy(\App\Models\Supplier $supplier)
+    public function destroy(Supplier $supplier)
     {
         $this->softDeleteSupplier->execute($supplier);
 

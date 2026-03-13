@@ -10,8 +10,10 @@ use App\Models\Offer;
 use App\Models\Order;
 use App\Models\PalletType;
 use App\Models\User;
+use App\Services\OfferNumberService;
 use App\Services\OrderProductionNumberService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 /**
@@ -226,10 +228,10 @@ class LoadTest extends TestCase
         // Create 2000 offers to test pagination
         // Use OfferNumberService to generate unique offer numbers
         // Create offers directly to avoid factory's unique() constraint
-        $offerNumberService = new \App\Services\OfferNumberService;
+        $offerNumberService = new OfferNumberService;
         for ($i = 0; $i < 2000; $i++) {
             $offer = new Offer([
-                'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+                'uuid' => Str::uuid()->toString(),
                 'customer_uuid' => $customer->uuid,
                 'customerdivision_uuid' => $division->uuid,
                 'offer_number' => $offerNumberService->generateNext(),
@@ -237,7 +239,7 @@ class LoadTest extends TestCase
                 'unit_of_measure' => 'PZ',
                 'quantity' => 100,
                 'piece' => 1,
-                'approval_status' => \App\Models\Offer::APPROVAL_STATUS_PENDING,
+                'approval_status' => Offer::APPROVAL_STATUS_PENDING,
                 'removed' => false,
             ]);
             $offer->save();

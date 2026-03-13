@@ -6,6 +6,7 @@ use App\Models\Employee;
 use App\Models\OfferOrderEmployee;
 use App\Models\Order;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 class OfferOrderEmployeeFactory extends Factory
 {
@@ -14,7 +15,7 @@ class OfferOrderEmployeeFactory extends Factory
     public function definition(): array
     {
         return [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'order_uuid' => fn () => Order::factory()->create()->uuid,
             'employee_uuid' => fn () => Employee::factory()->create()->uuid,
             'removed' => false,

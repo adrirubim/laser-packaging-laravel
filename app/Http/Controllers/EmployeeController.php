@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateEmployeeRequest;
 use App\Http\Resources\ApiResponseResource;
 use App\Models\Employee;
 use App\Models\EmployeeContract;
+use App\Models\Supplier;
 use Domain\Employees\Actions\DeleteEmployeeAction;
 use Domain\Employees\Actions\ListEmployeeContractsAction;
 use Domain\Employees\Actions\ListEmployeesAction;
@@ -219,7 +220,7 @@ class EmployeeController extends Controller
             ->orderBy('name')
             ->get(['uuid', 'matriculation_number', 'name', 'surname']);
 
-        $suppliers = \App\Models\Supplier::active()
+        $suppliers = Supplier::active()
             ->orderBy('company_name')
             ->get(['uuid', 'code', 'company_name']);
 
@@ -259,7 +260,7 @@ class EmployeeController extends Controller
             ->orderBy('name')
             ->get(['uuid', 'matriculation_number', 'name', 'surname']);
 
-        $suppliers = \App\Models\Supplier::active()
+        $suppliers = Supplier::active()
             ->orderBy('company_name')
             ->get(['uuid', 'code', 'company_name']);
 
@@ -325,7 +326,7 @@ class EmployeeController extends Controller
             ->orderBy('name')
             ->get(['uuid', 'matriculation_number', 'name', 'surname']);
 
-        $suppliers = \App\Models\Supplier::active()
+        $suppliers = Supplier::active()
             ->orderBy('company_name')
             ->get(['uuid', 'code', 'company_name']);
 

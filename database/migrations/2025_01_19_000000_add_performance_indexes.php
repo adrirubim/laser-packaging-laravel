@@ -19,7 +19,7 @@ return new class extends Migration
             );
 
             return isset($result->count) && $result->count > 0;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // If there's an error in the query, assume the index doesn't exist
             return false;
         }

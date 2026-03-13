@@ -11,6 +11,8 @@ use App\Models\Order;
 use App\Repositories\OrderRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -44,7 +46,7 @@ class OrderRepositoryTest extends TestCase
         $request = Request::create('/orders', 'GET');
         $result = $this->repository->getForIndex($request);
 
-        $this->assertInstanceOf(\Illuminate\Pagination\LengthAwarePaginator::class, $result);
+        $this->assertInstanceOf(LengthAwarePaginator::class, $result);
         $this->assertCount(2, $result->items());
     }
 
@@ -103,7 +105,7 @@ class OrderRepositoryTest extends TestCase
         $request = Request::create('/orders/production-advancements', 'GET');
         $result = $this->repository->getForProductionAdvancements($request);
 
-        $this->assertInstanceOf(\Illuminate\Pagination\LengthAwarePaginator::class, $result);
+        $this->assertInstanceOf(LengthAwarePaginator::class, $result);
         $this->assertGreaterThanOrEqual(1, $result->total());
     }
 
@@ -122,7 +124,7 @@ class OrderRepositoryTest extends TestCase
     public function it_returns_empty_collection_for_shipping_addresses_when_article_uuid_is_null()
     {
         $result = $this->repository->getShippingAddressesForArticle(null);
-        $this->assertInstanceOf(\Illuminate\Support\Collection::class, $result);
+        $this->assertInstanceOf(Collection::class, $result);
         $this->assertCount(0, $result);
     }
 

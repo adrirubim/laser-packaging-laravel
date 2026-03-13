@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateMachineryRequest;
 use App\Models\Machinery;
+use App\Models\ValueTypes;
 use App\Repositories\ArticleRepository;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -49,7 +50,7 @@ class MachineryController extends Controller
      */
     public function create(): Response
     {
-        $valueTypes = \App\Models\ValueTypes::active()->orderBy('id')->get(['id']);
+        $valueTypes = ValueTypes::active()->orderBy('id')->get(['id']);
 
         return Inertia::render('Machinery/Create', [
             'valueTypes' => $valueTypes,
@@ -93,7 +94,7 @@ class MachineryController extends Controller
     public function edit(Machinery $machinery): Response
     {
         $machinery->load('valueType');
-        $valueTypes = \App\Models\ValueTypes::active()->orderBy('id')->get(['id']);
+        $valueTypes = ValueTypes::active()->orderBy('id')->get(['id']);
 
         return Inertia::render('Machinery/Edit', [
             'machinery' => $machinery,

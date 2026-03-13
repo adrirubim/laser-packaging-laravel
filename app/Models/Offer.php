@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\OfferFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -19,7 +20,7 @@ class Offer extends Model
      */
     protected static function newFactory()
     {
-        return \Database\Factories\OfferFactory::new();
+        return OfferFactory::new();
     }
 
     protected $table = 'offer';

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\LsResourceFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ class LsResource extends Model
 
     protected static function newFactory()
     {
-        return \Database\Factories\LsResourceFactory::new();
+        return LsResourceFactory::new();
     }
 
     protected $table = 'offerlsresource';

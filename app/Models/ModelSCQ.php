@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Database\Factories\ModelSCQFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class ModelSCQ extends Model
 {
@@ -12,7 +14,7 @@ class ModelSCQ extends Model
 
     protected static function newFactory()
     {
-        return \Database\Factories\ModelSCQFactory::new();
+        return ModelSCQFactory::new();
     }
 
     protected $table = 'modelscq';
@@ -65,7 +67,7 @@ class ModelSCQ extends Model
     public static function generateNextCQUCode(): string
     {
         // PostgreSQL no tiene UNSIGNED, usar INTEGER o CAST a INTEGER
-        $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
+        $driver = DB::connection()->getDriverName();
         if ($driver === 'pgsql') {
             $lastModel = self::where('cod_model', 'like', 'CQU%')
                 ->where('removed', false)

@@ -6,6 +6,9 @@ use App\Models\OfferOperation;
 use App\Models\OfferOperationCategory;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -47,7 +50,7 @@ class OfferOperationControllerTest extends TestCase
         $category = OfferOperationCategory::factory()->create();
 
         $response = $this->post(route('offer-operations.store'), [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'category_uuid' => $category->uuid,
             'codice' => 'OP-001',
             'codice_univoco' => 'UNI-001',
@@ -229,9 +232,9 @@ class OfferOperationControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $category = OfferOperationCategory::factory()->create();
-        $uuid = \Illuminate\Support\Str::uuid()->toString();
+        $uuid = Str::uuid()->toString();
 
-        $file = \Illuminate\Http\UploadedFile::fake()->create('test.pdf', 100);
+        $file = UploadedFile::fake()->create('test.pdf', 100);
 
         $response = $this->post(route('offer-operations.store'), [
             'uuid' => $uuid,
@@ -248,7 +251,7 @@ class OfferOperationControllerTest extends TestCase
 
         $operation = OfferOperation::where('uuid', $uuid)->first();
         $this->assertNotNull($operation->filename);
-        \Illuminate\Support\Facades\Storage::disk('public')->assertExists($operation->filename);
+        Storage::disk('public')->assertExists($operation->filename);
     }
 
     #[Test]
@@ -262,7 +265,7 @@ class OfferOperationControllerTest extends TestCase
             'filename' => null,
         ]);
 
-        $file = \Illuminate\Http\UploadedFile::fake()->create('test-updated.pdf', 100);
+        $file = UploadedFile::fake()->create('test-updated.pdf', 100);
 
         $response = $this->put(route('offer-operations.update', $operation), [
             'category_uuid' => $category->uuid,
@@ -273,7 +276,7 @@ class OfferOperationControllerTest extends TestCase
         $response->assertRedirect(route('offer-operations.index'));
         $operation->refresh();
         $this->assertNotNull($operation->filename);
-        \Illuminate\Support\Facades\Storage::disk('public')->assertExists($operation->filename);
+        Storage::disk('public')->assertExists($operation->filename);
     }
 
     #[Test]
@@ -282,7 +285,7 @@ class OfferOperationControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $category = OfferOperationCategory::factory()->create();
-        $oldFile = \Illuminate\Http\UploadedFile::fake()->create('old.pdf', 100);
+        $oldFile = UploadedFile::fake()->create('old.pdf', 100);
         $oldPath = $oldFile->storeAs('offer-operations', 'old_file.pdf', 'public');
 
         $operation = OfferOperation::factory()->create([
@@ -290,9 +293,9 @@ class OfferOperationControllerTest extends TestCase
             'filename' => $oldPath,
         ]);
 
-        \Illuminate\Support\Facades\Storage::disk('public')->put($oldPath, 'content');
+        Storage::disk('public')->put($oldPath, 'content');
 
-        $newFile = \Illuminate\Http\UploadedFile::fake()->create('new.pdf', 100);
+        $newFile = UploadedFile::fake()->create('new.pdf', 100);
 
         $response = $this->put(route('offer-operations.update', $operation), [
             'category_uuid' => $category->uuid,
@@ -301,10 +304,10 @@ class OfferOperationControllerTest extends TestCase
         ]);
 
         $response->assertRedirect(route('offer-operations.index'));
-        \Illuminate\Support\Facades\Storage::disk('public')->assertMissing($oldPath);
+        Storage::disk('public')->assertMissing($oldPath);
 
         $operation->refresh();
-        \Illuminate\Support\Facades\Storage::disk('public')->assertExists($operation->filename);
+        Storage::disk('public')->assertExists($operation->filename);
     }
 
     #[Test]
@@ -313,10 +316,10 @@ class OfferOperationControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $category = OfferOperationCategory::factory()->create();
-        $uuid = \Illuminate\Support\Str::uuid()->toString();
+        $uuid = Str::uuid()->toString();
 
         // Create a file larger than 10MB
-        $file = \Illuminate\Http\UploadedFile::fake()->create('large.pdf', 11000); // 11MB
+        $file = UploadedFile::fake()->create('large.pdf', 11000); // 11MB
 
         $response = $this->post(route('offer-operations.store'), [
             'uuid' => $uuid,

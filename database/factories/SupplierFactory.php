@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Supplier;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 class SupplierFactory extends Factory
 {
@@ -24,7 +25,7 @@ class SupplierFactory extends Factory
         ];
 
         return [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'code' => $this->faker->unique()->bothify('SUP-???'),
             'company_name' => $this->faker->company(),
             // VAT number: 11 numeric digits (correct Italian format)

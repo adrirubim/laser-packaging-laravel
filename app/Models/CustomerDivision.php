@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\CustomerDivisionFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +15,7 @@ class CustomerDivision extends Model
 
     protected static function newFactory()
     {
-        return \Database\Factories\CustomerDivisionFactory::new();
+        return CustomerDivisionFactory::new();
     }
 
     protected $table = 'customerdivision';

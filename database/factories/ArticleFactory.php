@@ -5,9 +5,10 @@ namespace Database\Factories;
 use App\Models\Article;
 use App\Models\Offer;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Article>
+ * @extends Factory<Article>
  */
 class ArticleFactory extends Factory
 {
@@ -21,7 +22,7 @@ class ArticleFactory extends Factory
     public function definition(): array
     {
         return [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'offer_uuid' => fn () => Offer::factory()->create()->uuid,
             'cod_article_las' => $this->faker->unique()->bothify('LAS########'),
             'visibility_cod' => $this->faker->boolean(80),

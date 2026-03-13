@@ -8,12 +8,15 @@ use App\Models\ArticleIC;
 use App\Models\ArticleIO;
 use App\Models\ArticleIP;
 use App\Models\CriticalIssue;
+use App\Models\ModelSCQ;
 use App\Models\Offer;
+use App\Models\PalletSheet;
 use App\Models\User;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -45,15 +48,15 @@ class AppServiceProvider extends ServiceProvider
 
         Route::bind('cqModel', function ($value) {
             // Verify value is valid UUID before querying database
-            if (! \Illuminate\Support\Str::isUuid($value)) {
+            if (! Str::isUuid($value)) {
                 abort(404);
             }
 
-            return \App\Models\ModelSCQ::where('uuid', $value)->where('removed', false)->firstOrFail();
+            return ModelSCQ::where('uuid', $value)->where('removed', false)->firstOrFail();
         });
 
         Route::bind('palletSheet', function ($value) {
-            return \App\Models\PalletSheet::where('uuid', $value)->where('removed', false)->firstOrFail();
+            return PalletSheet::where('uuid', $value)->where('removed', false)->firstOrFail();
         });
 
         Route::bind('offer', function ($value) {

@@ -5,9 +5,10 @@ namespace Database\Factories;
 use App\Models\CustomerDivision;
 use App\Models\CustomerShippingAddress;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CustomerShippingAddress>
+ * @extends Factory<CustomerShippingAddress>
  */
 class CustomerShippingAddressFactory extends Factory
 {
@@ -33,7 +34,7 @@ class CustomerShippingAddressFactory extends Factory
         ];
 
         return [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'customerdivision_uuid' => fn () => CustomerDivision::factory()->create()->uuid,
             // Siempre generar C/O (Care Of)
             'co' => $this->faker->randomElement([

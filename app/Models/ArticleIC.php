@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\ArticleICFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ class ArticleIC extends Model
 
     protected static function newFactory()
     {
-        return \Database\Factories\ArticleICFactory::new();
+        return ArticleICFactory::new();
     }
 
     protected $table = 'articlesic';

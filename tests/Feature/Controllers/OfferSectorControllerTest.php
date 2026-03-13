@@ -5,6 +5,7 @@ namespace Tests\Feature\Controllers;
 use App\Models\OfferSector;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -40,7 +41,7 @@ class OfferSectorControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $response = $this->post(route('offer-sectors.store'), [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'name' => 'Nuovo Settore',
         ]);
 
@@ -192,7 +193,7 @@ class OfferSectorControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $response = $this->post(route('offer-sectors.store'), [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'name' => str_repeat('a', 256),
         ]);
 
@@ -217,7 +218,7 @@ class OfferSectorControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        $uuid = \Illuminate\Support\Str::uuid()->toString();
+        $uuid = Str::uuid()->toString();
         OfferSector::factory()->create(['uuid' => $uuid]);
 
         $response = $this->post(route('offer-sectors.store'), [

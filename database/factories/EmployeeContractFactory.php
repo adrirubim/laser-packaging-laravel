@@ -5,9 +5,10 @@ namespace Database\Factories;
 use App\Models\Employee;
 use App\Models\EmployeeContract;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\EmployeeContract>
+ * @extends Factory<EmployeeContract>
  */
 class EmployeeContractFactory extends Factory
 {
@@ -21,7 +22,7 @@ class EmployeeContractFactory extends Factory
     public function definition(): array
     {
         return [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'employee_uuid' => fn () => Employee::factory()->create()->uuid,
             'supplier_uuid' => null, // Nullable by default, can be overridden in tests
             'pay_level' => $this->faker->numberBetween(0, 8),

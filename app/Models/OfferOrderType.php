@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\OfferOrderTypeFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,7 @@ class OfferOrderType extends Model
 
     protected static function newFactory()
     {
-        return \Database\Factories\OfferOrderTypeFactory::new();
+        return OfferOrderTypeFactory::new();
     }
 
     protected $table = 'offertypeorder';

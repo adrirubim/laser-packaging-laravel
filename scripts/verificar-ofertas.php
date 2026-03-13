@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Offer;
+use Illuminate\Contracts\Console\Kernel;
+
 /**
  * Quick verification script for offers form
  *
@@ -10,13 +13,13 @@
 require __DIR__.'/../vendor/autoload.php';
 
 $app = require_once __DIR__.'/../bootstrap/app.php';
-$app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+$app->make(Kernel::class)->bootstrap();
 
 echo "=== VERIFICACIÓN DEL FORMULARIO DE OFERTAS ===\n\n";
 
 // 1. Verify last offer created
 echo "1. Verificando última oferta creada...\n";
-$offer = \App\Models\Offer::latest()->first();
+$offer = Offer::latest()->first();
 
 if (! $offer) {
     echo "   ⚠️  No se encontraron ofertas en la base de datos.\n";

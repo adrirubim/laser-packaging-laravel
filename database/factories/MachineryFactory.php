@@ -4,9 +4,10 @@ namespace Database\Factories;
 
 use App\Models\Machinery;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Machinery>
+ * @extends Factory<Machinery>
  */
 class MachineryFactory extends Factory
 {
@@ -20,7 +21,7 @@ class MachineryFactory extends Factory
     public function definition(): array
     {
         return [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'cod' => $this->faker->unique()->bothify('MCH-???'),
             // Always generate description
             'description' => $this->faker->sentence(),

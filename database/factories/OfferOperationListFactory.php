@@ -6,9 +6,10 @@ use App\Models\Offer;
 use App\Models\OfferOperation;
 use App\Models\OfferOperationList;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\OfferOperationList>
+ * @extends Factory<OfferOperationList>
  */
 class OfferOperationListFactory extends Factory
 {
@@ -22,7 +23,7 @@ class OfferOperationListFactory extends Factory
     public function definition(): array
     {
         return [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'offer_uuid' => fn () => Offer::factory()->create()->uuid,
             'offeroperation_uuid' => fn () => OfferOperation::factory()->create()->uuid,
             'num_op' => $this->faker->randomFloat(2, 0.1, 100),

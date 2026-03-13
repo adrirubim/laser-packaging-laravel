@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Concerns;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
@@ -34,7 +35,7 @@ trait HasCommonQueries
     /**
      * Apply common pagination to query.
      *
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     * @return LengthAwarePaginator
      */
     protected function applyPagination(Builder $query, Request $request, int $defaultPerPage = 15)
     {

@@ -4,6 +4,7 @@ namespace Tests\Unit\Services;
 
 use App\Models\Offer;
 use App\Models\OfferOperation;
+use App\Models\OfferOperationCategory;
 use App\Models\OfferOperationList;
 use App\Services\ProductionCalculationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -30,7 +31,7 @@ class ProductionCalculationServiceTest extends TestCase
             'removed' => false,
         ]);
 
-        $category = \App\Models\OfferOperationCategory::factory()->create([
+        $category = OfferOperationCategory::factory()->create([
             'removed' => false,
         ]);
 

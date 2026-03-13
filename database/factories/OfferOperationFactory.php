@@ -5,9 +5,10 @@ namespace Database\Factories;
 use App\Models\OfferOperation;
 use App\Models\OfferOperationCategory;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\OfferOperation>
+ * @extends Factory<OfferOperation>
  */
 class OfferOperationFactory extends Factory
 {
@@ -21,7 +22,7 @@ class OfferOperationFactory extends Factory
     public function definition(): array
     {
         return [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'category_uuid' => fn () => OfferOperationCategory::factory()->create()->uuid,
             // Siempre generar todos los campos
             'codice' => $this->faker->unique()->bothify('OP-???-####'),

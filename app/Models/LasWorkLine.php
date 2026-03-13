@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\LasWorkLineFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ class LasWorkLine extends Model
 
     protected static function newFactory()
     {
-        return \Database\Factories\LasWorkLineFactory::new();
+        return LasWorkLineFactory::new();
     }
 
     protected $table = 'offerlasworkline';

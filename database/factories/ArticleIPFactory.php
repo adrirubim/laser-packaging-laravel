@@ -4,9 +4,10 @@ namespace Database\Factories;
 
 use App\Models\ArticleIP;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ArticleIP>
+ * @extends Factory<ArticleIP>
  */
 class ArticleIPFactory extends Factory
 {
@@ -20,7 +21,7 @@ class ArticleIPFactory extends Factory
     public function definition(): array
     {
         return [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'code' => $this->faker->unique()->bothify('IP-???'),
             // Siempre generar todos los campos
             'number' => $this->faker->numerify('####'),

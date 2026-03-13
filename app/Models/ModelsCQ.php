@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class ModelsCQ extends Model
 {
@@ -37,7 +38,7 @@ class ModelsCQ extends Model
      */
     public static function generateNextCQUCode(): string
     {
-        return \Illuminate\Support\Facades\DB::transaction(function () {
+        return DB::transaction(function () {
             $lastModel = static::where('cod_model', 'like', 'CQU%')
                 ->where('removed', false)
                 ->orderByRaw('CAST(SUBSTRING(cod_model, 4) AS UNSIGNED) DESC')

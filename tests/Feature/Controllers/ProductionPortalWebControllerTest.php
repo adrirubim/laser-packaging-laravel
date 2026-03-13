@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Controllers;
 
+use App\Http\Controllers\Api\ProductionPortalController;
 use App\Models\Article;
 use App\Models\Customer;
 use App\Models\CustomerDivision;
@@ -13,6 +14,7 @@ use App\Models\Order;
 use App\Models\PalletType;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -81,7 +83,7 @@ class ProductionPortalWebControllerTest extends TestCase
     protected function createValidToken(): string
     {
         $currentTime = time();
-        $token = base64_encode(\Illuminate\Support\Str::random(32).'|'.$currentTime);
+        $token = base64_encode(Str::random(32).'|'.$currentTime);
         EmployeePortalToken::create([
             'employee_uuid' => $this->employee->uuid,
             'token' => $token,
@@ -167,7 +169,7 @@ class ProductionPortalWebControllerTest extends TestCase
         $token = $this->createValidToken();
 
         // Mock the API response
-        $this->mock(\App\Http\Controllers\Api\ProductionPortalController::class, function ($mock) {
+        $this->mock(ProductionPortalController::class, function ($mock) {
             $mock->shouldReceive('getEmployeeOrderList')
                 ->once()
                 ->andReturn(response()->json([
@@ -203,7 +205,7 @@ class ProductionPortalWebControllerTest extends TestCase
         $token = $this->createValidToken();
 
         // Mock the API response
-        $this->mock(\App\Http\Controllers\Api\ProductionPortalController::class, function ($mock) {
+        $this->mock(ProductionPortalController::class, function ($mock) {
             $mock->shouldReceive('getInfo')
                 ->once()
                 ->andReturn(response()->json([

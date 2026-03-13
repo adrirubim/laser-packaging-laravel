@@ -5,6 +5,7 @@ namespace Tests\Feature\Controllers;
 use App\Models\OfferActivity;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -88,7 +89,7 @@ class OfferActivityControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $response = $this->post(route('offer-activities.store'), [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'name' => 'Nuova Attività',
         ]);
 
@@ -274,7 +275,7 @@ class OfferActivityControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $response = $this->post(route('offer-activities.store'), [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'name' => str_repeat('a', 256),
         ]);
 
@@ -299,7 +300,7 @@ class OfferActivityControllerTest extends TestCase
     {
         $this->actingAs($this->user);
 
-        $uuid = \Illuminate\Support\Str::uuid()->toString();
+        $uuid = Str::uuid()->toString();
         OfferActivity::factory()->create(['uuid' => $uuid]);
 
         $response = $this->post(route('offer-activities.store'), [

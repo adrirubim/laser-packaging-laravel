@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\CriticalIssueFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +15,7 @@ class CriticalIssue extends Model
 
     protected static function newFactory()
     {
-        return \Database\Factories\CriticalIssueFactory::new();
+        return CriticalIssueFactory::new();
     }
 
     protected $table = 'criticalissues';

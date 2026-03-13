@@ -5,9 +5,10 @@ namespace Database\Factories;
 use App\Models\Customer;
 use App\Models\Offer;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Offer>
+ * @extends Factory<Offer>
  */
 class OfferFactory extends Factory
 {
@@ -21,7 +22,7 @@ class OfferFactory extends Factory
     public function definition(): array
     {
         return [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'customer_uuid' => fn () => Customer::factory()->create()->uuid,
             // Use unique() to avoid violating UNIQUE constraint in intensive tests
             'offer_number' => date('Y').'_'.str_pad($this->faker->unique()->numberBetween(1, 999), 3, '0', STR_PAD_LEFT).'_01_A',

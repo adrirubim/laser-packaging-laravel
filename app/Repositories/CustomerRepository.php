@@ -7,6 +7,7 @@ use App\Repositories\Concerns\HasCommonQueries;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class CustomerRepository
 {
@@ -50,7 +51,7 @@ class CustomerRepository
      */
     public function getForSelect(): Collection
     {
-        return \Illuminate\Support\Facades\Cache::remember('customers_for_select', 900, function () {
+        return Cache::remember('customers_for_select', 900, function () {
             return Customer::active()
                 ->orderBy('company_name')
                 ->get(['uuid', 'code', 'company_name']);
@@ -62,7 +63,7 @@ class CustomerRepository
      */
     public function clearCache(): void
     {
-        \Illuminate\Support\Facades\Cache::forget('customers_for_select');
+        Cache::forget('customers_for_select');
     }
 
     /**

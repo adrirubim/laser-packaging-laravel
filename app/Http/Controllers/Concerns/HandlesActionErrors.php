@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Concerns;
 
 use App\Http\Resources\Api\ApiResponseResource;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\ValidationException;
 
@@ -30,7 +31,7 @@ trait HandlesActionErrors
      * Handle JSON response errors for AJAX endpoints.
      *
      * @param  \Closure  $callback  The callback that may throw exceptions
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     protected function handleJsonErrors(\Closure $callback)
     {

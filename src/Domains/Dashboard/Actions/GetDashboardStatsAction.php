@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Domain\Dashboard\Actions;
 
 use App\Repositories\DashboardRepository;
+use Carbon\CarbonInterface;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 
@@ -216,7 +217,7 @@ class GetDashboardStatsAction
 
     /**
      * @param  array<string, mixed>  $filters
-     * @return array{start: \Carbon\CarbonInterface|null, end: \Carbon\CarbonInterface|null}
+     * @return array{start: CarbonInterface|null, end: CarbonInterface|null}
      */
     private function getDateRange(string $filter, array $filters): array
     {
@@ -247,8 +248,8 @@ class GetDashboardStatsAction
     }
 
     /**
-     * @param  array{start: \Carbon\CarbonInterface|null, end: \Carbon\CarbonInterface|null}  $currentRange
-     * @return array{start: \Carbon\CarbonInterface, end: \Carbon\CarbonInterface}|null
+     * @param  array{start: CarbonInterface|null, end: CarbonInterface|null}  $currentRange
+     * @return array{start: CarbonInterface, end: CarbonInterface}|null
      */
     private function getPreviousPeriodRange(array $currentRange): ?array
     {

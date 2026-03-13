@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\MaterialFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,7 @@ class Material extends Model
 
     protected static function newFactory()
     {
-        return \Database\Factories\MaterialFactory::new();
+        return MaterialFactory::new();
     }
 
     protected $table = 'materials';

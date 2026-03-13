@@ -4,8 +4,10 @@ namespace Tests\Feature\Controllers;
 
 use App\Models\Employee;
 use App\Models\EmployeeContract;
+use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Routing\Exceptions\UrlGenerationException;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -274,7 +276,7 @@ class EmployeeControllerTest extends TestCase
                 'success' => true,
             ]);
             $response->assertJsonPath('data.portal_enabled', true);
-        } catch (\Illuminate\Routing\Exceptions\UrlGenerationException $e) {
+        } catch (UrlGenerationException $e) {
             $this->markTestSkipped('Route employees.toggle-portal not defined');
         }
 
@@ -725,7 +727,7 @@ class EmployeeControllerTest extends TestCase
 
         $employee1 = Employee::factory()->create();
         $employee2 = Employee::factory()->create();
-        $supplier = \App\Models\Supplier::factory()->create();
+        $supplier = Supplier::factory()->create();
 
         EmployeeContract::factory()->create([
             'employee_uuid' => $employee1->uuid,
@@ -752,8 +754,8 @@ class EmployeeControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $employee = Employee::factory()->create();
-        $supplier1 = \App\Models\Supplier::factory()->create();
-        $supplier2 = \App\Models\Supplier::factory()->create();
+        $supplier1 = Supplier::factory()->create();
+        $supplier2 = Supplier::factory()->create();
 
         EmployeeContract::factory()->create([
             'employee_uuid' => $employee->uuid,
@@ -789,7 +791,7 @@ class EmployeeControllerTest extends TestCase
             'name' => 'Jane',
             'surname' => 'Smith',
         ]);
-        $supplier = \App\Models\Supplier::factory()->create();
+        $supplier = Supplier::factory()->create();
 
         EmployeeContract::factory()->create([
             'employee_uuid' => $employee1->uuid,
@@ -816,7 +818,7 @@ class EmployeeControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $employee = Employee::factory()->create();
-        $supplier = \App\Models\Supplier::factory()->create();
+        $supplier = Supplier::factory()->create();
 
         EmployeeContract::factory()->count(20)->create([
             'employee_uuid' => $employee->uuid,
@@ -847,7 +849,7 @@ class EmployeeControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $employee = Employee::factory()->create();
-        $supplier = \App\Models\Supplier::factory()->create();
+        $supplier = Supplier::factory()->create();
 
         EmployeeContract::factory()->count(30)->create([
             'employee_uuid' => $employee->uuid,
@@ -870,8 +872,8 @@ class EmployeeControllerTest extends TestCase
 
         $employee1 = Employee::factory()->create(['name' => 'John', 'surname' => 'Doe']);
         $employee2 = Employee::factory()->create(['name' => 'Jane', 'surname' => 'Smith']);
-        $supplier1 = \App\Models\Supplier::factory()->create();
-        $supplier2 = \App\Models\Supplier::factory()->create();
+        $supplier1 = Supplier::factory()->create();
+        $supplier2 = Supplier::factory()->create();
 
         EmployeeContract::factory()->create([
             'employee_uuid' => $employee1->uuid,
@@ -925,7 +927,7 @@ class EmployeeControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $employee = Employee::factory()->create();
-        $supplier = \App\Models\Supplier::factory()->create();
+        $supplier = Supplier::factory()->create();
 
         $oldContract = EmployeeContract::factory()->create([
             'employee_uuid' => $employee->uuid,
@@ -955,7 +957,7 @@ class EmployeeControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $employee = Employee::factory()->create();
-        $supplier = \App\Models\Supplier::factory()->create();
+        $supplier = Supplier::factory()->create();
 
         EmployeeContract::factory()->count(200)->create([
             'employee_uuid' => $employee->uuid,
@@ -983,7 +985,7 @@ class EmployeeControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $employee = Employee::factory()->create();
-        $supplier = \App\Models\Supplier::factory()->create();
+        $supplier = Supplier::factory()->create();
 
         EmployeeContract::factory()->count(5)->create([
             'employee_uuid' => $employee->uuid,
@@ -1010,7 +1012,7 @@ class EmployeeControllerTest extends TestCase
             'surname' => "D'Angelo",
             'matriculation_number' => 'EMP-001',
         ]);
-        $supplier = \App\Models\Supplier::factory()->create();
+        $supplier = Supplier::factory()->create();
 
         EmployeeContract::factory()->create([
             'employee_uuid' => $employee->uuid,
@@ -1036,7 +1038,7 @@ class EmployeeControllerTest extends TestCase
             'name' => 'John',
             'surname' => 'Doe',
         ]);
-        $supplier = \App\Models\Supplier::factory()->create();
+        $supplier = Supplier::factory()->create();
 
         EmployeeContract::factory()->create([
             'employee_uuid' => $employee->uuid,
@@ -1063,7 +1065,7 @@ class EmployeeControllerTest extends TestCase
             'surname' => 'Doe',
             'matriculation_number' => 'EMP001',
         ]);
-        $supplier = \App\Models\Supplier::factory()->create();
+        $supplier = Supplier::factory()->create();
 
         EmployeeContract::factory()->create([
             'employee_uuid' => $employee->uuid,
@@ -1123,7 +1125,7 @@ class EmployeeControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $employee = Employee::factory()->create();
-        $supplier = \App\Models\Supplier::factory()->create();
+        $supplier = Supplier::factory()->create();
 
         EmployeeContract::factory()->create([
             'employee_uuid' => $employee->uuid,
@@ -1146,7 +1148,7 @@ class EmployeeControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $employee = Employee::factory()->create();
-        $supplier = \App\Models\Supplier::factory()->create();
+        $supplier = Supplier::factory()->create();
 
         EmployeeContract::factory()->create([
             'employee_uuid' => $employee->uuid,

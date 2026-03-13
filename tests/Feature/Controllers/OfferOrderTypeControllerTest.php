@@ -5,6 +5,7 @@ namespace Tests\Feature\Controllers;
 use App\Models\OfferOrderType;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -40,7 +41,7 @@ class OfferOrderTypeControllerTest extends TestCase
         $this->actingAs($this->user);
 
         $response = $this->post(route('offer-order-types.store'), [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'code' => 'OT-001',
             'name' => 'Nuovo Tipo Ordine',
         ]);

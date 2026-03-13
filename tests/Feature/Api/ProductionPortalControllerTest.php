@@ -12,6 +12,8 @@ use App\Models\Offer;
 use App\Models\Order;
 use App\Models\PalletType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -80,7 +82,7 @@ class ProductionPortalControllerTest extends TestCase
     protected function createValidToken(): string
     {
         $currentTime = time();
-        $token = base64_encode(\Illuminate\Support\Str::random(32).'|'.$currentTime);
+        $token = base64_encode(Str::random(32).'|'.$currentTime);
         EmployeePortalToken::create([
             'employee_uuid' => $this->employee->uuid,
             'token' => $token,
@@ -501,12 +503,12 @@ class ProductionPortalControllerTest extends TestCase
     {
         // Create expired token (more than 6 months)
         $expiredTimestamp = time() - (7 * 30 * 24 * 60 * 60); // 7 months ago
-        $token = base64_encode(\Illuminate\Support\Str::random(32).'|'.$expiredTimestamp);
+        $token = base64_encode(Str::random(32).'|'.$expiredTimestamp);
 
         // Insert directly into database with expired date (more than 6 months)
         $expiredDate = now()->subMonths(7);
-        \Illuminate\Support\Facades\DB::table('employeeportaltoken')->insert([
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+        DB::table('employeeportaltoken')->insert([
+            'uuid' => Str::uuid()->toString(),
             'employee_uuid' => $this->employee->uuid,
             'token' => $token,
             'created_at' => $expiredDate,

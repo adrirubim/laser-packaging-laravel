@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Services;
 
+use App\Models\Article;
 use App\Models\Order;
 use App\Services\OrderProductionNumberService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -116,8 +117,8 @@ class OrderProductionNumberServiceTest extends TestCase
             $numbers[] = $number;
 
             // Save number to database so next one is different
-            $article = \App\Models\Article::factory()->create(['removed' => false]);
-            \App\Models\Order::factory()->create([
+            $article = Article::factory()->create(['removed' => false]);
+            Order::factory()->create([
                 'article_uuid' => $article->uuid,
                 'order_production_number' => $number,
                 'removed' => false,

@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Domain\Offers\Actions;
 
 use App\Models\Offer;
+use App\Models\OfferActivity;
+use App\Models\OfferOperationList;
+use App\Models\OfferSeasonality;
+use App\Models\OfferSector;
 use Domain\Offers\DTOs\OfferDetailsDto;
 
 class GetOfferDetailsAction
@@ -19,7 +23,7 @@ class GetOfferDetailsAction
         $totalSec = 0;
 
         // Load operationList without applying scope that filters by removed
-        $operationLists = \App\Models\OfferOperationList::withoutGlobalScopes()
+        $operationLists = OfferOperationList::withoutGlobalScopes()
             ->where('offer_uuid', $offer->uuid)
             ->where('removed', false)
             ->with('operation', 'operation.category')
@@ -133,21 +137,21 @@ class GetOfferDetailsAction
         // Ensure relations load correctly (do not use loadMissing as it can overwrite)
         // Verify and load relations that might not have been loaded
         if ($offer->activity_uuid && $offer->activity === null) {
-            $activity = \App\Models\OfferActivity::withoutGlobalScopes()
+            $activity = OfferActivity::withoutGlobalScopes()
                 ->where('uuid', $offer->activity_uuid)
                 ->first();
             $offer->setRelation('activity', $activity);
         }
 
         if ($offer->sector_uuid && $offer->sector === null) {
-            $sector = \App\Models\OfferSector::withoutGlobalScopes()
+            $sector = OfferSector::withoutGlobalScopes()
                 ->where('uuid', $offer->sector_uuid)
                 ->first();
             $offer->setRelation('sector', $sector);
         }
 
         if ($offer->seasonality_uuid && $offer->seasonality === null) {
-            $seasonality = \App\Models\OfferSeasonality::withoutGlobalScopes()
+            $seasonality = OfferSeasonality::withoutGlobalScopes()
                 ->where('uuid', $offer->seasonality_uuid)
                 ->first();
             $offer->setRelation('seasonality', $seasonality);

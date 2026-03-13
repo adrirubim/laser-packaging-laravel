@@ -6,9 +6,10 @@ use App\Models\Employee;
 use App\Models\Order;
 use App\Models\ProductionOrderProcessing;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ProductionOrderProcessing>
+ * @extends Factory<ProductionOrderProcessing>
  */
 class ProductionOrderProcessingFactory extends Factory
 {
@@ -22,7 +23,7 @@ class ProductionOrderProcessingFactory extends Factory
     public function definition(): array
     {
         return [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'employee_uuid' => fn () => Employee::factory()->create()->uuid,
             'order_uuid' => fn () => Order::factory()->create()->uuid,
             'quantity' => $this->faker->randomFloat(2, 1, 100),

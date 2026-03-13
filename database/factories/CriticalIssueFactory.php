@@ -4,9 +4,10 @@ namespace Database\Factories;
 
 use App\Models\CriticalIssue;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CriticalIssue>
+ * @extends Factory<CriticalIssue>
  */
 class CriticalIssueFactory extends Factory
 {
@@ -20,7 +21,7 @@ class CriticalIssueFactory extends Factory
     public function definition(): array
     {
         return [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'name' => $this->faker->unique()->word(),
             'removed' => false,
         ];

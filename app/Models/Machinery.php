@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\MachineryFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +15,7 @@ class Machinery extends Model
 
     protected static function newFactory()
     {
-        return \Database\Factories\MachineryFactory::new();
+        return MachineryFactory::new();
     }
 
     protected $table = 'machinery';
@@ -89,7 +90,7 @@ class Machinery extends Model
             }
 
             // Verify it's a Model instance before calling getAttributes
-            if (! ($valueType instanceof \Illuminate\Database\Eloquent\Model)) {
+            if (! ($valueType instanceof Model)) {
                 return null;
             }
 

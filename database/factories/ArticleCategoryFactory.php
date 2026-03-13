@@ -4,9 +4,10 @@ namespace Database\Factories;
 
 use App\Models\ArticleCategory;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ArticleCategory>
+ * @extends Factory<ArticleCategory>
  */
 class ArticleCategoryFactory extends Factory
 {
@@ -20,7 +21,7 @@ class ArticleCategoryFactory extends Factory
     public function definition(): array
     {
         return [
-            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+            'uuid' => Str::uuid()->toString(),
             'name' => $this->faker->unique()->word(),
             // Always generate description
             'description' => $this->faker->sentence(),

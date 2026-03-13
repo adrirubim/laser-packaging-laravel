@@ -41,10 +41,12 @@ use App\Models\Supplier;
 use App\Models\ValueTypes;
 use App\Services\OrderProductionNumberService;
 use App\Services\Planning\OrderShiftHours;
+use Carbon\Carbon;
 use Faker\Factory as Faker;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 /**
  * Test data seeder to exercise all application functions.
@@ -865,54 +867,54 @@ class TestDataSeeder extends Seeder
                 'removed' => false,
             ]);
             $demoOffer->articles()->attach($demoArticle->uuid, [
-                'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+                'uuid' => Str::uuid()->toString(),
                 'removed' => false,
             ]);
             $demoArticle->packagingInstructions()->attach($demoArticleIC->uuid, [
-                'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+                'uuid' => Str::uuid()->toString(),
                 'removed' => false,
             ]);
             $demoArticle->operatingInstructions()->attach($demoArticleIO->uuid, [
-                'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+                'uuid' => Str::uuid()->toString(),
                 'removed' => false,
             ]);
             $demoArticle->palletizingInstructions()->attach($demoArticleIP->uuid, [
-                'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+                'uuid' => Str::uuid()->toString(),
                 'removed' => false,
             ]);
             // Materials, machinery and criticals for demo (always include Demo All records)
             $demoArticle->materials()->attach($demoMaterial->uuid, [
-                'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+                'uuid' => Str::uuid()->toString(),
                 'removed' => false,
             ]);
             $otherMaterial = $materials->where('uuid', '!=', $demoMaterial->uuid)->first();
             if ($otherMaterial) {
                 $demoArticle->materials()->attach($otherMaterial->uuid, [
-                    'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+                    'uuid' => Str::uuid()->toString(),
                     'removed' => false,
                 ]);
             }
             $demoArticle->machinery()->attach($demoMachinery->uuid, [
-                'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+                'uuid' => Str::uuid()->toString(),
                 'removed' => false,
                 'value' => '42',
             ]);
             $otherMachinery = $machinery->where('uuid', '!=', $demoMachinery->uuid)->first();
             if ($otherMachinery) {
                 $demoArticle->machinery()->attach($otherMachinery->uuid, [
-                    'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+                    'uuid' => Str::uuid()->toString(),
                     'removed' => false,
                     'value' => '100',
                 ]);
             }
             $demoArticle->criticalIssues()->attach($demoCriticalIssue->uuid, [
-                'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+                'uuid' => Str::uuid()->toString(),
                 'removed' => false,
             ]);
             $otherCriticalIssue = $criticalIssues->where('uuid', '!=', $demoCriticalIssue->uuid)->first();
             if ($otherCriticalIssue) {
                 $demoArticle->criticalIssues()->attach($otherCriticalIssue->uuid, [
-                    'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+                    'uuid' => Str::uuid()->toString(),
                     'removed' => false,
                 ]);
             }
@@ -926,7 +928,7 @@ class TestDataSeeder extends Seeder
                 $materials->where('uuid', '!=', $demoMaterial->uuid)->take(1)->pluck('uuid')
             );
             $syncData = $twoMaterialUuids->mapWithKeys(fn ($uuid) => [
-                $uuid => ['uuid' => \Illuminate\Support\Str::uuid()->toString(), 'removed' => false],
+                $uuid => ['uuid' => Str::uuid()->toString(), 'removed' => false],
             ])->all();
             $demoArticleForMaterials->materials()->sync($syncData);
         }
@@ -971,7 +973,7 @@ class TestDataSeeder extends Seeder
 
                 // Pivot offerarticles: app uses $offer->articles() to validate and list offer articles
                 $offer->articles()->attach($article->uuid, [
-                    'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+                    'uuid' => Str::uuid()->toString(),
                     'removed' => false,
                 ]);
 
@@ -981,7 +983,7 @@ class TestDataSeeder extends Seeder
                     $more = $articleICs->count() > 1 ? $articleICs->random(min(rand(0, 2), $articleICs->count() - 1))->unique('uuid') : collect();
                     foreach ($one->merge($more)->unique('uuid') as $ic) {
                         $article->packagingInstructions()->attach($ic->uuid, [
-                            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+                            'uuid' => Str::uuid()->toString(),
                             'removed' => false,
                         ]);
                     }
@@ -991,7 +993,7 @@ class TestDataSeeder extends Seeder
                     $more = $articleIOs->count() > 1 ? $articleIOs->random(min(rand(0, 2), $articleIOs->count() - 1))->unique('uuid') : collect();
                     foreach ($one->merge($more)->unique('uuid') as $io) {
                         $article->operatingInstructions()->attach($io->uuid, [
-                            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+                            'uuid' => Str::uuid()->toString(),
                             'removed' => false,
                         ]);
                     }
@@ -1001,7 +1003,7 @@ class TestDataSeeder extends Seeder
                     $more = $articleIPs->count() > 1 ? $articleIPs->random(min(rand(0, 2), $articleIPs->count() - 1))->unique('uuid') : collect();
                     foreach ($one->merge($more)->unique('uuid') as $ip) {
                         $article->palletizingInstructions()->attach($ip->uuid, [
-                            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+                            'uuid' => Str::uuid()->toString(),
                             'removed' => false,
                         ]);
                     }
@@ -1012,7 +1014,7 @@ class TestDataSeeder extends Seeder
                     $selectedMaterials = $materials->random(min(rand(1, 3), $materials->count()));
                     foreach ($selectedMaterials as $material) {
                         $article->materials()->attach($material->uuid, [
-                            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+                            'uuid' => Str::uuid()->toString(),
                             'removed' => false,
                         ]);
                     }
@@ -1022,7 +1024,7 @@ class TestDataSeeder extends Seeder
                     $selectedMachinery = $machinery->random(min(rand(1, 2), $machinery->count()));
                     foreach ($selectedMachinery as $mach) {
                         $article->machinery()->attach($mach->uuid, [
-                            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+                            'uuid' => Str::uuid()->toString(),
                             'removed' => false,
                             'value' => $faker->randomElement([$faker->numerify('##'), $faker->numerify('#,#'), $faker->word()]),
                         ]);
@@ -1034,7 +1036,7 @@ class TestDataSeeder extends Seeder
                     $selectedCriticalIssues = $criticalIssues->random(min(rand(1, 2), $criticalIssues->count()));
                     foreach ($selectedCriticalIssues as $criticalIssue) {
                         $article->criticalIssues()->attach($criticalIssue->uuid, [
-                            'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+                            'uuid' => Str::uuid()->toString(),
                             'removed' => false,
                         ]);
                     }
@@ -1099,7 +1101,7 @@ class TestDataSeeder extends Seeder
                 $selectedMaterials = $materials->random(min(rand(1, 3), $materials->count()));
                 foreach ($selectedMaterials as $material) {
                     ArticleCheckMaterial::create([
-                        'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+                        'uuid' => Str::uuid()->toString(),
                         'article_uuid' => $article->uuid,
                         'material_uuid' => $material->uuid,
                         'um' => $material->um ?? 'PZ',
@@ -1121,7 +1123,7 @@ class TestDataSeeder extends Seeder
                 $candidates = $materials->filter(fn ($m) => ! in_array($m->uuid, $usedMaterialUuids));
                 foreach ($candidates->take($needed) as $material) {
                     ArticleCheckMaterial::create([
-                        'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+                        'uuid' => Str::uuid()->toString(),
                         'article_uuid' => $demoArticle->uuid,
                         'material_uuid' => $material->uuid,
                         'um' => $material->um ?? 'PZ',
@@ -2026,7 +2028,7 @@ class TestDataSeeder extends Seeder
 
                     // Requested delivery date within the historical month
                     $deliveryDateTime = $faker->dateTimeBetween($monthStart, $monthEnd);
-                    $deliveryDate = \Carbon\Carbon::instance($deliveryDateTime);
+                    $deliveryDate = Carbon::instance($deliveryDateTime);
 
                     // created_at in month, before delivery
                     $createdAt = $monthStart->copy()->addDays(rand(0, 10))->setTime(rand(8, 11), rand(0, 59));
@@ -2195,7 +2197,7 @@ class TestDataSeeder extends Seeder
                 $processedDate = $faker->dateTimeBetween($minDate, 'now');
 
                 $processing = ProductionOrderProcessing::create([
-                    'uuid' => \Illuminate\Support\Str::uuid()->toString(),
+                    'uuid' => Str::uuid()->toString(),
                     'employee_uuid' => $employees->random()->uuid,
                     'order_uuid' => $order->uuid,
                     'quantity' => $processingQuantity,

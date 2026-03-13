@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Database\Factories\CustomerFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Customer extends Model
 {
@@ -16,7 +18,7 @@ class Customer extends Model
      */
     protected static function newFactory()
     {
-        return \Database\Factories\CustomerFactory::new();
+        return CustomerFactory::new();
     }
 
     protected $table = 'customer';
@@ -33,7 +35,7 @@ class Customer extends Model
      */
     public function newUniqueId(): string
     {
-        return (string) \Illuminate\Support\Str::uuid();
+        return (string) Str::uuid();
     }
 
     /**
