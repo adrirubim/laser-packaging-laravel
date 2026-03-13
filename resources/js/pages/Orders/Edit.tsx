@@ -104,7 +104,7 @@ export default function OrdersEdit({
     const formatDateForInput = (
         dateString: string | null | undefined,
     ): string => {
-        if (!dateString) return '';
+        if (dateString == null || dateString === '') return '';
         try {
             // If it's already in yyyy-MM-dd format, return as is
             if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
@@ -123,12 +123,14 @@ export default function OrdersEdit({
     };
 
     const [quantity, setQuantity] = useState<string>(
-        order.quantity?.toString() || '',
+        order.quantity != null ? order.quantity.toString() : '',
     );
     const [deliveryDate, setDeliveryDate] = useState<string>(
         formatDateForInput(order.delivery_requested_date),
     );
-    const [line, setLine] = useState<string>(order.line?.toString() || '');
+    const [line, setLine] = useState<string>(
+        order.line != null ? order.line.toString() : '',
+    );
     const [expectedProductionStartDate, setExpectedProductionStartDate] =
         useState<string>(
             formatDateForInput(order.expected_production_start_date),
@@ -138,7 +140,7 @@ export default function OrdersEdit({
             ? String(order.type_lot)
             : '',
     );
-    const [lot, setLot] = useState<string>(order.lot || '');
+    const [lot, setLot] = useState<string>(order.lot ?? '');
     const [expirationDate, setExpirationDate] = useState<string>(
         formatDateForInput(order.expiration_date),
     );
@@ -170,12 +172,12 @@ export default function OrdersEdit({
             : '',
     );
     const [indicationsForShop, setIndicationsForShop] = useState<string>(
-        order.indications_for_shop || '',
+        order.indications_for_shop ?? '',
     );
     const [indicationsForProduction, setIndicationsForProduction] =
-        useState<string>(order.indications_for_production || '');
+        useState<string>(order.indications_for_production ?? '');
     const [indicationsForDelivery, setIndicationsForDelivery] =
-        useState<string>(order.indications_for_delivery || '');
+        useState<string>(order.indications_for_delivery ?? '');
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
 
     const currentArticle = initialArticle;
@@ -226,14 +228,16 @@ export default function OrdersEdit({
     const isLotReadonly = typeLot === '-1' || typeLot === '';
 
     const handleDownloadPalletSheet = () => {
-        if (currentArticle?.palletSheet?.uuid) {
-            window.open(
-                articlesRoutes.palletSheets.downloadFile({
-                    palletSheet: currentArticle.palletSheet.uuid,
-                }).url,
-                '_blank',
-            );
+        const palletSheetUuid = currentArticle?.palletSheet?.uuid;
+        if (palletSheetUuid == null || palletSheetUuid === '') {
+            return;
         }
+        window.open(
+            articlesRoutes.palletSheets.downloadFile({
+                palletSheet: palletSheetUuid,
+            }).url,
+            '_blank',
+        );
     };
 
     return (
@@ -301,24 +305,27 @@ export default function OrdersEdit({
                                                             />
                                                         </div>
 
-                                                        {currentArticle.um && (
-                                                            <div className="grid gap-2">
-                                                                <FormLabel htmlFor="um">
-                                                                    {t(
-                                                                        'orders.labels.um',
-                                                                    )}
-                                                                </FormLabel>
-                                                                <Input
-                                                                    id="um"
-                                                                    name="um"
-                                                                    value={
-                                                                        currentArticle.um
-                                                                    }
-                                                                    readOnly
-                                                                    className="bg-muted"
-                                                                />
-                                                            </div>
-                                                        )}
+                                                        {currentArticle.um !=
+                                                            null &&
+                                                            currentArticle.um !==
+                                                                '' && (
+                                                                <div className="grid gap-2">
+                                                                    <FormLabel htmlFor="um">
+                                                                        {t(
+                                                                            'orders.labels.um',
+                                                                        )}
+                                                                    </FormLabel>
+                                                                    <Input
+                                                                        id="um"
+                                                                        name="um"
+                                                                        value={
+                                                                            currentArticle.um
+                                                                        }
+                                                                        readOnly
+                                                                        className="bg-muted"
+                                                                    />
+                                                                </div>
+                                                            )}
                                                     </>
                                                 )}
 
@@ -384,10 +391,14 @@ export default function OrdersEdit({
                                                                             article.cod_article_las
                                                                         }{' '}
                                                                         -{' '}
-                                                                        {article.article_descr ||
-                                                                            t(
-                                                                                'common.no_description',
-                                                                            )}
+                                                                        {article.article_descr !=
+                                                                            null &&
+                                                                        article.article_descr !==
+                                                                            ''
+                                                                            ? article.article_descr
+                                                                            : t(
+                                                                                  'common.no_description',
+                                                                              )}
                                                                     </SelectItem>
                                                                 ),
                                                             )}
@@ -410,7 +421,7 @@ export default function OrdersEdit({
                                                         id="number_customer_reference_order"
                                                         name="number_customer_reference_order"
                                                         defaultValue={
-                                                            order.number_customer_reference_order ||
+                                                            order.number_customer_reference_order ??
                                                             ''
                                                         }
                                                         placeholder={t(
@@ -476,23 +487,32 @@ export default function OrdersEdit({
                                                         }
                                                         required
                                                         aria-invalid={
-                                                            quantityValidation.error
+                                                            quantityValidation.error !=
+                                                                null &&
+                                                            quantityValidation.error !==
+                                                                ''
                                                                 ? 'true'
                                                                 : 'false'
                                                         }
                                                         className={
-                                                            quantityValidation.error
+                                                            quantityValidation.error !=
+                                                                null &&
+                                                            quantityValidation.error !==
+                                                                ''
                                                                 ? 'border-destructive'
                                                                 : ''
                                                         }
                                                     />
-                                                    {quantityValidation.error && (
-                                                        <p className="text-xs text-destructive">
-                                                            {
-                                                                quantityValidation.error
-                                                            }
-                                                        </p>
-                                                    )}
+                                                    {quantityValidation.error !=
+                                                        null &&
+                                                        quantityValidation.error !==
+                                                            '' && (
+                                                            <p className="text-xs text-destructive">
+                                                                {
+                                                                    quantityValidation.error
+                                                                }
+                                                            </p>
+                                                        )}
                                                     <InputError
                                                         message={
                                                             allErrors.quantity
@@ -554,23 +574,32 @@ export default function OrdersEdit({
                                                             deliveryDateValidation.onBlur
                                                         }
                                                         aria-invalid={
-                                                            deliveryDateValidation.error
+                                                            deliveryDateValidation.error !=
+                                                                null &&
+                                                            deliveryDateValidation.error !==
+                                                                ''
                                                                 ? 'true'
                                                                 : 'false'
                                                         }
                                                         className={
-                                                            deliveryDateValidation.error
+                                                            deliveryDateValidation.error !=
+                                                                null &&
+                                                            deliveryDateValidation.error !==
+                                                                ''
                                                                 ? 'border-destructive'
                                                                 : ''
                                                         }
                                                     />
-                                                    {deliveryDateValidation.error && (
-                                                        <p className="text-xs text-destructive">
-                                                            {
-                                                                deliveryDateValidation.error
-                                                            }
-                                                        </p>
-                                                    )}
+                                                    {deliveryDateValidation.error !=
+                                                        null &&
+                                                        deliveryDateValidation.error !==
+                                                            '' && (
+                                                            <p className="text-xs text-destructive">
+                                                                {
+                                                                    deliveryDateValidation.error
+                                                                }
+                                                            </p>
+                                                        )}
                                                     <InputError
                                                         message={
                                                             allErrors.delivery_requested_date
@@ -587,8 +616,12 @@ export default function OrdersEdit({
                                                     <Select
                                                         name="customershippingaddress_uuid"
                                                         defaultValue={
-                                                            order.customershippingaddress_uuid ||
-                                                            undefined
+                                                            order.customershippingaddress_uuid !=
+                                                                null &&
+                                                            order.customershippingaddress_uuid !==
+                                                                ''
+                                                                ? order.customershippingaddress_uuid
+                                                                : undefined
                                                         }
                                                     >
                                                         <SelectTrigger>
@@ -615,7 +648,13 @@ export default function OrdersEdit({
                                                                             address.postal_code,
                                                                         ]
                                                                             .filter(
-                                                                                Boolean,
+                                                                                (
+                                                                                    part,
+                                                                                ) =>
+                                                                                    part !=
+                                                                                        null &&
+                                                                                    part !==
+                                                                                        '',
                                                                             )
                                                                             .join(
                                                                                 ' - ',
@@ -1031,7 +1070,8 @@ export default function OrdersEdit({
                                                 </div>
 
                                                 {/* Foglio Pallet Aggiuntivo */}
-                                                {currentArticle?.palletSheet && (
+                                                {currentArticle?.palletSheet !=
+                                                    null && (
                                                     <div className="grid gap-2">
                                                         <FormLabel htmlFor="pallet_sheet">
                                                             {t(
@@ -1042,7 +1082,7 @@ export default function OrdersEdit({
                                                             <Input
                                                                 id="pallet_sheet"
                                                                 name="pallet_sheet"
-                                                                value={`${currentArticle.palletSheet.code} - ${currentArticle.palletSheet.description || ''}`}
+                                                                value={`${currentArticle.palletSheet.code} - ${currentArticle.palletSheet.description ?? ''}`}
                                                                 readOnly
                                                                 className="flex-1 bg-muted"
                                                             />
@@ -1181,7 +1221,7 @@ export default function OrdersEdit({
                                                                             key={
                                                                                 material.uuid
                                                                             }
-                                                                            value={`${material.cod} - ${material.description || ''}`}
+                                                                            value={`${material.cod} - ${material.description ?? ''}`}
                                                                             readOnly
                                                                             className="bg-muted"
                                                                         />

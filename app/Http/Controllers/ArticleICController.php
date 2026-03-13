@@ -2,50 +2,33 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ApiResponseResource;
 use App\Models\ArticleIC;
-use App\Repositories\ArticleRepository;
+use Domain\Articles\Actions\DeleteArticleICAction;
+use Domain\Articles\Actions\GenerateArticleICNumberAction;
+use Domain\Articles\Actions\ListArticleICAction;
+use Domain\Articles\Actions\StoreArticleICAction;
+use Domain\Articles\Actions\UpdateArticleICAction;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ArticleICController extends Controller
 {
-    protected ArticleRepository $articleRepository;
-
-    public function __construct(ArticleRepository $articleRepository)
-    {
-        $this->articleRepository = $articleRepository;
-    }
+    public function __construct(
+        protected ListArticleICAction $listArticleICAction,
+        protected StoreArticleICAction $storeArticleICAction,
+        protected UpdateArticleICAction $updateArticleICAction,
+        protected DeleteArticleICAction $deleteArticleICAction,
+        protected GenerateArticleICNumberAction $generateArticleICNumberAction,
+    ) {}
 
     /**
      * Display a listing of packaging instructions.
      */
     public function index(Request $request): Response
     {
-        $query = ArticleIC::active();
-
-        // Search
-        if ($request->has('search')) {
-            $search = $request->get('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('code', 'like', "%{$search}%")
-                    ->orWhere('number', 'like', "%{$search}%")
-                    ->orWhere('filename', 'like', "%{$search}%");
-            });
-        }
-
-        // Ordinamento
-        $sortBy = $request->get('sort_by', 'code');
-        $sortOrder = $request->get('sort_order', 'asc');
-
-        $allowedSorts = ['code', 'number', 'filename'];
-        if (in_array($sortBy, $allowedSorts)) {
-            $query->orderBy($sortBy, $sortOrder);
-        } else {
-            $query->orderBy('code', 'asc');
-        }
-
-        $instructions = $query->paginate($request->get('per_page', 15));
+        $instructions = $this->listArticleICAction->execute($request->all());
 
         return Inertia::render('Articles/PackagingInstructions/Index', [
             'instructions' => $instructions,
@@ -89,10 +72,7 @@ class ArticleICController extends Controller
             $validated['filename'] = $originalName;
         }
 
-        $instruction = ArticleIC::create($validated);
-
-        // Invalidate form options cache
-        $this->articleRepository->clearFormOptionsCache();
+        $this->storeArticleICAction->execute($validated);
 
         return redirect()->route('articles.packaging-instructions.index')
             ->with('success', __('flash.article_ic.created'));
@@ -168,10 +148,7 @@ class ArticleICController extends Controller
             $validated['filename'] = $originalName;
         }
 
-        $packagingInstruction->update($validated);
-
-        // Invalidate form options cache
-        $this->articleRepository->clearFormOptionsCache();
+        $this->updateArticleICAction->execute($packagingInstruction, $validated);
 
         return redirect()->route('articles.packaging-instructions.index')
             ->with('success', __('flash.article_ic.updated'));
@@ -182,10 +159,7 @@ class ArticleICController extends Controller
      */
     public function destroy(ArticleIC $packagingInstruction)
     {
-        $packagingInstruction->update(['removed' => true]);
-
-        // Invalidate form options cache
-        $this->articleRepository->clearFormOptionsCache();
+        $this->deleteArticleICAction->execute($packagingInstruction);
 
         return redirect()->route('articles.packaging-instructions.index')
             ->with('success', __('flash.article_ic.deleted'));
@@ -216,24 +190,11 @@ class ArticleICController extends Controller
     public function generateICNumber()
     {
         try {
-            $articlesIC = ArticleIC::where('code', 'IC')
-                ->where('removed', false)
-                ->get();
+            $payload = $this->generateArticleICNumberAction->execute();
 
-            $maxNumber = 0;
-            foreach ($articlesIC as $article) {
-                $currentNumber = intval($article->number);
-                if ($currentNumber > $maxNumber) {
-                    $maxNumber = $currentNumber;
-                }
-            }
-
-            $newNumber = $maxNumber + 1;
-            $number = str_pad($newNumber, 4, '0', STR_PAD_LEFT);
-
-            return response()->json(['number' => $number]);
+            return ApiResponseResource::success($payload);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return ApiResponseResource::error($e->getMessage(), null, 400);
         }
     }
 }

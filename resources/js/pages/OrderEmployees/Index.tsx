@@ -110,10 +110,15 @@ export default function OrderEmployeesIndex() {
                                     >
                                         <td className="px-3 py-2 align-middle font-mono text-xs">
                                             {assignment.order
-                                                ?.order_production_number ||
-                                                t(
-                                                    'order_employees.not_available',
-                                                )}
+                                                ?.order_production_number !=
+                                                null &&
+                                            assignment.order
+                                                ?.order_production_number !== ''
+                                                ? assignment.order
+                                                      .order_production_number
+                                                : t(
+                                                      'order_employees.not_available',
+                                                  )}
                                         </td>
                                         <td className="px-3 py-2 align-middle font-medium">
                                             {assignment.employee
@@ -124,10 +129,15 @@ export default function OrderEmployeesIndex() {
                                         </td>
                                         <td className="px-3 py-2 align-middle font-mono text-xs">
                                             {assignment.employee
-                                                ?.matriculation_number ||
-                                                t(
-                                                    'order_employees.not_available',
-                                                )}
+                                                ?.matriculation_number !=
+                                                null &&
+                                            assignment.employee
+                                                ?.matriculation_number !== ''
+                                                ? assignment.employee
+                                                      .matriculation_number
+                                                : t(
+                                                      'order_employees.not_available',
+                                                  )}
                                         </td>
                                         <td className="px-3 py-2 text-right align-middle text-xs">
                                             {assignment.order && (

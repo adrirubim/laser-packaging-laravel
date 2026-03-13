@@ -105,7 +105,8 @@ export default function CustomerShippingAddressesShow({
                         <h1 className="text-2xl font-bold">{address.street}</h1>
                         <p className="mt-1 text-sm text-muted-foreground">
                             {address.city}{' '}
-                            {address.postal_code
+                            {address.postal_code != null &&
+                            address.postal_code !== ''
                                 ? `(${address.postal_code})`
                                 : ''}
                         </p>
@@ -158,7 +159,7 @@ export default function CustomerShippingAddressesShow({
                                 </p>
                             </div>
 
-                            {address.co && (
+                            {address.co != null && address.co !== '' && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
                                         {t(
@@ -180,49 +181,53 @@ export default function CustomerShippingAddressesShow({
                                 </p>
                             </div>
 
-                            {address.postal_code && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t(
-                                            'customer_shipping_addresses.table.cap',
-                                        )}
-                                    </Label>
-                                    <p>{address.postal_code}</p>
-                                </div>
-                            )}
+                            {address.postal_code != null &&
+                                address.postal_code !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t(
+                                                'customer_shipping_addresses.table.cap',
+                                            )}
+                                        </Label>
+                                        <p>{address.postal_code}</p>
+                                    </div>
+                                )}
 
-                            {address.province && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t(
-                                            'customer_shipping_addresses.table.province',
-                                        )}
-                                    </Label>
-                                    <p>{address.province}</p>
-                                </div>
-                            )}
+                            {address.province != null &&
+                                address.province !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t(
+                                                'customer_shipping_addresses.table.province',
+                                            )}
+                                        </Label>
+                                        <p>{address.province}</p>
+                                    </div>
+                                )}
 
-                            {address.country && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t(
-                                            'customer_shipping_addresses.table.country',
-                                        )}
-                                    </Label>
-                                    <p>{address.country}</p>
-                                </div>
-                            )}
+                            {address.country != null &&
+                                address.country !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t(
+                                                'customer_shipping_addresses.table.country',
+                                            )}
+                                        </Label>
+                                        <p>{address.country}</p>
+                                    </div>
+                                )}
 
-                            {address.contacts && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t(
-                                            'customer_shipping_addresses.table.contacts',
-                                        )}
-                                    </Label>
-                                    <p>{address.contacts}</p>
-                                </div>
-                            )}
+                            {address.contacts != null &&
+                                address.contacts !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t(
+                                                'customer_shipping_addresses.table.contacts',
+                                            )}
+                                        </Label>
+                                        <p>{address.contacts}</p>
+                                    </div>
+                                )}
                         </CardContent>
                     </Card>
 
@@ -288,7 +293,7 @@ export default function CustomerShippingAddressesShow({
                     </Card>
                 </div>
 
-                {address.orders && address.orders.length > 0 && (
+                {address.orders != null && address.orders.length > 0 && (
                     <Card>
                         <CardHeader>
                             <CardTitle>
@@ -329,7 +334,7 @@ export default function CustomerShippingAddressesShow({
                     </Card>
                 )}
 
-                {(!address.orders || address.orders.length === 0) && (
+                {(address.orders == null || address.orders.length === 0) && (
                     <Card>
                         <CardContent className="py-8 text-center text-muted-foreground">
                             <p>
@@ -352,8 +357,14 @@ export default function CustomerShippingAddressesShow({
                     'customer_shipping_addresses.delete_description',
                 )}
                 itemName={`${address.street}${
-                    address.city ? `, ${address.city}` : ''
-                }${address.postal_code ? ` (${address.postal_code})` : ''}`}
+                    address.city != null && address.city !== ''
+                        ? `, ${address.city}`
+                        : ''
+                }${
+                    address.postal_code != null && address.postal_code !== ''
+                        ? ` (${address.postal_code})`
+                        : ''
+                }`}
             />
         </AppLayout>
     );

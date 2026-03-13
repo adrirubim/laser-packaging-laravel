@@ -11,6 +11,7 @@
         "format": "prettier --write resources/",
         "format:check": "prettier --check resources/",
         "lint": "eslint . --fix",
+        "lint:scoped": "eslint --fix",
         "types": "tsc --noEmit",
         "test": "npm exec -- vitest"
     },
@@ -83,5 +84,8 @@
         "@tailwindcss/oxide-win32-x64-msvc": "^4.2.1",
         "lightningcss-linux-x64-gnu": "^1.32.0",
         "lightningcss-win32-x64-msvc": "1.32.0"
+    },
+    "engines": {
+        "node": ">=22.0.0"
     }
 }

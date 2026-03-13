@@ -35,11 +35,13 @@ export function Pagination({
                     ` (${totalItems} ${t('common.results')})`}
             </div>
             <div className="flex items-center gap-1">
-                {prevLink && (
+                {prevLink !== null && prevLink !== undefined && (
                     <Link
                         href={prevLink.url ?? '#'}
                         className={`inline-flex items-center rounded-md border px-3 py-2 transition-colors ${
-                            prevLink.url
+                            prevLink.url !== null &&
+                            prevLink.url !== undefined &&
+                            prevLink.url !== ''
                                 ? 'border-input hover:bg-muted'
                                 : 'cursor-not-allowed border-transparent opacity-50'
                         }`}
@@ -65,11 +67,13 @@ export function Pagination({
                         </Link>
                     ))}
                 </div>
-                {nextLink && (
+                {nextLink !== null && nextLink !== undefined && (
                     <Link
                         href={nextLink.url ?? '#'}
                         className={`inline-flex items-center rounded-md border px-3 py-2 transition-colors ${
-                            nextLink.url
+                            nextLink.url !== null &&
+                            nextLink.url !== undefined &&
+                            nextLink.url !== ''
                                 ? 'border-input hover:bg-muted'
                                 : 'cursor-not-allowed border-transparent opacity-50'
                         }`}

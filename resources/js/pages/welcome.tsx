@@ -102,7 +102,9 @@ export default function Welcome({ canRegister = true, url }: WelcomePageProps) {
                     content={t('welcome.meta_description')}
                 />
                 <meta property="og:type" content="website" />
-                {url && <meta property="og:url" content={url} />}
+                {url != null && url !== '' && (
+                    <meta property="og:url" content={url} />
+                )}
                 <link rel="preconnect" href="https://fonts.bunny.net" />
                 <link
                     rel="preload"
@@ -146,7 +148,7 @@ export default function Welcome({ canRegister = true, url }: WelcomePageProps) {
                                     );
                                 }}
                             />
-                            {auth.user ? (
+                            {auth.user != null ? (
                                 <Link
                                     href={dashboard().url}
                                     prefetch
@@ -218,7 +220,7 @@ export default function Welcome({ canRegister = true, url }: WelcomePageProps) {
                             <p className="mx-auto mb-8 max-w-2xl animate-in text-xl text-muted-foreground delay-200 duration-700 fade-in slide-in-from-bottom md:text-2xl">
                                 {t('welcome.hero.subtitle')}
                             </p>
-                            {!auth.user && (
+                            {auth.user == null && (
                                 <div className="mb-12 flex animate-in flex-col items-center justify-center gap-4 delay-400 duration-700 fade-in slide-in-from-bottom sm:flex-row">
                                     <Button size="lg" asChild>
                                         <Link href={login().url} prefetch>
@@ -388,7 +390,7 @@ export default function Welcome({ canRegister = true, url }: WelcomePageProps) {
                     </section>
 
                     {/* CTA Section */}
-                    {!auth.user && (
+                    {auth.user == null && (
                         <section className="container mx-auto px-6 py-16 lg:py-24">
                             <div className="mx-auto max-w-4xl text-center">
                                 <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">

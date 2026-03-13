@@ -6,7 +6,7 @@
 
 ## Quick Summary
 
-- **Status:** Production-ready
+- **Status:** Production-ready · **Omega 2026: 100% aligned (Action → Resource → Response → Types)**
 - **Core modules:** Offers, Customers, Articles, Orders (incl. Production Planning), master data, Production Portal (web + API), Settings (Profile, Appearance, Sessions, Data Export)
 - **i18n:** IT, ES, EN — locale persisted in `user_preferences` (authenticated) or session (guests); selector on Welcome and Settings → Appearance. See [I18N.md](I18N.md)
 

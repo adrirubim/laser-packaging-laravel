@@ -7,7 +7,7 @@ import {
 } from './../../../../wayfinder';
 /**
  * @see \App\Http\Controllers\OfferController::getDivisions
- * @see app/Http/Controllers/OfferController.php:922
+ * @see app/Http/Controllers/OfferController.php:648
  * @route '/offers/get-divisions'
  */
 export const getDivisions = (
@@ -24,7 +24,7 @@ getDivisions.definition = {
 
 /**
  * @see \App\Http\Controllers\OfferController::getDivisions
- * @see app/Http/Controllers/OfferController.php:922
+ * @see app/Http/Controllers/OfferController.php:648
  * @route '/offers/get-divisions'
  */
 getDivisions.url = (options?: RouteQueryOptions) => {
@@ -33,7 +33,7 @@ getDivisions.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\OfferController::getDivisions
- * @see app/Http/Controllers/OfferController.php:922
+ * @see app/Http/Controllers/OfferController.php:648
  * @route '/offers/get-divisions'
  */
 getDivisions.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -43,7 +43,7 @@ getDivisions.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\OfferController::getDivisions
- * @see app/Http/Controllers/OfferController.php:922
+ * @see app/Http/Controllers/OfferController.php:648
  * @route '/offers/get-divisions'
  */
 getDivisions.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -53,7 +53,7 @@ getDivisions.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
  * @see \App\Http\Controllers\OfferController::getDivisions
- * @see app/Http/Controllers/OfferController.php:922
+ * @see app/Http/Controllers/OfferController.php:648
  * @route '/offers/get-divisions'
  */
 const getDivisionsForm = (
@@ -65,7 +65,7 @@ const getDivisionsForm = (
 
 /**
  * @see \App\Http\Controllers\OfferController::getDivisions
- * @see app/Http/Controllers/OfferController.php:922
+ * @see app/Http/Controllers/OfferController.php:648
  * @route '/offers/get-divisions'
  */
 getDivisionsForm.get = (
@@ -77,7 +77,7 @@ getDivisionsForm.get = (
 
 /**
  * @see \App\Http\Controllers\OfferController::getDivisions
- * @see app/Http/Controllers/OfferController.php:922
+ * @see app/Http/Controllers/OfferController.php:648
  * @route '/offers/get-divisions'
  */
 getDivisionsForm.head = (
@@ -96,7 +96,7 @@ getDivisions.form = getDivisionsForm;
 
 /**
  * @see \App\Http\Controllers\OfferController::downloadPdf
- * @see app/Http/Controllers/OfferController.php:512
+ * @see app/Http/Controllers/OfferController.php:353
  * @route '/offers/{offer}/download-pdf'
  */
 export const downloadPdf = (
@@ -118,7 +118,7 @@ downloadPdf.definition = {
 
 /**
  * @see \App\Http\Controllers\OfferController::downloadPdf
- * @see app/Http/Controllers/OfferController.php:512
+ * @see app/Http/Controllers/OfferController.php:353
  * @route '/offers/{offer}/download-pdf'
  */
 downloadPdf.url = (
@@ -158,7 +158,7 @@ downloadPdf.url = (
 
 /**
  * @see \App\Http\Controllers\OfferController::downloadPdf
- * @see app/Http/Controllers/OfferController.php:512
+ * @see app/Http/Controllers/OfferController.php:353
  * @route '/offers/{offer}/download-pdf'
  */
 downloadPdf.get = (
@@ -175,7 +175,7 @@ downloadPdf.get = (
 
 /**
  * @see \App\Http\Controllers\OfferController::downloadPdf
- * @see app/Http/Controllers/OfferController.php:512
+ * @see app/Http/Controllers/OfferController.php:353
  * @route '/offers/{offer}/download-pdf'
  */
 downloadPdf.head = (
@@ -192,7 +192,7 @@ downloadPdf.head = (
 
 /**
  * @see \App\Http\Controllers\OfferController::downloadPdf
- * @see app/Http/Controllers/OfferController.php:512
+ * @see app/Http/Controllers/OfferController.php:353
  * @route '/offers/{offer}/download-pdf'
  */
 const downloadPdfForm = (
@@ -209,7 +209,7 @@ const downloadPdfForm = (
 
 /**
  * @see \App\Http\Controllers\OfferController::downloadPdf
- * @see app/Http/Controllers/OfferController.php:512
+ * @see app/Http/Controllers/OfferController.php:353
  * @route '/offers/{offer}/download-pdf'
  */
 downloadPdfForm.get = (
@@ -226,7 +226,7 @@ downloadPdfForm.get = (
 
 /**
  * @see \App\Http\Controllers\OfferController::downloadPdf
- * @see app/Http/Controllers/OfferController.php:512
+ * @see app/Http/Controllers/OfferController.php:353
  * @route '/offers/{offer}/download-pdf'
  */
 downloadPdfForm.head = (
@@ -250,7 +250,7 @@ downloadPdf.form = downloadPdfForm;
 
 /**
  * @see \App\Http\Controllers\OfferController::index
- * @see app/Http/Controllers/OfferController.php:54
+ * @see app/Http/Controllers/OfferController.php:75
  * @route '/offers'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -265,7 +265,7 @@ index.definition = {
 
 /**
  * @see \App\Http\Controllers\OfferController::index
- * @see app/Http/Controllers/OfferController.php:54
+ * @see app/Http/Controllers/OfferController.php:75
  * @route '/offers'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -274,7 +274,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\OfferController::index
- * @see app/Http/Controllers/OfferController.php:54
+ * @see app/Http/Controllers/OfferController.php:75
  * @route '/offers'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -284,7 +284,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\OfferController::index
- * @see app/Http/Controllers/OfferController.php:54
+ * @see app/Http/Controllers/OfferController.php:75
  * @route '/offers'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -294,7 +294,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
  * @see \App\Http\Controllers\OfferController::index
- * @see app/Http/Controllers/OfferController.php:54
+ * @see app/Http/Controllers/OfferController.php:75
  * @route '/offers'
  */
 const indexForm = (
@@ -306,7 +306,7 @@ const indexForm = (
 
 /**
  * @see \App\Http\Controllers\OfferController::index
- * @see app/Http/Controllers/OfferController.php:54
+ * @see app/Http/Controllers/OfferController.php:75
  * @route '/offers'
  */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -316,7 +316,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\OfferController::index
- * @see app/Http/Controllers/OfferController.php:54
+ * @see app/Http/Controllers/OfferController.php:75
  * @route '/offers'
  */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -333,7 +333,7 @@ index.form = indexForm;
 
 /**
  * @see \App\Http\Controllers\OfferController::create
- * @see app/Http/Controllers/OfferController.php:109
+ * @see app/Http/Controllers/OfferController.php:139
  * @route '/offers/create'
  */
 export const create = (
@@ -350,7 +350,7 @@ create.definition = {
 
 /**
  * @see \App\Http\Controllers\OfferController::create
- * @see app/Http/Controllers/OfferController.php:109
+ * @see app/Http/Controllers/OfferController.php:139
  * @route '/offers/create'
  */
 create.url = (options?: RouteQueryOptions) => {
@@ -359,7 +359,7 @@ create.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\OfferController::create
- * @see app/Http/Controllers/OfferController.php:109
+ * @see app/Http/Controllers/OfferController.php:139
  * @route '/offers/create'
  */
 create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -369,7 +369,7 @@ create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\OfferController::create
- * @see app/Http/Controllers/OfferController.php:109
+ * @see app/Http/Controllers/OfferController.php:139
  * @route '/offers/create'
  */
 create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -379,7 +379,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
  * @see \App\Http\Controllers\OfferController::create
- * @see app/Http/Controllers/OfferController.php:109
+ * @see app/Http/Controllers/OfferController.php:139
  * @route '/offers/create'
  */
 const createForm = (
@@ -391,7 +391,7 @@ const createForm = (
 
 /**
  * @see \App\Http\Controllers\OfferController::create
- * @see app/Http/Controllers/OfferController.php:109
+ * @see app/Http/Controllers/OfferController.php:139
  * @route '/offers/create'
  */
 createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -401,7 +401,7 @@ createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\OfferController::create
- * @see app/Http/Controllers/OfferController.php:109
+ * @see app/Http/Controllers/OfferController.php:139
  * @route '/offers/create'
  */
 createForm.head = (
@@ -420,7 +420,7 @@ create.form = createForm;
 
 /**
  * @see \App\Http\Controllers\OfferController::store
- * @see app/Http/Controllers/OfferController.php:242
+ * @see app/Http/Controllers/OfferController.php:272
  * @route '/offers'
  */
 export const store = (
@@ -437,7 +437,7 @@ store.definition = {
 
 /**
  * @see \App\Http\Controllers\OfferController::store
- * @see app/Http/Controllers/OfferController.php:242
+ * @see app/Http/Controllers/OfferController.php:272
  * @route '/offers'
  */
 store.url = (options?: RouteQueryOptions) => {
@@ -446,7 +446,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\OfferController::store
- * @see app/Http/Controllers/OfferController.php:242
+ * @see app/Http/Controllers/OfferController.php:272
  * @route '/offers'
  */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -456,7 +456,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
  * @see \App\Http\Controllers\OfferController::store
- * @see app/Http/Controllers/OfferController.php:242
+ * @see app/Http/Controllers/OfferController.php:272
  * @route '/offers'
  */
 const storeForm = (
@@ -468,7 +468,7 @@ const storeForm = (
 
 /**
  * @see \App\Http\Controllers\OfferController::store
- * @see app/Http/Controllers/OfferController.php:242
+ * @see app/Http/Controllers/OfferController.php:272
  * @route '/offers'
  */
 storeForm.post = (
@@ -482,7 +482,7 @@ store.form = storeForm;
 
 /**
  * @see \App\Http\Controllers\OfferController::show
- * @see app/Http/Controllers/OfferController.php:263
+ * @see app/Http/Controllers/OfferController.php:293
  * @route '/offers/{offer}'
  */
 export const show = (
@@ -504,7 +504,7 @@ show.definition = {
 
 /**
  * @see \App\Http\Controllers\OfferController::show
- * @see app/Http/Controllers/OfferController.php:263
+ * @see app/Http/Controllers/OfferController.php:293
  * @route '/offers/{offer}'
  */
 show.url = (
@@ -544,7 +544,7 @@ show.url = (
 
 /**
  * @see \App\Http\Controllers\OfferController::show
- * @see app/Http/Controllers/OfferController.php:263
+ * @see app/Http/Controllers/OfferController.php:293
  * @route '/offers/{offer}'
  */
 show.get = (
@@ -561,7 +561,7 @@ show.get = (
 
 /**
  * @see \App\Http\Controllers\OfferController::show
- * @see app/Http/Controllers/OfferController.php:263
+ * @see app/Http/Controllers/OfferController.php:293
  * @route '/offers/{offer}'
  */
 show.head = (
@@ -578,7 +578,7 @@ show.head = (
 
 /**
  * @see \App\Http\Controllers\OfferController::show
- * @see app/Http/Controllers/OfferController.php:263
+ * @see app/Http/Controllers/OfferController.php:293
  * @route '/offers/{offer}'
  */
 const showForm = (
@@ -595,7 +595,7 @@ const showForm = (
 
 /**
  * @see \App\Http\Controllers\OfferController::show
- * @see app/Http/Controllers/OfferController.php:263
+ * @see app/Http/Controllers/OfferController.php:293
  * @route '/offers/{offer}'
  */
 showForm.get = (
@@ -612,7 +612,7 @@ showForm.get = (
 
 /**
  * @see \App\Http\Controllers\OfferController::show
- * @see app/Http/Controllers/OfferController.php:263
+ * @see app/Http/Controllers/OfferController.php:293
  * @route '/offers/{offer}'
  */
 showForm.head = (
@@ -636,7 +636,7 @@ show.form = showForm;
 
 /**
  * @see \App\Http\Controllers\OfferController::edit
- * @see app/Http/Controllers/OfferController.php:646
+ * @see app/Http/Controllers/OfferController.php:372
  * @route '/offers/{offer}/edit'
  */
 export const edit = (
@@ -658,7 +658,7 @@ edit.definition = {
 
 /**
  * @see \App\Http\Controllers\OfferController::edit
- * @see app/Http/Controllers/OfferController.php:646
+ * @see app/Http/Controllers/OfferController.php:372
  * @route '/offers/{offer}/edit'
  */
 edit.url = (
@@ -698,7 +698,7 @@ edit.url = (
 
 /**
  * @see \App\Http\Controllers\OfferController::edit
- * @see app/Http/Controllers/OfferController.php:646
+ * @see app/Http/Controllers/OfferController.php:372
  * @route '/offers/{offer}/edit'
  */
 edit.get = (
@@ -715,7 +715,7 @@ edit.get = (
 
 /**
  * @see \App\Http\Controllers\OfferController::edit
- * @see app/Http/Controllers/OfferController.php:646
+ * @see app/Http/Controllers/OfferController.php:372
  * @route '/offers/{offer}/edit'
  */
 edit.head = (
@@ -732,7 +732,7 @@ edit.head = (
 
 /**
  * @see \App\Http\Controllers\OfferController::edit
- * @see app/Http/Controllers/OfferController.php:646
+ * @see app/Http/Controllers/OfferController.php:372
  * @route '/offers/{offer}/edit'
  */
 const editForm = (
@@ -749,7 +749,7 @@ const editForm = (
 
 /**
  * @see \App\Http\Controllers\OfferController::edit
- * @see app/Http/Controllers/OfferController.php:646
+ * @see app/Http/Controllers/OfferController.php:372
  * @route '/offers/{offer}/edit'
  */
 editForm.get = (
@@ -766,7 +766,7 @@ editForm.get = (
 
 /**
  * @see \App\Http\Controllers\OfferController::edit
- * @see app/Http/Controllers/OfferController.php:646
+ * @see app/Http/Controllers/OfferController.php:372
  * @route '/offers/{offer}/edit'
  */
 editForm.head = (
@@ -790,7 +790,7 @@ edit.form = editForm;
 
 /**
  * @see \App\Http\Controllers\OfferController::update
- * @see app/Http/Controllers/OfferController.php:866
+ * @see app/Http/Controllers/OfferController.php:592
  * @route '/offers/{offer}'
  */
 export const update = (
@@ -812,7 +812,7 @@ update.definition = {
 
 /**
  * @see \App\Http\Controllers\OfferController::update
- * @see app/Http/Controllers/OfferController.php:866
+ * @see app/Http/Controllers/OfferController.php:592
  * @route '/offers/{offer}'
  */
 update.url = (
@@ -852,7 +852,7 @@ update.url = (
 
 /**
  * @see \App\Http\Controllers\OfferController::update
- * @see app/Http/Controllers/OfferController.php:866
+ * @see app/Http/Controllers/OfferController.php:592
  * @route '/offers/{offer}'
  */
 update.put = (
@@ -869,7 +869,7 @@ update.put = (
 
 /**
  * @see \App\Http\Controllers\OfferController::update
- * @see app/Http/Controllers/OfferController.php:866
+ * @see app/Http/Controllers/OfferController.php:592
  * @route '/offers/{offer}'
  */
 update.patch = (
@@ -886,7 +886,7 @@ update.patch = (
 
 /**
  * @see \App\Http\Controllers\OfferController::update
- * @see app/Http/Controllers/OfferController.php:866
+ * @see app/Http/Controllers/OfferController.php:592
  * @route '/offers/{offer}'
  */
 const updateForm = (
@@ -908,7 +908,7 @@ const updateForm = (
 
 /**
  * @see \App\Http\Controllers\OfferController::update
- * @see app/Http/Controllers/OfferController.php:866
+ * @see app/Http/Controllers/OfferController.php:592
  * @route '/offers/{offer}'
  */
 updateForm.put = (
@@ -930,7 +930,7 @@ updateForm.put = (
 
 /**
  * @see \App\Http\Controllers\OfferController::update
- * @see app/Http/Controllers/OfferController.php:866
+ * @see app/Http/Controllers/OfferController.php:592
  * @route '/offers/{offer}'
  */
 updateForm.patch = (
@@ -954,7 +954,7 @@ update.form = updateForm;
 
 /**
  * @see \App\Http\Controllers\OfferController::destroy
- * @see app/Http/Controllers/OfferController.php:893
+ * @see app/Http/Controllers/OfferController.php:619
  * @route '/offers/{offer}'
  */
 export const destroy = (
@@ -976,7 +976,7 @@ destroy.definition = {
 
 /**
  * @see \App\Http\Controllers\OfferController::destroy
- * @see app/Http/Controllers/OfferController.php:893
+ * @see app/Http/Controllers/OfferController.php:619
  * @route '/offers/{offer}'
  */
 destroy.url = (
@@ -1016,7 +1016,7 @@ destroy.url = (
 
 /**
  * @see \App\Http\Controllers\OfferController::destroy
- * @see app/Http/Controllers/OfferController.php:893
+ * @see app/Http/Controllers/OfferController.php:619
  * @route '/offers/{offer}'
  */
 destroy.delete = (
@@ -1033,7 +1033,7 @@ destroy.delete = (
 
 /**
  * @see \App\Http\Controllers\OfferController::destroy
- * @see app/Http/Controllers/OfferController.php:893
+ * @see app/Http/Controllers/OfferController.php:619
  * @route '/offers/{offer}'
  */
 const destroyForm = (
@@ -1055,7 +1055,7 @@ const destroyForm = (
 
 /**
  * @see \App\Http\Controllers\OfferController::destroy
- * @see app/Http/Controllers/OfferController.php:893
+ * @see app/Http/Controllers/OfferController.php:619
  * @route '/offers/{offer}'
  */
 destroyForm.delete = (

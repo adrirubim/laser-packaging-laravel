@@ -43,7 +43,11 @@ export function SortableHeader({
                 className,
             )}
             onClick={() => onSort(column)}
-            title={title || t('common.click_to_sort')}
+            title={
+                title !== null && title !== undefined && title !== ''
+                    ? title
+                    : t('common.click_to_sort')
+            }
         >
             <div className="flex items-center">
                 {children}

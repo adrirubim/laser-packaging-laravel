@@ -272,8 +272,8 @@ class EmployeeControllerTest extends TestCase
             $response->assertStatus(200);
             $response->assertJson([
                 'success' => true,
-                'portal_enabled' => true,
             ]);
+            $response->assertJsonPath('data.portal_enabled', true);
         } catch (\Illuminate\Routing\Exceptions\UrlGenerationException $e) {
             $this->markTestSkipped('Route employees.toggle-portal not defined');
         }
@@ -528,7 +528,10 @@ class EmployeeControllerTest extends TestCase
         $response = $this->get(route('employees.contracts', $employee));
 
         $response->assertStatus(200);
-        $response->assertJsonCount(1);
+        $response->assertJson([
+            'success' => true,
+        ]);
+        $response->assertJsonCount(1, 'data');
         $response->assertJsonFragment(['id' => $contract->id]);
     }
 
@@ -547,8 +550,10 @@ class EmployeeControllerTest extends TestCase
         ]);
 
         $response->assertStatus(200);
-        $response->assertJson(['success' => true]);
-        $response->assertJsonStructure(['success', 'contract']);
+        $response->assertJson([
+            'success' => true,
+        ]);
+        $response->assertJsonStructure(['success', 'message', 'data' => ['id', 'employee_uuid']]);
 
         $this->assertDatabaseHas('employeecontracts', [
             'employee_uuid' => $employee->uuid,
@@ -665,7 +670,10 @@ class EmployeeControllerTest extends TestCase
         ]);
 
         $response->assertStatus(404);
-        $response->assertJson(['error' => 'Contratto non trovato.']);
+        $response->assertJson([
+            'success' => false,
+            'message' => 'Contratto non trovato.',
+        ]);
     }
 
     #[Test]
@@ -704,7 +712,10 @@ class EmployeeControllerTest extends TestCase
         $response = $this->delete(route('employees.destroy-contract', [$employee2, $contract]));
 
         $response->assertStatus(404);
-        $response->assertJson(['error' => 'Contratto non trovato.']);
+        $response->assertJson([
+            'success' => false,
+            'message' => 'Contratto non trovato.',
+        ]);
     }
 
     #[Test]

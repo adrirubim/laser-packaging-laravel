@@ -259,10 +259,11 @@ export default function ArticlesEdit({
     const { t } = useTranslations();
     const { props } = usePage<ArticlesEditProps>();
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
-    const actualUm = um || props.um;
-    const actualPiecesPerPackage = piecesPerPackage || props.piecesPerPackage;
-    const actualMediaValues = mediaValues || props.mediaValues;
-    const actualMediaRealePzHPs = mediaRealePzHPs || props.mediaRealePzHPs || 0;
+    const actualUm = um ?? props.um ?? null;
+    const actualPiecesPerPackage =
+        piecesPerPackage ?? props.piecesPerPackage ?? null;
+    const actualMediaValues = mediaValues ?? props.mediaValues ?? null;
+    const actualMediaRealePzHPs = mediaRealePzHPs ?? props.mediaRealePzHPs ?? 0;
     const actualCqModels =
         cqModels.length > 0 ? cqModels : props.cqModels || [];
     const actualPalletSheets =
@@ -312,119 +313,119 @@ export default function ArticlesEdit({
     );
     const [codArticleLas, setCodArticleLas] = useState(article.cod_article_las);
     const [articleDescr, setArticleDescr] = useState(
-        article.article_descr || '',
+        article.article_descr ?? '',
     );
     const [planPackaging, setPlanPackaging] = useState(
-        article.plan_packaging?.toString() || '',
+        article.plan_packaging?.toString() ?? '',
     );
     const [palletPlans, setPalletPlans] = useState(
-        article.pallet_plans?.toString() || '',
+        article.pallet_plans?.toString() ?? '',
     );
     const [visibilityCod, setVisibilityCod] = useState(
-        article.visibility_cod || false,
+        article.visibility_cod ?? false,
     );
     const [stockManaged, setStockManaged] = useState(
-        article.stock_managed || false,
+        article.stock_managed ?? false,
     );
     const [lotAttribution, setLotAttribution] = useState<string>(
-        article.lot_attribution?.toString() || '',
+        article.lot_attribution?.toString() ?? '',
     );
     const [expirationAttribution, setExpirationAttribution] = useState<string>(
-        article.expiration_attribution?.toString() || '',
+        article.expiration_attribution?.toString() ?? '',
     );
-    const [ean, setEan] = useState(article.ean || '');
-    const [db, setDb] = useState<string>(article.db?.toString() || '');
+    const [ean, setEan] = useState(article.ean ?? '');
+    const [db, setDb] = useState<string>(article.db?.toString() ?? '');
     const [labelsExternal, setLabelsExternal] = useState<string>(
-        article.labels_external?.toString() || '',
+        article.labels_external?.toString() ?? '',
     );
     const [labelsPvp, setLabelsPvp] = useState<string>(
-        article.labels_pvp?.toString() || '',
+        article.labels_pvp?.toString() ?? '',
     );
     const [valuePvp, setValuePvp] = useState(
-        article.value_pvp?.toString() || '',
+        article.value_pvp?.toString() ?? '',
     );
     const [labelsIngredient, setLabelsIngredient] = useState<string>(
-        article.labels_ingredient?.toString() || '',
+        article.labels_ingredient?.toString() ?? '',
     );
     const [labelsDataVariable, setLabelsDataVariable] = useState<string>(
-        article.labels_data_variable?.toString() || '',
+        article.labels_data_variable?.toString() ?? '',
     );
     const [labelOfJumpers, setLabelOfJumpers] = useState<string>(
-        article.label_of_jumpers?.toString() || '',
+        article.label_of_jumpers?.toString() ?? '',
     );
     const [weightKg, setWeightKg] = useState(
-        article.weight_kg?.toString() || '',
+        article.weight_kg?.toString() ?? '',
     );
     const [nominalWeightControl, setNominalWeightControl] = useState<string>(
-        article.nominal_weight_control?.toString() || '',
+        article.nominal_weight_control?.toString() ?? '',
     );
     const [weightUnitOfMeasur, setWeightUnitOfMeasur] = useState(
-        article.weight_unit_of_measur || '',
+        article.weight_unit_of_measur ?? '',
     );
     const [weightValue, setWeightValue] = useState(
-        article.weight_value?.toString() || '',
+        article.weight_value?.toString() ?? '',
     );
     const [objectControlWeight, setObjectControlWeight] = useState<string>(
-        article.object_control_weight?.toString() || '',
+        article.object_control_weight?.toString() ?? '',
     );
-    const [allergens, setAllergens] = useState(article.allergens || false);
+    const [allergens, setAllergens] = useState(article.allergens ?? false);
     const [palletSheet, setPalletSheet] = useState<string>(
-        article.pallet_sheet || '',
+        article.pallet_sheet ?? '',
     );
     const [modelUuid, setModelUuid] = useState<string>(
-        article.model_uuid || '',
+        article.model_uuid ?? '',
     );
     const [customerSamplesListValue, setCustomerSamplesListValue] =
-        useState<string>(article.customer_samples_list?.toString() || '');
+        useState<string>(article.customer_samples_list?.toString() ?? '');
     const [mediaRealeCfzHPz, setMediaRealeCfzHPz] = useState(
-        article.media_reale_cfz_h_pz?.toString() || '',
+        article.media_reale_cfz_h_pz?.toString() ?? '',
     );
     const [productionApprovalCheckbox, setProductionApprovalCheckbox] =
-        useState(article.production_approval_checkbox || false);
+        useState(article.production_approval_checkbox ?? false);
     const [productionApprovalEmployee, setProductionApprovalEmployee] =
-        useState(article.production_approval_employee || '');
+        useState(article.production_approval_employee ?? '');
     const [productionApprovalDate, setProductionApprovalDate] = useState(
-        article.production_approval_date?.split('T')[0] || '',
+        article.production_approval_date?.split('T')[0] ?? '',
     );
     const [productionApprovalNotes, setProductionApprovalNotes] = useState(
-        article.production_approval_notes || '',
+        article.production_approval_notes ?? '',
     );
     const [approvQualityCheckbox, setApprovQualityCheckbox] = useState(
-        article.approv_quality_checkbox || false,
+        article.approv_quality_checkbox ?? false,
     );
     const [approvQualityEmployee, setApprovQualityEmployee] = useState(
-        article.approv_quality_employee || '',
+        article.approv_quality_employee ?? '',
     );
     const [approvQualityDate, setApprovQualityDate] = useState(
-        article.approv_quality_date?.split('T')[0] || '',
+        article.approv_quality_date?.split('T')[0] ?? '',
     );
     const [approvQualityNotes, setApprovQualityNotes] = useState(
-        article.approv_quality_notes || '',
+        article.approv_quality_notes ?? '',
     );
     const [commercialApprovalCheckbox, setCommercialApprovalCheckbox] =
-        useState(article.commercial_approval_checkbox || false);
+        useState(article.commercial_approval_checkbox ?? false);
     const [commercialApprovalEmployee, setCommercialApprovalEmployee] =
-        useState(article.commercial_approval_employee || '');
+        useState(article.commercial_approval_employee ?? '');
     const [commercialApprovalDate, setCommercialApprovalDate] = useState(
-        article.commercial_approval_date?.split('T')[0] || '',
+        article.commercial_approval_date?.split('T')[0] ?? '',
     );
     const [commercialApprovalNotes, setCommercialApprovalNotes] = useState(
-        article.commercial_approval_notes || '',
+        article.commercial_approval_notes ?? '',
     );
     const [lineLayoutFileName, setLineLayoutFileName] = useState<string | null>(
         null,
     );
     const [clientApprovalCheckbox, setClientApprovalCheckbox] = useState(
-        article.client_approval_checkbox || false,
+        article.client_approval_checkbox ?? false,
     );
     const [clientApprovalEmployee, setClientApprovalEmployee] = useState(
-        article.client_approval_employee || '',
+        article.client_approval_employee ?? '',
     );
     const [clientApprovalDate, setClientApprovalDate] = useState(
-        article.client_approval_date?.split('T')[0] || '',
+        article.client_approval_date?.split('T')[0] ?? '',
     );
     const [clientApprovalNotes, setClientApprovalNotes] = useState(
-        article.client_approval_notes || '',
+        article.client_approval_notes ?? '',
     );
 
     // State for dynamic rows
@@ -437,8 +438,8 @@ export default function ArticlesEdit({
                 ) => ({
                     id: `machinery-${idx}`,
                     machineryUuid: m.uuid,
-                    value: m.pivot?.value || '',
-                    valueType: m.valuetype || null,
+                    value: m.pivot?.value ?? '',
+                    valueType: m.valuetype ?? null,
                 }),
             );
         }
@@ -514,9 +515,9 @@ export default function ArticlesEdit({
                 ) => ({
                     id: `check-material-${idx}`,
                     materialUuid: cm.material_uuid,
-                    um: cm.um || '',
-                    quantityExpected: cm.quantity_expected?.toString() || '',
-                    quantityEffective: cm.quantity_effective?.toString() || '',
+                    um: cm.um ?? '',
+                    quantityExpected: cm.quantity_expected?.toString() ?? '',
+                    quantityEffective: cm.quantity_effective?.toString() ?? '',
                 }),
             );
         }
@@ -676,7 +677,7 @@ export default function ArticlesEdit({
                                                                             offer.offer_number
                                                                         }{' '}
                                                                         -{' '}
-                                                                        {offer.description ||
+                                                                        {offer.description ??
                                                                             t(
                                                                                 'articles.edit.placeholder_no_description',
                                                                             )}
@@ -715,23 +716,32 @@ export default function ArticlesEdit({
                                                         )}
                                                         maxLength={255}
                                                         aria-invalid={
-                                                            codArticleLasValidation.error
+                                                            codArticleLasValidation.error !=
+                                                                null &&
+                                                            codArticleLasValidation.error !==
+                                                                ''
                                                                 ? 'true'
                                                                 : 'false'
                                                         }
                                                         className={
-                                                            codArticleLasValidation.error
+                                                            codArticleLasValidation.error !=
+                                                                null &&
+                                                            codArticleLasValidation.error !==
+                                                                ''
                                                                 ? 'border-destructive'
                                                                 : ''
                                                         }
                                                     />
-                                                    {codArticleLasValidation.error && (
-                                                        <p className="text-xs text-destructive">
-                                                            {
-                                                                codArticleLasValidation.error
-                                                            }
-                                                        </p>
-                                                    )}
+                                                    {codArticleLasValidation.error !=
+                                                        null &&
+                                                        codArticleLasValidation.error !==
+                                                            '' && (
+                                                            <p className="text-xs text-destructive">
+                                                                {
+                                                                    codArticleLasValidation.error
+                                                                }
+                                                            </p>
+                                                        )}
                                                     <p className="text-xs text-muted-foreground">
                                                         {t(
                                                             'articles.edit.cod_las_help',
@@ -771,23 +781,32 @@ export default function ArticlesEdit({
                                                         )}
                                                         maxLength={255}
                                                         aria-invalid={
-                                                            articleDescrValidation.error
+                                                            articleDescrValidation.error !=
+                                                                null &&
+                                                            articleDescrValidation.error !==
+                                                                ''
                                                                 ? 'true'
                                                                 : 'false'
                                                         }
                                                         className={
-                                                            articleDescrValidation.error
+                                                            articleDescrValidation.error !=
+                                                                null &&
+                                                            articleDescrValidation.error !==
+                                                                ''
                                                                 ? 'border-destructive'
                                                                 : ''
                                                         }
                                                     />
-                                                    {articleDescrValidation.error && (
-                                                        <p className="text-xs text-destructive">
-                                                            {
-                                                                articleDescrValidation.error
-                                                            }
-                                                        </p>
-                                                    )}
+                                                    {articleDescrValidation.error !=
+                                                        null &&
+                                                        articleDescrValidation.error !==
+                                                            '' && (
+                                                            <p className="text-xs text-destructive">
+                                                                {
+                                                                    articleDescrValidation.error
+                                                                }
+                                                            </p>
+                                                        )}
                                                     <p className="text-xs text-muted-foreground">
                                                         {t(
                                                             'articles.edit.description_help',
@@ -810,7 +829,7 @@ export default function ArticlesEdit({
                                                         id="cod_article_client"
                                                         name="cod_article_client"
                                                         defaultValue={
-                                                            article.cod_article_client ||
+                                                            article.cod_article_client ??
                                                             ''
                                                         }
                                                         placeholder={t(
@@ -844,7 +863,7 @@ export default function ArticlesEdit({
                                                         id="additional_descr"
                                                         name="additional_descr"
                                                         defaultValue={
-                                                            article.additional_descr ||
+                                                            article.additional_descr ??
                                                             ''
                                                         }
                                                         placeholder={t(
@@ -916,22 +935,23 @@ export default function ArticlesEdit({
                                                     </label>
                                                 </div>
 
-                                                {actualUm && (
-                                                    <div className="grid gap-2">
-                                                        <FormLabel htmlFor="um">
-                                                            {t(
-                                                                'articles.edit.um',
-                                                            )}
-                                                        </FormLabel>
-                                                        <Input
-                                                            id="um"
-                                                            name="um"
-                                                            value={actualUm}
-                                                            readOnly
-                                                            className="bg-muted"
-                                                        />
-                                                    </div>
-                                                )}
+                                                {actualUm != null &&
+                                                    actualUm !== '' && (
+                                                        <div className="grid gap-2">
+                                                            <FormLabel htmlFor="um">
+                                                                {t(
+                                                                    'articles.edit.um',
+                                                                )}
+                                                            </FormLabel>
+                                                            <Input
+                                                                id="um"
+                                                                name="um"
+                                                                value={actualUm}
+                                                                readOnly
+                                                                className="bg-muted"
+                                                            />
+                                                        </div>
+                                                    )}
 
                                                 <div className="grid gap-2">
                                                     <FormLabel
@@ -1096,7 +1116,7 @@ export default function ArticlesEdit({
                                                     <Select
                                                         name="article_category"
                                                         defaultValue={
-                                                            article.article_category ||
+                                                            article.article_category ??
                                                             undefined
                                                         }
                                                     >
@@ -1142,7 +1162,7 @@ export default function ArticlesEdit({
                                                     <Select
                                                         name="pallet_uuid"
                                                         defaultValue={
-                                                            article.pallet_uuid ||
+                                                            article.pallet_uuid ??
                                                             undefined
                                                         }
                                                     >
@@ -1168,7 +1188,7 @@ export default function ArticlesEdit({
                                                                             pallet.cod
                                                                         }{' '}
                                                                         -{' '}
-                                                                        {pallet.description ||
+                                                                        {pallet.description ??
                                                                             t(
                                                                                 'articles.edit.placeholder_no_description',
                                                                             )}
@@ -1209,23 +1229,32 @@ export default function ArticlesEdit({
                                                             'articles.edit.placeholder_plan',
                                                         )}
                                                         aria-invalid={
-                                                            planPackagingValidation.error
+                                                            planPackagingValidation.error !=
+                                                                null &&
+                                                            planPackagingValidation.error !==
+                                                                ''
                                                                 ? 'true'
                                                                 : 'false'
                                                         }
                                                         className={
-                                                            planPackagingValidation.error
+                                                            planPackagingValidation.error !=
+                                                                null &&
+                                                            planPackagingValidation.error !==
+                                                                ''
                                                                 ? 'border-destructive'
                                                                 : ''
                                                         }
                                                     />
-                                                    {planPackagingValidation.error && (
-                                                        <p className="text-xs text-destructive">
-                                                            {
-                                                                planPackagingValidation.error
-                                                            }
-                                                        </p>
-                                                    )}
+                                                    {planPackagingValidation.error !=
+                                                        null &&
+                                                        planPackagingValidation.error !==
+                                                            '' && (
+                                                            <p className="text-xs text-destructive">
+                                                                {
+                                                                    planPackagingValidation.error
+                                                                }
+                                                            </p>
+                                                        )}
                                                     <p className="text-xs text-muted-foreground">
                                                         {t(
                                                             'articles.edit.plan_help',
@@ -1263,23 +1292,32 @@ export default function ArticlesEdit({
                                                             'articles.edit.placeholder_plan',
                                                         )}
                                                         aria-invalid={
-                                                            palletPlansValidation.error
+                                                            palletPlansValidation.error !=
+                                                                null &&
+                                                            palletPlansValidation.error !==
+                                                                ''
                                                                 ? 'true'
                                                                 : 'false'
                                                         }
                                                         className={
-                                                            palletPlansValidation.error
+                                                            palletPlansValidation.error !=
+                                                                null &&
+                                                            palletPlansValidation.error !==
+                                                                ''
                                                                 ? 'border-destructive'
                                                                 : ''
                                                         }
                                                     />
-                                                    {palletPlansValidation.error && (
-                                                        <p className="text-xs text-destructive">
-                                                            {
-                                                                palletPlansValidation.error
-                                                            }
-                                                        </p>
-                                                    )}
+                                                    {palletPlansValidation.error !=
+                                                        null &&
+                                                        palletPlansValidation.error !==
+                                                            '' && (
+                                                            <p className="text-xs text-destructive">
+                                                                {
+                                                                    palletPlansValidation.error
+                                                                }
+                                                            </p>
+                                                        )}
                                                     <p className="text-xs text-muted-foreground">
                                                         {t(
                                                             'articles.edit.pallet_plans_help',
@@ -1314,52 +1352,58 @@ export default function ArticlesEdit({
                                                             );
                                                         }}
                                                     />
-                                                    {article.line_layout && (
-                                                        <div className="flex items-center gap-2">
+                                                    {article.line_layout !=
+                                                        null &&
+                                                        article.line_layout !==
+                                                            '' && (
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-xs text-muted-foreground">
+                                                                    {t(
+                                                                        'articles.edit.current_attachment',
+                                                                    )}{' '}
+                                                                    {
+                                                                        article.line_layout
+                                                                    }
+                                                                </span>
+                                                                <Button
+                                                                    type="button"
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    onClick={() => {
+                                                                        window.location.href =
+                                                                            articles.downloadLineLayout(
+                                                                                {
+                                                                                    article:
+                                                                                        article.uuid,
+                                                                                },
+                                                                            ).url;
+                                                                    }}
+                                                                    aria-label={t(
+                                                                        'articles.edit.download',
+                                                                    )}
+                                                                >
+                                                                    <Download className="mr-1 h-3 w-3" />
+                                                                    {t(
+                                                                        'articles.edit.download',
+                                                                    )}
+                                                                </Button>
+                                                            </div>
+                                                        )}
+                                                    {lineLayoutFileName !=
+                                                        null &&
+                                                        lineLayoutFileName !==
+                                                            '' && (
                                                             <span className="text-xs text-muted-foreground">
                                                                 {t(
-                                                                    'articles.edit.current_attachment',
+                                                                    'articles.edit.new_attachment_selected',
                                                                 )}{' '}
-                                                                {
-                                                                    article.line_layout
-                                                                }
+                                                                <span className="font-mono">
+                                                                    {
+                                                                        lineLayoutFileName
+                                                                    }
+                                                                </span>
                                                             </span>
-                                                            <Button
-                                                                type="button"
-                                                                variant="outline"
-                                                                size="sm"
-                                                                onClick={() => {
-                                                                    window.location.href =
-                                                                        articles.downloadLineLayout(
-                                                                            {
-                                                                                article:
-                                                                                    article.uuid,
-                                                                            },
-                                                                        ).url;
-                                                                }}
-                                                                aria-label={t(
-                                                                    'articles.edit.download',
-                                                                )}
-                                                            >
-                                                                <Download className="mr-1 h-3 w-3" />
-                                                                {t(
-                                                                    'articles.edit.download',
-                                                                )}
-                                                            </Button>
-                                                        </div>
-                                                    )}
-                                                    {lineLayoutFileName && (
-                                                        <span className="text-xs text-muted-foreground">
-                                                            {t(
-                                                                'articles.edit.new_attachment_selected',
-                                                            )}{' '}
-                                                            <span className="font-mono">
-                                                                {
-                                                                    lineLayoutFileName
-                                                                }
-                                                            </span>
-                                                        </span>
-                                                    )}
+                                                        )}
                                                     <InputError
                                                         message={
                                                             allErrors.line_layout_file
@@ -2089,7 +2133,7 @@ export default function ArticlesEdit({
                                                                                     sheet.code
                                                                                 }{' '}
                                                                                 -{' '}
-                                                                                {sheet.description ||
+                                                                                {sheet.description ??
                                                                                     t(
                                                                                         'articles.edit.placeholder_no_description',
                                                                                     )}
@@ -2143,7 +2187,7 @@ export default function ArticlesEdit({
                                                                                     model.cod_model
                                                                                 }{' '}
                                                                                 -{' '}
-                                                                                {model.description_model ||
+                                                                                {model.description_model ??
                                                                                     t(
                                                                                         'articles.edit.placeholder_no_description',
                                                                                     )}
@@ -2303,8 +2347,17 @@ export default function ArticlesEdit({
                                                                             id="media_reale_pz_h_ps"
                                                                             name="media_reale_pz_h_ps"
                                                                             value={
-                                                                                mediaRealeCfzHPz &&
-                                                                                actualPiecesPerPackage
+                                                                                mediaRealeCfzHPz !==
+                                                                                    null &&
+                                                                                mediaRealeCfzHPz !==
+                                                                                    '' &&
+                                                                                !Number.isNaN(
+                                                                                    Number(
+                                                                                        mediaRealeCfzHPz,
+                                                                                    ),
+                                                                                ) &&
+                                                                                actualPiecesPerPackage !=
+                                                                                    null
                                                                                     ? (
                                                                                           parseFloat(
                                                                                               mediaRealeCfzHPz,

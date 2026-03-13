@@ -311,20 +311,23 @@ export default function OfferOperationsEdit({
                                                             'offer_operations.create.attachment_label',
                                                         )}
                                                     </FormLabel>
-                                                    {operation.filename && (
-                                                        <div className="mb-2 rounded-md bg-muted p-2">
-                                                            <p className="mb-1 text-xs text-muted-foreground">
-                                                                {t(
-                                                                    'offer_operations.attachment_current',
-                                                                )}
-                                                            </p>
-                                                            <p className="font-mono text-sm break-all">
-                                                                {
-                                                                    operation.filename
-                                                                }
-                                                            </p>
-                                                        </div>
-                                                    )}
+                                                    {operation.filename !=
+                                                        null &&
+                                                        operation.filename !==
+                                                            '' && (
+                                                            <div className="mb-2 rounded-md bg-muted p-2">
+                                                                <p className="mb-1 text-xs text-muted-foreground">
+                                                                    {t(
+                                                                        'offer_operations.attachment_current',
+                                                                    )}
+                                                                </p>
+                                                                <p className="font-mono text-sm break-all">
+                                                                    {
+                                                                        operation.filename
+                                                                    }
+                                                                </p>
+                                                            </div>
+                                                        )}
                                                     <Input
                                                         id="filename"
                                                         name="filename"
@@ -347,7 +350,10 @@ export default function OfferOperationsEdit({
                                                         id="filename-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        {operation.filename
+                                                        {operation.filename !=
+                                                            null &&
+                                                        operation.filename !==
+                                                            ''
                                                             ? t(
                                                                   'offer_operations.attachment_replace',
                                                               )
@@ -355,19 +361,21 @@ export default function OfferOperationsEdit({
                                                                   'offer_operations.attachment_select',
                                                               )}
                                                     </p>
-                                                    {selectedFileName && (
-                                                        <p className="text-xs text-muted-foreground">
-                                                            {t(
-                                                                'offer_operations.attachment_new',
-                                                            )}
-                                                            :{' '}
-                                                            <span className="font-mono">
-                                                                {
-                                                                    selectedFileName
-                                                                }
-                                                            </span>
-                                                        </p>
-                                                    )}
+                                                    {selectedFileName != null &&
+                                                        selectedFileName !==
+                                                            '' && (
+                                                            <p className="text-xs text-muted-foreground">
+                                                                {t(
+                                                                    'offer_operations.attachment_new',
+                                                                )}
+                                                                :{' '}
+                                                                <span className="font-mono">
+                                                                    {
+                                                                        selectedFileName
+                                                                    }
+                                                                </span>
+                                                            </p>
+                                                        )}
                                                     <InputError
                                                         message={
                                                             allErrors.filename

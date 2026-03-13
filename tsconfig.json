@@ -114,11 +114,23 @@
             "@/constants/*": ["./resources/js/constants/*"],
             "@/layouts/*": ["./resources/js/layouts/*"],
             "@/lib/*": ["./resources/js/lib/*"],
-            "@/routes/*": ["./resources/js/routes/*"]
+            "@/routes/*": ["./resources/js/routes/*"],
+            "@modules/*": ["./src/modules/*"],
+            "@core/*": ["./src/core/*"],
+            "@shared/*": ["./src/shared/*"],
+            "@infra/*": ["./src/infrastructure/*"]
         },
         "jsx": "react-jsx",
         "resolveJsonModule": true
     },
-    "include": ["resources/js/**/*.ts", "resources/js/**/*.d.ts", "resources/js/**/*.tsx"],
-    "exclude": ["node_modules", "**/*.test.ts", "**/*.test.tsx"]
+    "include": [
+        "resources/js/**/*.ts",
+        "resources/js/**/*.d.ts",
+        "resources/js/**/*.tsx",
+        "resources/js/**/*.test.ts",
+        "resources/js/**/*.test.tsx",
+        "src/**/*.ts",
+        "src/**/*.tsx"
+    ],
+    "exclude": ["node_modules"]
 }

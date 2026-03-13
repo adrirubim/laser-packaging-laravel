@@ -31,6 +31,7 @@ import articlesRoutes from '@/routes/articles/index';
 import offers from '@/routes/offers/index';
 import orders from '@/routes/orders/index';
 import { type BreadcrumbItem } from '@/types';
+import type { DomainOrder } from '@/types/DomainModels';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
     AlertTriangle,
@@ -72,23 +73,7 @@ type Customer = {
     name: string;
 };
 
-type Order = {
-    id: number;
-    uuid: string;
-    order_production_number: string;
-    number_customer_reference_order?: string | null;
-    line?: number | null;
-    quantity?: number | string | null;
-    worked_quantity?: number | string | null;
-    delivery_requested_date?: string | null;
-    status: number;
-    article?: Article | null;
-    status_semaforo?: {
-        etichette: number;
-        packaging: number;
-        prodotto: number;
-    } | null;
-};
+type Order = DomainOrder;
 
 type OrdersIndexProps = {
     orders: {
@@ -214,7 +199,7 @@ export default function OrdersIndex() {
         Record<string, boolean>
     >(() => {
         const saved = localStorage.getItem('orders_visible_columns');
-        if (saved) {
+        if (saved != null) {
             try {
                 return JSON.parse(saved);
             } catch {
@@ -231,9 +216,8 @@ export default function OrdersIndex() {
         Array<{ name: string; filters: typeof filters }>
     >(() => {
         try {
-            return JSON.parse(
-                localStorage.getItem('orders_saved_filters') || '[]',
-            );
+            const raw = localStorage.getItem('orders_saved_filters');
+            return JSON.parse(raw ?? '[]');
         } catch {
             return [];
         }
@@ -242,13 +226,16 @@ export default function OrdersIndex() {
     // Calculate number of active filters
     const activeFiltersCount = useMemo(() => {
         let count = 0;
-        if (filters.search) count++;
-        if (filters.article_uuid) count++;
-        if (filters.status) count++;
-        if (filters.customer_uuid) count++;
-        if (filters.date_from) count++;
-        if (filters.date_to) count++;
-        if (filters.autocontrollo) count++;
+        if (filters.search != null && filters.search !== '') count++;
+        if (filters.article_uuid != null && filters.article_uuid !== '')
+            count++;
+        if (filters.status != null && filters.status !== '') count++;
+        if (filters.customer_uuid != null && filters.customer_uuid !== '')
+            count++;
+        if (filters.date_from != null && filters.date_from !== '') count++;
+        if (filters.date_to != null && filters.date_to !== '') count++;
+        if (filters.autocontrollo != null && filters.autocontrollo !== '')
+            count++;
         if (
             minQuantity !== '' &&
             minQuantity !== null &&
@@ -426,7 +413,10 @@ export default function OrdersIndex() {
             };
         }
 
-        if (!order.delivery_requested_date) {
+        if (
+            order.delivery_requested_date == null ||
+            order.delivery_requested_date === ''
+        ) {
             return {
                 type: 'normal',
                 icon: <CheckCircle2 className="h-4 w-4 text-emerald-500" />,
@@ -633,7 +623,11 @@ export default function OrdersIndex() {
             if (res.ok && data.error_code === 0) {
                 router.reload();
             } else {
-                alert(data.message || t('orders.index.reschedule_error'));
+                const errorMessage =
+                    data.message != null && data.message !== ''
+                        ? data.message
+                        : t('orders.index.reschedule_error');
+                alert(errorMessage);
             }
         } catch (e) {
             console.error('Force reschedule error:', e);
@@ -664,16 +658,15 @@ export default function OrdersIndex() {
             return [
                 order.id,
                 order.order_production_number,
-                order.number_customer_reference_order || '',
-                order.line !== null && order.line !== undefined
-                    ? order.line
-                    : '',
-                order.article?.cod_article_las || '',
-                order.article?.article_descr || '',
+                order.number_customer_reference_order ?? '',
+                order.line != null ? order.line : '',
+                order.article?.cod_article_las ?? '',
+                order.article?.article_descr ?? '',
                 formatDecimal(order.quantity, 2, ''),
                 formatDecimal(order.worked_quantity, 2, ''),
                 progress + '%',
-                order.delivery_requested_date
+                order.delivery_requested_date != null &&
+                order.delivery_requested_date !== ''
                     ? new Date(
                           order.delivery_requested_date,
                       ).toLocaleDateString(getDateLocale(props.locale ?? 'it'))
@@ -773,10 +766,11 @@ export default function OrdersIndex() {
     // Save filters as favorite
     const saveFilterAsFavorite = () => {
         const filterName = prompt(t('orders.index.filter_name_prompt'));
-        if (filterName) {
-            const favorites = JSON.parse(
-                localStorage.getItem('orders_filter_favorites') || '[]',
+        if (filterName != null && filterName !== '') {
+            const favoritesRaw = localStorage.getItem(
+                'orders_filter_favorites',
             );
+            const favorites = JSON.parse(favoritesRaw ?? '[]');
             favorites.push({
                 name: filterName,
                 filters: { ...filters },
@@ -803,9 +797,8 @@ export default function OrdersIndex() {
 
     const savedFavorites = useMemo(() => {
         try {
-            return JSON.parse(
-                localStorage.getItem('orders_filter_favorites') || '[]',
-            );
+            const raw = localStorage.getItem('orders_filter_favorites');
+            return JSON.parse(raw ?? '[]');
         } catch {
             return [];
         }
@@ -832,7 +825,7 @@ export default function OrdersIndex() {
     // Save current filters
     const saveCurrentFilters = () => {
         const filterName = prompt(t('orders.index.filter_name_prompt'));
-        if (filterName) {
+        if (filterName != null && filterName !== '') {
             const newFilters = [
                 ...savedFilters,
                 {
@@ -971,7 +964,7 @@ export default function OrdersIndex() {
                                                 document.getElementById(
                                                     'favorites-menu',
                                                 );
-                                            if (menu) {
+                                            if (menu != null) {
                                                 menu.classList.toggle('hidden');
                                             }
                                         }}
@@ -1005,7 +998,7 @@ export default function OrdersIndex() {
                                                             document.getElementById(
                                                                 'favorites-menu',
                                                             );
-                                                        if (menu)
+                                                        if (menu != null)
                                                             menu.classList.add(
                                                                 'hidden',
                                                             );
@@ -1027,83 +1020,111 @@ export default function OrdersIndex() {
                                 <Bookmark className="mr-1 h-3 w-3" />
                                 {t('orders.index.save_short')}
                             </button>
-                            {filters.search && (
-                                <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
-                                    {t('orders.index.search_filter')} "
-                                    {filters.search}"
-                                    <button
-                                        onClick={() => {
-                                            setSearchValue('');
-                                            applyFilters({ search: undefined });
-                                        }}
-                                        className="hover:opacity-70"
-                                    >
-                                        <X className="h-3 w-3" />
-                                    </button>
-                                </span>
-                            )}
-                            {filters.status && (
-                                <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
-                                    {t('common.status')}:{' '}
-                                    {
-                                        statusOptions.find(
-                                            (o: {
-                                                value: string;
-                                                label: string;
-                                            }) => o.value === filters.status,
-                                        )?.label
-                                    }
-                                    <button
-                                        onClick={() => {
-                                            setSelectedStatus('');
-                                            applyFilters({ status: undefined });
-                                        }}
-                                        className="hover:opacity-70"
-                                    >
-                                        <X className="h-3 w-3" />
-                                    </button>
-                                </span>
-                            )}
-                            {filters.article_uuid && (
-                                <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
-                                    {t('orders.filter.article_selected')}
-                                    <button
-                                        onClick={() => {
-                                            setSelectedArticle('');
-                                            applyFilters({
-                                                article_uuid: undefined,
-                                            });
-                                        }}
-                                        className="hover:opacity-70"
-                                    >
-                                        <X className="h-3 w-3" />
-                                    </button>
-                                </span>
-                            )}
-                            {filters.customer_uuid && (
-                                <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
-                                    {t('common.customer')}:{' '}
-                                    {customers.find(
-                                        (c) => c.uuid === filters.customer_uuid,
-                                    )?.code || t('orders.index.selected')}
-                                    <button
-                                        onClick={() => {
-                                            setSelectedCustomer('');
-                                            applyFilters({
-                                                customer_uuid: undefined,
-                                            });
-                                        }}
-                                        className="hover:opacity-70"
-                                    >
-                                        <X className="h-3 w-3" />
-                                    </button>
-                                </span>
-                            )}
-                            {(filters.date_from || filters.date_to) && (
+                            {filters.search != null &&
+                                filters.search !== '' && (
+                                    <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
+                                        {t('orders.index.search_filter')} "
+                                        {filters.search}"
+                                        <button
+                                            onClick={() => {
+                                                setSearchValue('');
+                                                applyFilters({
+                                                    search: undefined,
+                                                });
+                                            }}
+                                            className="hover:opacity-70"
+                                        >
+                                            <X className="h-3 w-3" />
+                                        </button>
+                                    </span>
+                                )}
+                            {filters.status != null &&
+                                filters.status !== '' && (
+                                    <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
+                                        {t('common.status')}:{' '}
+                                        {
+                                            statusOptions.find(
+                                                (o: {
+                                                    value: string;
+                                                    label: string;
+                                                }) =>
+                                                    o.value === filters.status,
+                                            )?.label
+                                        }
+                                        <button
+                                            onClick={() => {
+                                                setSelectedStatus('');
+                                                applyFilters({
+                                                    status: undefined,
+                                                });
+                                            }}
+                                            className="hover:opacity-70"
+                                        >
+                                            <X className="h-3 w-3" />
+                                        </button>
+                                    </span>
+                                )}
+                            {filters.article_uuid != null &&
+                                filters.article_uuid !== '' && (
+                                    <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
+                                        {t('orders.filter.article_selected')}
+                                        <button
+                                            onClick={() => {
+                                                setSelectedArticle('');
+                                                applyFilters({
+                                                    article_uuid: undefined,
+                                                });
+                                            }}
+                                            className="hover:opacity-70"
+                                        >
+                                            <X className="h-3 w-3" />
+                                        </button>
+                                    </span>
+                                )}
+                            {filters.customer_uuid != null &&
+                                filters.customer_uuid !== '' && (
+                                    <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
+                                        {t('common.customer')}:{' '}
+                                        {(() => {
+                                            const customer = customers.find(
+                                                (c) =>
+                                                    c.uuid ===
+                                                    filters.customer_uuid,
+                                            );
+                                            const code = customer?.code;
+                                            if (code != null && code !== '') {
+                                                return code;
+                                            }
+                                            return t('orders.index.selected');
+                                        })()}
+                                        <button
+                                            onClick={() => {
+                                                setSelectedCustomer('');
+                                                applyFilters({
+                                                    customer_uuid: undefined,
+                                                });
+                                            }}
+                                            className="hover:opacity-70"
+                                        >
+                                            <X className="h-3 w-3" />
+                                        </button>
+                                    </span>
+                                )}
+                            {(filters.date_from != null &&
+                                filters.date_from !== '') ||
+                            (filters.date_to != null &&
+                                filters.date_to !== '') ? (
                                 <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
                                     {t('orders.index.dates_filter')}:{' '}
-                                    {filters.date_from || t('common.ellipsis')}{' '}
-                                    - {filters.date_to || t('common.ellipsis')}
+                                    {filters.date_from != null &&
+                                    filters.date_from !== ''
+                                        ? filters.date_from
+                                        : t('common.ellipsis')}{' '}
+                                    -{' '}
+                                    {filters.date_to != null &&
+                                    filters.date_to !== ''
+                                        ? filters.date_to
+                                        : t('common.ellipsis')}
                                     <button
                                         onClick={() => {
                                             setDateFrom('');
@@ -1118,7 +1139,7 @@ export default function OrdersIndex() {
                                         <X className="h-3 w-3" />
                                     </button>
                                 </span>
-                            )}
+                            ) : null}
                             {minQuantity !== '' &&
                                 minQuantity !== null &&
                                 minQuantity !== undefined && (
@@ -1153,17 +1174,28 @@ export default function OrdersIndex() {
                                         </button>
                                     </span>
                                 )}
-                            {filters.autocontrollo && (
+                            {(filters.date_from != null &&
+                                filters.date_from !== '') ||
+                            (filters.date_to != null &&
+                                filters.date_to !== '') ? (
                                 <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
-                                    {t('common.autocontrollo')}:{' '}
-                                    {filters.autocontrollo === 'false'
-                                        ? t('orders.index.pending')
-                                        : t('orders.index.completed')}
+                                    {t('orders.index.dates_filter')}:{' '}
+                                    {filters.date_from != null &&
+                                    filters.date_from !== ''
+                                        ? filters.date_from
+                                        : t('common.ellipsis')}{' '}
+                                    -{' '}
+                                    {filters.date_to != null &&
+                                    filters.date_to !== ''
+                                        ? filters.date_to
+                                        : t('common.ellipsis')}
                                     <button
                                         onClick={() => {
-                                            setSelectedAutocontrollo('');
+                                            setDateFrom('');
+                                            setDateTo('');
                                             applyFilters({
-                                                autocontrollo: undefined,
+                                                date_from: undefined,
+                                                date_to: undefined,
                                             });
                                         }}
                                         className="hover:opacity-70"
@@ -1171,7 +1203,27 @@ export default function OrdersIndex() {
                                         <X className="h-3 w-3" />
                                     </button>
                                 </span>
-                            )}
+                            ) : null}
+                            {filters.autocontrollo != null &&
+                                filters.autocontrollo !== '' && (
+                                    <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
+                                        {t('common.autocontrollo')}:{' '}
+                                        {filters.autocontrollo === 'false'
+                                            ? t('orders.index.pending')
+                                            : t('orders.index.completed')}
+                                        <button
+                                            onClick={() => {
+                                                setSelectedAutocontrollo('');
+                                                applyFilters({
+                                                    autocontrollo: undefined,
+                                                });
+                                            }}
+                                            className="hover:opacity-70"
+                                        >
+                                            <X className="h-3 w-3" />
+                                        </button>
+                                    </span>
+                                )}
                         </div>
                         <button
                             onClick={clearAllFilters}
@@ -1487,8 +1539,10 @@ export default function OrdersIndex() {
                                             value={article.uuid}
                                         >
                                             {article.cod_article_las} -{' '}
-                                            {article.article_descr ||
-                                                t('common.no_description')}
+                                            {article.article_descr != null &&
+                                            article.article_descr !== ''
+                                                ? article.article_descr
+                                                : t('common.no_description')}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -1500,12 +1554,18 @@ export default function OrdersIndex() {
                                 {t('common.autocontrollo')}
                             </label>
                             <Select
-                                value={selectedAutocontrollo || 'all'}
+                                value={
+                                    selectedAutocontrollo != null &&
+                                    selectedAutocontrollo !== ''
+                                        ? selectedAutocontrollo
+                                        : 'all'
+                                }
                                 onValueChange={(value) => {
                                     const next = value === 'all' ? '' : value;
                                     setSelectedAutocontrollo(next);
                                     applyFilters({
-                                        autocontrollo: next || undefined,
+                                        autocontrollo:
+                                            next !== '' ? next : undefined,
                                     });
                                 }}
                             >
@@ -1536,7 +1596,7 @@ export default function OrdersIndex() {
                                 {t('common.items_per_page')}
                             </label>
                             <Select
-                                value={String(filters.per_page || '15')}
+                                value={String(filters.per_page ?? '15')}
                                 onValueChange={(value) =>
                                     applyFilters({ per_page: value })
                                 }
@@ -1646,9 +1706,9 @@ export default function OrdersIndex() {
                     <div className="flex items-center gap-3">
                         <div>
                             {t('orders.index.from_to_orders', {
-                                from: ordersPaginated.from || 0,
-                                to: ordersPaginated.to || 0,
-                                total: ordersPaginated.total || 0,
+                                from: ordersPaginated.from ?? 0,
+                                to: ordersPaginated.to ?? 0,
+                                total: ordersPaginated.total ?? 0,
                             })}
                         </div>
                         {selectedOrders.size > 0 && (
@@ -2070,7 +2130,12 @@ export default function OrdersIndex() {
                                                                 'number_customer_reference_order'
                                                             ] !== false && (
                                                                 <td className="hidden px-3 py-2 text-xs md:table-cell">
-                                                                    {order.number_customer_reference_order || (
+                                                                    {order.number_customer_reference_order !=
+                                                                        null &&
+                                                                    order.number_customer_reference_order !==
+                                                                        '' ? (
+                                                                        order.number_customer_reference_order
+                                                                    ) : (
                                                                         <span className="text-muted-foreground">
                                                                             -
                                                                         </span>
@@ -2108,20 +2173,25 @@ export default function OrdersIndex() {
                                                                             </span>
                                                                             {order
                                                                                 .article
-                                                                                .article_descr && (
-                                                                                <>
-                                                                                    <Info className="ml-1 inline h-3 w-3 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
-                                                                                    <div className="absolute top-full left-0 z-20 mt-1 hidden group-hover:block">
-                                                                                        <div className="max-w-xs rounded-md border bg-popover p-2 text-xs whitespace-normal text-popover-foreground shadow-md">
-                                                                                            {
-                                                                                                order
-                                                                                                    .article
-                                                                                                    .article_descr
-                                                                                            }
+                                                                                .article_descr !=
+                                                                                null &&
+                                                                                order
+                                                                                    .article
+                                                                                    .article_descr !==
+                                                                                    '' && (
+                                                                                    <>
+                                                                                        <Info className="ml-1 inline h-3 w-3 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+                                                                                        <div className="absolute top-full left-0 z-20 mt-1 hidden group-hover:block">
+                                                                                            <div className="max-w-xs rounded-md border bg-popover p-2 text-xs whitespace-normal text-popover-foreground shadow-md">
+                                                                                                {
+                                                                                                    order
+                                                                                                        .article
+                                                                                                        .article_descr
+                                                                                                }
+                                                                                            </div>
                                                                                         </div>
-                                                                                    </div>
-                                                                                </>
-                                                                            )}
+                                                                                    </>
+                                                                                )}
                                                                         </div>
                                                                     ) : (
                                                                         <span className="text-muted-foreground">
@@ -2293,7 +2363,10 @@ export default function OrdersIndex() {
                                                             ] !== false && (
                                                                 <td className="px-3 py-2 text-xs">
                                                                     <div className="flex items-center gap-2">
-                                                                        {order.delivery_requested_date ? (
+                                                                        {order.delivery_requested_date !=
+                                                                            null &&
+                                                                        order.delivery_requested_date !==
+                                                                            '' ? (
                                                                             <>
                                                                                 <span
                                                                                     title={
@@ -2407,26 +2480,31 @@ export default function OrdersIndex() {
                                                                                 )}
                                                                                 {order
                                                                                     .article
-                                                                                    ?.offer_uuid && (
-                                                                                    <Link
-                                                                                        href={
-                                                                                            offers.show(
-                                                                                                {
-                                                                                                    offer: order
-                                                                                                        .article!
-                                                                                                        .offer_uuid!,
-                                                                                                },
-                                                                                            )
-                                                                                                .url
-                                                                                        }
-                                                                                        className="flex items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
-                                                                                    >
-                                                                                        <FileText className="mr-2 h-4 w-4 text-foreground" />
-                                                                                        {t(
-                                                                                            'orders.view_offer',
-                                                                                        )}
-                                                                                    </Link>
-                                                                                )}
+                                                                                    ?.offer_uuid !=
+                                                                                    null &&
+                                                                                    order
+                                                                                        .article
+                                                                                        ?.offer_uuid !==
+                                                                                        '' && (
+                                                                                        <Link
+                                                                                            href={
+                                                                                                offers.show(
+                                                                                                    {
+                                                                                                        offer: order
+                                                                                                            .article!
+                                                                                                            .offer_uuid!,
+                                                                                                    },
+                                                                                                )
+                                                                                                    .url
+                                                                                            }
+                                                                                            className="flex items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
+                                                                                        >
+                                                                                            <FileText className="mr-2 h-4 w-4 text-foreground" />
+                                                                                            {t(
+                                                                                                'orders.view_offer',
+                                                                                            )}
+                                                                                        </Link>
+                                                                                    )}
                                                                                 <div
                                                                                     onClick={(
                                                                                         e,
@@ -2618,38 +2696,45 @@ export default function OrdersIndex() {
                                                                     .cod_article_las
                                                             }
                                                             {order.article
-                                                                .article_descr && (
-                                                                <span
-                                                                    className="ml-2 text-xs"
-                                                                    title={
-                                                                        order
+                                                                .article_descr !=
+                                                                null &&
+                                                                order.article
+                                                                    .article_descr !==
+                                                                    '' && (
+                                                                    <span
+                                                                        className="ml-2 text-xs"
+                                                                        title={
+                                                                            order
+                                                                                .article
+                                                                                .article_descr
+                                                                        }
+                                                                    >
+                                                                        {order
                                                                             .article
                                                                             .article_descr
-                                                                    }
-                                                                >
-                                                                    {order
-                                                                        .article
-                                                                        .article_descr
-                                                                        .length >
-                                                                    30
-                                                                        ? order.article.article_descr.substring(
-                                                                              0,
-                                                                              30,
-                                                                          ) +
-                                                                          t(
-                                                                              'common.ellipsis',
-                                                                          )
-                                                                        : order
-                                                                              .article
-                                                                              .article_descr}
-                                                                </span>
-                                                            )}
+                                                                            .length >
+                                                                        30
+                                                                            ? order.article.article_descr.substring(
+                                                                                  0,
+                                                                                  30,
+                                                                              ) +
+                                                                              t(
+                                                                                  'common.ellipsis',
+                                                                              )
+                                                                            : order
+                                                                                  .article
+                                                                                  .article_descr}
+                                                                    </span>
+                                                                )}
                                                         </div>
                                                     )}
                                                 {(visibleColumns[
                                                     'number_customer_reference_order'
                                                 ] !== false &&
-                                                    order.number_customer_reference_order) ||
+                                                    order.number_customer_reference_order !=
+                                                        null &&
+                                                    order.number_customer_reference_order !==
+                                                        '') ||
                                                 (visibleColumns['line'] !==
                                                     false &&
                                                     order.line != null) ? (
@@ -2657,7 +2742,10 @@ export default function OrdersIndex() {
                                                         {visibleColumns[
                                                             'number_customer_reference_order'
                                                         ] !== false &&
-                                                            order.number_customer_reference_order && (
+                                                            order.number_customer_reference_order !=
+                                                                null &&
+                                                            order.number_customer_reference_order !==
+                                                                '' && (
                                                                 <span>
                                                                     {t(
                                                                         'common.customer',
@@ -2797,7 +2885,7 @@ export default function OrdersIndex() {
                                         <div className="mb-3 grid grid-cols-2 gap-2 text-xs">
                                             {visibleColumns['quantity'] !==
                                                 false &&
-                                                order.quantity !== null && (
+                                                order.quantity != null && (
                                                     <div>
                                                         <span className="text-muted-foreground">
                                                             {t(
@@ -2836,7 +2924,10 @@ export default function OrdersIndex() {
                                                 )}
                                             {visibleColumns['delivery_date'] !==
                                                 false &&
-                                                order.delivery_requested_date && (
+                                                order.delivery_requested_date !=
+                                                    null &&
+                                                order.delivery_requested_date !==
+                                                    '' && (
                                                     <div className="flex items-center gap-1">
                                                         <span
                                                             title={
@@ -2912,25 +3003,29 @@ export default function OrdersIndex() {
                                                             </Link>
                                                         )}
                                                         {order.article
-                                                            ?.offer_uuid && (
-                                                            <Link
-                                                                href={
-                                                                    offers.show(
-                                                                        {
-                                                                            offer: order
-                                                                                .article!
-                                                                                .offer_uuid!,
-                                                                        },
-                                                                    ).url
-                                                                }
-                                                                className="flex items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
-                                                            >
-                                                                <FileText className="mr-2 h-4 w-4 text-foreground" />
-                                                                {t(
-                                                                    'orders.view_offer',
-                                                                )}
-                                                            </Link>
-                                                        )}
+                                                            ?.offer_uuid !=
+                                                            null &&
+                                                            order.article
+                                                                ?.offer_uuid !==
+                                                                '' && (
+                                                                <Link
+                                                                    href={
+                                                                        offers.show(
+                                                                            {
+                                                                                offer: order
+                                                                                    .article!
+                                                                                    .offer_uuid!,
+                                                                            },
+                                                                        ).url
+                                                                    }
+                                                                    className="flex items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
+                                                                >
+                                                                    <FileText className="mr-2 h-4 w-4 text-foreground" />
+                                                                    {t(
+                                                                        'orders.view_offer',
+                                                                    )}
+                                                                </Link>
+                                                            )}
                                                         <div
                                                             onClick={(e) => {
                                                                 e.preventDefault();

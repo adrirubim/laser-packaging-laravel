@@ -166,7 +166,10 @@ export default function MachineryShow({ machinery }: MachineryShowProps) {
                                     {t('machinery.show.fields.parameter')}
                                 </Label>
                                 <p className="text-lg font-semibold">
-                                    {machinery.parameter || (
+                                    {machinery.parameter != null &&
+                                    machinery.parameter !== '' ? (
+                                        machinery.parameter
+                                    ) : (
                                         <span className="text-muted-foreground">
                                             -
                                         </span>
@@ -212,11 +215,16 @@ export default function MachineryShow({ machinery }: MachineryShowProps) {
                                                 <p className="font-mono font-medium">
                                                     {article.cod_article_las}
                                                 </p>
-                                                {article.article_descr && (
-                                                    <p className="text-sm text-muted-foreground">
-                                                        {article.article_descr}
-                                                    </p>
-                                                )}
+                                                {article.article_descr !=
+                                                    null &&
+                                                    article.article_descr !==
+                                                        '' && (
+                                                        <p className="text-sm text-muted-foreground">
+                                                            {
+                                                                article.article_descr
+                                                            }
+                                                        </p>
+                                                    )}
                                             </div>
                                         </div>
                                     ))}

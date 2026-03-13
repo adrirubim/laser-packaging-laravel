@@ -91,11 +91,22 @@ export default function EmployeesIndex() {
         router.get(
             employees.index().url,
             {
-                search: value || undefined,
-                portal_enabled: filters.portal_enabled || undefined,
-                per_page: filters.per_page || undefined,
-                sort_by: filters.sort_by || undefined,
-                sort_order: filters.sort_order || undefined,
+                search: value != null && value !== '' ? value : undefined,
+                portal_enabled:
+                    filters.portal_enabled != null &&
+                    filters.portal_enabled !== ''
+                        ? filters.portal_enabled
+                        : undefined,
+                per_page:
+                    filters.per_page != null && filters.per_page !== ''
+                        ? filters.per_page
+                        : undefined,
+                sort_by:
+                    filters.sort_by != null && filters.sort_by !== ''
+                        ? filters.sort_by
+                        : undefined,
+                sort_order:
+                    filters.sort_order != null ? filters.sort_order : undefined,
             },
             {
                 preserveState: true,
@@ -108,10 +119,21 @@ export default function EmployeesIndex() {
         router.get(
             employees.index().url,
             {
-                portal_enabled: filters.portal_enabled || undefined,
-                per_page: filters.per_page || undefined,
-                sort_by: filters.sort_by || undefined,
-                sort_order: filters.sort_order || undefined,
+                portal_enabled:
+                    filters.portal_enabled != null &&
+                    filters.portal_enabled !== ''
+                        ? filters.portal_enabled
+                        : undefined,
+                per_page:
+                    filters.per_page != null && filters.per_page !== ''
+                        ? filters.per_page
+                        : undefined,
+                sort_by:
+                    filters.sort_by != null && filters.sort_by !== ''
+                        ? filters.sort_by
+                        : undefined,
+                sort_order:
+                    filters.sort_order != null ? filters.sort_order : undefined,
             },
             { preserveState: true, preserveScroll: true },
         );
@@ -121,11 +143,22 @@ export default function EmployeesIndex() {
         router.get(
             employees.index().url,
             {
-                search: filters.search || undefined,
-                portal_enabled: value || undefined,
-                per_page: filters.per_page || undefined,
-                sort_by: filters.sort_by || undefined,
-                sort_order: filters.sort_order || undefined,
+                search:
+                    filters.search != null && filters.search !== ''
+                        ? filters.search
+                        : undefined,
+                portal_enabled:
+                    value != null && value !== '' ? value : undefined,
+                per_page:
+                    filters.per_page != null && filters.per_page !== ''
+                        ? filters.per_page
+                        : undefined,
+                sort_by:
+                    filters.sort_by != null && filters.sort_by !== ''
+                        ? filters.sort_by
+                        : undefined,
+                sort_order:
+                    filters.sort_order != null ? filters.sort_order : undefined,
             },
             {
                 preserveState: true,
@@ -233,7 +266,7 @@ export default function EmployeesIndex() {
                         </div>
                         <div className="flex flex-wrap items-center gap-2">
                             <SearchInput
-                                value={filters.search || ''}
+                                value={filters.search ?? ''}
                                 onChange={handleSearchChange}
                                 onClear={clearSearch}
                                 placeholder={t('employees.search_placeholder')}
@@ -243,7 +276,12 @@ export default function EmployeesIndex() {
                                 {t('employees.index.portal_filter_label')}
                             </label>
                             <Select
-                                value={filters.portal_enabled || '' || 'all'}
+                                value={
+                                    filters.portal_enabled != null &&
+                                    filters.portal_enabled !== ''
+                                        ? filters.portal_enabled
+                                        : 'all'
+                                }
                                 onValueChange={(value) =>
                                     handlePortalFilterChange(
                                         value === 'all' ? '' : value,

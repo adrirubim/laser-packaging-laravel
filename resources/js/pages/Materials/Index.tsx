@@ -127,7 +127,7 @@ export default function MaterialsIndex() {
                             {t('common.search')}
                         </label>
                         <SearchInput
-                            value={filters.search || ''}
+                            value={filters.search ?? ''}
                             onChange={handleSearchChange}
                             onClear={clearSearch}
                             placeholder={t('materials.search_placeholder')}

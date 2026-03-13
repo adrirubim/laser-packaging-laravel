@@ -125,44 +125,51 @@ export default function CQModelsShow() {
                                 {cqModel.cod_model}
                             </p>
                         </div>
-                        {cqModel.description_model && (
-                            <div>
-                                <Label className="text-sm font-medium text-muted-foreground">
-                                    {t(
-                                        'articles.cq_models.show.fields.description',
-                                    )}
-                                </Label>
-                                <p className="mt-1 text-sm font-medium">
-                                    {cqModel.description_model}
-                                </p>
-                            </div>
-                        )}
-                        {cqModel.filename && (
-                            <div>
-                                <Label className="text-sm font-medium text-muted-foreground">
-                                    {t(
-                                        'articles.cq_models.show.fields.filename',
-                                    )}
-                                </Label>
-                                <div className="mt-1 flex items-center gap-2">
-                                    <p className="text-sm font-medium">
-                                        {cqModel.filename}
+                        {cqModel.description_model !== null &&
+                            cqModel.description_model !== undefined &&
+                            cqModel.description_model !== '' && (
+                                <div>
+                                    <Label className="text-sm font-medium text-muted-foreground">
+                                        {t(
+                                            'articles.cq_models.show.fields.description',
+                                        )}
+                                    </Label>
+                                    <p className="mt-1 text-sm font-medium">
+                                        {cqModel.description_model}
                                     </p>
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => {
-                                            window.location.href =
-                                                articles.cqModels.downloadFile({
-                                                    cqModel: cqModel.uuid,
-                                                }).url;
-                                        }}
-                                    >
-                                        <Download className="h-4 w-4" />
-                                    </Button>
                                 </div>
-                            </div>
-                        )}
+                            )}
+                        {cqModel.filename !== null &&
+                            cqModel.filename !== undefined &&
+                            cqModel.filename !== '' && (
+                                <div>
+                                    <Label className="text-sm font-medium text-muted-foreground">
+                                        {t(
+                                            'articles.cq_models.show.fields.filename',
+                                        )}
+                                    </Label>
+                                    <div className="mt-1 flex items-center gap-2">
+                                        <p className="text-sm font-medium">
+                                            {cqModel.filename}
+                                        </p>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => {
+                                                window.location.href =
+                                                    articles.cqModels.downloadFile(
+                                                        {
+                                                            cqModel:
+                                                                cqModel.uuid,
+                                                        },
+                                                    ).url;
+                                            }}
+                                        >
+                                            <Download className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
                     </CardContent>
                 </Card>
 

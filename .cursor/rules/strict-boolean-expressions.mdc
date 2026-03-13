@@ -1,0 +1,166 @@
+---
+alwaysApply: true
+---
+
+# Strict Boolean Expressions 2026
+
+These rules codify all the work done in 2025–2026 to clean the project of `@typescript-eslint/strict-boolean-expressions`. Any new AI or developer must follow them strictly in **all** `*.ts`/`*.tsx` files.
+
+## 1. No implicit truthiness
+
+Never use a non-boolean value directly in a conditional:
+
+- **Forbidden**:
+  - `if (value)` when `value` is `string | number | object | null | undefined`.
+  - `if (!value)` for those same types.
+
+All conditionals must be explicit about `null`, `undefined`, empty string, `0`, and `NaN`.
+
+## 2. Nullable or empty strings
+
+When a string can be `null`, `undefined` or `''`:
+
+- **Simple conditional**:
+  - Before: `if (str) { ... }`
+  - Now: `if (str != null && str !== '') { ... }`
+
+- **JSX conditional**:
+  - Before: `{str && <p>{str}</p>}`
+  - Now: `{str != null && str !== '' && <p>{str}</p>}`
+
+- **Fallback with `||`**:
+  - Before: `const label = str || '—';`
+  - Now: `const label = str != null && str !== '' ? str : '—';`
+
+Use `??` only when empty string is a **valid** value:
+
+- `const val = maybeString ?? '';` (accepts `''` as valid; only replaces `null`/`undefined`).
+
+## 3. Nullable numbers and `NaN`
+
+Never rely on `if (num)` to check for a number:
+
+- **Validate number**:
+  - `if (num != null && !Number.isNaN(num)) { ... }`
+
+- **Avoid divide-by-zero / percentages**:
+  - Before: `if (order.quantity) { ... }`
+  - Now: `if (order.quantity != null && order.quantity !== 0) { ... }`
+
+- **Numeric defaults**:
+  - Before: `total = value || 0;`
+  - Now: `total = value ?? 0;` (when `0` is a valid value).
+
+## 4. Nullable booleans
+
+When the type is `boolean | null | undefined`:
+
+- **Never**: `if (flag)` / `if (!flag)` directly.
+- Use:
+  - `if (flag === true) { ... }`
+  - `if (flag !== true) { ... }` when the “not true” case includes `false`/`null`/`undefined`.
+
+Typical examples here: `work_saturday`, `shift_morning`, `shift_afternoon`, `row.editable`, `session.is_current`.
+
+## 5. Objects and maps in conditionals
+
+Do not use objects as booleans:
+
+- **Initialize entries**:
+  - Before: `if (!result[key]) result[key] = {};`
+  - Now: `if (result[key] == null) { result[key] = {}; }`
+
+- **Check presence**:
+  - Before: `if (values) { ... }`
+  - Now: `if (values != null) { ... }`
+
+For arrays:
+
+- Empty length:
+  - Before: `if (!arr.length) { ... }`
+  - Now: `if (arr.length === 0) { ... }`
+
+## 6. `||` vs `??`
+
+General rule:
+
+- Use `??` for defaults when `''` and `0` are valid:
+  - `const name = supplier.name ?? '';`
+  - `const qty = worked_quantity ?? 0;`
+
+- For display strings where `''` means “no value”:
+  - Use ternaries with explicit checks:
+    - `str != null && str !== '' ? str : t('common.empty_value')`.
+
+- For filter/query params:
+  - Before: `param: value || undefined`
+  - Now: `param: value != null && value !== '' ? value : undefined`.
+
+## 7. Combined error messages
+
+When there is a form error + a server error, do not use plain `||`:
+
+- **Forbidden**:
+  - `message={errors.field || serverErrors?.field}`
+
+- **Required**:
+
+```ts
+message={(() => {
+  const fieldError = errors.field;
+  const serverError = serverErrors?.field;
+  if (fieldError != null && fieldError !== '') return fieldError;
+  if (serverError != null && serverError !== '') return serverError;
+  return '';
+})()}
+```
+
+## 8. IIFEs in JSX for complex logic
+
+For titles, tooltips and formatted text, use IIFEs when you need to filter/join multiple parts:
+
+```tsx
+title={(() => {
+  const parts = [code, article_code, description].filter(
+    (p) => p != null && p !== '',
+  );
+  if (parts.length > 0) return parts.join(' — ');
+  return code;
+})()}
+```
+
+This pattern is used throughout `Planning`, `Orders`, `Offers`, `Suppliers`, `ProductionPortal`, etc. Any new UI should follow it instead of `filter(Boolean)`.
+
+## 9. Common optional fields in this project
+
+Always treat the following as “nullable + empty string”:
+
+- Descriptions (`article_descr`, `description`, `notes`, `indications_*`).
+- Reference identifiers (`number_customer_reference_order`, `customer_ref`, `article_code_ref`).
+- Address data (`street`, `city`, `province`, `postal_code`, `country`, `co`, `contacts`).
+- Flash/state messages (`flash.error`, `flash.success`, `status`, `infoMessage`, `error`).
+
+When rendering these fields:
+
+- `field != null && field !== '' && <span>{field}</span>`
+- `field != null && field !== '' ? field : '—'`
+
+## 10. SSR and env vars
+
+Never use `||` on env values as an implicit boolean:
+
+- Before:
+  - `const appName = import.meta.env.VITE_APP_NAME || 'Laravel';`
+- Now:
+  - `const appName = (import.meta.env.VITE_APP_NAME ?? 'Laravel') as string;`
+
+This prevents `''` from being treated as “no value” silently.
+
+---
+
+**Summary:**  
+If you ever write a condition over something that is **not already** a `boolean`, you must explicitly ask:  
+> Am I distinguishing between `null/undefined`, empty (`''`), `0`, `NaN` and valid values?
+
+If the answer is “no” or “kind of”, rewrite the condition following these patterns before considering it done.
+

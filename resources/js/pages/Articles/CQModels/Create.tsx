@@ -18,6 +18,7 @@ import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import articles from '@/routes/articles/index';
 import { type BreadcrumbItem } from '@/types';
+import type { ApiResponse } from '@/types/DomainModels';
 import { Form, Head, router } from '@inertiajs/react';
 import { HelpCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -36,10 +37,20 @@ export default function CQModelsCreate({
     useEffect(() => {
         queueMicrotask(() => setIsLoadingCode(true));
         fetch(articles.cqModels.generateCquNumber().url)
-            .then((res) => res.json())
+            .then(
+                (res) =>
+                    res.json() as Promise<
+                        ApiResponse<{ cod_model: string | null }>
+                    >,
+            )
             .then((data) => {
-                if (data.cod_model) {
-                    setCquCode(data.cod_model);
+                if (
+                    data.success === true &&
+                    data.data != null &&
+                    data.data.cod_model != null &&
+                    data.data.cod_model !== ''
+                ) {
+                    setCquCode(data.data.cod_model);
                 }
                 setIsLoadingCode(false);
             })

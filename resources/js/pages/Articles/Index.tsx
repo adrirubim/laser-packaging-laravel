@@ -433,7 +433,7 @@ export default function ArticlesIndex() {
                                             value={offer.uuid}
                                         >
                                             {offer.offer_number} -{' '}
-                                            {offer.description ||
+                                            {offer.description ??
                                                 t('common.no_description')}
                                         </SelectItem>
                                     ))}
@@ -508,7 +508,7 @@ export default function ArticlesIndex() {
                                         <div className="flex items-start justify-between">
                                             <div className="flex-1">
                                                 <h3 className="font-medium">
-                                                    {article.article_descr ||
+                                                    {article.article_descr ??
                                                         article.cod_article_las}
                                                 </h3>
                                                 <p className="mt-1 font-mono text-xs text-muted-foreground">
@@ -664,21 +664,24 @@ export default function ArticlesIndex() {
                                             </DropdownMenu>
                                         </div>
                                         <div className="grid grid-cols-2 gap-2 text-xs">
-                                            {article.cod_article_client && (
-                                                <div>
-                                                    <span className="text-muted-foreground">
-                                                        {t(
-                                                            'common.code_customer',
-                                                        )}
-                                                        :{' '}
-                                                    </span>
-                                                    <span>
-                                                        {
-                                                            article.cod_article_client
-                                                        }
-                                                    </span>
-                                                </div>
-                                            )}
+                                            {article.cod_article_client !=
+                                                null &&
+                                                article.cod_article_client !==
+                                                    '' && (
+                                                    <div>
+                                                        <span className="text-muted-foreground">
+                                                            {t(
+                                                                'common.code_customer',
+                                                            )}
+                                                            :{' '}
+                                                        </span>
+                                                        <span>
+                                                            {
+                                                                article.cod_article_client
+                                                            }
+                                                        </span>
+                                                    </div>
+                                                )}
                                             {article.category && (
                                                 <div>
                                                     <span className="text-muted-foreground">
@@ -806,21 +809,32 @@ export default function ArticlesIndex() {
                                             {article.cod_article_las}
                                         </td>
                                         <td className="px-3 py-2 align-middle text-xs">
-                                            {article.cod_article_client || (
+                                            {article.cod_article_client !=
+                                                null &&
+                                            article.cod_article_client !==
+                                                '' ? (
+                                                article.cod_article_client
+                                            ) : (
                                                 <span className="text-muted-foreground">
                                                     —
                                                 </span>
                                             )}
                                         </td>
                                         <td className="px-3 py-2 align-middle">
-                                            {article.article_descr || (
+                                            {article.article_descr != null &&
+                                            article.article_descr !== '' ? (
+                                                article.article_descr
+                                            ) : (
                                                 <span className="text-muted-foreground">
                                                     —
                                                 </span>
                                             )}
                                         </td>
                                         <td className="px-3 py-2 align-middle">
-                                            {article.additional_descr || (
+                                            {article.additional_descr != null &&
+                                            article.additional_descr !== '' ? (
+                                                article.additional_descr
+                                            ) : (
                                                 <span className="text-muted-foreground">
                                                     —
                                                 </span>

@@ -72,7 +72,7 @@ export default function ProductionPortalDashboard({
 
     // Store token globally for API calls (in effect to satisfy immutability rule)
     useEffect(() => {
-        if (typeof window !== 'undefined' && token) {
+        if (typeof window !== 'undefined' && token != null && token !== '') {
             window.__PRODUCTION_PORTAL_TOKEN__ = token;
         }
     }, [token]);
@@ -137,13 +137,13 @@ export default function ProductionPortalDashboard({
 
             {/* Main Content */}
             <main className="container mx-auto px-4 py-6">
-                {flash?.error && (
+                {flash?.error != null && flash.error !== '' && (
                     <div className="mb-4 rounded-md border border-red-500/40 bg-red-500/5 px-4 py-3 text-sm text-red-700 dark:text-red-300">
                         {flash.error}
                     </div>
                 )}
 
-                {flash?.success && (
+                {flash?.success != null && flash.success !== '' && (
                     <div className="mb-4 rounded-md border border-emerald-500/40 bg-emerald-500/5 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-300">
                         {flash.success}
                     </div>
@@ -256,10 +256,16 @@ export default function ProductionPortalDashboard({
                                                         }{' '}
                                                         -{' '}
                                                         {order.article
-                                                            .article_descr ||
-                                                            t(
-                                                                'production_portal.dashboard.no_description',
-                                                            )}
+                                                            .article_descr !=
+                                                            null &&
+                                                        order.article
+                                                            .article_descr !==
+                                                            ''
+                                                            ? order.article
+                                                                  .article_descr
+                                                            : t(
+                                                                  'production_portal.dashboard.no_description',
+                                                              )}
                                                     </p>
                                                 )}
 

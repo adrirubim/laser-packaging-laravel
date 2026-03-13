@@ -86,7 +86,7 @@ export default function CustomerShippingAddressesCreate({
         setSelectedDivision(''); // Reimposta divisione al cambio cliente
         setDivisions([]);
 
-        if (customerUuid) {
+        if (customerUuid !== '') {
             setLoadingDivisions(true);
             // Use fetch for simple AJAX request
             fetch(
@@ -100,7 +100,22 @@ export default function CustomerShippingAddressesCreate({
             )
                 .then((response) => response.json())
                 .then((data) => {
-                    setDivisions(data.customer_divisions || []);
+                    const divisionsData = Array.isArray(
+                        (
+                            data as {
+                                customer_divisions?: CustomerDivision[] | null;
+                            }
+                        ).customer_divisions,
+                    )
+                        ? (
+                              data as {
+                                  customer_divisions?:
+                                      | CustomerDivision[]
+                                      | null;
+                              }
+                          ).customer_divisions
+                        : [];
+                    setDivisions(divisionsData ?? []);
                     setLoadingDivisions(false);
                 })
                 .catch((error) => {
@@ -114,7 +129,11 @@ export default function CustomerShippingAddressesCreate({
 
     // Load divisions if there's an initial customer but no divisions loaded
     useEffect(() => {
-        if (initialCustomerUuid && initialDivisions.length === 0) {
+        if (
+            initialCustomerUuid != null &&
+            initialCustomerUuid !== '' &&
+            initialDivisions.length === 0
+        ) {
             queueMicrotask(() => handleCustomerChange(initialCustomerUuid));
         }
     }, [initialCustomerUuid, initialDivisions.length]);
@@ -259,14 +278,16 @@ export default function CustomerShippingAddressesCreate({
                                                         }
                                                         required
                                                         disabled={
-                                                            !selectedCustomer ||
+                                                            selectedCustomer ===
+                                                                '' ||
                                                             loadingDivisions
                                                         }
                                                     >
                                                         <SelectTrigger>
                                                             <SelectValue
                                                                 placeholder={
-                                                                    !selectedCustomer
+                                                                    selectedCustomer ===
+                                                                    ''
                                                                         ? t(
                                                                               'customer_shipping_addresses.form.division_placeholder_select_customer',
                                                                           )
@@ -297,7 +318,8 @@ export default function CustomerShippingAddressesCreate({
                                                                 </div>
                                                             ) : divisions.length ===
                                                                   0 &&
-                                                              selectedCustomer ? (
+                                                              selectedCustomer !==
+                                                                  '' ? (
                                                                 <div className="p-4 text-center text-sm text-muted-foreground">
                                                                     {t(
                                                                         'customer_shipping_addresses.form.division_none_for_customer',
@@ -451,18 +473,24 @@ export default function CustomerShippingAddressesCreate({
                                                                 'customer_shipping_addresses.form.postal_code_aria',
                                                             )}
                                                             aria-invalid={
-                                                                postalCodeValidation.error
+                                                                postalCodeValidation.error !=
+                                                                    null &&
+                                                                postalCodeValidation.error !==
+                                                                    ''
                                                                     ? 'true'
                                                                     : 'false'
                                                             }
                                                         />
-                                                        {postalCodeValidation.error && (
-                                                            <p className="mt-1 text-xs text-destructive">
-                                                                {
-                                                                    postalCodeValidation.error
-                                                                }
-                                                            </p>
-                                                        )}
+                                                        {postalCodeValidation.error !=
+                                                            null &&
+                                                            postalCodeValidation.error !==
+                                                                '' && (
+                                                                <p className="mt-1 text-xs text-destructive">
+                                                                    {
+                                                                        postalCodeValidation.error
+                                                                    }
+                                                                </p>
+                                                            )}
                                                         <InputError
                                                             message={
                                                                 allErrors.postal_code
@@ -548,18 +576,24 @@ export default function CustomerShippingAddressesCreate({
                                                                 'customer_shipping_addresses.form.province_aria',
                                                             )}
                                                             aria-invalid={
-                                                                provinceValidation.error
+                                                                provinceValidation.error !=
+                                                                    null &&
+                                                                provinceValidation.error !==
+                                                                    ''
                                                                     ? 'true'
                                                                     : 'false'
                                                             }
                                                         />
-                                                        {provinceValidation.error && (
-                                                            <p className="mt-1 text-xs text-destructive">
-                                                                {
-                                                                    provinceValidation.error
-                                                                }
-                                                            </p>
-                                                        )}
+                                                        {provinceValidation.error !=
+                                                            null &&
+                                                            provinceValidation.error !==
+                                                                '' && (
+                                                                <p className="mt-1 text-xs text-destructive">
+                                                                    {
+                                                                        provinceValidation.error
+                                                                    }
+                                                                </p>
+                                                            )}
                                                         <InputError
                                                             message={
                                                                 allErrors.province

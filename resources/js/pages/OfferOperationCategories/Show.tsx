@@ -228,11 +228,13 @@ export default function OfferOperationCategoriesShow({
                                             <p className="font-mono font-medium">
                                                 {operation.codice ?? '—'}
                                             </p>
-                                            {operation.descrizione && (
-                                                <p className="text-sm text-muted-foreground">
-                                                    {operation.descrizione}
-                                                </p>
-                                            )}
+                                            {operation.descrizione != null &&
+                                                operation.descrizione !==
+                                                    '' && (
+                                                    <p className="text-sm text-muted-foreground">
+                                                        {operation.descrizione}
+                                                    </p>
+                                                )}
                                         </div>
                                     </Link>
                                 ))}

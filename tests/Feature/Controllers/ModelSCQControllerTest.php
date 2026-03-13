@@ -335,9 +335,14 @@ class ModelSCQControllerTest extends TestCase
         $response = $this->getJson(route('articles.cq-models.generate-cqu-number'));
 
         $response->assertStatus(200);
-        $response->assertJsonStructure(['cqunumber']);
+        $response->assertJsonStructure([
+            'success',
+            'message',
+            'data' => ['cod_model'],
+        ]);
         $jsonData = $response->json();
-        $this->assertStringStartsWith('CQU', $jsonData['cqunumber']);
+        $this->assertTrue($jsonData['success']);
+        $this->assertStringStartsWith('CQU', $jsonData['data']['cod_model']);
     }
 
     #[Test]
@@ -349,7 +354,10 @@ class ModelSCQControllerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJson([
-            'cqunumber' => 'CQU001',
+            'success' => true,
+            'data' => [
+                'cod_model' => 'CQU001',
+            ],
         ]);
     }
 

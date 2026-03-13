@@ -78,19 +78,21 @@ export default function ContractsEdit({
     const { contract, employees, suppliers } = props;
 
     const [employeeUuid, setEmployeeUuid] = useState(
-        contract.employee?.uuid || '',
+        contract.employee?.uuid ?? '',
     );
     const [supplierUuid, setSupplierUuid] = useState(
-        contract.supplier?.uuid || '',
+        contract.supplier?.uuid ?? '',
     );
     const [startDate, setStartDate] = useState(
         contract.start_date ? contract.start_date.split('T')[0] : '',
     );
     const [endDate, setEndDate] = useState(
-        contract.end_date ? contract.end_date.split('T')[0] : '',
+        contract.end_date != null && contract.end_date !== ''
+            ? contract.end_date.split('T')[0]
+            : '',
     );
     const [payLevel, setPayLevel] = useState(
-        contract.pay_level?.toString() || '0',
+        contract.pay_level?.toString() ?? '0',
     );
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
 
@@ -102,30 +104,33 @@ export default function ContractsEdit({
     ) as Record<string, string>;
 
     const isDirty =
-        employeeUuid !== (contract.employee?.uuid || '') ||
-        supplierUuid !== (contract.supplier?.uuid || '') ||
+        employeeUuid !== (contract.employee?.uuid ?? '') ||
+        supplierUuid !== (contract.supplier?.uuid ?? '') ||
         startDate !==
             (contract.start_date ? contract.start_date.split('T')[0] : '') ||
         endDate !==
-            (contract.end_date ? contract.end_date.split('T')[0] : '') ||
-        payLevel !== (contract.pay_level?.toString() || '0');
+            (contract.end_date != null && contract.end_date !== ''
+                ? contract.end_date.split('T')[0]
+                : '') ||
+        payLevel !== (contract.pay_level?.toString() ?? '0');
 
     useEffect(() => {
-        if (contract) {
-            queueMicrotask(() => {
-                setEmployeeUuid(contract.employee?.uuid || '');
-                setSupplierUuid(contract.supplier?.uuid || '');
-                setStartDate(
-                    contract.start_date
-                        ? contract.start_date.split('T')[0]
-                        : '',
-                );
-                setEndDate(
-                    contract.end_date ? contract.end_date.split('T')[0] : '',
-                );
-                setPayLevel(contract.pay_level?.toString() || '0');
-            });
+        if (contract == null) {
+            return;
         }
+        queueMicrotask(() => {
+            setEmployeeUuid(contract.employee?.uuid ?? '');
+            setSupplierUuid(contract.supplier?.uuid ?? '');
+            setStartDate(
+                contract.start_date ? contract.start_date.split('T')[0] : '',
+            );
+            setEndDate(
+                contract.end_date != null && contract.end_date !== ''
+                    ? contract.end_date.split('T')[0]
+                    : '',
+            );
+            setPayLevel(contract.pay_level?.toString() || '0');
+        });
     }, [contract]);
 
     const employeeValidation = useFieldValidation(employeeUuid, [
@@ -223,12 +228,18 @@ export default function ContractsEdit({
                                             >
                                                 <SelectTrigger
                                                     className={
-                                                        employeeValidation.error
+                                                        employeeValidation.error !=
+                                                            null &&
+                                                        employeeValidation.error !==
+                                                            ''
                                                             ? 'border-destructive'
                                                             : ''
                                                     }
                                                     aria-invalid={
-                                                        employeeValidation.error
+                                                        employeeValidation.error !=
+                                                            null &&
+                                                        employeeValidation.error !==
+                                                            ''
                                                             ? 'true'
                                                             : 'false'
                                                     }
@@ -259,11 +270,15 @@ export default function ContractsEdit({
                                                         ))}
                                                 </SelectContent>
                                             </Select>
-                                            {employeeValidation.error && (
-                                                <p className="text-xs text-destructive">
-                                                    {employeeValidation.error}
-                                                </p>
-                                            )}
+                                            {employeeValidation.error != null &&
+                                                employeeValidation.error !==
+                                                    '' && (
+                                                    <p className="text-xs text-destructive">
+                                                        {
+                                                            employeeValidation.error
+                                                        }
+                                                    </p>
+                                                )}
                                             <InputError
                                                 message={
                                                     allErrors.employee_uuid
@@ -290,12 +305,18 @@ export default function ContractsEdit({
                                             >
                                                 <SelectTrigger
                                                     className={
-                                                        supplierValidation.error
+                                                        supplierValidation.error !=
+                                                            null &&
+                                                        supplierValidation.error !==
+                                                            ''
                                                             ? 'border-destructive'
                                                             : ''
                                                     }
                                                     aria-invalid={
-                                                        supplierValidation.error
+                                                        supplierValidation.error !=
+                                                            null &&
+                                                        supplierValidation.error !==
+                                                            ''
                                                             ? 'true'
                                                             : 'false'
                                                     }
@@ -324,11 +345,15 @@ export default function ContractsEdit({
                                                         ))}
                                                 </SelectContent>
                                             </Select>
-                                            {supplierValidation.error && (
-                                                <p className="text-xs text-destructive">
-                                                    {supplierValidation.error}
-                                                </p>
-                                            )}
+                                            {supplierValidation.error != null &&
+                                                supplierValidation.error !==
+                                                    '' && (
+                                                    <p className="text-xs text-destructive">
+                                                        {
+                                                            supplierValidation.error
+                                                        }
+                                                    </p>
+                                                )}
                                             <InputError
                                                 message={
                                                     allErrors.supplier_uuid
@@ -362,23 +387,32 @@ export default function ContractsEdit({
                                                     }
                                                     required
                                                     aria-invalid={
-                                                        startDateValidation.error
+                                                        startDateValidation.error !=
+                                                            null &&
+                                                        startDateValidation.error !==
+                                                            ''
                                                             ? 'true'
                                                             : 'false'
                                                     }
                                                     className={
-                                                        startDateValidation.error
+                                                        startDateValidation.error !=
+                                                            null &&
+                                                        startDateValidation.error !==
+                                                            ''
                                                             ? 'border-destructive'
                                                             : ''
                                                     }
                                                 />
-                                                {startDateValidation.error && (
-                                                    <p className="text-xs text-destructive">
-                                                        {
-                                                            startDateValidation.error
-                                                        }
-                                                    </p>
-                                                )}
+                                                {startDateValidation.error !=
+                                                    null &&
+                                                    startDateValidation.error !==
+                                                        '' && (
+                                                        <p className="text-xs text-destructive">
+                                                            {
+                                                                startDateValidation.error
+                                                            }
+                                                        </p>
+                                                    )}
                                                 <InputError
                                                     message={
                                                         allErrors.start_date

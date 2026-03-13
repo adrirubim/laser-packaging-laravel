@@ -5,7 +5,7 @@
  */
 export function generateUUID(): string {
     const crypto = globalThis.crypto;
-    if (!crypto) {
+    if (crypto == null) {
         throw new Error(
             'generateUUID requiere globalThis.crypto (navegador o Node 19+).',
         );

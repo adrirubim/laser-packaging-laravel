@@ -52,5 +52,17 @@ export default [
             '@typescript-eslint/no-unused-vars': 'off',
         },
     },
+    {
+        files: ['resources/js/**/*.{ts,tsx}', 'src/**/*.{ts,tsx}'],
+        languageOptions: {
+            parserOptions: {
+                project: './tsconfig.json',
+                tsconfigRootDir: new URL('.', import.meta.url).pathname,
+            },
+        },
+        rules: {
+            '@typescript-eslint/strict-boolean-expressions': 'warn',
+        },
+    },
     prettier, // Turn off all rules that might conflict with Prettier
 ];

@@ -63,7 +63,12 @@ function ProductionProgressTooltip({
     payload,
 }: TooltipProps<number, string> & { payload?: TooltipPayloadEntry[] }) {
     const { t } = useTranslations();
-    if (!active || !payload || payload.length === 0) {
+    if (
+        active !== true ||
+        payload === null ||
+        payload === undefined ||
+        payload.length === 0
+    ) {
         return null;
     }
 
@@ -76,17 +81,19 @@ function ProductionProgressTooltip({
               daysUntilDelivery?: number;
           }
         | undefined;
-    if (!rawPayload) return null;
+    if (rawPayload === null || rawPayload === undefined) {
+        return null;
+    }
 
     // Detect dark theme robustly:
     // - First check if <html> has "dark" class (Tailwind).
     // - Otherwise fall back to prefers-color-scheme.
     const isDark =
-        typeof document !== 'undefined'
-            ? document.documentElement.classList.contains('dark') ||
-              (window.matchMedia &&
-                  window.matchMedia('(prefers-color-scheme: dark)').matches)
-            : false;
+        typeof document !== 'undefined' &&
+        (document.documentElement.classList.contains('dark') ||
+            (typeof window !== 'undefined' &&
+                typeof window.matchMedia === 'function' &&
+                window.matchMedia('(prefers-color-scheme: dark)').matches));
 
     const backgroundColor = isDark
         ? 'rgba(15, 23, 42, 0.97)' // slate-900 casi opaco en dark
@@ -117,7 +124,7 @@ function ProductionProgressTooltip({
     if (progress >= 100) {
         statoKey = 'completed';
     } else if (
-        rawPayload.isUrgent &&
+        rawPayload.isUrgent === true &&
         rawPayload.daysUntilDelivery !== undefined
     ) {
         if (rawPayload.daysUntilDelivery < 0) {
@@ -340,7 +347,11 @@ export function ProductionProgressChart({
                         fill="#60A5FA"
                         radius={[0, 4, 4, 0]}
                         // Global interactivity feedback
-                        style={onBarClick ? { cursor: 'pointer' } : undefined}
+                        style={
+                            Boolean(onBarClick) === true
+                                ? { cursor: 'pointer' }
+                                : undefined
+                        }
                         onMouseLeave={() => setActiveIndex(null)}
                     >
                         {chartData.map((entry, index) => (
@@ -356,7 +367,7 @@ export function ProductionProgressChart({
                                 onMouseEnter={() => setActiveIndex(index)}
                                 onMouseLeave={() => setActiveIndex(null)}
                                 onClick={() => {
-                                    if (onBarClick) {
+                                    if (typeof onBarClick === 'function') {
                                         onBarClick(entry.fullName);
                                     }
                                 }}

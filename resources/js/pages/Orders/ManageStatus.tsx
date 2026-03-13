@@ -34,6 +34,7 @@ import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import orders from '@/routes/orders/index';
 import { type BreadcrumbItem } from '@/types';
+import type { ApiResponse } from '@/types/DomainModels';
 import { Head, router } from '@inertiajs/react';
 import { AlertCircle, CheckCircle2, Loader2, XCircle } from 'lucide-react';
 import { useState } from 'react';
@@ -137,32 +138,40 @@ export default function OrdersManageStatus({
         setSuccess(null);
 
         try {
+            const csrfToken =
+                document
+                    .querySelector('meta[name="csrf-token"]')
+                    ?.getAttribute('content') ?? '';
             const response = await fetch(
                 `/orders/${order.uuid}/save-semaforo`,
                 {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN':
-                            document
-                                .querySelector('meta[name="csrf-token"]')
-                                ?.getAttribute('content') || '',
+                        'X-CSRF-TOKEN': csrfToken,
                     },
                     body: JSON.stringify(statusSemaforo),
                 },
             );
 
-            const data = await response.json();
+            const data = (await response.json()) as ApiResponse<{
+                all_green: boolean;
+                can_change_to_lanciato: boolean;
+            }>;
 
-            if (data.success) {
+            if (data.success === true) {
                 setSuccess(t('orders.manage_status.toasts.semaforo_saved'));
-                if (data.all_green && data.can_change_to_lanciato) {
+                if (
+                    data.data?.all_green === true &&
+                    data.data?.can_change_to_lanciato === true
+                ) {
                     setShowLanciatoPrompt(true);
                 }
             } else {
                 setError(
-                    data.message ||
-                        t('orders.manage_status.toasts.semaforo_error'),
+                    data.message != null && data.message !== ''
+                        ? data.message
+                        : t('orders.manage_status.toasts.semaforo_error'),
                 );
             }
         } catch {
@@ -184,32 +193,34 @@ export default function OrdersManageStatus({
         setSuccess(null);
 
         try {
+            const csrfToken =
+                document
+                    .querySelector('meta[name="csrf-token"]')
+                    ?.getAttribute('content') ?? '';
             const response = await fetch(
                 `/orders/${order.uuid}/change-status`,
                 {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN':
-                            document
-                                .querySelector('meta[name="csrf-token"]')
-                                ?.getAttribute('content') || '',
+                        'X-CSRF-TOKEN': csrfToken,
                     },
                     body: JSON.stringify(payload),
                 },
             );
 
-            const data = await response.json();
+            const data = (await response.json()) as ApiResponse<unknown>;
 
-            if (data.success) {
+            if (data.success === true) {
                 setSuccess(t('orders.manage_status.toasts.status_updated'));
                 setTimeout(() => {
                     router.visit(orders.show({ order: order.uuid }).url);
                 }, 1500);
             } else {
                 setError(
-                    data.message ||
-                        t('orders.manage_status.toasts.status_error'),
+                    data.message != null && data.message !== ''
+                        ? data.message
+                        : t('orders.manage_status.toasts.status_error'),
                 );
             }
         } catch {
@@ -478,14 +489,14 @@ export default function OrdersManageStatus({
                     </Button>
                 </div>
 
-                {error && (
+                {error != null && error !== '' && (
                     <Alert variant="destructive">
                         <AlertCircle className="h-4 w-4" />
                         <AlertDescription>{error}</AlertDescription>
                     </Alert>
                 )}
 
-                {success && (
+                {success != null && success !== '' && (
                     <Alert className="border-green-500 bg-green-50">
                         <CheckCircle2 className="h-4 w-4 text-green-600" />
                         <AlertDescription className="text-green-800">
@@ -611,11 +622,12 @@ export default function OrdersManageStatus({
                                         )}
                                     </Label>
                                     <p>{order.article.cod_article_las}</p>
-                                    {order.article.article_descr && (
-                                        <p className="text-sm text-muted-foreground">
-                                            {order.article.article_descr}
-                                        </p>
-                                    )}
+                                    {order.article.article_descr != null &&
+                                        order.article.article_descr !== '' && (
+                                            <p className="text-sm text-muted-foreground">
+                                                {order.article.article_descr}
+                                            </p>
+                                        )}
                                 </div>
                             )}
                             <div>
@@ -632,7 +644,7 @@ export default function OrdersManageStatus({
                                     })}
                                 </span>
                             </div>
-                            {order.quantity && (
+                            {order.quantity != null && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
                                         {t(
@@ -652,16 +664,18 @@ export default function OrdersManageStatus({
                                     <p>{order.worked_quantity}</p>
                                 </div>
                             )}
-                            {order.status === 4 && order.motivazione && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t(
-                                            'orders.manage_status.labels.motivazione',
-                                        )}
-                                    </Label>
-                                    <p>{order.motivazione}</p>
-                                </div>
-                            )}
+                            {order.status === 4 &&
+                                order.motivazione != null &&
+                                order.motivazione !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t(
+                                                'orders.manage_status.labels.motivazione',
+                                            )}
+                                        </Label>
+                                        <p>{order.motivazione}</p>
+                                    </div>
+                                )}
                         </CardContent>
                     </Card>
 
@@ -1085,7 +1099,9 @@ export default function OrdersManageStatus({
                                             </Label>
                                             <Select
                                                 value={
-                                                    newStatus?.toString() || ''
+                                                    newStatus != null
+                                                        ? newStatus.toString()
+                                                        : ''
                                                 }
                                                 onValueChange={(value) => {
                                                     setNewStatus(

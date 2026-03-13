@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\SyncOrderEmployeesAction;
+use App\Http\Resources\Api\ApiResponseResource;
 use App\Models\Employee;
 use App\Models\OfferOrderEmployee;
 use App\Models\Order;
+use Domain\Orders\Actions\SyncOrderEmployeesAction;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -57,7 +58,15 @@ class OrderEmployeeController extends Controller
             ->pluck('employee_uuid')
             ->toArray();
 
-        return response()->json(['assignments' => $assignments]);
+        return ApiResponseResource::success(
+            true,
+            null,
+            [
+                'assignments' => $assignments,
+            ]
+        )->additional([
+            'assignments' => $assignments,
+        ])->response();
     }
 
     /**
@@ -96,7 +105,15 @@ class OrderEmployeeController extends Controller
             ->where('removed', false)
             ->exists();
 
-        return response()->json(['assigned' => $exists]);
+        return ApiResponseResource::success(
+            true,
+            null,
+            [
+                'assigned' => $exists,
+            ]
+        )->additional([
+            'assigned' => $exists,
+        ])->response();
     }
 
     /**

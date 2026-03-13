@@ -49,7 +49,7 @@ type OfferOperation = {
 };
 
 const getFileDisplayName = (path?: string | null): string => {
-    if (!path) return '—';
+    if (path == null || path === '') return '—';
     const base = path.split('/').pop() ?? path;
     const parts = base.split('_');
     return parts.length > 1 ? parts.slice(1).join('_') : base;
@@ -105,7 +105,7 @@ export default function OfferOperationsIndex() {
             offerOperations.index().url,
             {
                 ...filters,
-                search: value || undefined,
+                search: value != null && value !== '' ? value : undefined,
             },
             {
                 preserveState: true,
@@ -351,14 +351,21 @@ export default function OfferOperationsIndex() {
                                                 extraItems={
                                                     <DropdownMenuItem
                                                         disabled={
-                                                            !operation.filename
+                                                            operation.filename ==
+                                                                null ||
+                                                            operation.filename ===
+                                                                ''
                                                         }
                                                         onSelect={(e) => {
                                                             e.preventDefault();
                                                             if (
-                                                                !operation.filename
-                                                            )
+                                                                operation.filename ==
+                                                                    null ||
+                                                                operation.filename ===
+                                                                    ''
+                                                            ) {
                                                                 return;
+                                                            }
                                                             window.location.href =
                                                                 offerOperations.downloadFile(
                                                                     {
@@ -399,8 +406,13 @@ export default function OfferOperationsIndex() {
                     title={t('offer_operations.delete_title')}
                     description={t('offer_operations.delete_description')}
                     itemName={
-                        deleteDialog.operation?.codice ||
-                        deleteDialog.operation?.descrizione
+                        deleteDialog.operation?.codice != null &&
+                        deleteDialog.operation.codice !== ''
+                            ? deleteDialog.operation.codice
+                            : deleteDialog.operation?.descrizione != null &&
+                                deleteDialog.operation.descrizione !== ''
+                              ? deleteDialog.operation.descrizione
+                              : t('offer_operations.fallback_name')
                     }
                     isLoading={isDeleting}
                 />

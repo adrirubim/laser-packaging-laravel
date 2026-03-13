@@ -104,12 +104,12 @@ export default function ProductionPortalLogin({
                     </div>
 
                     {/* Error/Success Messages */}
-                    {flash?.error && (
+                    {flash?.error != null && flash.error !== '' && (
                         <div className="mb-4 rounded-md border border-red-500/40 bg-red-500/5 px-3 py-2 text-sm text-red-700 dark:text-red-300">
                             {flash.error}
                         </div>
                     )}
-                    {flash?.success && (
+                    {flash?.success != null && flash.success !== '' && (
                         <div className="mb-4 rounded-md border border-emerald-500/40 bg-emerald-500/5 px-3 py-2 text-sm text-emerald-700 dark:text-emerald-300">
                             {flash.success}
                         </div>
@@ -147,11 +147,26 @@ export default function ProductionPortalLogin({
                                     )}
                                 />
                                 <InputError
-                                    message={
-                                        credentialsForm.errors
-                                            .matriculation_number ||
-                                        serverErrors?.matriculation_number
-                                    }
+                                    message={(() => {
+                                        const fieldError =
+                                            credentialsForm.errors
+                                                .matriculation_number;
+                                        const serverError =
+                                            serverErrors?.matriculation_number;
+                                        if (
+                                            fieldError != null &&
+                                            fieldError !== ''
+                                        ) {
+                                            return fieldError;
+                                        }
+                                        if (
+                                            serverError != null &&
+                                            serverError !== ''
+                                        ) {
+                                            return serverError;
+                                        }
+                                        return '';
+                                    })()}
                                 />
                             </div>
 
@@ -175,10 +190,25 @@ export default function ProductionPortalLogin({
                                     placeholder="••••••••"
                                 />
                                 <InputError
-                                    message={
-                                        credentialsForm.errors.password ||
-                                        serverErrors?.password
-                                    }
+                                    message={(() => {
+                                        const fieldError =
+                                            credentialsForm.errors.password;
+                                        const serverError =
+                                            serverErrors?.password;
+                                        if (
+                                            fieldError != null &&
+                                            fieldError !== ''
+                                        ) {
+                                            return fieldError;
+                                        }
+                                        if (
+                                            serverError != null &&
+                                            serverError !== ''
+                                        ) {
+                                            return serverError;
+                                        }
+                                        return '';
+                                    })()}
                                 />
                             </div>
 
@@ -224,10 +254,25 @@ export default function ProductionPortalLogin({
                                     )}
                                 />
                                 <InputError
-                                    message={
-                                        eanForm.errors.employee_number ||
-                                        serverErrors?.employee_number
-                                    }
+                                    message={(() => {
+                                        const fieldError =
+                                            eanForm.errors.employee_number;
+                                        const serverError =
+                                            serverErrors?.employee_number;
+                                        if (
+                                            fieldError != null &&
+                                            fieldError !== ''
+                                        ) {
+                                            return fieldError;
+                                        }
+                                        if (
+                                            serverError != null &&
+                                            serverError !== ''
+                                        ) {
+                                            return serverError;
+                                        }
+                                        return '';
+                                    })()}
                                 />
                             </div>
 
@@ -253,10 +298,25 @@ export default function ProductionPortalLogin({
                                     )}
                                 />
                                 <InputError
-                                    message={
-                                        eanForm.errors.order_number ||
-                                        serverErrors?.order_number
-                                    }
+                                    message={(() => {
+                                        const fieldError =
+                                            eanForm.errors.order_number;
+                                        const serverError =
+                                            serverErrors?.order_number;
+                                        if (
+                                            fieldError != null &&
+                                            fieldError !== ''
+                                        ) {
+                                            return fieldError;
+                                        }
+                                        if (
+                                            serverError != null &&
+                                            serverError !== ''
+                                        ) {
+                                            return serverError;
+                                        }
+                                        return '';
+                                    })()}
                                 />
                             </div>
 

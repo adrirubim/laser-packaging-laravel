@@ -223,52 +223,62 @@ export default function SuppliersIndex() {
                                             />
                                         </div>
                                         <div className="grid grid-cols-2 gap-2 text-xs">
-                                            {supplier.vat_number && (
-                                                <div>
-                                                    <span className="text-muted-foreground">
-                                                        {t(
-                                                            'suppliers.index.mobile_vat_label',
-                                                        )}{' '}
-                                                    </span>
-                                                    <span>
-                                                        {supplier.vat_number}
-                                                    </span>
-                                                </div>
-                                            )}
-                                            {supplier.city && (
-                                                <div>
-                                                    <span className="text-muted-foreground">
-                                                        {t(
-                                                            'suppliers.index.mobile_city_label',
-                                                        )}{' '}
-                                                    </span>
-                                                    <span>{supplier.city}</span>
-                                                </div>
-                                            )}
-                                            {supplier.province && (
-                                                <div>
-                                                    <span className="text-muted-foreground">
-                                                        {t(
-                                                            'suppliers.index.mobile_province_label',
-                                                        )}{' '}
-                                                    </span>
-                                                    <span>
-                                                        {supplier.province}
-                                                    </span>
-                                                </div>
-                                            )}
-                                            {supplier.postal_code && (
-                                                <div>
-                                                    <span className="text-muted-foreground">
-                                                        {t(
-                                                            'suppliers.index.mobile_cap_label',
-                                                        )}{' '}
-                                                    </span>
-                                                    <span>
-                                                        {supplier.postal_code}
-                                                    </span>
-                                                </div>
-                                            )}
+                                            {supplier.vat_number != null &&
+                                                supplier.vat_number !== '' && (
+                                                    <div>
+                                                        <span className="text-muted-foreground">
+                                                            {t(
+                                                                'suppliers.index.mobile_vat_label',
+                                                            )}{' '}
+                                                        </span>
+                                                        <span>
+                                                            {
+                                                                supplier.vat_number
+                                                            }
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            {supplier.city != null &&
+                                                supplier.city !== '' && (
+                                                    <div>
+                                                        <span className="text-muted-foreground">
+                                                            {t(
+                                                                'suppliers.index.mobile_city_label',
+                                                            )}{' '}
+                                                        </span>
+                                                        <span>
+                                                            {supplier.city}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            {supplier.province != null &&
+                                                supplier.province !== '' && (
+                                                    <div>
+                                                        <span className="text-muted-foreground">
+                                                            {t(
+                                                                'suppliers.index.mobile_province_label',
+                                                            )}{' '}
+                                                        </span>
+                                                        <span>
+                                                            {supplier.province}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            {supplier.postal_code != null &&
+                                                supplier.postal_code !== '' && (
+                                                    <div>
+                                                        <span className="text-muted-foreground">
+                                                            {t(
+                                                                'suppliers.index.mobile_cap_label',
+                                                            )}{' '}
+                                                        </span>
+                                                        <span>
+                                                            {
+                                                                supplier.postal_code
+                                                            }
+                                                        </span>
+                                                    </div>
+                                                )}
                                         </div>
                                     </div>
                                 ))
@@ -386,12 +396,13 @@ export default function SuppliersIndex() {
                                             {supplier.street ?? '—'}
                                         </td>
                                         <td className="px-3 py-2 align-middle text-xs">
-                                            {supplier.contacts
+                                            {supplier.contacts != null &&
+                                            supplier.contacts !== ''
                                                 ? supplier.contacts.length > 30
-                                                    ? supplier.contacts.substring(
+                                                    ? `${supplier.contacts.substring(
                                                           0,
                                                           30,
-                                                      ) + '...'
+                                                      )}...`
                                                     : supplier.contacts
                                                 : '—'}
                                         </td>
@@ -449,10 +460,17 @@ export default function SuppliersIndex() {
                     onConfirm={handleDeleteConfirm}
                     title={t('suppliers.delete_title')}
                     description={t('suppliers.delete_description')}
-                    itemName={
-                        deleteDialog.supplier?.company_name ||
-                        deleteDialog.supplier?.code
-                    }
+                    itemName={(() => {
+                        const companyName = deleteDialog.supplier?.company_name;
+                        const code = deleteDialog.supplier?.code;
+                        if (companyName != null && companyName !== '') {
+                            return companyName;
+                        }
+                        if (code != null && code !== '') {
+                            return code;
+                        }
+                        return '';
+                    })()}
                     isLoading={isDeleting}
                 />
             </div>

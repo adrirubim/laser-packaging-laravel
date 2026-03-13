@@ -49,7 +49,7 @@ export default function PalletizationInstructionsShow({
     const { t } = useTranslations();
     const [isDeleting, setIsDeleting] = useState(false);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-    const instructionCode = instruction.code + (instruction.number || '');
+    const instructionCode = instruction.code + (instruction.number ?? '');
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
@@ -104,7 +104,7 @@ export default function PalletizationInstructionsShow({
                     <div>
                         <h1 className="text-2xl font-semibold tracking-tight">
                             {instruction.code}
-                            {instruction.number || ''}
+                            {instruction.number ?? ''}
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
                             {t(
@@ -171,47 +171,49 @@ export default function PalletizationInstructionsShow({
                                     {instruction.code}
                                 </p>
                             </div>
-                            {instruction.number && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t(
-                                            'articles.palletization_instructions.show.fields.number',
-                                        )}
-                                    </Label>
-                                    <p className="mt-1 text-sm font-medium">
-                                        {instruction.number}
-                                    </p>
-                                </div>
-                            )}
-                            {instruction.filename && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t(
-                                            'articles.palletization_instructions.show.fields.filename',
-                                        )}
-                                    </Label>
-                                    <div className="mt-1 flex items-center gap-2">
-                                        <p className="text-sm font-medium">
-                                            {instruction.filename}
+                            {instruction.number != null &&
+                                instruction.number !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t(
+                                                'articles.palletization_instructions.show.fields.number',
+                                            )}
+                                        </Label>
+                                        <p className="mt-1 text-sm font-medium">
+                                            {instruction.number}
                                         </p>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => {
-                                                window.location.href =
-                                                    articles.palletizationInstructions.download(
-                                                        {
-                                                            palletizationInstruction:
-                                                                instruction.uuid,
-                                                        },
-                                                    ).url;
-                                            }}
-                                        >
-                                            <Download className="h-4 w-4" />
-                                        </Button>
                                     </div>
-                                </div>
-                            )}
+                                )}
+                            {instruction.filename != null &&
+                                instruction.filename !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t(
+                                                'articles.palletization_instructions.show.fields.filename',
+                                            )}
+                                        </Label>
+                                        <div className="mt-1 flex items-center gap-2">
+                                            <p className="text-sm font-medium">
+                                                {instruction.filename}
+                                            </p>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => {
+                                                    window.location.href =
+                                                        articles.palletizationInstructions.download(
+                                                            {
+                                                                palletizationInstruction:
+                                                                    instruction.uuid,
+                                                            },
+                                                        ).url;
+                                                }}
+                                            >
+                                                <Download className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
                         </CardContent>
                     </Card>
 
@@ -224,54 +226,58 @@ export default function PalletizationInstructionsShow({
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {instruction.length_cm && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t(
-                                            'articles.palletization_instructions.show.fields.length',
-                                        )}
-                                    </Label>
-                                    <p className="mt-1 text-sm font-medium">
-                                        {instruction.length_cm} cm
-                                    </p>
-                                </div>
-                            )}
-                            {instruction.depth_cm && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t(
-                                            'articles.palletization_instructions.show.fields.depth',
-                                        )}
-                                    </Label>
-                                    <p className="mt-1 text-sm font-medium">
-                                        {instruction.depth_cm} cm
-                                    </p>
-                                </div>
-                            )}
-                            {instruction.height_cm && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t(
-                                            'articles.palletization_instructions.show.fields.height',
-                                        )}
-                                    </Label>
-                                    <p className="mt-1 text-sm font-medium">
-                                        {instruction.height_cm} cm
-                                    </p>
-                                </div>
-                            )}
-                            {instruction.volume_dmc && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t(
-                                            'articles.palletization_instructions.show.fields.volume',
-                                        )}
-                                    </Label>
-                                    <p className="mt-1 text-sm font-medium">
-                                        {instruction.volume_dmc} dm³
-                                    </p>
-                                </div>
-                            )}
+                            {instruction.length_cm != null &&
+                                !Number.isNaN(instruction.length_cm) && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t(
+                                                'articles.palletization_instructions.show.fields.length',
+                                            )}
+                                        </Label>
+                                        <p className="mt-1 text-sm font-medium">
+                                            {instruction.length_cm} cm
+                                        </p>
+                                    </div>
+                                )}
+                            {instruction.depth_cm != null &&
+                                !Number.isNaN(instruction.depth_cm) && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t(
+                                                'articles.palletization_instructions.show.fields.depth',
+                                            )}
+                                        </Label>
+                                        <p className="mt-1 text-sm font-medium">
+                                            {instruction.depth_cm} cm
+                                        </p>
+                                    </div>
+                                )}
+                            {instruction.height_cm != null &&
+                                !Number.isNaN(instruction.height_cm) && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t(
+                                                'articles.palletization_instructions.show.fields.height',
+                                            )}
+                                        </Label>
+                                        <p className="mt-1 text-sm font-medium">
+                                            {instruction.height_cm} cm
+                                        </p>
+                                    </div>
+                                )}
+                            {instruction.volume_dmc != null &&
+                                !Number.isNaN(instruction.volume_dmc) && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t(
+                                                'articles.palletization_instructions.show.fields.volume',
+                                            )}
+                                        </Label>
+                                        <p className="mt-1 text-sm font-medium">
+                                            {instruction.volume_dmc} dm³
+                                        </p>
+                                    </div>
+                                )}
                         </CardContent>
                     </Card>
 
@@ -284,66 +290,71 @@ export default function PalletizationInstructionsShow({
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {instruction.plan_packaging && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t(
-                                            'articles.palletization_instructions.show.fields.plan_packaging',
-                                        )}
-                                    </Label>
-                                    <p className="mt-1 text-sm font-medium">
-                                        {instruction.plan_packaging}
-                                    </p>
-                                </div>
-                            )}
-                            {instruction.pallet_plans && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t(
-                                            'articles.palletization_instructions.show.fields.pallet_plans',
-                                        )}
-                                    </Label>
-                                    <p className="mt-1 text-sm font-medium">
-                                        {instruction.pallet_plans}
-                                    </p>
-                                </div>
-                            )}
-                            {instruction.qty_pallet && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t(
-                                            'articles.palletization_instructions.show.fields.qty_pallet',
-                                        )}
-                                    </Label>
-                                    <p className="mt-1 text-sm font-medium">
-                                        {instruction.qty_pallet}
-                                    </p>
-                                </div>
-                            )}
-                            {instruction.units_per_neck && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t(
-                                            'articles.palletization_instructions.show.fields.units_per_neck',
-                                        )}
-                                    </Label>
-                                    <p className="mt-1 text-sm font-medium">
-                                        {instruction.units_per_neck}
-                                    </p>
-                                </div>
-                            )}
-                            {instruction.units_pallet && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t(
-                                            'articles.palletization_instructions.show.fields.units_pallet',
-                                        )}
-                                    </Label>
-                                    <p className="mt-1 text-sm font-medium">
-                                        {instruction.units_pallet}
-                                    </p>
-                                </div>
-                            )}
+                            {instruction.plan_packaging != null &&
+                                !Number.isNaN(instruction.plan_packaging) && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t(
+                                                'articles.palletization_instructions.show.fields.plan_packaging',
+                                            )}
+                                        </Label>
+                                        <p className="mt-1 text-sm font-medium">
+                                            {instruction.plan_packaging}
+                                        </p>
+                                    </div>
+                                )}
+                            {instruction.pallet_plans != null &&
+                                !Number.isNaN(instruction.pallet_plans) && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t(
+                                                'articles.palletization_instructions.show.fields.pallet_plans',
+                                            )}
+                                        </Label>
+                                        <p className="mt-1 text-sm font-medium">
+                                            {instruction.pallet_plans}
+                                        </p>
+                                    </div>
+                                )}
+                            {instruction.qty_pallet != null &&
+                                !Number.isNaN(instruction.qty_pallet) && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t(
+                                                'articles.palletization_instructions.show.fields.qty_pallet',
+                                            )}
+                                        </Label>
+                                        <p className="mt-1 text-sm font-medium">
+                                            {instruction.qty_pallet}
+                                        </p>
+                                    </div>
+                                )}
+                            {instruction.units_per_neck != null &&
+                                !Number.isNaN(instruction.units_per_neck) && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t(
+                                                'articles.palletization_instructions.show.fields.units_per_neck',
+                                            )}
+                                        </Label>
+                                        <p className="mt-1 text-sm font-medium">
+                                            {instruction.units_per_neck}
+                                        </p>
+                                    </div>
+                                )}
+                            {instruction.units_pallet != null &&
+                                !Number.isNaN(instruction.units_pallet) && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t(
+                                                'articles.palletization_instructions.show.fields.units_pallet',
+                                            )}
+                                        </Label>
+                                        <p className="mt-1 text-sm font-medium">
+                                            {instruction.units_pallet}
+                                        </p>
+                                    </div>
+                                )}
                             {instruction.interlayer_every_floors !== null &&
                                 instruction.interlayer_every_floors !==
                                     undefined && (

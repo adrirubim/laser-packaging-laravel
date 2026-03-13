@@ -1,0 +1,7 @@
+Omega 2026 Laws
+
+- All business logic MUST live in src/Domains/{Domain}/Actions.
+- All data passing to Frontend MUST use JsonResource.
+- Strict Boolean Rule: No implicit truthy checks in TSX.
+- PHP 8.4: Use readonly classes for DTOs and property hooks for validation.
+

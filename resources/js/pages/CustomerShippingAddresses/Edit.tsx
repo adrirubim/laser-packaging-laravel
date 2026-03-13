@@ -80,8 +80,8 @@ export default function CustomerShippingAddressesEdit({
     const [divisions, setDivisions] =
         useState<CustomerDivision[]>(initialDivisions);
     const [loadingDivisions, setLoadingDivisions] = useState(false);
-    const [postalCode, setPostalCode] = useState(address.postal_code || '');
-    const [province, setProvince] = useState(address.province || '');
+    const [postalCode, setPostalCode] = useState(address.postal_code ?? '');
+    const [province, setProvince] = useState(address.province ?? '');
 
     const postalCodeValidation = useFieldValidation(postalCode, [
         validationRules.postalCode(),
@@ -114,7 +114,7 @@ export default function CustomerShippingAddressesEdit({
         setSelectedCustomer(customerUuid);
         setDivisions([]);
 
-        if (customerUuid) {
+        if (customerUuid !== '') {
             setLoadingDivisions(true);
             // Use fetch for simple AJAX request
             fetch(
@@ -128,7 +128,22 @@ export default function CustomerShippingAddressesEdit({
             )
                 .then((response) => response.json())
                 .then((data) => {
-                    setDivisions(data.customer_divisions || []);
+                    const divisionsData = Array.isArray(
+                        (
+                            data as {
+                                customer_divisions?: CustomerDivision[] | null;
+                            }
+                        ).customer_divisions,
+                    )
+                        ? (
+                              data as {
+                                  customer_divisions?:
+                                      | CustomerDivision[]
+                                      | null;
+                              }
+                          ).customer_divisions
+                        : [];
+                    setDivisions(divisionsData ?? []);
                     setLoadingDivisions(false);
                 })
                 .catch((error) => {
@@ -263,14 +278,16 @@ export default function CustomerShippingAddressesEdit({
                                                         }
                                                         required
                                                         disabled={
-                                                            !selectedCustomer ||
+                                                            selectedCustomer ===
+                                                                '' ||
                                                             loadingDivisions
                                                         }
                                                     >
                                                         <SelectTrigger>
                                                             <SelectValue
                                                                 placeholder={
-                                                                    !selectedCustomer
+                                                                    selectedCustomer ===
+                                                                    ''
                                                                         ? t(
                                                                               'customer_shipping_addresses.form.division_placeholder_select_customer',
                                                                           )
@@ -436,18 +453,24 @@ export default function CustomerShippingAddressesEdit({
                                                                 'customer_shipping_addresses.form.postal_code_aria',
                                                             )}
                                                             aria-invalid={
-                                                                postalCodeValidation.error
+                                                                postalCodeValidation.error !=
+                                                                    null &&
+                                                                postalCodeValidation.error !==
+                                                                    ''
                                                                     ? 'true'
                                                                     : 'false'
                                                             }
                                                         />
-                                                        {postalCodeValidation.error && (
-                                                            <p className="mt-1 text-xs text-destructive">
-                                                                {
-                                                                    postalCodeValidation.error
-                                                                }
-                                                            </p>
-                                                        )}
+                                                        {postalCodeValidation.error !=
+                                                            null &&
+                                                            postalCodeValidation.error !==
+                                                                '' && (
+                                                                <p className="mt-1 text-xs text-destructive">
+                                                                    {
+                                                                        postalCodeValidation.error
+                                                                    }
+                                                                </p>
+                                                            )}
                                                         <InputError
                                                             message={
                                                                 allErrors.postal_code
@@ -527,18 +550,24 @@ export default function CustomerShippingAddressesEdit({
                                                                 'customer_shipping_addresses.form.province_aria',
                                                             )}
                                                             aria-invalid={
-                                                                provinceValidation.error
+                                                                provinceValidation.error !=
+                                                                    null &&
+                                                                provinceValidation.error !==
+                                                                    ''
                                                                     ? 'true'
                                                                     : 'false'
                                                             }
                                                         />
-                                                        {provinceValidation.error && (
-                                                            <p className="mt-1 text-xs text-destructive">
-                                                                {
-                                                                    provinceValidation.error
-                                                                }
-                                                            </p>
-                                                        )}
+                                                        {provinceValidation.error !=
+                                                            null &&
+                                                            provinceValidation.error !==
+                                                                '' && (
+                                                                <p className="mt-1 text-xs text-destructive">
+                                                                    {
+                                                                        provinceValidation.error
+                                                                    }
+                                                                </p>
+                                                            )}
                                                         <InputError
                                                             message={
                                                                 allErrors.province

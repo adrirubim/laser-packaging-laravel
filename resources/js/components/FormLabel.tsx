@@ -14,13 +14,15 @@ export function FormLabel({
     children,
     className,
 }: FormLabelProps) {
+    const safeClassName = className ?? '';
+
     return (
         <Label
             htmlFor={htmlFor}
-            className={`flex items-center gap-1 ${className || ''}`}
+            className={`flex items-center gap-1 ${safeClassName}`}
         >
             {children}
-            {required && <span className="text-destructive">*</span>}
+            {required === true && <span className="text-destructive">*</span>}
         </Label>
     );
 }

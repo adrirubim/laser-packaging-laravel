@@ -16,24 +16,35 @@ export function useFieldValidation(
 
     useEffect(() => {
         const shouldValidate =
-            (touched && validateOnBlur) || (value && validateOnChange);
+            (touched === true && validateOnBlur === true) ||
+            (value !== null &&
+                value !== undefined &&
+                value !== '' &&
+                validateOnChange === true);
 
-        if (shouldValidate) {
+        if (shouldValidate === true) {
             for (const rule of rules) {
                 const errorMessage = rule(value);
-                if (errorMessage) {
+                if (
+                    errorMessage !== null &&
+                    errorMessage !== undefined &&
+                    errorMessage !== ''
+                ) {
                     queueMicrotask(() => setError(errorMessage));
                     return;
                 }
             }
             queueMicrotask(() => setError(null));
-        } else if (!value && touched) {
+        } else if (
+            (value === null || value === undefined || value === '') &&
+            touched === true
+        ) {
             // If field is empty and has been touched, check if it's required
             const requiredRule = rules.find((rule) => {
                 const result = rule('');
                 return result !== null;
             });
-            if (requiredRule) {
+            if (typeof requiredRule === 'function') {
                 queueMicrotask(() => setError(requiredRule('')));
             } else {
                 queueMicrotask(() => setError(null));
@@ -47,7 +58,7 @@ export function useFieldValidation(
         setTouched,
         onBlur: () => setTouched(true),
         onFocus: () => {
-            if (!touched) {
+            if (touched !== true) {
                 setTouched(true);
             }
         },

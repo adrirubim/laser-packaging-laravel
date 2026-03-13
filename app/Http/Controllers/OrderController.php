@@ -1,9 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
-use App\Actions\CreateOrderAction;
-use App\Actions\UpdateOrderAction;
 use App\Enums\OrderLabelStatus;
 use App\Enums\OrderStatus;
 use App\Http\Controllers\Concerns\HandlesActionErrors;
@@ -11,17 +11,25 @@ use App\Http\Requests\ChangeOrderStatusRequest;
 use App\Http\Requests\SaveSemaforoRequest;
 use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
+use App\Http\Resources\Api\ApiResponseResource;
+use App\Http\Resources\OrderResource;
+use App\Http\Resources\OrderShippingAddressResource;
 use App\Models\Order;
 use App\Repositories\OrderRepository;
 use App\Services\OrderProductionNumberService;
 use App\Services\Planning\PlanningReplanService;
+use Domain\Orders\Actions\ChangeOrderStatusAction;
+use Domain\Orders\Actions\CreateOrderAction;
+use Domain\Orders\Actions\GenerateOrderAutocontrolloPdfAction;
+use Domain\Orders\Actions\GenerateOrderBarcodePdfAction;
+use Domain\Orders\Actions\GetOrderLabelDataAction;
+use Domain\Orders\Actions\UpdateOrderAction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
-use Picqer\Barcode\BarcodeGeneratorHTML;
 
 class OrderController extends Controller
 {
@@ -37,18 +45,34 @@ class OrderController extends Controller
 
     protected PlanningReplanService $planningReplanService;
 
+    protected GetOrderLabelDataAction $getOrderLabelDataAction;
+
+    protected ChangeOrderStatusAction $changeOrderStatusAction;
+
+    protected GenerateOrderBarcodePdfAction $generateOrderBarcodePdfAction;
+
+    protected GenerateOrderAutocontrolloPdfAction $generateOrderAutocontrolloPdfAction;
+
     public function __construct(
         OrderProductionNumberService $orderProductionNumberService,
         OrderRepository $orderRepository,
         CreateOrderAction $createOrderAction,
         UpdateOrderAction $updateOrderAction,
-        PlanningReplanService $planningReplanService
+        PlanningReplanService $planningReplanService,
+        GetOrderLabelDataAction $getOrderLabelDataAction,
+        ChangeOrderStatusAction $changeOrderStatusAction,
+        GenerateOrderBarcodePdfAction $generateOrderBarcodePdfAction,
+        GenerateOrderAutocontrolloPdfAction $generateOrderAutocontrolloPdfAction,
     ) {
         $this->orderProductionNumberService = $orderProductionNumberService;
         $this->orderRepository = $orderRepository;
         $this->createOrderAction = $createOrderAction;
         $this->updateOrderAction = $updateOrderAction;
         $this->planningReplanService = $planningReplanService;
+        $this->getOrderLabelDataAction = $getOrderLabelDataAction;
+        $this->changeOrderStatusAction = $changeOrderStatusAction;
+        $this->generateOrderBarcodePdfAction = $generateOrderBarcodePdfAction;
+        $this->generateOrderAutocontrolloPdfAction = $generateOrderAutocontrolloPdfAction;
     }
 
     /**
@@ -60,9 +84,27 @@ class OrderController extends Controller
         // For filter, only show articles that have orders
         $formOptions = $this->orderRepository->getFormOptions(onlyWithOrders: true);
 
+        $ordersTransformed = $orders->through(
+            static fn (Order $order) => OrderResource::make($order)->toArray($request)
+        );
+
         return Inertia::render('Orders/Index', [
-            'orders' => $orders,
-            'articles' => $formOptions['articles'],
+            'orders' => $ordersTransformed->toArray(),
+            'articles' => $formOptions['articles']->map(
+                static function ($article): array {
+                    $uuid = is_array($article) ? ($article['uuid'] ?? null) : $article->uuid;
+                    $codArticleLas = is_array($article) ? ($article['cod_article_las'] ?? null) : $article->cod_article_las;
+                    $articleDescr = is_array($article) ? ($article['article_descr'] ?? null) : $article->article_descr;
+                    $offerUuid = is_array($article) ? ($article['offer_uuid'] ?? null) : $article->offer_uuid;
+
+                    return [
+                        'uuid' => $uuid,
+                        'cod_article_las' => $codArticleLas,
+                        'article_descr' => $articleDescr,
+                        'offer_uuid' => $offerUuid,
+                    ];
+                },
+            ),
             'customers' => $formOptions['customers'] ?? collect([]),
             'filters' => $request->only(['search', 'article_uuid', 'status', 'customer_uuid', 'date_from', 'date_to', 'autocontrollo', 'sort_by', 'sort_order', 'per_page']),
         ]);
@@ -139,8 +181,10 @@ class OrderController extends Controller
         // Calculate remain_quantity
         $order->remain_quantity = $order->quantity - ($order->worked_quantity ?? 0);
 
+        $orderResource = OrderResource::make($order)->toArray(request());
+
         return Inertia::render('Orders/Show', [
-            'order' => $order,
+            'order' => $orderResource,
         ]);
     }
 
@@ -211,8 +255,12 @@ class OrderController extends Controller
         // For filter, only show articles with orders in status 2 (Lanciato) or 3 (In Avanzamento)
         $formOptions = $this->orderRepository->getFormOptions(onlyWithOrders: true, statusFilter: [OrderStatus::LANCIATO->value, OrderStatus::IN_AVANZAMENTO->value]);
 
+        $ordersTransformed = $orders->through(
+            static fn (Order $order) => OrderResource::make($order)->toArray($request)
+        );
+
         return Inertia::render('Orders/ProductionAdvancements', [
-            'orders' => $orders,
+            'orders' => $ordersTransformed->toArray(),
             'articles' => $formOptions['articles'],
             'filters' => $request->only(['search', 'article_uuid', 'per_page', 'sort_by', 'sort_order']),
         ]);
@@ -231,7 +279,21 @@ class OrderController extends Controller
             $request->get('article_uuid')
         );
 
-        return response()->json($shippingAddresses);
+        $resource = OrderShippingAddressResource::collection($shippingAddresses);
+
+        // Mantener contrato legacy: raíz = array de direcciones
+        $resolved = $resource->resolve();
+
+        $response = ApiResponseResource::success(
+            true,
+            null,
+            $resolved
+        )->response();
+
+        // Sobrescribe el payload JSON para que la raíz sea el array esperado por los tests
+        $response->setData($resolved);
+
+        return $response;
     }
 
     /**
@@ -285,22 +347,23 @@ class OrderController extends Controller
                 && $statusSemaforo['packaging'] === 2
                 && $statusSemaforo['prodotto'] === 2;
 
-            return response()->json([
-                'success' => true,
-                'message' => __('flash.semaforo_saved'),
-                'all_green' => $allGreen,
-                'can_change_to_lanciato' => $allGreen && $order->status === OrderStatus::IN_ALLESTIMENTO->value,
-            ]);
+            return ApiResponseResource::success(
+                true,
+                __('flash.semaforo_saved'),
+                [
+                    'all_green' => $allGreen,
+                    'can_change_to_lanciato' => $allGreen && $order->status === OrderStatus::IN_ALLESTIMENTO->value,
+                ]
+            )->response();
         } catch (\Exception $e) {
             Log::error('Errore salvataggio semaforo', [
                 'order_uuid' => $order->uuid,
                 'error' => $e->getMessage(),
             ]);
 
-            return response()->json([
-                'success' => false,
-                'message' => __('flash.semaforo_error'),
-            ], 500);
+            return ApiResponseResource::error(
+                __('flash.semaforo_error')
+            )->response()->setStatusCode(500);
         }
     }
 
@@ -310,37 +373,19 @@ class OrderController extends Controller
     public function changeStatus(ChangeOrderStatusRequest $request, Order $order): JsonResponse
     {
         try {
-            $newStatus = (int) $request->input('status');
-            $currentStatus = $order->status;
+            $result = $this->changeOrderStatusAction->execute($order, $request);
 
-            // Validate transition
-            $validTransition = $this->isValidStatusTransition($currentStatus, $newStatus);
-            if (! $validTransition) {
-                return response()->json([
-                    'success' => false,
-                    'message' => __('flash.invalid_state_transition'),
-                ], 400);
+            if ($result['success'] !== true) {
+                return ApiResponseResource::error(
+                    $result['message']
+                )->response()->setStatusCode($result['status']);
             }
 
-            $updateData = ['status' => $newStatus];
-
-            // If changing to SOSPESO, require motivazione
-            if ($newStatus === OrderStatus::SOSPESO->value) {
-                $updateData['motivazione'] = $request->input('motivazione');
-            }
-
-            // If forcing to IN_AVANZAMENTO, set autocontrollo to 0
-            if ($newStatus === OrderStatus::IN_AVANZAMENTO->value && $request->has('force')) {
-                $updateData['autocontrollo'] = false;
-            }
-
-            $order->update($updateData);
-
-            return response()->json([
-                'success' => true,
-                'message' => __('flash.order_state_updated'),
-                'order' => $order->fresh(),
-            ]);
+            return ApiResponseResource::success(
+                true,
+                $result['message'],
+                $result['data']
+            )->response();
         } catch (\Exception $e) {
             Log::error('Errore cambio stato ordine', [
                 'order_uuid' => $order->uuid,
@@ -348,44 +393,10 @@ class OrderController extends Controller
                 'error' => $e->getMessage(),
             ]);
 
-            return response()->json([
-                'success' => false,
-                'message' => __('flash.order_state_error'),
-            ], 500);
+            return ApiResponseResource::error(
+                __('flash.order_state_error')
+            )->response()->setStatusCode(500);
         }
-    }
-
-    /**
-     * Validate if status transition is valid.
-     */
-    protected function isValidStatusTransition(int $currentStatus, int $newStatus): bool
-    {
-        // If order is already SALDATO, no status change is allowed
-        if ($currentStatus === OrderStatus::SALDATO->value) {
-            return false;
-        }
-
-        // Can always change to SOSPESO
-        if ($newStatus === OrderStatus::SOSPESO->value) {
-            return true;
-        }
-
-        // Can always change from SOSPESO to any other status (except itself)
-        if ($currentStatus === OrderStatus::SOSPESO->value) {
-            return $newStatus !== OrderStatus::SOSPESO->value;
-        }
-
-        // Define valid transitions
-        $validTransitions = [
-            OrderStatus::PIANIFICATO->value => [OrderStatus::IN_ALLESTIMENTO->value],
-            OrderStatus::IN_ALLESTIMENTO->value => [OrderStatus::LANCIATO->value],
-            OrderStatus::LANCIATO->value => [OrderStatus::IN_AVANZAMENTO->value],
-            OrderStatus::IN_AVANZAMENTO->value => [OrderStatus::EVASO->value],
-            OrderStatus::EVASO->value => [OrderStatus::SALDATO->value],
-        ];
-
-        return isset($validTransitions[$currentStatus])
-            && in_array($newStatus, $validTransitions[$currentStatus]);
     }
 
     /**
@@ -394,63 +405,12 @@ class OrderController extends Controller
     public function downloadBarcode(Order $order): HttpResponse
     {
         try {
-            // Generate barcode code (pad order ID to 13 digits)
-            $code = str_pad((string) $order->id, 13, '0', STR_PAD_LEFT);
+            $result = $this->generateOrderBarcodePdfAction->execute($order);
 
-            // Generate barcode HTML
-            $generator = new BarcodeGeneratorHTML;
-            $barcodeHtml = $generator->getBarcode($code, $generator::TYPE_CODE_128, 3, 60);
-
-            // Create temporary directory if it doesn't exist
-            $tmpDir = storage_path('app/tmp/orders/barcodes');
-            if (! is_dir($tmpDir)) {
-                mkdir($tmpDir, 0755, true);
-            }
-
-            // Render HTML view
-            $html = view('orders.barcode', [
-                'order' => $order,
-                'barcode' => $barcodeHtml,
-                'code' => $code,
-            ])->render();
-
-            // Save HTML to temporary file
-            $tmpFile = $tmpDir.'/'.$order->uuid.'.html';
-            file_put_contents($tmpFile, $html);
-
-            // Get wkhtmltopdf path from config or environment
-            $wkhtmltopdfPath = env('WKHTMLTOPDF_PATH', '/usr/bin/wkhtmltopdf');
-            if (! file_exists($wkhtmltopdfPath)) {
-                // Try common locations
-                $commonPaths = ['/usr/local/bin/wkhtmltopdf', 'wkhtmltopdf'];
-                foreach ($commonPaths as $path) {
-                    if (file_exists($path) || shell_exec("which {$path}")) {
-                        $wkhtmltopdfPath = $path;
-                        break;
-                    }
-                }
-            }
-
-            $pdfTitle = 'Barcode ORDINE '.$order->order_production_number;
-            $command = "ulimit -n 4096; {$wkhtmltopdfPath} --title \"{$pdfTitle}\" {$tmpFile} - 2>&1";
-
-            Log::debug('[ORDER] BARCODE PDF - Executing command: '.$command);
-
-            $pdf = shell_exec($command);
-
-            if (empty($pdf)) {
-                throw new \Exception(__('flash.wkhtmltopdf_error'));
-            }
-
-            // Clean up temporary file
-            @unlink($tmpFile);
-
-            $filename = 'barcode_ordine_'.$order->order_production_number.'.pdf';
-
-            return response($pdf, 200, [
+            return response($result['pdf'], 200, [
                 'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="'.$filename.'"',
-                'Content-Length' => strlen($pdf),
+                'Content-Disposition' => 'attachment; filename="'.$result['filename'].'"',
+                'Content-Length' => strlen($result['pdf']),
             ]);
         } catch (\Exception $e) {
             Log::error('Errore download barcode', [
@@ -458,9 +418,9 @@ class OrderController extends Controller
                 'error' => $e->getMessage(),
             ]);
 
-            return response()->json([
-                'error' => __('flash.barcode_error').': '.$e->getMessage(),
-            ], 500);
+            return ApiResponseResource::error(
+                __('flash.barcode_error').': '.$e->getMessage()
+            )->response()->setStatusCode(500);
         }
     }
 
@@ -470,109 +430,12 @@ class OrderController extends Controller
     public function downloadAutocontrollo(Order $order): HttpResponse
     {
         try {
-            // Load all necessary relationships
-            $order->load([
-                'article.offer.customer',
-                'article.offer.customerDivision',
-                'article.palletSheet',
-                'article.materials' => function ($query) {
-                    $query->where('articlematerials.removed', false);
-                },
-                'article.criticalIssues',
-                'article.packagingInstructions',
-                'article.palletizingInstructions',
-            ]);
+            $result = $this->generateOrderAutocontrolloPdfAction->execute($order);
 
-            if (! $order->article) {
-                throw new \Exception(__('flash.article_not_found_for_order'));
-            }
-
-            $article = $order->article;
-
-            // Get packaging and palletizing instructions
-            $packagingInstruct = '';
-            $palletizingInstruct = '';
-
-            // Try to get from related instructions if available
-            if ($article->packagingInstructions && $article->packagingInstructions->isNotEmpty()) {
-                $packagingInstruct = $article->packagingInstructions->pluck('description')->implode(' - ');
-            }
-
-            if ($article->palletizingInstructions && $article->palletizingInstructions->isNotEmpty()) {
-                $palletizingInstruct = $article->palletizingInstructions->pluck('description')->implode(' - ');
-            }
-
-            // Prepare data for the view
-            $data = [
-                'order' => $order,
-                'article' => $article,
-                'um' => $article->um ?? '-',
-                'cod_article_cliente' => $article->cod_article_client ?? '-',
-                'article_descr' => $article->article_descr ?? '-',
-                'order_production_number' => $order->order_production_number,
-                'quantity' => number_format((float) ($order->quantity ?? 0), 2, ',', ' '),
-                'lot' => $order->lot ?? '-',
-                'expiration_date' => $order->expiration_date ? $order->expiration_date->format('d/m/Y') : '-',
-                'additional_descr' => $article->additional_descr ?? '-',
-                'notes' => $article->offer->notes ?? '-',
-                'packaging_instruct' => $packagingInstruct ?: '-',
-                'palletizing_instruct' => $palletizingInstruct ?: '-',
-                'pallet_plans' => $article->pallet_plans ?? '-',
-                'interlayer_every_floors' => $article->interlayer_every_floors ?? '-',
-                'label_info' => $this->getLabelInfo($article),
-                'criticita' => $this->getCriticita($article),
-                'customer_samples' => $this->getCustomerSamples($article),
-                'pallet' => $article->palletSheet ?? null,
-                'article_material_list' => $this->getArticleMaterials($article),
-                'weight_info' => $this->getWeightInfo($article),
-            ];
-
-            // Create temporary directory if it doesn't exist
-            $tmpDir = storage_path('app/tmp/orders/autocontrollo');
-            if (! is_dir($tmpDir)) {
-                mkdir($tmpDir, 0755, true);
-            }
-
-            // Render HTML view
-            $html = view('orders.autocontrollo', $data)->render();
-
-            // Save HTML to temporary file
-            $tmpFile = $tmpDir.'/'.$order->uuid.'.html';
-            file_put_contents($tmpFile, $html);
-
-            // Get wkhtmltopdf path from config or environment
-            $wkhtmltopdfPath = env('WKHTMLTOPDF_PATH', '/usr/bin/wkhtmltopdf');
-            if (! file_exists($wkhtmltopdfPath)) {
-                // Try common locations
-                $commonPaths = ['/usr/local/bin/wkhtmltopdf', 'wkhtmltopdf'];
-                foreach ($commonPaths as $path) {
-                    if (file_exists($path) || shell_exec("which {$path}")) {
-                        $wkhtmltopdfPath = $path;
-                        break;
-                    }
-                }
-            }
-
-            $pdfTitle = 'Autocontrollo ORDINE '.$order->order_production_number;
-            $command = "ulimit -n 4096; {$wkhtmltopdfPath} --title \"{$pdfTitle}\" --margin-left 2mm --margin-right 2mm {$tmpFile} - 2>&1";
-
-            Log::debug('[ORDER] Autocontrollo PDF - Executing command: '.$command);
-
-            $pdf = shell_exec($command);
-
-            if (empty($pdf)) {
-                throw new \Exception(__('flash.wkhtmltopdf_error'));
-            }
-
-            // Clean up temporary file
-            @unlink($tmpFile);
-
-            $filename = 'autocontrollo_ordine_'.$order->order_production_number.'.pdf';
-
-            return response($pdf, 200, [
+            return response($result['pdf'], 200, [
                 'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="'.$filename.'"',
-                'Content-Length' => strlen($pdf),
+                'Content-Disposition' => 'attachment; filename="'.$result['filename'].'"',
+                'Content-Length' => strlen($result['pdf']),
             ]);
         } catch (\Exception $e) {
             Log::error('Errore download autocontrollo', [
@@ -580,105 +443,9 @@ class OrderController extends Controller
                 'error' => $e->getMessage(),
             ]);
 
-            return response()->json([
-                'error' => __('flash.autocontrollo_pdf_error').': '.$e->getMessage(),
-            ], 500);
+            return ApiResponseResource::error(
+                __('flash.autocontrollo_pdf_error').': '.$e->getMessage()
+            )->response()->setStatusCode(500);
         }
-    }
-
-    /**
-     * Get label information for the article.
-     */
-    protected function getLabelInfo($article): string
-    {
-        $ingredient = $this->getLabelValue($article->labels_ingredient ?? null);
-        $variable = $this->getLabelValue($article->labels_data_variable ?? null);
-        $jumpers = $this->getLabelValue($article->label_of_jumpers ?? null);
-
-        return "{$ingredient} / {$variable} / {$jumpers}";
-    }
-
-    /**
-     * Get label value helper.
-     */
-    protected function getLabelValue($value): string
-    {
-        if ($value === null) {
-            return '-';
-        }
-
-        // Map values to labels (simplified - adjust based on your actual enum/constants)
-        $labels = [
-            0 => __('common.no'),
-            1 => __('common.yes'),
-            2 => __('common.partial'),
-        ];
-
-        return $labels[$value] ?? (string) $value;
-    }
-
-    /**
-     * Get critical issues for the article.
-     */
-    protected function getCriticita($article): string
-    {
-        if (! $article->criticalIssues || $article->criticalIssues->isEmpty()) {
-            return '-';
-        }
-
-        return $article->criticalIssues->pluck('name')->implode(', ');
-    }
-
-    /**
-     * Get customer samples for the article.
-     */
-    protected function getCustomerSamples($article): ?string
-    {
-        // This would need to be implemented based on your actual data structure
-        return $article->customer_samples_list ?? null;
-    }
-
-    /**
-     * Get article materials list.
-     */
-    protected function getArticleMaterials($article): array
-    {
-        if (! $article->materials || $article->materials->isEmpty()) {
-            return [];
-        }
-
-        return $article->materials->map(function ($material) {
-            return [
-                'uuid' => $material->uuid,
-                'cod' => $material->cod ?? '-',
-                'description' => $material->description ?? '-',
-            ];
-        })->toArray();
-    }
-
-    /**
-     * Get weight information for the article.
-     */
-    protected function getWeightInfo($article): string
-    {
-        $nominal = $this->getWeightControlValue($article->nominal_weight_control ?? null);
-        $unit = $article->weight_unit_of_measur ?? '';
-        $value = $article->weight_value ?? '';
-        $object = $this->getWeightControlValue($article->object_control_weight ?? null);
-
-        return "{$nominal}  {$unit}  {$value}  {$object}";
-    }
-
-    /**
-     * Get weight control value helper.
-     */
-    protected function getWeightControlValue($value): string
-    {
-        if ($value === null) {
-            return '';
-        }
-
-        // Map values to labels (simplified - adjust based on your actual enum/constants)
-        return (string) $value;
     }
 }

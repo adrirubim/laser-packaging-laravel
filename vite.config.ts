@@ -31,4 +31,12 @@ export default defineConfig(({ command }) => ({
     esbuild: {
         jsx: 'automatic',
     },
+    resolve: {
+        alias: {
+            '@modules': '/src/modules',
+            '@core': '/src/core',
+            '@shared': '/src/shared',
+            '@infra': '/src/infrastructure',
+        },
+    },
 }));

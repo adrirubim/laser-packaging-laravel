@@ -2,12 +2,12 @@
 
 **Stack:** [VERSION_STACK.md](VERSION_STACK.md). Laravel 12.54.x, PHP 8.4.x, PostgreSQL, Inertia.js 2.3.x, PHPUnit 13.
 
-## 1. Architecture
+## 1. Architecture (Omega 2026)
 
-The backend follows a layered approach:
+The backend follows the **Omega 2026** Action → Resource → Response pattern:
 
 ```text
-Request → Controller → Service / Action → Repository → Model
+Request → Controller → Domain Action → Resource / Service → Repository → Model
                     ↓
              Inertia / JSON response
 ```
@@ -15,11 +15,14 @@ Request → Controller → Service / Action → Repository → Model
 - **Controllers** (`app/Http/Controllers/`)  
   Handle HTTP concerns: routing, auth, validation (via Form Requests), returning Inertia/JSON responses.
 
-- **Services** (`app/Services/`)  
-  Encapsulate domain logic (codes, calculations, number generation, etc.).
+- **Domain Actions** (`src/Domains/{Domain}/Actions/`, namespace `Domain\{Domain}\Actions`)  
+  Encapsulate business use‑cases (create/update flows, planning operations, production portal flows), orchestrate services/repositories, and are the **only** place where domain rules should live.
 
-- **Actions** (`app/Actions/`)  
-  Orchestrate complex flows (create/update Offer/Article/Order, sync employees, etc.), typically transactional.
+- **Services** (`app/Services/`)  
+  Encapsulate shared application logic (codes, calculations, number generation, cross‑domain helpers) reused by Domain Actions.
+
+- **Domain DTOs** (`src/Domains/{Domain}/DTOs/`)  
+  Typed data structures passed into/out of Domain Actions (for example `PalletMovementDto`).
 
 - **Repositories** (`app/Repositories/`)  
   Provide query and persistence abstractions over Eloquent models, especially for complex reads (dashboard, filters, reporting).
@@ -28,6 +31,8 @@ Request → Controller → Service / Action → Repository → Model
   UUID‑based Eloquent models with casts, accessors, relationships and scopes.
 
 ---
+
+See `ARCHITECTURE_OMEGA.md` for a full description of these layers.
 
 ## 2. Controllers
 
@@ -43,7 +48,7 @@ Request → Controller → Service / Action → Repository → Model
 
 - Responses:
   - Inertia pages for backoffice (`Inertia::render()` with React pages under `resources/js/pages`).  
-  - JSON for API endpoints (especially Production Portal).
+  - JSON for API endpoints (especially Production Portal), **wrapped in** `App\Http\Resources\Api\ApiResponseResource` (standard `{ success, message, data }` contract) except for a small number of legacy endpoints that still return `response()->json()` with dedicated Resources (for example some Planning APIs).
 
 ## 3. Services & Actions
 

@@ -2,50 +2,33 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ApiResponseResource;
 use App\Models\ArticleIP;
-use App\Repositories\ArticleRepository;
+use Domain\Articles\Actions\DeleteArticleIPAction;
+use Domain\Articles\Actions\GenerateArticleIPNumberAction;
+use Domain\Articles\Actions\ListArticleIPAction;
+use Domain\Articles\Actions\StoreArticleIPAction;
+use Domain\Articles\Actions\UpdateArticleIPAction;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ArticleIPController extends Controller
 {
-    protected ArticleRepository $articleRepository;
-
-    public function __construct(ArticleRepository $articleRepository)
-    {
-        $this->articleRepository = $articleRepository;
-    }
+    public function __construct(
+        protected ListArticleIPAction $listArticleIPAction,
+        protected StoreArticleIPAction $storeArticleIPAction,
+        protected UpdateArticleIPAction $updateArticleIPAction,
+        protected DeleteArticleIPAction $deleteArticleIPAction,
+        protected GenerateArticleIPNumberAction $generateArticleIPNumberAction,
+    ) {}
 
     /**
      * Display a listing of palletization instructions.
      */
     public function index(Request $request): Response
     {
-        $query = ArticleIP::active();
-
-        // Search
-        if ($request->has('search')) {
-            $search = $request->get('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('code', 'like', "%{$search}%")
-                    ->orWhere('number', 'like', "%{$search}%")
-                    ->orWhere('filename', 'like', "%{$search}%");
-            });
-        }
-
-        // Ordinamento
-        $sortBy = $request->get('sort_by', 'code');
-        $sortOrder = $request->get('sort_order', 'asc');
-
-        $allowedSorts = ['code', 'number', 'filename'];
-        if (in_array($sortBy, $allowedSorts)) {
-            $query->orderBy($sortBy, $sortOrder);
-        } else {
-            $query->orderBy('code', 'asc');
-        }
-
-        $instructions = $query->paginate($request->get('per_page', 15));
+        $instructions = $this->listArticleIPAction->execute($request->all());
 
         return Inertia::render('Articles/PalletizationInstructions/Index', [
             'instructions' => $instructions,
@@ -100,10 +83,7 @@ class ArticleIPController extends Controller
             $data['filename'] = $originalName;
         }
 
-        $instruction = ArticleIP::create($data);
-
-        // Invalidate form options cache
-        $this->articleRepository->clearFormOptionsCache();
+        $this->storeArticleIPAction->execute($data);
 
         return redirect()->route('articles.palletization-instructions.index')
             ->with('success', __('flash.article_ip.created'));
@@ -190,10 +170,7 @@ class ArticleIPController extends Controller
             $data['filename'] = $originalName;
         }
 
-        $palletizationInstruction->update($data);
-
-        // Invalidate form options cache
-        $this->articleRepository->clearFormOptionsCache();
+        $this->updateArticleIPAction->execute($palletizationInstruction, $data);
 
         return redirect()->route('articles.palletization-instructions.index')
             ->with('success', __('flash.article_ip.updated'));
@@ -204,10 +181,7 @@ class ArticleIPController extends Controller
      */
     public function destroy(ArticleIP $palletizationInstruction)
     {
-        $palletizationInstruction->update(['removed' => true]);
-
-        // Invalidate form options cache
-        $this->articleRepository->clearFormOptionsCache();
+        $this->deleteArticleIPAction->execute($palletizationInstruction);
 
         return redirect()->route('articles.palletization-instructions.index')
             ->with('success', __('flash.article_ip.deleted'));
@@ -238,24 +212,11 @@ class ArticleIPController extends Controller
     public function generateIPNumber()
     {
         try {
-            $articlesIP = ArticleIP::where('code', 'IP')
-                ->where('removed', false)
-                ->get();
+            $payload = $this->generateArticleIPNumberAction->execute();
 
-            $maxNumber = 0;
-            foreach ($articlesIP as $article) {
-                $currentNumber = intval($article->number);
-                if ($currentNumber > $maxNumber) {
-                    $maxNumber = $currentNumber;
-                }
-            }
-
-            $newNumber = $maxNumber + 1;
-            $number = str_pad($newNumber, 4, '0', STR_PAD_LEFT);
-
-            return response()->json(['number' => $number]);
+            return ApiResponseResource::success($payload);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return ApiResponseResource::error($e->getMessage(), null, 400);
         }
     }
 }

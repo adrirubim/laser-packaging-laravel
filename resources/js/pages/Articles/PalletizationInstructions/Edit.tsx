@@ -52,45 +52,49 @@ export default function PalletizationInstructionsEdit({
     const { t } = useTranslations();
     const { props } = usePage<PalletizationInstructionsEditProps>();
     const { instruction } = props;
-    const instructionCode = instruction.code + (instruction.number || '');
+    const instructionCode = instruction.code + (instruction.number ?? '');
 
     const [lengthCm, setLengthCm] = useState<string>(
-        instruction.length_cm?.toString() || '',
+        instruction.length_cm?.toString() ?? '',
     );
     const [depthCm, setDepthCm] = useState<string>(
-        instruction.depth_cm?.toString() || '',
+        instruction.depth_cm?.toString() ?? '',
     );
     const [heightCm, setHeightCm] = useState<string>(
-        instruction.height_cm?.toString() || '',
+        instruction.height_cm?.toString() ?? '',
     );
     const [volumeDmc, setVolumeDmc] = useState<string>(
-        instruction.volume_dmc?.toString() || '',
+        instruction.volume_dmc?.toString() ?? '',
     );
     const [planPackaging, setPlanPackaging] = useState<string>(
-        instruction.plan_packaging?.toString() || '',
+        instruction.plan_packaging?.toString() ?? '',
     );
     const [palletPlans, setPalletPlans] = useState<string>(
-        instruction.pallet_plans?.toString() || '',
+        instruction.pallet_plans?.toString() ?? '',
     );
     const [qtyPallet, setQtyPallet] = useState<string>(
-        instruction.qty_pallet?.toString() || '',
+        instruction.qty_pallet?.toString() ?? '',
     );
     const [unitsPerNeck, setUnitsPerNeck] = useState<string>(
-        instruction.units_per_neck?.toString() || '',
+        instruction.units_per_neck?.toString() ?? '',
     );
     const [selectedFileName, setSelectedFileName] = useState<string | null>(
         null,
     );
     const [unitsPallet, setUnitsPallet] = useState<string>(
-        instruction.units_pallet?.toString() || '',
+        instruction.units_pallet?.toString() ?? '',
     );
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
 
     // Calculate volume on dimension change
     useEffect(() => {
-        const length = parseFloat(lengthCm) || 0;
-        const depth = parseFloat(depthCm) || 0;
-        const height = parseFloat(heightCm) || 0;
+        const parsedLength = parseFloat(lengthCm);
+        const parsedDepth = parseFloat(depthCm);
+        const parsedHeight = parseFloat(heightCm);
+
+        const length = Number.isNaN(parsedLength) ? 0 : parsedLength;
+        const depth = Number.isNaN(parsedDepth) ? 0 : parsedDepth;
+        const height = Number.isNaN(parsedHeight) ? 0 : parsedHeight;
 
         if (length > 0 && depth > 0 && height > 0) {
             const volume = (length * depth * height) / 1000; // Convertir a dm³
@@ -540,20 +544,23 @@ export default function PalletizationInstructionsEdit({
                                                             'articles.palletization_instructions.form.attachment_label',
                                                         )}
                                                     </FormLabel>
-                                                    {instruction.filename && (
-                                                        <div className="mb-2 rounded-md bg-muted p-2">
-                                                            <p className="mb-1 text-xs text-muted-foreground">
-                                                                {t(
-                                                                    'articles.palletization_instructions.edit.current_attachment',
-                                                                )}
-                                                            </p>
-                                                            <p className="font-mono text-sm">
-                                                                {
-                                                                    instruction.filename
-                                                                }
-                                                            </p>
-                                                        </div>
-                                                    )}
+                                                    {instruction.filename !=
+                                                        null &&
+                                                        instruction.filename !==
+                                                            '' && (
+                                                            <div className="mb-2 rounded-md bg-muted p-2">
+                                                                <p className="mb-1 text-xs text-muted-foreground">
+                                                                    {t(
+                                                                        'articles.palletization_instructions.edit.current_attachment',
+                                                                    )}
+                                                                </p>
+                                                                <p className="font-mono text-sm">
+                                                                    {
+                                                                        instruction.filename
+                                                                    }
+                                                                </p>
+                                                            </div>
+                                                        )}
                                                     <Input
                                                         id="filename"
                                                         name="filename"
@@ -576,7 +583,10 @@ export default function PalletizationInstructionsEdit({
                                                         id="filename-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        {instruction.filename
+                                                        {instruction.filename !=
+                                                            null &&
+                                                        instruction.filename !==
+                                                            ''
                                                             ? t(
                                                                   'articles.palletization_instructions.edit.attachment_replace_help',
                                                               )
@@ -584,18 +594,20 @@ export default function PalletizationInstructionsEdit({
                                                                   'articles.palletization_instructions.edit.attachment_help',
                                                               )}
                                                     </p>
-                                                    {selectedFileName && (
-                                                        <p className="text-xs text-muted-foreground">
-                                                            {t(
-                                                                'articles.palletization_instructions.edit.new_attachment_selected',
-                                                            )}{' '}
-                                                            <span className="font-mono">
-                                                                {
-                                                                    selectedFileName
-                                                                }
-                                                            </span>
-                                                        </p>
-                                                    )}
+                                                    {selectedFileName != null &&
+                                                        selectedFileName !==
+                                                            '' && (
+                                                            <p className="text-xs text-muted-foreground">
+                                                                {t(
+                                                                    'articles.palletization_instructions.edit.new_attachment_selected',
+                                                                )}{' '}
+                                                                <span className="font-mono">
+                                                                    {
+                                                                        selectedFileName
+                                                                    }
+                                                                </span>
+                                                            </p>
+                                                        )}
                                                     <InputError
                                                         message={
                                                             allErrors.filename

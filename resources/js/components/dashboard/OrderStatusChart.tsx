@@ -106,7 +106,7 @@ export function OrderStatusChart({
     const renderLegend = (props: any) => {
         const payload = (props?.payload ?? []) as LegendPayload[];
 
-        if (!payload || !payload.length) {
+        if (payload === null || payload === undefined || payload.length === 0) {
             return null;
         }
 
@@ -231,7 +231,9 @@ export function OrderStatusChart({
                         dataKey="value"
                         // Feedback visual de que es interactivo
                         style={
-                            onStatusClick ? { cursor: 'pointer' } : undefined
+                            Boolean(onStatusClick) === true
+                                ? { cursor: 'pointer' }
+                                : undefined
                         }
                         isAnimationActive={false}
                         onMouseMove={(_, index: number) =>
@@ -251,7 +253,7 @@ export function OrderStatusChart({
                                         : 0.4
                                 }
                                 onClick={() => {
-                                    if (onStatusClick) {
+                                    if (typeof onStatusClick === 'function') {
                                         onStatusClick(entry.statusKey);
                                     }
                                 }}

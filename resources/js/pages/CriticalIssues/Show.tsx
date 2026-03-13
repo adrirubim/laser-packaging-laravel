@@ -205,7 +205,7 @@ export default function CriticalIssuesShow({
                         </CardContent>
                     </Card>
 
-                    {criticalIssue.articles &&
+                    {criticalIssue.articles != null &&
                         criticalIssue.articles.length > 0 && (
                             <Card>
                                 <CardHeader>
@@ -240,13 +240,16 @@ export default function CriticalIssuesShow({
                                                                     article.cod_article_las
                                                                 }
                                                             </div>
-                                                            {article.article_descr && (
-                                                                <div className="truncate text-xs text-muted-foreground">
-                                                                    {
-                                                                        article.article_descr
-                                                                    }
-                                                                </div>
-                                                            )}
+                                                            {article.article_descr !=
+                                                                null &&
+                                                                article.article_descr !==
+                                                                    '' && (
+                                                                    <div className="truncate text-xs text-muted-foreground">
+                                                                        {
+                                                                            article.article_descr
+                                                                        }
+                                                                    </div>
+                                                                )}
                                                         </div>
                                                     </div>
                                                 </div>

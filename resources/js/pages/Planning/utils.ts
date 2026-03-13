@@ -29,7 +29,7 @@ export function isCellEnabledForOrder(
 ): boolean {
     if (dayOfWeek === 0) return false;
     if (dayOfWeek === 6) {
-        if (!order.work_saturday) return false;
+        if (order.work_saturday !== true) return false;
     }
     const shiftMode = order.shift_mode ?? 0;
     if (shiftMode === 0) return hour >= 8 && hour < 16;

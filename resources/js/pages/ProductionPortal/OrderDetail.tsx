@@ -147,7 +147,7 @@ export default function ProductionPortalOrderDetail({
                     type: 'success',
                     message: t('production_portal.order.pallet_added'),
                 });
-                if (result.print_url) {
+                if (result.print_url != null && result.print_url !== '') {
                     // Open print URL in new window
                     window.open(result.print_url, '_blank');
                 }
@@ -198,7 +198,7 @@ export default function ProductionPortalOrderDetail({
                     }),
                 });
                 setManualQuantity('');
-                if (result.print_url) {
+                if (result.print_url != null && result.print_url !== '') {
                     window.open(result.print_url, '_blank');
                 }
                 setTimeout(() => {
@@ -347,17 +347,17 @@ export default function ProductionPortalOrderDetail({
             {/* Main Content */}
             <main className="container mx-auto px-4 py-6">
                 {/* Messages */}
-                {flash?.error && (
+                {flash?.error != null && flash.error !== '' && (
                     <div className="mb-4 rounded-md border border-red-500/40 bg-red-500/5 px-4 py-3 text-sm text-red-700 dark:text-red-300">
                         {flash.error}
                     </div>
                 )}
-                {flash?.success && (
+                {flash?.success != null && flash.success !== '' && (
                     <div className="mb-4 rounded-md border border-emerald-500/40 bg-emerald-500/5 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-300">
                         {flash.success}
                     </div>
                 )}
-                {actionMessage && (
+                {actionMessage != null && (
                     <div
                         className={`mb-4 rounded-md border px-4 py-3 text-sm ${
                             actionMessage.type === 'success'
@@ -406,20 +406,23 @@ export default function ProductionPortalOrderDetail({
                                             {order.order_production_number}
                                         </p>
                                     </div>
-                                    {order.number_customer_reference_order && (
-                                        <div>
-                                            <Label className="text-xs text-muted-foreground">
-                                                {t(
-                                                    'production_portal.order.customer_reference',
-                                                )}
-                                            </Label>
-                                            <p className="font-semibold">
-                                                {
-                                                    order.number_customer_reference_order
-                                                }
-                                            </p>
-                                        </div>
-                                    )}
+                                    {order.number_customer_reference_order !=
+                                        null &&
+                                        order.number_customer_reference_order !==
+                                            '' && (
+                                            <div>
+                                                <Label className="text-xs text-muted-foreground">
+                                                    {t(
+                                                        'production_portal.order.customer_reference',
+                                                    )}
+                                                </Label>
+                                                <p className="font-semibold">
+                                                    {
+                                                        order.number_customer_reference_order
+                                                    }
+                                                </p>
+                                            </div>
+                                        )}
                                 </div>
 
                                 {order.article && (
@@ -432,11 +435,16 @@ export default function ProductionPortalOrderDetail({
                                         <p className="font-semibold">
                                             {order.article.cod_article_las}
                                         </p>
-                                        {order.article.article_descr && (
-                                            <p className="text-sm text-muted-foreground">
-                                                {order.article.article_descr}
-                                            </p>
-                                        )}
+                                        {order.article.article_descr != null &&
+                                            order.article.article_descr !==
+                                                '' && (
+                                                <p className="text-sm text-muted-foreground">
+                                                    {
+                                                        order.article
+                                                            .article_descr
+                                                    }
+                                                </p>
+                                            )}
                                     </div>
                                 )}
 

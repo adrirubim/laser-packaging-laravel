@@ -192,14 +192,15 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
                                 </p>
                             </div>
 
-                            {customer.vat_number && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t('customers.table.vat')}
-                                    </Label>
-                                    <p>{customer.vat_number}</p>
-                                </div>
-                            )}
+                            {customer.vat_number != null &&
+                                customer.vat_number !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t('customers.table.vat')}
+                                        </Label>
+                                        <p>{customer.vat_number}</p>
+                                    </div>
+                                )}
                         </CardContent>
                     </Card>
 
@@ -213,18 +214,19 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {customer.street && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t('customers.table.street')}
-                                    </Label>
-                                    <p className="text-lg font-semibold">
-                                        {customer.street}
-                                    </p>
-                                </div>
-                            )}
+                            {customer.street != null &&
+                                customer.street !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t('customers.table.street')}
+                                        </Label>
+                                        <p className="text-lg font-semibold">
+                                            {customer.street}
+                                        </p>
+                                    </div>
+                                )}
 
-                            {customer.co && (
+                            {customer.co != null && customer.co !== '' && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
                                         {t('customers.table.co')}
@@ -233,9 +235,11 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
                                 </div>
                             )}
 
-                            {(customer.city ||
-                                customer.postal_code ||
-                                customer.province) && (
+                            {((customer.city != null && customer.city !== '') ||
+                                (customer.postal_code != null &&
+                                    customer.postal_code !== '') ||
+                                (customer.province != null &&
+                                    customer.province !== '')) && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
                                         {t('customers.show.location_label')}
@@ -244,25 +248,30 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
                                         <MapPin className="h-4 w-4 text-muted-foreground" />
                                         {[
                                             customer.city,
-                                            customer.postal_code
+                                            customer.postal_code != null &&
+                                            customer.postal_code !== ''
                                                 ? `(${customer.postal_code})`
                                                 : null,
                                             customer.province,
                                         ]
-                                            .filter(Boolean)
+                                            .filter(
+                                                (part) =>
+                                                    part != null && part !== '',
+                                            )
                                             .join(' ')}
                                     </p>
                                 </div>
                             )}
 
-                            {customer.country && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t('customers.table.country')}
-                                    </Label>
-                                    <p>{customer.country}</p>
-                                </div>
-                            )}
+                            {customer.country != null &&
+                                customer.country !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t('customers.table.country')}
+                                        </Label>
+                                        <p>{customer.country}</p>
+                                    </div>
+                                )}
                         </CardContent>
                     </Card>
                 </div>
@@ -311,11 +320,12 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
                                             <p className="font-medium">
                                                 {division.name}
                                             </p>
-                                            {division.code && (
-                                                <p className="text-sm text-muted-foreground">
-                                                    Codice: {division.code}
-                                                </p>
-                                            )}
+                                            {division.code != null &&
+                                                division.code !== '' && (
+                                                    <p className="text-sm text-muted-foreground">
+                                                        Codice: {division.code}
+                                                    </p>
+                                                )}
                                         </div>
                                     </Link>
                                 ))}
@@ -372,21 +382,23 @@ export default function CustomersShow({ customer }: CustomersShowProps) {
                                             <p className="font-mono font-medium">
                                                 {offer.offer_number}
                                             </p>
-                                            {offer.description && (
-                                                <p className="text-sm text-muted-foreground">
-                                                    {offer.description}
-                                                </p>
-                                            )}
-                                            {offer.offer_date && (
-                                                <p className="text-xs text-muted-foreground">
-                                                    {t(
-                                                        'customers.show.offer_date_label',
-                                                    )}{' '}
-                                                    {new Date(
-                                                        offer.offer_date,
-                                                    ).toLocaleDateString()}
-                                                </p>
-                                            )}
+                                            {offer.description != null &&
+                                                offer.description !== '' && (
+                                                    <p className="text-sm text-muted-foreground">
+                                                        {offer.description}
+                                                    </p>
+                                                )}
+                                            {offer.offer_date != null &&
+                                                offer.offer_date !== '' && (
+                                                    <p className="text-xs text-muted-foreground">
+                                                        {t(
+                                                            'customers.show.offer_date_label',
+                                                        )}{' '}
+                                                        {new Date(
+                                                            offer.offer_date,
+                                                        ).toLocaleDateString()}
+                                                    </p>
+                                                )}
                                         </div>
                                     </Link>
                                 ))}

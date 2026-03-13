@@ -127,7 +127,7 @@ export default function PalletTypesIndex() {
                             {t('common.search')}
                         </label>
                         <SearchInput
-                            value={filters.search || ''}
+                            value={filters.search ?? ''}
                             onChange={handleSearchChange}
                             onClear={clearSearch}
                             placeholder={t('pallet_types.search_placeholder')}

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\Api\ApiResponseResource;
 use App\Models\ModelSCQ;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -232,9 +233,17 @@ class ModelSCQController extends Controller
         try {
             $cquNumber = ModelSCQ::generateNextCQUCode();
 
-            return response()->json(['cqunumber' => $cquNumber]);
+            return ApiResponseResource::success(
+                true,
+                null,
+                [
+                    'cod_model' => $cquNumber,
+                ]
+            )->response();
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return ApiResponseResource::error(
+                $e->getMessage()
+            )->response()->setStatusCode(400);
         }
     }
 

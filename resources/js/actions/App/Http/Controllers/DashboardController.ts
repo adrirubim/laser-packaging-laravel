@@ -6,7 +6,7 @@ import {
 } from './../../../../wayfinder';
 /**
  * @see \App\Http\Controllers\DashboardController::index
- * @see app/Http/Controllers/DashboardController.php:23
+ * @see app/Http/Controllers/DashboardController.php:21
  * @route '/dashboard'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -21,7 +21,7 @@ index.definition = {
 
 /**
  * @see \App\Http\Controllers\DashboardController::index
- * @see app/Http/Controllers/DashboardController.php:23
+ * @see app/Http/Controllers/DashboardController.php:21
  * @route '/dashboard'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -30,7 +30,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\DashboardController::index
- * @see app/Http/Controllers/DashboardController.php:23
+ * @see app/Http/Controllers/DashboardController.php:21
  * @route '/dashboard'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -40,7 +40,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\DashboardController::index
- * @see app/Http/Controllers/DashboardController.php:23
+ * @see app/Http/Controllers/DashboardController.php:21
  * @route '/dashboard'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -50,7 +50,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
  * @see \App\Http\Controllers\DashboardController::index
- * @see app/Http/Controllers/DashboardController.php:23
+ * @see app/Http/Controllers/DashboardController.php:21
  * @route '/dashboard'
  */
 const indexForm = (
@@ -62,7 +62,7 @@ const indexForm = (
 
 /**
  * @see \App\Http\Controllers\DashboardController::index
- * @see app/Http/Controllers/DashboardController.php:23
+ * @see app/Http/Controllers/DashboardController.php:21
  * @route '/dashboard'
  */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -72,7 +72,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\DashboardController::index
- * @see app/Http/Controllers/DashboardController.php:23
+ * @see app/Http/Controllers/DashboardController.php:21
  * @route '/dashboard'
  */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -88,8 +88,91 @@ indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 index.form = indexForm;
 
 /**
+ * @see \App\Http\Controllers\DashboardController::stats
+ * @see app/Http/Controllers/DashboardController.php:42
+ * @route '/dashboard/stats'
+ */
+export const stats = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: stats.url(options),
+    method: 'get',
+});
+
+stats.definition = {
+    methods: ['get', 'head'],
+    url: '/dashboard/stats',
+} satisfies RouteDefinition<['get', 'head']>;
+
+/**
+ * @see \App\Http\Controllers\DashboardController::stats
+ * @see app/Http/Controllers/DashboardController.php:42
+ * @route '/dashboard/stats'
+ */
+stats.url = (options?: RouteQueryOptions) => {
+    return stats.definition.url + queryParams(options);
+};
+
+/**
+ * @see \App\Http\Controllers\DashboardController::stats
+ * @see app/Http/Controllers/DashboardController.php:42
+ * @route '/dashboard/stats'
+ */
+stats.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: stats.url(options),
+    method: 'get',
+});
+
+/**
+ * @see \App\Http\Controllers\DashboardController::stats
+ * @see app/Http/Controllers/DashboardController.php:42
+ * @route '/dashboard/stats'
+ */
+stats.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: stats.url(options),
+    method: 'head',
+});
+
+/**
+ * @see \App\Http\Controllers\DashboardController::stats
+ * @see app/Http/Controllers/DashboardController.php:42
+ * @route '/dashboard/stats'
+ */
+const statsForm = (
+    options?: RouteQueryOptions,
+): RouteFormDefinition<'get'> => ({
+    action: stats.url(options),
+    method: 'get',
+});
+
+/**
+ * @see \App\Http\Controllers\DashboardController::stats
+ * @see app/Http/Controllers/DashboardController.php:42
+ * @route '/dashboard/stats'
+ */
+statsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: stats.url(options),
+    method: 'get',
+});
+
+/**
+ * @see \App\Http\Controllers\DashboardController::stats
+ * @see app/Http/Controllers/DashboardController.php:42
+ * @route '/dashboard/stats'
+ */
+statsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: stats.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        },
+    }),
+    method: 'get',
+});
+
+stats.form = statsForm;
+
+/**
  * @see \App\Http\Controllers\DashboardController::acknowledgeAlert
- * @see app/Http/Controllers/DashboardController.php:132
+ * @see app/Http/Controllers/DashboardController.php:64
  * @route '/dashboard/alerts/acknowledge'
  */
 export const acknowledgeAlert = (
@@ -106,7 +189,7 @@ acknowledgeAlert.definition = {
 
 /**
  * @see \App\Http\Controllers\DashboardController::acknowledgeAlert
- * @see app/Http/Controllers/DashboardController.php:132
+ * @see app/Http/Controllers/DashboardController.php:64
  * @route '/dashboard/alerts/acknowledge'
  */
 acknowledgeAlert.url = (options?: RouteQueryOptions) => {
@@ -115,7 +198,7 @@ acknowledgeAlert.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\DashboardController::acknowledgeAlert
- * @see app/Http/Controllers/DashboardController.php:132
+ * @see app/Http/Controllers/DashboardController.php:64
  * @route '/dashboard/alerts/acknowledge'
  */
 acknowledgeAlert.post = (
@@ -127,7 +210,7 @@ acknowledgeAlert.post = (
 
 /**
  * @see \App\Http\Controllers\DashboardController::acknowledgeAlert
- * @see app/Http/Controllers/DashboardController.php:132
+ * @see app/Http/Controllers/DashboardController.php:64
  * @route '/dashboard/alerts/acknowledge'
  */
 const acknowledgeAlertForm = (
@@ -139,7 +222,7 @@ const acknowledgeAlertForm = (
 
 /**
  * @see \App\Http\Controllers\DashboardController::acknowledgeAlert
- * @see app/Http/Controllers/DashboardController.php:132
+ * @see app/Http/Controllers/DashboardController.php:64
  * @route '/dashboard/alerts/acknowledge'
  */
 acknowledgeAlertForm.post = (
@@ -151,6 +234,6 @@ acknowledgeAlertForm.post = (
 
 acknowledgeAlert.form = acknowledgeAlertForm;
 
-const DashboardController = { index, acknowledgeAlert };
+const DashboardController = { index, stats, acknowledgeAlert };
 
 export default DashboardController;

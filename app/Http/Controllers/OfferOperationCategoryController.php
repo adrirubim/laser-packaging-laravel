@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\Api\ApiResponseResource;
 use App\Models\OfferOperationCategory;
 use App\Repositories\OfferRepository;
 use Illuminate\Http\Request;
@@ -127,8 +128,12 @@ class OfferOperationCategoryController extends Controller
             ->orderBy('code')
             ->get(['uuid', 'code', 'name']);
 
-        return response()->json([
-            'categories' => $categories,
-        ]);
+        return ApiResponseResource::success(
+            true,
+            null,
+            [
+                'categories' => $categories,
+            ]
+        )->response();
     }
 }

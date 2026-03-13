@@ -165,20 +165,23 @@ export default function PalletSheetsEdit({
                                                             'articles.pallet_sheets.form.attachment_label',
                                                         )}
                                                     </FormLabel>
-                                                    {palletSheet.filename && (
-                                                        <div className="mb-2 rounded-md bg-muted p-2">
-                                                            <p className="mb-1 text-xs text-muted-foreground">
-                                                                {t(
-                                                                    'articles.pallet_sheets.edit.current_attachment',
-                                                                )}
-                                                            </p>
-                                                            <p className="font-mono text-sm">
-                                                                {
-                                                                    palletSheet.filename
-                                                                }
-                                                            </p>
-                                                        </div>
-                                                    )}
+                                                    {palletSheet.filename !=
+                                                        null &&
+                                                        palletSheet.filename !==
+                                                            '' && (
+                                                            <div className="mb-2 rounded-md bg-muted p-2">
+                                                                <p className="mb-1 text-xs text-muted-foreground">
+                                                                    {t(
+                                                                        'articles.pallet_sheets.edit.current_attachment',
+                                                                    )}
+                                                                </p>
+                                                                <p className="font-mono text-sm">
+                                                                    {
+                                                                        palletSheet.filename
+                                                                    }
+                                                                </p>
+                                                            </div>
+                                                        )}
                                                     <Input
                                                         id="filename"
                                                         name="filename"
@@ -201,7 +204,10 @@ export default function PalletSheetsEdit({
                                                         id="filename-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        {palletSheet.filename
+                                                        {palletSheet.filename !=
+                                                            null &&
+                                                        palletSheet.filename !==
+                                                            ''
                                                             ? t(
                                                                   'articles.pallet_sheets.edit.attachment_replace_help',
                                                               )
@@ -209,18 +215,20 @@ export default function PalletSheetsEdit({
                                                                   'articles.pallet_sheets.edit.attachment_help',
                                                               )}
                                                     </p>
-                                                    {selectedFileName && (
-                                                        <p className="text-xs text-muted-foreground">
-                                                            {t(
-                                                                'articles.pallet_sheets.edit.new_attachment_selected',
-                                                            )}{' '}
-                                                            <span className="font-mono">
-                                                                {
-                                                                    selectedFileName
-                                                                }
-                                                            </span>
-                                                        </p>
-                                                    )}
+                                                    {selectedFileName != null &&
+                                                        selectedFileName !==
+                                                            '' && (
+                                                            <p className="text-xs text-muted-foreground">
+                                                                {t(
+                                                                    'articles.pallet_sheets.edit.new_attachment_selected',
+                                                                )}{' '}
+                                                                <span className="font-mono">
+                                                                    {
+                                                                        selectedFileName
+                                                                    }
+                                                                </span>
+                                                            </p>
+                                                        )}
                                                     <InputError
                                                         message={
                                                             allErrors.filename

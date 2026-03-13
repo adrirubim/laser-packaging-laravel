@@ -236,16 +236,19 @@ export default function PalletizationInstructionsIndex() {
                                                         <h3 className="font-medium">
                                                             {instruction.code}
                                                         </h3>
-                                                        {instruction.number && (
-                                                            <p className="text-xs text-muted-foreground">
-                                                                {t(
-                                                                    'articles.palletization_instructions.index.number_label',
-                                                                )}{' '}
-                                                                {
-                                                                    instruction.number
-                                                                }
-                                                            </p>
-                                                        )}
+                                                        {instruction.number !=
+                                                            null &&
+                                                            instruction.number !==
+                                                                '' && (
+                                                                <p className="text-xs text-muted-foreground">
+                                                                    {t(
+                                                                        'articles.palletization_instructions.index.number_label',
+                                                                    )}{' '}
+                                                                    {
+                                                                        instruction.number
+                                                                    }
+                                                                </p>
+                                                            )}
                                                     </div>
                                                 </div>
                                                 <ActionsDropdown
@@ -273,37 +276,39 @@ export default function PalletizationInstructionsIndex() {
                                                 />
                                             </div>
                                             <div className="grid grid-cols-2 gap-2 text-xs">
-                                                {instruction.filename && (
-                                                    <div>
-                                                        <span className="text-muted-foreground">
-                                                            {t(
-                                                                'articles.palletization_instructions.index.attachment_label',
-                                                            )}{' '}
-                                                        </span>
-                                                        <span>
-                                                            {
-                                                                instruction.filename
-                                                            }
-                                                        </span>{' '}
-                                                        <button
-                                                            type="button"
-                                                            className="ml-1 text-primary underline-offset-2 hover:underline"
-                                                            onClick={() => {
-                                                                window.location.href =
-                                                                    articles.palletizationInstructions.download(
-                                                                        {
-                                                                            palletizationInstruction:
-                                                                                instruction.uuid,
-                                                                        },
-                                                                    ).url;
-                                                            }}
-                                                        >
-                                                            {t(
-                                                                'articles.palletization_instructions.index.download',
-                                                            )}
-                                                        </button>
-                                                    </div>
-                                                )}
+                                                {instruction.filename != null &&
+                                                    instruction.filename !==
+                                                        '' && (
+                                                        <div>
+                                                            <span className="text-muted-foreground">
+                                                                {t(
+                                                                    'articles.palletization_instructions.index.attachment_label',
+                                                                )}{' '}
+                                                            </span>
+                                                            <span>
+                                                                {
+                                                                    instruction.filename
+                                                                }
+                                                            </span>{' '}
+                                                            <button
+                                                                type="button"
+                                                                className="ml-1 text-primary underline-offset-2 hover:underline"
+                                                                onClick={() => {
+                                                                    window.location.href =
+                                                                        articles.palletizationInstructions.download(
+                                                                            {
+                                                                                palletizationInstruction:
+                                                                                    instruction.uuid,
+                                                                            },
+                                                                        ).url;
+                                                                }}
+                                                            >
+                                                                {t(
+                                                                    'articles.palletization_instructions.index.download',
+                                                                )}
+                                                            </button>
+                                                        </div>
+                                                    )}
                                                 {instruction.plan_packaging !==
                                                     null &&
                                                     instruction.plan_packaging !==
@@ -452,14 +457,20 @@ export default function PalletizationInstructionsIndex() {
                                                 {instruction.uuid}
                                             </td>
                                             <td className="px-3 py-2 align-middle font-medium">
-                                                {instruction.code || (
+                                                {instruction.code != null &&
+                                                instruction.code !== '' ? (
+                                                    instruction.code
+                                                ) : (
                                                     <span className="text-muted-foreground">
                                                         —
                                                     </span>
                                                 )}
                                             </td>
                                             <td className="px-3 py-2 align-middle text-xs">
-                                                {instruction.number || (
+                                                {instruction.number != null &&
+                                                instruction.number !== '' ? (
+                                                    instruction.number
+                                                ) : (
                                                     <span className="text-muted-foreground">
                                                         —
                                                     </span>
@@ -572,7 +583,10 @@ export default function PalletizationInstructionsIndex() {
                                                 )}
                                             </td>
                                             <td className="px-3 py-2 align-middle text-xs">
-                                                {instruction.filename || (
+                                                {instruction.filename != null &&
+                                                instruction.filename !== '' ? (
+                                                    instruction.filename
+                                                ) : (
                                                     <span className="text-muted-foreground">
                                                         —
                                                     </span>
@@ -602,7 +616,10 @@ export default function PalletizationInstructionsIndex() {
                                                         )
                                                     }
                                                     extraItems={
-                                                        instruction.filename ? (
+                                                        instruction.filename !=
+                                                            null &&
+                                                        instruction.filename !==
+                                                            '' ? (
                                                             <DropdownMenuItem
                                                                 onSelect={(
                                                                     e,

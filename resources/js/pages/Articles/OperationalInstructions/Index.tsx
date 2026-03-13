@@ -222,17 +222,20 @@ export default function OperationalInstructionsIndex() {
                                                         <h3 className="font-medium">
                                                             {instruction.code}
                                                         </h3>
-                                                        {instruction.number && (
-                                                            <p className="text-xs text-muted-foreground">
-                                                                {t(
-                                                                    'operational_instructions.index.th_number',
-                                                                )}
-                                                                :{' '}
-                                                                {
-                                                                    instruction.number
-                                                                }
-                                                            </p>
-                                                        )}
+                                                        {instruction.number !=
+                                                            null &&
+                                                            instruction.number !==
+                                                                '' && (
+                                                                <p className="text-xs text-muted-foreground">
+                                                                    {t(
+                                                                        'operational_instructions.index.th_number',
+                                                                    )}
+                                                                    :{' '}
+                                                                    {
+                                                                        instruction.number
+                                                                    }
+                                                                </p>
+                                                            )}
                                                     </div>
                                                 </div>
                                                 <ActionsDropdown
@@ -259,34 +262,35 @@ export default function OperationalInstructionsIndex() {
                                                     }
                                                 />
                                             </div>
-                                            {instruction.filename && (
-                                                <div className="text-xs text-muted-foreground">
-                                                    {t(
-                                                        'operational_instructions.index.attachment_prefix',
-                                                    )}{' '}
-                                                    {instruction.filename}{' '}
-                                                    <button
-                                                        type="button"
-                                                        className="ml-1 text-primary underline-offset-2 hover:underline"
-                                                        onClick={() => {
-                                                            window.location.href =
-                                                                articles.operationalInstructions.download(
-                                                                    {
-                                                                        operationalInstruction:
-                                                                            instruction.uuid,
-                                                                    },
-                                                                ).url;
-                                                        }}
-                                                        aria-label={t(
-                                                            'operational_instructions.index.download',
-                                                        )}
-                                                    >
+                                            {instruction.filename != null &&
+                                                instruction.filename !== '' && (
+                                                    <div className="text-xs text-muted-foreground">
                                                         {t(
-                                                            'operational_instructions.index.download',
-                                                        )}
-                                                    </button>
-                                                </div>
-                                            )}
+                                                            'operational_instructions.index.attachment_prefix',
+                                                        )}{' '}
+                                                        {instruction.filename}{' '}
+                                                        <button
+                                                            type="button"
+                                                            className="ml-1 text-primary underline-offset-2 hover:underline"
+                                                            onClick={() => {
+                                                                window.location.href =
+                                                                    articles.operationalInstructions.download(
+                                                                        {
+                                                                            operationalInstruction:
+                                                                                instruction.uuid,
+                                                                        },
+                                                                    ).url;
+                                                            }}
+                                                            aria-label={t(
+                                                                'operational_instructions.index.download',
+                                                            )}
+                                                        >
+                                                            {t(
+                                                                'operational_instructions.index.download',
+                                                            )}
+                                                        </button>
+                                                    </div>
+                                                )}
                                         </div>
                                     ),
                                 )
@@ -387,14 +391,20 @@ export default function OperationalInstructionsIndex() {
                                                 {instruction.code}
                                             </td>
                                             <td className="px-3 py-2 align-middle">
-                                                {instruction.number || (
+                                                {instruction.number != null &&
+                                                instruction.number !== '' ? (
+                                                    instruction.number
+                                                ) : (
                                                     <span className="text-muted-foreground">
                                                         —
                                                     </span>
                                                 )}
                                             </td>
                                             <td className="px-3 py-2 align-middle text-xs">
-                                                {instruction.filename || (
+                                                {instruction.filename != null &&
+                                                instruction.filename !== '' ? (
+                                                    instruction.filename
+                                                ) : (
                                                     <span className="text-muted-foreground">
                                                         —
                                                     </span>

@@ -6,7 +6,7 @@ import {
 } from './../../../../../wayfinder';
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::authenticate
- * @see app/Http/Controllers/Api/ProductionPortalController.php:108
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:68
  * @route '/api/production/authenticate'
  */
 export const authenticate = (
@@ -23,7 +23,7 @@ authenticate.definition = {
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::authenticate
- * @see app/Http/Controllers/Api/ProductionPortalController.php:108
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:68
  * @route '/api/production/authenticate'
  */
 authenticate.url = (options?: RouteQueryOptions) => {
@@ -32,7 +32,7 @@ authenticate.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::authenticate
- * @see app/Http/Controllers/Api/ProductionPortalController.php:108
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:68
  * @route '/api/production/authenticate'
  */
 authenticate.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -42,7 +42,7 @@ authenticate.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::authenticate
- * @see app/Http/Controllers/Api/ProductionPortalController.php:108
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:68
  * @route '/api/production/authenticate'
  */
 const authenticateForm = (
@@ -54,7 +54,7 @@ const authenticateForm = (
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::authenticate
- * @see app/Http/Controllers/Api/ProductionPortalController.php:108
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:68
  * @route '/api/production/authenticate'
  */
 authenticateForm.post = (
@@ -68,7 +68,7 @@ authenticate.form = authenticateForm;
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::login
- * @see app/Http/Controllers/Api/ProductionPortalController.php:170
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:98
  * @route '/api/production/login'
  */
 export const login = (
@@ -85,7 +85,7 @@ login.definition = {
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::login
- * @see app/Http/Controllers/Api/ProductionPortalController.php:170
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:98
  * @route '/api/production/login'
  */
 login.url = (options?: RouteQueryOptions) => {
@@ -94,7 +94,7 @@ login.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::login
- * @see app/Http/Controllers/Api/ProductionPortalController.php:170
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:98
  * @route '/api/production/login'
  */
 login.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -104,7 +104,7 @@ login.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::login
- * @see app/Http/Controllers/Api/ProductionPortalController.php:170
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:98
  * @route '/api/production/login'
  */
 const loginForm = (
@@ -116,7 +116,7 @@ const loginForm = (
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::login
- * @see app/Http/Controllers/Api/ProductionPortalController.php:170
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:98
  * @route '/api/production/login'
  */
 loginForm.post = (
@@ -130,7 +130,7 @@ login.form = loginForm;
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::checkToken
- * @see app/Http/Controllers/Api/ProductionPortalController.php:211
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:144
  * @route '/api/production/check-token'
  */
 export const checkToken = (
@@ -147,7 +147,7 @@ checkToken.definition = {
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::checkToken
- * @see app/Http/Controllers/Api/ProductionPortalController.php:211
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:144
  * @route '/api/production/check-token'
  */
 checkToken.url = (options?: RouteQueryOptions) => {
@@ -156,7 +156,7 @@ checkToken.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::checkToken
- * @see app/Http/Controllers/Api/ProductionPortalController.php:211
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:144
  * @route '/api/production/check-token'
  */
 checkToken.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -166,7 +166,7 @@ checkToken.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::checkToken
- * @see app/Http/Controllers/Api/ProductionPortalController.php:211
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:144
  * @route '/api/production/check-token'
  */
 const checkTokenForm = (
@@ -178,7 +178,7 @@ const checkTokenForm = (
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::checkToken
- * @see app/Http/Controllers/Api/ProductionPortalController.php:211
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:144
  * @route '/api/production/check-token'
  */
 checkTokenForm.post = (
@@ -192,7 +192,7 @@ checkToken.form = checkTokenForm;
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::addPalletQuantity
- * @see app/Http/Controllers/Api/ProductionPortalController.php:232
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:173
  * @route '/api/production/add-pallet-quantity'
  */
 export const addPalletQuantity = (
@@ -209,7 +209,7 @@ addPalletQuantity.definition = {
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::addPalletQuantity
- * @see app/Http/Controllers/Api/ProductionPortalController.php:232
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:173
  * @route '/api/production/add-pallet-quantity'
  */
 addPalletQuantity.url = (options?: RouteQueryOptions) => {
@@ -218,7 +218,7 @@ addPalletQuantity.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::addPalletQuantity
- * @see app/Http/Controllers/Api/ProductionPortalController.php:232
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:173
  * @route '/api/production/add-pallet-quantity'
  */
 addPalletQuantity.post = (
@@ -230,7 +230,7 @@ addPalletQuantity.post = (
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::addPalletQuantity
- * @see app/Http/Controllers/Api/ProductionPortalController.php:232
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:173
  * @route '/api/production/add-pallet-quantity'
  */
 const addPalletQuantityForm = (
@@ -242,7 +242,7 @@ const addPalletQuantityForm = (
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::addPalletQuantity
- * @see app/Http/Controllers/Api/ProductionPortalController.php:232
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:173
  * @route '/api/production/add-pallet-quantity'
  */
 addPalletQuantityForm.post = (
@@ -256,7 +256,7 @@ addPalletQuantity.form = addPalletQuantityForm;
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::addManualQuantity
- * @see app/Http/Controllers/Api/ProductionPortalController.php:296
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:203
  * @route '/api/production/add-manual-quantity'
  */
 export const addManualQuantity = (
@@ -273,7 +273,7 @@ addManualQuantity.definition = {
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::addManualQuantity
- * @see app/Http/Controllers/Api/ProductionPortalController.php:296
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:203
  * @route '/api/production/add-manual-quantity'
  */
 addManualQuantity.url = (options?: RouteQueryOptions) => {
@@ -282,7 +282,7 @@ addManualQuantity.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::addManualQuantity
- * @see app/Http/Controllers/Api/ProductionPortalController.php:296
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:203
  * @route '/api/production/add-manual-quantity'
  */
 addManualQuantity.post = (
@@ -294,7 +294,7 @@ addManualQuantity.post = (
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::addManualQuantity
- * @see app/Http/Controllers/Api/ProductionPortalController.php:296
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:203
  * @route '/api/production/add-manual-quantity'
  */
 const addManualQuantityForm = (
@@ -306,7 +306,7 @@ const addManualQuantityForm = (
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::addManualQuantity
- * @see app/Http/Controllers/Api/ProductionPortalController.php:296
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:203
  * @route '/api/production/add-manual-quantity'
  */
 addManualQuantityForm.post = (
@@ -320,7 +320,7 @@ addManualQuantity.form = addManualQuantityForm;
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::suspendOrder
- * @see app/Http/Controllers/Api/ProductionPortalController.php:348
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:235
  * @route '/api/production/suspend-order'
  */
 export const suspendOrder = (
@@ -337,7 +337,7 @@ suspendOrder.definition = {
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::suspendOrder
- * @see app/Http/Controllers/Api/ProductionPortalController.php:348
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:235
  * @route '/api/production/suspend-order'
  */
 suspendOrder.url = (options?: RouteQueryOptions) => {
@@ -346,7 +346,7 @@ suspendOrder.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::suspendOrder
- * @see app/Http/Controllers/Api/ProductionPortalController.php:348
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:235
  * @route '/api/production/suspend-order'
  */
 suspendOrder.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -356,7 +356,7 @@ suspendOrder.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::suspendOrder
- * @see app/Http/Controllers/Api/ProductionPortalController.php:348
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:235
  * @route '/api/production/suspend-order'
  */
 const suspendOrderForm = (
@@ -368,7 +368,7 @@ const suspendOrderForm = (
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::suspendOrder
- * @see app/Http/Controllers/Api/ProductionPortalController.php:348
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:235
  * @route '/api/production/suspend-order'
  */
 suspendOrderForm.post = (
@@ -382,7 +382,7 @@ suspendOrder.form = suspendOrderForm;
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::confirmAutocontrollo
- * @see app/Http/Controllers/Api/ProductionPortalController.php:376
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:262
  * @route '/api/production/confirm-autocontrollo'
  */
 export const confirmAutocontrollo = (
@@ -399,7 +399,7 @@ confirmAutocontrollo.definition = {
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::confirmAutocontrollo
- * @see app/Http/Controllers/Api/ProductionPortalController.php:376
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:262
  * @route '/api/production/confirm-autocontrollo'
  */
 confirmAutocontrollo.url = (options?: RouteQueryOptions) => {
@@ -408,7 +408,7 @@ confirmAutocontrollo.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::confirmAutocontrollo
- * @see app/Http/Controllers/Api/ProductionPortalController.php:376
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:262
  * @route '/api/production/confirm-autocontrollo'
  */
 confirmAutocontrollo.post = (
@@ -420,7 +420,7 @@ confirmAutocontrollo.post = (
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::confirmAutocontrollo
- * @see app/Http/Controllers/Api/ProductionPortalController.php:376
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:262
  * @route '/api/production/confirm-autocontrollo'
  */
 const confirmAutocontrolloForm = (
@@ -432,7 +432,7 @@ const confirmAutocontrolloForm = (
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::confirmAutocontrollo
- * @see app/Http/Controllers/Api/ProductionPortalController.php:376
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:262
  * @route '/api/production/confirm-autocontrollo'
  */
 confirmAutocontrolloForm.post = (
@@ -446,7 +446,7 @@ confirmAutocontrollo.form = confirmAutocontrolloForm;
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::getEmployeeOrderList
- * @see app/Http/Controllers/Api/ProductionPortalController.php:403
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:289
  * @route '/api/production/employee-order-list'
  */
 export const getEmployeeOrderList = (
@@ -463,7 +463,7 @@ getEmployeeOrderList.definition = {
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::getEmployeeOrderList
- * @see app/Http/Controllers/Api/ProductionPortalController.php:403
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:289
  * @route '/api/production/employee-order-list'
  */
 getEmployeeOrderList.url = (options?: RouteQueryOptions) => {
@@ -472,7 +472,7 @@ getEmployeeOrderList.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::getEmployeeOrderList
- * @see app/Http/Controllers/Api/ProductionPortalController.php:403
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:289
  * @route '/api/production/employee-order-list'
  */
 getEmployeeOrderList.post = (
@@ -484,7 +484,7 @@ getEmployeeOrderList.post = (
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::getEmployeeOrderList
- * @see app/Http/Controllers/Api/ProductionPortalController.php:403
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:289
  * @route '/api/production/employee-order-list'
  */
 const getEmployeeOrderListForm = (
@@ -496,7 +496,7 @@ const getEmployeeOrderListForm = (
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::getEmployeeOrderList
- * @see app/Http/Controllers/Api/ProductionPortalController.php:403
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:289
  * @route '/api/production/employee-order-list'
  */
 getEmployeeOrderListForm.post = (
@@ -510,7 +510,7 @@ getEmployeeOrderList.form = getEmployeeOrderListForm;
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::getInfo
- * @see app/Http/Controllers/Api/ProductionPortalController.php:469
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:318
  * @route '/api/production/get-info'
  */
 export const getInfo = (
@@ -527,7 +527,7 @@ getInfo.definition = {
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::getInfo
- * @see app/Http/Controllers/Api/ProductionPortalController.php:469
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:318
  * @route '/api/production/get-info'
  */
 getInfo.url = (options?: RouteQueryOptions) => {
@@ -536,7 +536,7 @@ getInfo.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::getInfo
- * @see app/Http/Controllers/Api/ProductionPortalController.php:469
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:318
  * @route '/api/production/get-info'
  */
 getInfo.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -546,7 +546,7 @@ getInfo.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::getInfo
- * @see app/Http/Controllers/Api/ProductionPortalController.php:469
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:318
  * @route '/api/production/get-info'
  */
 const getInfoForm = (
@@ -558,7 +558,7 @@ const getInfoForm = (
 
 /**
  * @see \App\Http\Controllers\Api\ProductionPortalController::getInfo
- * @see app/Http/Controllers/Api/ProductionPortalController.php:469
+ * @see app/Http/Controllers/Api/ProductionPortalController.php:318
  * @route '/api/production/get-info'
  */
 getInfoForm.post = (

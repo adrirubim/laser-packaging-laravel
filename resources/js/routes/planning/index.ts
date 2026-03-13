@@ -6,7 +6,7 @@ import {
 } from './../../wayfinder';
 /**
  * @see \App\Http\Controllers\Planning\PlanningController::index
- * @see app/Http/Controllers/Planning/PlanningController.php:37
+ * @see app/Http/Controllers/Planning/PlanningController.php:45
  * @route '/planning'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -21,7 +21,7 @@ index.definition = {
 
 /**
  * @see \App\Http\Controllers\Planning\PlanningController::index
- * @see app/Http/Controllers/Planning/PlanningController.php:37
+ * @see app/Http/Controllers/Planning/PlanningController.php:45
  * @route '/planning'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -30,7 +30,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\Planning\PlanningController::index
- * @see app/Http/Controllers/Planning/PlanningController.php:37
+ * @see app/Http/Controllers/Planning/PlanningController.php:45
  * @route '/planning'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -40,7 +40,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\Planning\PlanningController::index
- * @see app/Http/Controllers/Planning/PlanningController.php:37
+ * @see app/Http/Controllers/Planning/PlanningController.php:45
  * @route '/planning'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -50,7 +50,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
  * @see \App\Http\Controllers\Planning\PlanningController::index
- * @see app/Http/Controllers/Planning/PlanningController.php:37
+ * @see app/Http/Controllers/Planning/PlanningController.php:45
  * @route '/planning'
  */
 const indexForm = (
@@ -62,7 +62,7 @@ const indexForm = (
 
 /**
  * @see \App\Http\Controllers\Planning\PlanningController::index
- * @see app/Http/Controllers/Planning/PlanningController.php:37
+ * @see app/Http/Controllers/Planning/PlanningController.php:45
  * @route '/planning'
  */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -72,7 +72,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\Planning\PlanningController::index
- * @see app/Http/Controllers/Planning/PlanningController.php:37
+ * @see app/Http/Controllers/Planning/PlanningController.php:45
  * @route '/planning'
  */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

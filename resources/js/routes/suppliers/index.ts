@@ -7,7 +7,7 @@ import {
 } from './../../wayfinder';
 /**
  * @see \App\Http\Controllers\SupplierController::index
- * @see app/Http/Controllers/SupplierController.php:17
+ * @see app/Http/Controllers/SupplierController.php:30
  * @route '/suppliers'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -22,7 +22,7 @@ index.definition = {
 
 /**
  * @see \App\Http\Controllers\SupplierController::index
- * @see app/Http/Controllers/SupplierController.php:17
+ * @see app/Http/Controllers/SupplierController.php:30
  * @route '/suppliers'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -31,7 +31,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\SupplierController::index
- * @see app/Http/Controllers/SupplierController.php:17
+ * @see app/Http/Controllers/SupplierController.php:30
  * @route '/suppliers'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -41,7 +41,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\SupplierController::index
- * @see app/Http/Controllers/SupplierController.php:17
+ * @see app/Http/Controllers/SupplierController.php:30
  * @route '/suppliers'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -51,7 +51,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
  * @see \App\Http\Controllers\SupplierController::index
- * @see app/Http/Controllers/SupplierController.php:17
+ * @see app/Http/Controllers/SupplierController.php:30
  * @route '/suppliers'
  */
 const indexForm = (
@@ -63,7 +63,7 @@ const indexForm = (
 
 /**
  * @see \App\Http\Controllers\SupplierController::index
- * @see app/Http/Controllers/SupplierController.php:17
+ * @see app/Http/Controllers/SupplierController.php:30
  * @route '/suppliers'
  */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -73,7 +73,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\SupplierController::index
- * @see app/Http/Controllers/SupplierController.php:17
+ * @see app/Http/Controllers/SupplierController.php:30
  * @route '/suppliers'
  */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -90,7 +90,7 @@ index.form = indexForm;
 
 /**
  * @see \App\Http\Controllers\SupplierController::create
- * @see app/Http/Controllers/SupplierController.php:53
+ * @see app/Http/Controllers/SupplierController.php:45
  * @route '/suppliers/create'
  */
 export const create = (
@@ -107,7 +107,7 @@ create.definition = {
 
 /**
  * @see \App\Http\Controllers\SupplierController::create
- * @see app/Http/Controllers/SupplierController.php:53
+ * @see app/Http/Controllers/SupplierController.php:45
  * @route '/suppliers/create'
  */
 create.url = (options?: RouteQueryOptions) => {
@@ -116,7 +116,7 @@ create.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\SupplierController::create
- * @see app/Http/Controllers/SupplierController.php:53
+ * @see app/Http/Controllers/SupplierController.php:45
  * @route '/suppliers/create'
  */
 create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -126,7 +126,7 @@ create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\SupplierController::create
- * @see app/Http/Controllers/SupplierController.php:53
+ * @see app/Http/Controllers/SupplierController.php:45
  * @route '/suppliers/create'
  */
 create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -136,7 +136,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
  * @see \App\Http\Controllers\SupplierController::create
- * @see app/Http/Controllers/SupplierController.php:53
+ * @see app/Http/Controllers/SupplierController.php:45
  * @route '/suppliers/create'
  */
 const createForm = (
@@ -148,7 +148,7 @@ const createForm = (
 
 /**
  * @see \App\Http\Controllers\SupplierController::create
- * @see app/Http/Controllers/SupplierController.php:53
+ * @see app/Http/Controllers/SupplierController.php:45
  * @route '/suppliers/create'
  */
 createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -158,7 +158,7 @@ createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\SupplierController::create
- * @see app/Http/Controllers/SupplierController.php:53
+ * @see app/Http/Controllers/SupplierController.php:45
  * @route '/suppliers/create'
  */
 createForm.head = (
@@ -177,7 +177,7 @@ create.form = createForm;
 
 /**
  * @see \App\Http\Controllers\SupplierController::store
- * @see app/Http/Controllers/SupplierController.php:61
+ * @see app/Http/Controllers/SupplierController.php:53
  * @route '/suppliers'
  */
 export const store = (
@@ -194,7 +194,7 @@ store.definition = {
 
 /**
  * @see \App\Http\Controllers\SupplierController::store
- * @see app/Http/Controllers/SupplierController.php:61
+ * @see app/Http/Controllers/SupplierController.php:53
  * @route '/suppliers'
  */
 store.url = (options?: RouteQueryOptions) => {
@@ -203,7 +203,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\SupplierController::store
- * @see app/Http/Controllers/SupplierController.php:61
+ * @see app/Http/Controllers/SupplierController.php:53
  * @route '/suppliers'
  */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -213,7 +213,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
  * @see \App\Http\Controllers\SupplierController::store
- * @see app/Http/Controllers/SupplierController.php:61
+ * @see app/Http/Controllers/SupplierController.php:53
  * @route '/suppliers'
  */
 const storeForm = (
@@ -225,7 +225,7 @@ const storeForm = (
 
 /**
  * @see \App\Http\Controllers\SupplierController::store
- * @see app/Http/Controllers/SupplierController.php:61
+ * @see app/Http/Controllers/SupplierController.php:53
  * @route '/suppliers'
  */
 storeForm.post = (
@@ -239,7 +239,7 @@ store.form = storeForm;
 
 /**
  * @see \App\Http\Controllers\SupplierController::show
- * @see app/Http/Controllers/SupplierController.php:74
+ * @see app/Http/Controllers/SupplierController.php:64
  * @route '/suppliers/{supplier}'
  */
 export const show = (
@@ -261,7 +261,7 @@ show.definition = {
 
 /**
  * @see \App\Http\Controllers\SupplierController::show
- * @see app/Http/Controllers/SupplierController.php:74
+ * @see app/Http/Controllers/SupplierController.php:64
  * @route '/suppliers/{supplier}'
  */
 show.url = (
@@ -304,7 +304,7 @@ show.url = (
 
 /**
  * @see \App\Http\Controllers\SupplierController::show
- * @see app/Http/Controllers/SupplierController.php:74
+ * @see app/Http/Controllers/SupplierController.php:64
  * @route '/suppliers/{supplier}'
  */
 show.get = (
@@ -321,7 +321,7 @@ show.get = (
 
 /**
  * @see \App\Http\Controllers\SupplierController::show
- * @see app/Http/Controllers/SupplierController.php:74
+ * @see app/Http/Controllers/SupplierController.php:64
  * @route '/suppliers/{supplier}'
  */
 show.head = (
@@ -338,7 +338,7 @@ show.head = (
 
 /**
  * @see \App\Http\Controllers\SupplierController::show
- * @see app/Http/Controllers/SupplierController.php:74
+ * @see app/Http/Controllers/SupplierController.php:64
  * @route '/suppliers/{supplier}'
  */
 const showForm = (
@@ -355,7 +355,7 @@ const showForm = (
 
 /**
  * @see \App\Http\Controllers\SupplierController::show
- * @see app/Http/Controllers/SupplierController.php:74
+ * @see app/Http/Controllers/SupplierController.php:64
  * @route '/suppliers/{supplier}'
  */
 showForm.get = (
@@ -372,7 +372,7 @@ showForm.get = (
 
 /**
  * @see \App\Http\Controllers\SupplierController::show
- * @see app/Http/Controllers/SupplierController.php:74
+ * @see app/Http/Controllers/SupplierController.php:64
  * @route '/suppliers/{supplier}'
  */
 showForm.head = (
@@ -396,7 +396,7 @@ show.form = showForm;
 
 /**
  * @see \App\Http\Controllers\SupplierController::edit
- * @see app/Http/Controllers/SupplierController.php:84
+ * @see app/Http/Controllers/SupplierController.php:76
  * @route '/suppliers/{supplier}/edit'
  */
 export const edit = (
@@ -418,7 +418,7 @@ edit.definition = {
 
 /**
  * @see \App\Http\Controllers\SupplierController::edit
- * @see app/Http/Controllers/SupplierController.php:84
+ * @see app/Http/Controllers/SupplierController.php:76
  * @route '/suppliers/{supplier}/edit'
  */
 edit.url = (
@@ -461,7 +461,7 @@ edit.url = (
 
 /**
  * @see \App\Http\Controllers\SupplierController::edit
- * @see app/Http/Controllers/SupplierController.php:84
+ * @see app/Http/Controllers/SupplierController.php:76
  * @route '/suppliers/{supplier}/edit'
  */
 edit.get = (
@@ -478,7 +478,7 @@ edit.get = (
 
 /**
  * @see \App\Http\Controllers\SupplierController::edit
- * @see app/Http/Controllers/SupplierController.php:84
+ * @see app/Http/Controllers/SupplierController.php:76
  * @route '/suppliers/{supplier}/edit'
  */
 edit.head = (
@@ -495,7 +495,7 @@ edit.head = (
 
 /**
  * @see \App\Http\Controllers\SupplierController::edit
- * @see app/Http/Controllers/SupplierController.php:84
+ * @see app/Http/Controllers/SupplierController.php:76
  * @route '/suppliers/{supplier}/edit'
  */
 const editForm = (
@@ -512,7 +512,7 @@ const editForm = (
 
 /**
  * @see \App\Http\Controllers\SupplierController::edit
- * @see app/Http/Controllers/SupplierController.php:84
+ * @see app/Http/Controllers/SupplierController.php:76
  * @route '/suppliers/{supplier}/edit'
  */
 editForm.get = (
@@ -529,7 +529,7 @@ editForm.get = (
 
 /**
  * @see \App\Http\Controllers\SupplierController::edit
- * @see app/Http/Controllers/SupplierController.php:84
+ * @see app/Http/Controllers/SupplierController.php:76
  * @route '/suppliers/{supplier}/edit'
  */
 editForm.head = (
@@ -553,7 +553,7 @@ edit.form = editForm;
 
 /**
  * @see \App\Http\Controllers\SupplierController::update
- * @see app/Http/Controllers/SupplierController.php:94
+ * @see app/Http/Controllers/SupplierController.php:88
  * @route '/suppliers/{supplier}'
  */
 export const update = (
@@ -575,7 +575,7 @@ update.definition = {
 
 /**
  * @see \App\Http\Controllers\SupplierController::update
- * @see app/Http/Controllers/SupplierController.php:94
+ * @see app/Http/Controllers/SupplierController.php:88
  * @route '/suppliers/{supplier}'
  */
 update.url = (
@@ -618,7 +618,7 @@ update.url = (
 
 /**
  * @see \App\Http\Controllers\SupplierController::update
- * @see app/Http/Controllers/SupplierController.php:94
+ * @see app/Http/Controllers/SupplierController.php:88
  * @route '/suppliers/{supplier}'
  */
 update.put = (
@@ -635,7 +635,7 @@ update.put = (
 
 /**
  * @see \App\Http\Controllers\SupplierController::update
- * @see app/Http/Controllers/SupplierController.php:94
+ * @see app/Http/Controllers/SupplierController.php:88
  * @route '/suppliers/{supplier}'
  */
 update.patch = (
@@ -652,7 +652,7 @@ update.patch = (
 
 /**
  * @see \App\Http\Controllers\SupplierController::update
- * @see app/Http/Controllers/SupplierController.php:94
+ * @see app/Http/Controllers/SupplierController.php:88
  * @route '/suppliers/{supplier}'
  */
 const updateForm = (
@@ -674,7 +674,7 @@ const updateForm = (
 
 /**
  * @see \App\Http\Controllers\SupplierController::update
- * @see app/Http/Controllers/SupplierController.php:94
+ * @see app/Http/Controllers/SupplierController.php:88
  * @route '/suppliers/{supplier}'
  */
 updateForm.put = (
@@ -696,7 +696,7 @@ updateForm.put = (
 
 /**
  * @see \App\Http\Controllers\SupplierController::update
- * @see app/Http/Controllers/SupplierController.php:94
+ * @see app/Http/Controllers/SupplierController.php:88
  * @route '/suppliers/{supplier}'
  */
 updateForm.patch = (
@@ -720,7 +720,7 @@ update.form = updateForm;
 
 /**
  * @see \App\Http\Controllers\SupplierController::destroy
- * @see app/Http/Controllers/SupplierController.php:105
+ * @see app/Http/Controllers/SupplierController.php:99
  * @route '/suppliers/{supplier}'
  */
 export const destroy = (
@@ -742,7 +742,7 @@ destroy.definition = {
 
 /**
  * @see \App\Http\Controllers\SupplierController::destroy
- * @see app/Http/Controllers/SupplierController.php:105
+ * @see app/Http/Controllers/SupplierController.php:99
  * @route '/suppliers/{supplier}'
  */
 destroy.url = (
@@ -785,7 +785,7 @@ destroy.url = (
 
 /**
  * @see \App\Http\Controllers\SupplierController::destroy
- * @see app/Http/Controllers/SupplierController.php:105
+ * @see app/Http/Controllers/SupplierController.php:99
  * @route '/suppliers/{supplier}'
  */
 destroy.delete = (
@@ -802,7 +802,7 @@ destroy.delete = (
 
 /**
  * @see \App\Http\Controllers\SupplierController::destroy
- * @see app/Http/Controllers/SupplierController.php:105
+ * @see app/Http/Controllers/SupplierController.php:99
  * @route '/suppliers/{supplier}'
  */
 const destroyForm = (
@@ -824,7 +824,7 @@ const destroyForm = (
 
 /**
  * @see \App\Http\Controllers\SupplierController::destroy
- * @see app/Http/Controllers/SupplierController.php:105
+ * @see app/Http/Controllers/SupplierController.php:99
  * @route '/suppliers/{supplier}'
  */
 destroyForm.delete = (

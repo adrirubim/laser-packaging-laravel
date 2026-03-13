@@ -7,7 +7,7 @@ import {
 } from './../../../../wayfinder';
 /**
  * @see \App\Http\Controllers\ArticleIOController::generateIONumber
- * @see app/Http/Controllers/ArticleIOController.php:210
+ * @see app/Http/Controllers/ArticleIOController.php:190
  * @route '/articles/operational-instructions/generate-io-number'
  */
 export const generateIONumber = (
@@ -24,7 +24,7 @@ generateIONumber.definition = {
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::generateIONumber
- * @see app/Http/Controllers/ArticleIOController.php:210
+ * @see app/Http/Controllers/ArticleIOController.php:190
  * @route '/articles/operational-instructions/generate-io-number'
  */
 generateIONumber.url = (options?: RouteQueryOptions) => {
@@ -33,7 +33,7 @@ generateIONumber.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::generateIONumber
- * @see app/Http/Controllers/ArticleIOController.php:210
+ * @see app/Http/Controllers/ArticleIOController.php:190
  * @route '/articles/operational-instructions/generate-io-number'
  */
 generateIONumber.get = (
@@ -45,7 +45,7 @@ generateIONumber.get = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::generateIONumber
- * @see app/Http/Controllers/ArticleIOController.php:210
+ * @see app/Http/Controllers/ArticleIOController.php:190
  * @route '/articles/operational-instructions/generate-io-number'
  */
 generateIONumber.head = (
@@ -57,7 +57,7 @@ generateIONumber.head = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::generateIONumber
- * @see app/Http/Controllers/ArticleIOController.php:210
+ * @see app/Http/Controllers/ArticleIOController.php:190
  * @route '/articles/operational-instructions/generate-io-number'
  */
 const generateIONumberForm = (
@@ -69,7 +69,7 @@ const generateIONumberForm = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::generateIONumber
- * @see app/Http/Controllers/ArticleIOController.php:210
+ * @see app/Http/Controllers/ArticleIOController.php:190
  * @route '/articles/operational-instructions/generate-io-number'
  */
 generateIONumberForm.get = (
@@ -81,7 +81,7 @@ generateIONumberForm.get = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::generateIONumber
- * @see app/Http/Controllers/ArticleIOController.php:210
+ * @see app/Http/Controllers/ArticleIOController.php:190
  * @route '/articles/operational-instructions/generate-io-number'
  */
 generateIONumberForm.head = (
@@ -100,7 +100,7 @@ generateIONumber.form = generateIONumberForm;
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::download
- * @see app/Http/Controllers/ArticleIOController.php:191
+ * @see app/Http/Controllers/ArticleIOController.php:171
  * @route '/articles/operational-instructions/{operationalInstruction}/download'
  */
 export const download = (
@@ -122,7 +122,7 @@ download.definition = {
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::download
- * @see app/Http/Controllers/ArticleIOController.php:191
+ * @see app/Http/Controllers/ArticleIOController.php:171
  * @route '/articles/operational-instructions/{operationalInstruction}/download'
  */
 download.url = (
@@ -168,7 +168,7 @@ download.url = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::download
- * @see app/Http/Controllers/ArticleIOController.php:191
+ * @see app/Http/Controllers/ArticleIOController.php:171
  * @route '/articles/operational-instructions/{operationalInstruction}/download'
  */
 download.get = (
@@ -185,7 +185,7 @@ download.get = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::download
- * @see app/Http/Controllers/ArticleIOController.php:191
+ * @see app/Http/Controllers/ArticleIOController.php:171
  * @route '/articles/operational-instructions/{operationalInstruction}/download'
  */
 download.head = (
@@ -202,7 +202,7 @@ download.head = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::download
- * @see app/Http/Controllers/ArticleIOController.php:191
+ * @see app/Http/Controllers/ArticleIOController.php:171
  * @route '/articles/operational-instructions/{operationalInstruction}/download'
  */
 const downloadForm = (
@@ -219,7 +219,7 @@ const downloadForm = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::download
- * @see app/Http/Controllers/ArticleIOController.php:191
+ * @see app/Http/Controllers/ArticleIOController.php:171
  * @route '/articles/operational-instructions/{operationalInstruction}/download'
  */
 downloadForm.get = (
@@ -236,7 +236,7 @@ downloadForm.get = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::download
- * @see app/Http/Controllers/ArticleIOController.php:191
+ * @see app/Http/Controllers/ArticleIOController.php:171
  * @route '/articles/operational-instructions/{operationalInstruction}/download'
  */
 downloadForm.head = (
@@ -260,7 +260,7 @@ download.form = downloadForm;
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::index
- * @see app/Http/Controllers/ArticleIOController.php:23
+ * @see app/Http/Controllers/ArticleIOController.php:29
  * @route '/articles/operational-instructions'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -275,7 +275,7 @@ index.definition = {
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::index
- * @see app/Http/Controllers/ArticleIOController.php:23
+ * @see app/Http/Controllers/ArticleIOController.php:29
  * @route '/articles/operational-instructions'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -284,7 +284,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::index
- * @see app/Http/Controllers/ArticleIOController.php:23
+ * @see app/Http/Controllers/ArticleIOController.php:29
  * @route '/articles/operational-instructions'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -294,7 +294,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::index
- * @see app/Http/Controllers/ArticleIOController.php:23
+ * @see app/Http/Controllers/ArticleIOController.php:29
  * @route '/articles/operational-instructions'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -304,7 +304,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::index
- * @see app/Http/Controllers/ArticleIOController.php:23
+ * @see app/Http/Controllers/ArticleIOController.php:29
  * @route '/articles/operational-instructions'
  */
 const indexForm = (
@@ -316,7 +316,7 @@ const indexForm = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::index
- * @see app/Http/Controllers/ArticleIOController.php:23
+ * @see app/Http/Controllers/ArticleIOController.php:29
  * @route '/articles/operational-instructions'
  */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -326,7 +326,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::index
- * @see app/Http/Controllers/ArticleIOController.php:23
+ * @see app/Http/Controllers/ArticleIOController.php:29
  * @route '/articles/operational-instructions'
  */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -343,7 +343,7 @@ index.form = indexForm;
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::create
- * @see app/Http/Controllers/ArticleIOController.php:59
+ * @see app/Http/Controllers/ArticleIOController.php:42
  * @route '/articles/operational-instructions/create'
  */
 export const create = (
@@ -360,7 +360,7 @@ create.definition = {
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::create
- * @see app/Http/Controllers/ArticleIOController.php:59
+ * @see app/Http/Controllers/ArticleIOController.php:42
  * @route '/articles/operational-instructions/create'
  */
 create.url = (options?: RouteQueryOptions) => {
@@ -369,7 +369,7 @@ create.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::create
- * @see app/Http/Controllers/ArticleIOController.php:59
+ * @see app/Http/Controllers/ArticleIOController.php:42
  * @route '/articles/operational-instructions/create'
  */
 create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -379,7 +379,7 @@ create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::create
- * @see app/Http/Controllers/ArticleIOController.php:59
+ * @see app/Http/Controllers/ArticleIOController.php:42
  * @route '/articles/operational-instructions/create'
  */
 create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -389,7 +389,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::create
- * @see app/Http/Controllers/ArticleIOController.php:59
+ * @see app/Http/Controllers/ArticleIOController.php:42
  * @route '/articles/operational-instructions/create'
  */
 const createForm = (
@@ -401,7 +401,7 @@ const createForm = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::create
- * @see app/Http/Controllers/ArticleIOController.php:59
+ * @see app/Http/Controllers/ArticleIOController.php:42
  * @route '/articles/operational-instructions/create'
  */
 createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -411,7 +411,7 @@ createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::create
- * @see app/Http/Controllers/ArticleIOController.php:59
+ * @see app/Http/Controllers/ArticleIOController.php:42
  * @route '/articles/operational-instructions/create'
  */
 createForm.head = (
@@ -430,7 +430,7 @@ create.form = createForm;
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::store
- * @see app/Http/Controllers/ArticleIOController.php:67
+ * @see app/Http/Controllers/ArticleIOController.php:50
  * @route '/articles/operational-instructions'
  */
 export const store = (
@@ -447,7 +447,7 @@ store.definition = {
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::store
- * @see app/Http/Controllers/ArticleIOController.php:67
+ * @see app/Http/Controllers/ArticleIOController.php:50
  * @route '/articles/operational-instructions'
  */
 store.url = (options?: RouteQueryOptions) => {
@@ -456,7 +456,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::store
- * @see app/Http/Controllers/ArticleIOController.php:67
+ * @see app/Http/Controllers/ArticleIOController.php:50
  * @route '/articles/operational-instructions'
  */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -466,7 +466,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::store
- * @see app/Http/Controllers/ArticleIOController.php:67
+ * @see app/Http/Controllers/ArticleIOController.php:50
  * @route '/articles/operational-instructions'
  */
 const storeForm = (
@@ -478,7 +478,7 @@ const storeForm = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::store
- * @see app/Http/Controllers/ArticleIOController.php:67
+ * @see app/Http/Controllers/ArticleIOController.php:50
  * @route '/articles/operational-instructions'
  */
 storeForm.post = (
@@ -492,7 +492,7 @@ store.form = storeForm;
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::show
- * @see app/Http/Controllers/ArticleIOController.php:101
+ * @see app/Http/Controllers/ArticleIOController.php:84
  * @route '/articles/operational-instructions/{operationalInstruction}'
  */
 export const show = (
@@ -514,7 +514,7 @@ show.definition = {
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::show
- * @see app/Http/Controllers/ArticleIOController.php:101
+ * @see app/Http/Controllers/ArticleIOController.php:84
  * @route '/articles/operational-instructions/{operationalInstruction}'
  */
 show.url = (
@@ -560,7 +560,7 @@ show.url = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::show
- * @see app/Http/Controllers/ArticleIOController.php:101
+ * @see app/Http/Controllers/ArticleIOController.php:84
  * @route '/articles/operational-instructions/{operationalInstruction}'
  */
 show.get = (
@@ -577,7 +577,7 @@ show.get = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::show
- * @see app/Http/Controllers/ArticleIOController.php:101
+ * @see app/Http/Controllers/ArticleIOController.php:84
  * @route '/articles/operational-instructions/{operationalInstruction}'
  */
 show.head = (
@@ -594,7 +594,7 @@ show.head = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::show
- * @see app/Http/Controllers/ArticleIOController.php:101
+ * @see app/Http/Controllers/ArticleIOController.php:84
  * @route '/articles/operational-instructions/{operationalInstruction}'
  */
 const showForm = (
@@ -611,7 +611,7 @@ const showForm = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::show
- * @see app/Http/Controllers/ArticleIOController.php:101
+ * @see app/Http/Controllers/ArticleIOController.php:84
  * @route '/articles/operational-instructions/{operationalInstruction}'
  */
 showForm.get = (
@@ -628,7 +628,7 @@ showForm.get = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::show
- * @see app/Http/Controllers/ArticleIOController.php:101
+ * @see app/Http/Controllers/ArticleIOController.php:84
  * @route '/articles/operational-instructions/{operationalInstruction}'
  */
 showForm.head = (
@@ -652,7 +652,7 @@ show.form = showForm;
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::edit
- * @see app/Http/Controllers/ArticleIOController.php:113
+ * @see app/Http/Controllers/ArticleIOController.php:96
  * @route '/articles/operational-instructions/{operationalInstruction}/edit'
  */
 export const edit = (
@@ -674,7 +674,7 @@ edit.definition = {
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::edit
- * @see app/Http/Controllers/ArticleIOController.php:113
+ * @see app/Http/Controllers/ArticleIOController.php:96
  * @route '/articles/operational-instructions/{operationalInstruction}/edit'
  */
 edit.url = (
@@ -720,7 +720,7 @@ edit.url = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::edit
- * @see app/Http/Controllers/ArticleIOController.php:113
+ * @see app/Http/Controllers/ArticleIOController.php:96
  * @route '/articles/operational-instructions/{operationalInstruction}/edit'
  */
 edit.get = (
@@ -737,7 +737,7 @@ edit.get = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::edit
- * @see app/Http/Controllers/ArticleIOController.php:113
+ * @see app/Http/Controllers/ArticleIOController.php:96
  * @route '/articles/operational-instructions/{operationalInstruction}/edit'
  */
 edit.head = (
@@ -754,7 +754,7 @@ edit.head = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::edit
- * @see app/Http/Controllers/ArticleIOController.php:113
+ * @see app/Http/Controllers/ArticleIOController.php:96
  * @route '/articles/operational-instructions/{operationalInstruction}/edit'
  */
 const editForm = (
@@ -771,7 +771,7 @@ const editForm = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::edit
- * @see app/Http/Controllers/ArticleIOController.php:113
+ * @see app/Http/Controllers/ArticleIOController.php:96
  * @route '/articles/operational-instructions/{operationalInstruction}/edit'
  */
 editForm.get = (
@@ -788,7 +788,7 @@ editForm.get = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::edit
- * @see app/Http/Controllers/ArticleIOController.php:113
+ * @see app/Http/Controllers/ArticleIOController.php:96
  * @route '/articles/operational-instructions/{operationalInstruction}/edit'
  */
 editForm.head = (
@@ -812,7 +812,7 @@ edit.form = editForm;
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::update
- * @see app/Http/Controllers/ArticleIOController.php:123
+ * @see app/Http/Controllers/ArticleIOController.php:106
  * @route '/articles/operational-instructions/{operationalInstruction}'
  */
 export const update = (
@@ -834,7 +834,7 @@ update.definition = {
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::update
- * @see app/Http/Controllers/ArticleIOController.php:123
+ * @see app/Http/Controllers/ArticleIOController.php:106
  * @route '/articles/operational-instructions/{operationalInstruction}'
  */
 update.url = (
@@ -880,7 +880,7 @@ update.url = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::update
- * @see app/Http/Controllers/ArticleIOController.php:123
+ * @see app/Http/Controllers/ArticleIOController.php:106
  * @route '/articles/operational-instructions/{operationalInstruction}'
  */
 update.put = (
@@ -897,7 +897,7 @@ update.put = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::update
- * @see app/Http/Controllers/ArticleIOController.php:123
+ * @see app/Http/Controllers/ArticleIOController.php:106
  * @route '/articles/operational-instructions/{operationalInstruction}'
  */
 update.patch = (
@@ -914,7 +914,7 @@ update.patch = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::update
- * @see app/Http/Controllers/ArticleIOController.php:123
+ * @see app/Http/Controllers/ArticleIOController.php:106
  * @route '/articles/operational-instructions/{operationalInstruction}'
  */
 const updateForm = (
@@ -936,7 +936,7 @@ const updateForm = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::update
- * @see app/Http/Controllers/ArticleIOController.php:123
+ * @see app/Http/Controllers/ArticleIOController.php:106
  * @route '/articles/operational-instructions/{operationalInstruction}'
  */
 updateForm.put = (
@@ -958,7 +958,7 @@ updateForm.put = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::update
- * @see app/Http/Controllers/ArticleIOController.php:123
+ * @see app/Http/Controllers/ArticleIOController.php:106
  * @route '/articles/operational-instructions/{operationalInstruction}'
  */
 updateForm.patch = (
@@ -982,7 +982,7 @@ update.form = updateForm;
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::destroy
- * @see app/Http/Controllers/ArticleIOController.php:177
+ * @see app/Http/Controllers/ArticleIOController.php:160
  * @route '/articles/operational-instructions/{operationalInstruction}'
  */
 export const destroy = (
@@ -1004,7 +1004,7 @@ destroy.definition = {
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::destroy
- * @see app/Http/Controllers/ArticleIOController.php:177
+ * @see app/Http/Controllers/ArticleIOController.php:160
  * @route '/articles/operational-instructions/{operationalInstruction}'
  */
 destroy.url = (
@@ -1050,7 +1050,7 @@ destroy.url = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::destroy
- * @see app/Http/Controllers/ArticleIOController.php:177
+ * @see app/Http/Controllers/ArticleIOController.php:160
  * @route '/articles/operational-instructions/{operationalInstruction}'
  */
 destroy.delete = (
@@ -1067,7 +1067,7 @@ destroy.delete = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::destroy
- * @see app/Http/Controllers/ArticleIOController.php:177
+ * @see app/Http/Controllers/ArticleIOController.php:160
  * @route '/articles/operational-instructions/{operationalInstruction}'
  */
 const destroyForm = (
@@ -1089,7 +1089,7 @@ const destroyForm = (
 
 /**
  * @see \App\Http\Controllers\ArticleIOController::destroy
- * @see app/Http/Controllers/ArticleIOController.php:177
+ * @see app/Http/Controllers/ArticleIOController.php:160
  * @route '/articles/operational-instructions/{operationalInstruction}'
  */
 destroyForm.delete = (

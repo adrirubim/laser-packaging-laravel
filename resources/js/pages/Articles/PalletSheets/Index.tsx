@@ -68,10 +68,17 @@ export default function PalletSheetsIndex() {
         router.get(
             articles.palletSheets.index().url,
             {
-                search: value || undefined,
-                per_page: filters.per_page || undefined,
-                sort_by: filters.sort_by || undefined,
-                sort_order: filters.sort_order || undefined,
+                search: value != null && value !== '' ? value : undefined,
+                per_page:
+                    filters.per_page != null && filters.per_page !== ''
+                        ? filters.per_page
+                        : undefined,
+                sort_by:
+                    filters.sort_by != null && filters.sort_by !== ''
+                        ? filters.sort_by
+                        : undefined,
+                sort_order:
+                    filters.sort_order != null ? filters.sort_order : undefined,
             },
             {
                 preserveState: true,
@@ -152,7 +159,7 @@ export default function PalletSheetsIndex() {
 
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <SearchInput
-                        value={filters.search || ''}
+                        value={filters.search ?? ''}
                         onChange={handleSearchChange}
                         placeholder={t(
                             'articles.pallet_sheets.search_placeholder',
@@ -257,7 +264,10 @@ export default function PalletSheetsIndex() {
                                             {sheet.description}
                                         </td>
                                         <td className="px-3 py-2">
-                                            {sheet.filename || (
+                                            {sheet.filename != null &&
+                                            sheet.filename !== '' ? (
+                                                sheet.filename
+                                            ) : (
                                                 <span className="text-muted-foreground">
                                                     -
                                                 </span>
@@ -279,7 +289,8 @@ export default function PalletSheetsIndex() {
                                                     handleDeleteClick(sheet)
                                                 }
                                                 extraItems={
-                                                    sheet.filename ? (
+                                                    sheet.filename != null &&
+                                                    sheet.filename !== '' ? (
                                                         <DropdownMenuItem
                                                             onSelect={(e) => {
                                                                 e.preventDefault();

@@ -6,25 +6,30 @@ use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
 use App\Models\Customer;
 use App\Repositories\CustomerRepository;
+use Domain\Customers\Actions\CreateCustomerAction;
+use Domain\Customers\Actions\ListCustomersAction;
+use Domain\Customers\Actions\SoftDeleteCustomerAction;
+use Domain\Customers\Actions\UpdateCustomerAction;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class CustomerController extends Controller
 {
-    protected CustomerRepository $customerRepository;
-
-    public function __construct(CustomerRepository $customerRepository)
-    {
-        $this->customerRepository = $customerRepository;
-    }
+    public function __construct(
+        protected CustomerRepository $customerRepository,
+        protected ListCustomersAction $listCustomersAction,
+        protected CreateCustomerAction $createCustomer,
+        protected UpdateCustomerAction $updateCustomer,
+        protected SoftDeleteCustomerAction $softDeleteCustomer,
+    ) {}
 
     /**
      * Display a listing of customers.
      */
     public function index(Request $request): Response
     {
-        $customers = $this->customerRepository->getForIndex($request);
+        $customers = $this->listCustomersAction->execute($request->all());
         $provinces = $this->customerRepository->getProvinces();
 
         return Inertia::render('Customers/Index', [
@@ -47,7 +52,7 @@ class CustomerController extends Controller
      */
     public function store(StoreCustomerRequest $request)
     {
-        $customer = Customer::create($request->validated());
+        $this->createCustomer->execute($request->validated());
 
         // Invalidate cache
         $this->customerRepository->clearCache();
@@ -81,9 +86,9 @@ class CustomerController extends Controller
     /**
      * Update the specified customer.
      */
-    public function update(UpdateCustomerRequest $request, Customer $customer)
+    public function update(UpdateCustomerRequest $request, \App\Models\Customer $customer)
     {
-        $customer->update($request->validated());
+        $this->updateCustomer->execute($customer, $request->validated());
 
         // Invalidate cache
         $this->customerRepository->clearCache();
@@ -95,23 +100,14 @@ class CustomerController extends Controller
     /**
      * Remove the specified customer (soft delete).
      */
-    public function destroy(Customer $customer)
+    public function destroy(\App\Models\Customer $customer)
     {
-        // Verify if has active divisions
-        if ($customer->divisions()->where('removed', false)->exists()) {
+        $result = $this->softDeleteCustomer->execute($customer);
+        if ($result->canDelete === false) {
             return back()->withErrors([
-                'error' => __('flash.cannot_delete_customer_divisions'),
+                'error' => $result->message,
             ]);
         }
-
-        // Verify if has active offers
-        if ($customer->offers()->where('removed', false)->exists()) {
-            return back()->withErrors([
-                'error' => __('flash.cannot_delete_customer_offers'),
-            ]);
-        }
-
-        $customer->update(['removed' => true]);
 
         // Invalidate cache
         $this->customerRepository->clearCache();

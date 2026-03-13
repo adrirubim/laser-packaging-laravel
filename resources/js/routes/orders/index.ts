@@ -7,7 +7,7 @@ import {
 } from './../../wayfinder';
 /**
  * @see \App\Http\Controllers\OrderController::productionAdvancements
- * @see app/Http/Controllers/OrderController.php:208
+ * @see app/Http/Controllers/OrderController.php:253
  * @route '/orders/production-advancements'
  */
 export const productionAdvancements = (
@@ -24,7 +24,7 @@ productionAdvancements.definition = {
 
 /**
  * @see \App\Http\Controllers\OrderController::productionAdvancements
- * @see app/Http/Controllers/OrderController.php:208
+ * @see app/Http/Controllers/OrderController.php:253
  * @route '/orders/production-advancements'
  */
 productionAdvancements.url = (options?: RouteQueryOptions) => {
@@ -33,7 +33,7 @@ productionAdvancements.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\OrderController::productionAdvancements
- * @see app/Http/Controllers/OrderController.php:208
+ * @see app/Http/Controllers/OrderController.php:253
  * @route '/orders/production-advancements'
  */
 productionAdvancements.get = (
@@ -45,7 +45,7 @@ productionAdvancements.get = (
 
 /**
  * @see \App\Http\Controllers\OrderController::productionAdvancements
- * @see app/Http/Controllers/OrderController.php:208
+ * @see app/Http/Controllers/OrderController.php:253
  * @route '/orders/production-advancements'
  */
 productionAdvancements.head = (
@@ -57,7 +57,7 @@ productionAdvancements.head = (
 
 /**
  * @see \App\Http\Controllers\OrderController::productionAdvancements
- * @see app/Http/Controllers/OrderController.php:208
+ * @see app/Http/Controllers/OrderController.php:253
  * @route '/orders/production-advancements'
  */
 const productionAdvancementsForm = (
@@ -69,7 +69,7 @@ const productionAdvancementsForm = (
 
 /**
  * @see \App\Http\Controllers\OrderController::productionAdvancements
- * @see app/Http/Controllers/OrderController.php:208
+ * @see app/Http/Controllers/OrderController.php:253
  * @route '/orders/production-advancements'
  */
 productionAdvancementsForm.get = (
@@ -81,7 +81,7 @@ productionAdvancementsForm.get = (
 
 /**
  * @see \App\Http\Controllers\OrderController::productionAdvancements
- * @see app/Http/Controllers/OrderController.php:208
+ * @see app/Http/Controllers/OrderController.php:253
  * @route '/orders/production-advancements'
  */
 productionAdvancementsForm.head = (
@@ -100,7 +100,7 @@ productionAdvancements.form = productionAdvancementsForm;
 
 /**
  * @see \App\Http\Controllers\OrderController::getShippingAddresses
- * @see app/Http/Controllers/OrderController.php:224
+ * @see app/Http/Controllers/OrderController.php:273
  * @route '/orders/get-shipping-addresses'
  */
 export const getShippingAddresses = (
@@ -117,7 +117,7 @@ getShippingAddresses.definition = {
 
 /**
  * @see \App\Http\Controllers\OrderController::getShippingAddresses
- * @see app/Http/Controllers/OrderController.php:224
+ * @see app/Http/Controllers/OrderController.php:273
  * @route '/orders/get-shipping-addresses'
  */
 getShippingAddresses.url = (options?: RouteQueryOptions) => {
@@ -126,7 +126,7 @@ getShippingAddresses.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\OrderController::getShippingAddresses
- * @see app/Http/Controllers/OrderController.php:224
+ * @see app/Http/Controllers/OrderController.php:273
  * @route '/orders/get-shipping-addresses'
  */
 getShippingAddresses.get = (
@@ -138,7 +138,7 @@ getShippingAddresses.get = (
 
 /**
  * @see \App\Http\Controllers\OrderController::getShippingAddresses
- * @see app/Http/Controllers/OrderController.php:224
+ * @see app/Http/Controllers/OrderController.php:273
  * @route '/orders/get-shipping-addresses'
  */
 getShippingAddresses.head = (
@@ -150,7 +150,7 @@ getShippingAddresses.head = (
 
 /**
  * @see \App\Http\Controllers\OrderController::getShippingAddresses
- * @see app/Http/Controllers/OrderController.php:224
+ * @see app/Http/Controllers/OrderController.php:273
  * @route '/orders/get-shipping-addresses'
  */
 const getShippingAddressesForm = (
@@ -162,7 +162,7 @@ const getShippingAddressesForm = (
 
 /**
  * @see \App\Http\Controllers\OrderController::getShippingAddresses
- * @see app/Http/Controllers/OrderController.php:224
+ * @see app/Http/Controllers/OrderController.php:273
  * @route '/orders/get-shipping-addresses'
  */
 getShippingAddressesForm.get = (
@@ -174,7 +174,7 @@ getShippingAddressesForm.get = (
 
 /**
  * @see \App\Http\Controllers\OrderController::getShippingAddresses
- * @see app/Http/Controllers/OrderController.php:224
+ * @see app/Http/Controllers/OrderController.php:273
  * @route '/orders/get-shipping-addresses'
  */
 getShippingAddressesForm.head = (
@@ -347,7 +347,7 @@ manageEmployees.form = manageEmployeesForm;
 
 /**
  * @see \App\Http\Controllers\OrderController::manageStatus
- * @see app/Http/Controllers/OrderController.php:240
+ * @see app/Http/Controllers/OrderController.php:291
  * @route '/orders/{order}/manage-status'
  */
 export const manageStatus = (
@@ -369,7 +369,7 @@ manageStatus.definition = {
 
 /**
  * @see \App\Http\Controllers\OrderController::manageStatus
- * @see app/Http/Controllers/OrderController.php:240
+ * @see app/Http/Controllers/OrderController.php:291
  * @route '/orders/{order}/manage-status'
  */
 manageStatus.url = (
@@ -409,7 +409,7 @@ manageStatus.url = (
 
 /**
  * @see \App\Http\Controllers\OrderController::manageStatus
- * @see app/Http/Controllers/OrderController.php:240
+ * @see app/Http/Controllers/OrderController.php:291
  * @route '/orders/{order}/manage-status'
  */
 manageStatus.get = (
@@ -426,7 +426,7 @@ manageStatus.get = (
 
 /**
  * @see \App\Http\Controllers\OrderController::manageStatus
- * @see app/Http/Controllers/OrderController.php:240
+ * @see app/Http/Controllers/OrderController.php:291
  * @route '/orders/{order}/manage-status'
  */
 manageStatus.head = (
@@ -443,7 +443,7 @@ manageStatus.head = (
 
 /**
  * @see \App\Http\Controllers\OrderController::manageStatus
- * @see app/Http/Controllers/OrderController.php:240
+ * @see app/Http/Controllers/OrderController.php:291
  * @route '/orders/{order}/manage-status'
  */
 const manageStatusForm = (
@@ -460,7 +460,7 @@ const manageStatusForm = (
 
 /**
  * @see \App\Http\Controllers\OrderController::manageStatus
- * @see app/Http/Controllers/OrderController.php:240
+ * @see app/Http/Controllers/OrderController.php:291
  * @route '/orders/{order}/manage-status'
  */
 manageStatusForm.get = (
@@ -477,7 +477,7 @@ manageStatusForm.get = (
 
 /**
  * @see \App\Http\Controllers\OrderController::manageStatus
- * @see app/Http/Controllers/OrderController.php:240
+ * @see app/Http/Controllers/OrderController.php:291
  * @route '/orders/{order}/manage-status'
  */
 manageStatusForm.head = (
@@ -501,7 +501,7 @@ manageStatus.form = manageStatusForm;
 
 /**
  * @see \App\Http\Controllers\OrderController::saveSemaforo
- * @see app/Http/Controllers/OrderController.php:270
+ * @see app/Http/Controllers/OrderController.php:321
  * @route '/orders/{order}/save-semaforo'
  */
 export const saveSemaforo = (
@@ -523,7 +523,7 @@ saveSemaforo.definition = {
 
 /**
  * @see \App\Http\Controllers\OrderController::saveSemaforo
- * @see app/Http/Controllers/OrderController.php:270
+ * @see app/Http/Controllers/OrderController.php:321
  * @route '/orders/{order}/save-semaforo'
  */
 saveSemaforo.url = (
@@ -563,7 +563,7 @@ saveSemaforo.url = (
 
 /**
  * @see \App\Http\Controllers\OrderController::saveSemaforo
- * @see app/Http/Controllers/OrderController.php:270
+ * @see app/Http/Controllers/OrderController.php:321
  * @route '/orders/{order}/save-semaforo'
  */
 saveSemaforo.post = (
@@ -580,7 +580,7 @@ saveSemaforo.post = (
 
 /**
  * @see \App\Http\Controllers\OrderController::saveSemaforo
- * @see app/Http/Controllers/OrderController.php:270
+ * @see app/Http/Controllers/OrderController.php:321
  * @route '/orders/{order}/save-semaforo'
  */
 const saveSemaforoForm = (
@@ -597,7 +597,7 @@ const saveSemaforoForm = (
 
 /**
  * @see \App\Http\Controllers\OrderController::saveSemaforo
- * @see app/Http/Controllers/OrderController.php:270
+ * @see app/Http/Controllers/OrderController.php:321
  * @route '/orders/{order}/save-semaforo'
  */
 saveSemaforoForm.post = (
@@ -616,7 +616,7 @@ saveSemaforo.form = saveSemaforoForm;
 
 /**
  * @see \App\Http\Controllers\OrderController::changeStatus
- * @see app/Http/Controllers/OrderController.php:310
+ * @see app/Http/Controllers/OrderController.php:362
  * @route '/orders/{order}/change-status'
  */
 export const changeStatus = (
@@ -638,7 +638,7 @@ changeStatus.definition = {
 
 /**
  * @see \App\Http\Controllers\OrderController::changeStatus
- * @see app/Http/Controllers/OrderController.php:310
+ * @see app/Http/Controllers/OrderController.php:362
  * @route '/orders/{order}/change-status'
  */
 changeStatus.url = (
@@ -678,7 +678,7 @@ changeStatus.url = (
 
 /**
  * @see \App\Http\Controllers\OrderController::changeStatus
- * @see app/Http/Controllers/OrderController.php:310
+ * @see app/Http/Controllers/OrderController.php:362
  * @route '/orders/{order}/change-status'
  */
 changeStatus.post = (
@@ -695,7 +695,7 @@ changeStatus.post = (
 
 /**
  * @see \App\Http\Controllers\OrderController::changeStatus
- * @see app/Http/Controllers/OrderController.php:310
+ * @see app/Http/Controllers/OrderController.php:362
  * @route '/orders/{order}/change-status'
  */
 const changeStatusForm = (
@@ -712,7 +712,7 @@ const changeStatusForm = (
 
 /**
  * @see \App\Http\Controllers\OrderController::changeStatus
- * @see app/Http/Controllers/OrderController.php:310
+ * @see app/Http/Controllers/OrderController.php:362
  * @route '/orders/{order}/change-status'
  */
 changeStatusForm.post = (
@@ -885,7 +885,7 @@ downloadBarcode.form = downloadBarcodeForm;
 
 /**
  * @see \App\Http\Controllers\OrderController::downloadAutocontrollo
- * @see app/Http/Controllers/OrderController.php:470
+ * @see app/Http/Controllers/OrderController.php:419
  * @route '/orders/{order}/download-autocontrollo'
  */
 export const downloadAutocontrollo = (
@@ -907,7 +907,7 @@ downloadAutocontrollo.definition = {
 
 /**
  * @see \App\Http\Controllers\OrderController::downloadAutocontrollo
- * @see app/Http/Controllers/OrderController.php:470
+ * @see app/Http/Controllers/OrderController.php:419
  * @route '/orders/{order}/download-autocontrollo'
  */
 downloadAutocontrollo.url = (
@@ -947,7 +947,7 @@ downloadAutocontrollo.url = (
 
 /**
  * @see \App\Http\Controllers\OrderController::downloadAutocontrollo
- * @see app/Http/Controllers/OrderController.php:470
+ * @see app/Http/Controllers/OrderController.php:419
  * @route '/orders/{order}/download-autocontrollo'
  */
 downloadAutocontrollo.get = (
@@ -964,7 +964,7 @@ downloadAutocontrollo.get = (
 
 /**
  * @see \App\Http\Controllers\OrderController::downloadAutocontrollo
- * @see app/Http/Controllers/OrderController.php:470
+ * @see app/Http/Controllers/OrderController.php:419
  * @route '/orders/{order}/download-autocontrollo'
  */
 downloadAutocontrollo.head = (
@@ -981,7 +981,7 @@ downloadAutocontrollo.head = (
 
 /**
  * @see \App\Http\Controllers\OrderController::downloadAutocontrollo
- * @see app/Http/Controllers/OrderController.php:470
+ * @see app/Http/Controllers/OrderController.php:419
  * @route '/orders/{order}/download-autocontrollo'
  */
 const downloadAutocontrolloForm = (
@@ -998,7 +998,7 @@ const downloadAutocontrolloForm = (
 
 /**
  * @see \App\Http\Controllers\OrderController::downloadAutocontrollo
- * @see app/Http/Controllers/OrderController.php:470
+ * @see app/Http/Controllers/OrderController.php:419
  * @route '/orders/{order}/download-autocontrollo'
  */
 downloadAutocontrolloForm.get = (
@@ -1015,7 +1015,7 @@ downloadAutocontrolloForm.get = (
 
 /**
  * @see \App\Http\Controllers\OrderController::downloadAutocontrollo
- * @see app/Http/Controllers/OrderController.php:470
+ * @see app/Http/Controllers/OrderController.php:419
  * @route '/orders/{order}/download-autocontrollo'
  */
 downloadAutocontrolloForm.head = (
@@ -1039,7 +1039,7 @@ downloadAutocontrollo.form = downloadAutocontrolloForm;
 
 /**
  * @see \App\Http\Controllers\OrderController::index
- * @see app/Http/Controllers/OrderController.php:57
+ * @see app/Http/Controllers/OrderController.php:82
  * @route '/orders'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -1054,7 +1054,7 @@ index.definition = {
 
 /**
  * @see \App\Http\Controllers\OrderController::index
- * @see app/Http/Controllers/OrderController.php:57
+ * @see app/Http/Controllers/OrderController.php:82
  * @route '/orders'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -1063,7 +1063,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\OrderController::index
- * @see app/Http/Controllers/OrderController.php:57
+ * @see app/Http/Controllers/OrderController.php:82
  * @route '/orders'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -1073,7 +1073,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\OrderController::index
- * @see app/Http/Controllers/OrderController.php:57
+ * @see app/Http/Controllers/OrderController.php:82
  * @route '/orders'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -1083,7 +1083,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
  * @see \App\Http\Controllers\OrderController::index
- * @see app/Http/Controllers/OrderController.php:57
+ * @see app/Http/Controllers/OrderController.php:82
  * @route '/orders'
  */
 const indexForm = (
@@ -1095,7 +1095,7 @@ const indexForm = (
 
 /**
  * @see \App\Http\Controllers\OrderController::index
- * @see app/Http/Controllers/OrderController.php:57
+ * @see app/Http/Controllers/OrderController.php:82
  * @route '/orders'
  */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -1105,7 +1105,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\OrderController::index
- * @see app/Http/Controllers/OrderController.php:57
+ * @see app/Http/Controllers/OrderController.php:82
  * @route '/orders'
  */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -1122,7 +1122,7 @@ index.form = indexForm;
 
 /**
  * @see \App\Http\Controllers\OrderController::create
- * @see app/Http/Controllers/OrderController.php:74
+ * @see app/Http/Controllers/OrderController.php:117
  * @route '/orders/create'
  */
 export const create = (
@@ -1139,7 +1139,7 @@ create.definition = {
 
 /**
  * @see \App\Http\Controllers\OrderController::create
- * @see app/Http/Controllers/OrderController.php:74
+ * @see app/Http/Controllers/OrderController.php:117
  * @route '/orders/create'
  */
 create.url = (options?: RouteQueryOptions) => {
@@ -1148,7 +1148,7 @@ create.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\OrderController::create
- * @see app/Http/Controllers/OrderController.php:74
+ * @see app/Http/Controllers/OrderController.php:117
  * @route '/orders/create'
  */
 create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -1158,7 +1158,7 @@ create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\OrderController::create
- * @see app/Http/Controllers/OrderController.php:74
+ * @see app/Http/Controllers/OrderController.php:117
  * @route '/orders/create'
  */
 create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -1168,7 +1168,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
  * @see \App\Http\Controllers\OrderController::create
- * @see app/Http/Controllers/OrderController.php:74
+ * @see app/Http/Controllers/OrderController.php:117
  * @route '/orders/create'
  */
 const createForm = (
@@ -1180,7 +1180,7 @@ const createForm = (
 
 /**
  * @see \App\Http\Controllers\OrderController::create
- * @see app/Http/Controllers/OrderController.php:74
+ * @see app/Http/Controllers/OrderController.php:117
  * @route '/orders/create'
  */
 createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -1190,7 +1190,7 @@ createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\OrderController::create
- * @see app/Http/Controllers/OrderController.php:74
+ * @see app/Http/Controllers/OrderController.php:117
  * @route '/orders/create'
  */
 createForm.head = (
@@ -1209,7 +1209,7 @@ create.form = createForm;
 
 /**
  * @see \App\Http\Controllers\OrderController::store
- * @see app/Http/Controllers/OrderController.php:108
+ * @see app/Http/Controllers/OrderController.php:151
  * @route '/orders'
  */
 export const store = (
@@ -1226,7 +1226,7 @@ store.definition = {
 
 /**
  * @see \App\Http\Controllers\OrderController::store
- * @see app/Http/Controllers/OrderController.php:108
+ * @see app/Http/Controllers/OrderController.php:151
  * @route '/orders'
  */
 store.url = (options?: RouteQueryOptions) => {
@@ -1235,7 +1235,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\OrderController::store
- * @see app/Http/Controllers/OrderController.php:108
+ * @see app/Http/Controllers/OrderController.php:151
  * @route '/orders'
  */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -1245,7 +1245,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
  * @see \App\Http\Controllers\OrderController::store
- * @see app/Http/Controllers/OrderController.php:108
+ * @see app/Http/Controllers/OrderController.php:151
  * @route '/orders'
  */
 const storeForm = (
@@ -1257,7 +1257,7 @@ const storeForm = (
 
 /**
  * @see \App\Http\Controllers\OrderController::store
- * @see app/Http/Controllers/OrderController.php:108
+ * @see app/Http/Controllers/OrderController.php:151
  * @route '/orders'
  */
 storeForm.post = (
@@ -1271,7 +1271,7 @@ store.form = storeForm;
 
 /**
  * @see \App\Http\Controllers\OrderController::show
- * @see app/Http/Controllers/OrderController.php:126
+ * @see app/Http/Controllers/OrderController.php:169
  * @route '/orders/{order}'
  */
 export const show = (
@@ -1293,7 +1293,7 @@ show.definition = {
 
 /**
  * @see \App\Http\Controllers\OrderController::show
- * @see app/Http/Controllers/OrderController.php:126
+ * @see app/Http/Controllers/OrderController.php:169
  * @route '/orders/{order}'
  */
 show.url = (
@@ -1333,7 +1333,7 @@ show.url = (
 
 /**
  * @see \App\Http\Controllers\OrderController::show
- * @see app/Http/Controllers/OrderController.php:126
+ * @see app/Http/Controllers/OrderController.php:169
  * @route '/orders/{order}'
  */
 show.get = (
@@ -1350,7 +1350,7 @@ show.get = (
 
 /**
  * @see \App\Http\Controllers\OrderController::show
- * @see app/Http/Controllers/OrderController.php:126
+ * @see app/Http/Controllers/OrderController.php:169
  * @route '/orders/{order}'
  */
 show.head = (
@@ -1367,7 +1367,7 @@ show.head = (
 
 /**
  * @see \App\Http\Controllers\OrderController::show
- * @see app/Http/Controllers/OrderController.php:126
+ * @see app/Http/Controllers/OrderController.php:169
  * @route '/orders/{order}'
  */
 const showForm = (
@@ -1384,7 +1384,7 @@ const showForm = (
 
 /**
  * @see \App\Http\Controllers\OrderController::show
- * @see app/Http/Controllers/OrderController.php:126
+ * @see app/Http/Controllers/OrderController.php:169
  * @route '/orders/{order}'
  */
 showForm.get = (
@@ -1401,7 +1401,7 @@ showForm.get = (
 
 /**
  * @see \App\Http\Controllers\OrderController::show
- * @see app/Http/Controllers/OrderController.php:126
+ * @see app/Http/Controllers/OrderController.php:169
  * @route '/orders/{order}'
  */
 showForm.head = (
@@ -1425,7 +1425,7 @@ show.form = showForm;
 
 /**
  * @see \App\Http\Controllers\OrderController::edit
- * @see app/Http/Controllers/OrderController.php:150
+ * @see app/Http/Controllers/OrderController.php:195
  * @route '/orders/{order}/edit'
  */
 export const edit = (
@@ -1447,7 +1447,7 @@ edit.definition = {
 
 /**
  * @see \App\Http\Controllers\OrderController::edit
- * @see app/Http/Controllers/OrderController.php:150
+ * @see app/Http/Controllers/OrderController.php:195
  * @route '/orders/{order}/edit'
  */
 edit.url = (
@@ -1487,7 +1487,7 @@ edit.url = (
 
 /**
  * @see \App\Http\Controllers\OrderController::edit
- * @see app/Http/Controllers/OrderController.php:150
+ * @see app/Http/Controllers/OrderController.php:195
  * @route '/orders/{order}/edit'
  */
 edit.get = (
@@ -1504,7 +1504,7 @@ edit.get = (
 
 /**
  * @see \App\Http\Controllers\OrderController::edit
- * @see app/Http/Controllers/OrderController.php:150
+ * @see app/Http/Controllers/OrderController.php:195
  * @route '/orders/{order}/edit'
  */
 edit.head = (
@@ -1521,7 +1521,7 @@ edit.head = (
 
 /**
  * @see \App\Http\Controllers\OrderController::edit
- * @see app/Http/Controllers/OrderController.php:150
+ * @see app/Http/Controllers/OrderController.php:195
  * @route '/orders/{order}/edit'
  */
 const editForm = (
@@ -1538,7 +1538,7 @@ const editForm = (
 
 /**
  * @see \App\Http\Controllers\OrderController::edit
- * @see app/Http/Controllers/OrderController.php:150
+ * @see app/Http/Controllers/OrderController.php:195
  * @route '/orders/{order}/edit'
  */
 editForm.get = (
@@ -1555,7 +1555,7 @@ editForm.get = (
 
 /**
  * @see \App\Http\Controllers\OrderController::edit
- * @see app/Http/Controllers/OrderController.php:150
+ * @see app/Http/Controllers/OrderController.php:195
  * @route '/orders/{order}/edit'
  */
 editForm.head = (
@@ -1579,7 +1579,7 @@ edit.form = editForm;
 
 /**
  * @see \App\Http\Controllers\OrderController::update
- * @see app/Http/Controllers/OrderController.php:176
+ * @see app/Http/Controllers/OrderController.php:221
  * @route '/orders/{order}'
  */
 export const update = (
@@ -1601,7 +1601,7 @@ update.definition = {
 
 /**
  * @see \App\Http\Controllers\OrderController::update
- * @see app/Http/Controllers/OrderController.php:176
+ * @see app/Http/Controllers/OrderController.php:221
  * @route '/orders/{order}'
  */
 update.url = (
@@ -1641,7 +1641,7 @@ update.url = (
 
 /**
  * @see \App\Http\Controllers\OrderController::update
- * @see app/Http/Controllers/OrderController.php:176
+ * @see app/Http/Controllers/OrderController.php:221
  * @route '/orders/{order}'
  */
 update.put = (
@@ -1658,7 +1658,7 @@ update.put = (
 
 /**
  * @see \App\Http\Controllers\OrderController::update
- * @see app/Http/Controllers/OrderController.php:176
+ * @see app/Http/Controllers/OrderController.php:221
  * @route '/orders/{order}'
  */
 update.patch = (
@@ -1675,7 +1675,7 @@ update.patch = (
 
 /**
  * @see \App\Http\Controllers\OrderController::update
- * @see app/Http/Controllers/OrderController.php:176
+ * @see app/Http/Controllers/OrderController.php:221
  * @route '/orders/{order}'
  */
 const updateForm = (
@@ -1697,7 +1697,7 @@ const updateForm = (
 
 /**
  * @see \App\Http\Controllers\OrderController::update
- * @see app/Http/Controllers/OrderController.php:176
+ * @see app/Http/Controllers/OrderController.php:221
  * @route '/orders/{order}'
  */
 updateForm.put = (
@@ -1719,7 +1719,7 @@ updateForm.put = (
 
 /**
  * @see \App\Http\Controllers\OrderController::update
- * @see app/Http/Controllers/OrderController.php:176
+ * @see app/Http/Controllers/OrderController.php:221
  * @route '/orders/{order}'
  */
 updateForm.patch = (
@@ -1743,7 +1743,7 @@ update.form = updateForm;
 
 /**
  * @see \App\Http\Controllers\OrderController::destroy
- * @see app/Http/Controllers/OrderController.php:197
+ * @see app/Http/Controllers/OrderController.php:242
  * @route '/orders/{order}'
  */
 export const destroy = (
@@ -1765,7 +1765,7 @@ destroy.definition = {
 
 /**
  * @see \App\Http\Controllers\OrderController::destroy
- * @see app/Http/Controllers/OrderController.php:197
+ * @see app/Http/Controllers/OrderController.php:242
  * @route '/orders/{order}'
  */
 destroy.url = (
@@ -1805,7 +1805,7 @@ destroy.url = (
 
 /**
  * @see \App\Http\Controllers\OrderController::destroy
- * @see app/Http/Controllers/OrderController.php:197
+ * @see app/Http/Controllers/OrderController.php:242
  * @route '/orders/{order}'
  */
 destroy.delete = (
@@ -1822,7 +1822,7 @@ destroy.delete = (
 
 /**
  * @see \App\Http\Controllers\OrderController::destroy
- * @see app/Http/Controllers/OrderController.php:197
+ * @see app/Http/Controllers/OrderController.php:242
  * @route '/orders/{order}'
  */
 const destroyForm = (
@@ -1844,7 +1844,7 @@ const destroyForm = (
 
 /**
  * @see \App\Http\Controllers\OrderController::destroy
- * @see app/Http/Controllers/OrderController.php:197
+ * @see app/Http/Controllers/OrderController.php:242
  * @route '/orders/{order}'
  */
 destroyForm.delete = (

@@ -243,7 +243,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
 
     // Format date for input type="date"
     const formatDateForInput = (dateString?: string): string => {
-        if (!dateString) return '';
+        if (dateString == null || dateString === '') return '';
         const date = new Date(dateString);
         return date.toISOString().split('T')[0];
     };
@@ -264,14 +264,15 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                 number: offer.offer_number,
                             })}
                         </h1>
-                        {offer.offer_date && (
-                            <p className="mt-1 text-sm text-muted-foreground">
-                                {t('offers.show.date_label')}{' '}
-                                {new Date(
-                                    offer.offer_date,
-                                ).toLocaleDateString()}
-                            </p>
-                        )}
+                        {offer.offer_date != null &&
+                            offer.offer_date !== '' && (
+                                <p className="mt-1 text-sm text-muted-foreground">
+                                    {t('offers.show.date_label')}{' '}
+                                    {new Date(
+                                        offer.offer_date,
+                                    ).toLocaleDateString()}
+                                </p>
+                            )}
                     </div>
                     <div className="flex gap-2">
                         <Button
@@ -399,11 +400,25 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         id="customer_uuid"
                                         name="customer_uuid"
                                         type="text"
-                                        value={
-                                            offer.customer
-                                                ? `${offer.customer.code || ''}${offer.customer.code ? ' - ' : ''}${offer.customer.company_name || ''}`
-                                                : ''
-                                        }
+                                        value={(() => {
+                                            if (offer.customer == null) {
+                                                return '';
+                                            }
+                                            const code =
+                                                offer.customer.code ?? '';
+                                            const companyName =
+                                                offer.customer.company_name ??
+                                                '';
+                                            const hasCode = code !== '';
+                                            const hasCompanyName =
+                                                companyName !== '';
+                                            if (!hasCode && !hasCompanyName) {
+                                                return '';
+                                            }
+                                            return `${code}${
+                                                hasCode ? ' - ' : ''
+                                            }${companyName}`;
+                                        })()}
                                         readOnly
                                         className="bg-muted"
                                     />
@@ -422,16 +437,20 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         name="customerdivision_uuid"
                                         type="text"
                                         value={
-                                            offer.customerDivision?.name || ''
+                                            offer.customerDivision?.name ?? ''
                                         }
                                         readOnly
                                         className={
-                                            offer.customerDivision?.name
+                                            offer.customerDivision?.name !=
+                                                null &&
+                                            offer.customerDivision.name !== ''
                                                 ? 'bg-muted'
                                                 : 'bg-muted/50 text-muted-foreground italic'
                                         }
                                         placeholder={
-                                            offer.customerDivision?.name
+                                            offer.customerDivision?.name !=
+                                                null &&
+                                            offer.customerDivision.name !== ''
                                                 ? undefined
                                                 : t('offers.show.not_specified')
                                         }
@@ -450,15 +469,17 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         id="customer_ref"
                                         name="customer_ref"
                                         type="text"
-                                        value={offer.customer_ref || ''}
+                                        value={offer.customer_ref ?? ''}
                                         readOnly
                                         className={
-                                            offer.customer_ref
+                                            offer.customer_ref != null &&
+                                            offer.customer_ref !== ''
                                                 ? 'bg-muted'
                                                 : 'bg-muted/50 text-muted-foreground italic'
                                         }
                                         placeholder={
-                                            offer.customer_ref
+                                            offer.customer_ref != null &&
+                                            offer.customer_ref !== ''
                                                 ? undefined
                                                 : t('offers.show.not_specified')
                                         }
@@ -485,7 +506,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         id="activity_uuid"
                                         name="activity_uuid"
                                         type="text"
-                                        value={offer.activity?.name || ''}
+                                        value={offer.activity?.name ?? ''}
                                         readOnly
                                         className="bg-muted"
                                     />
@@ -503,7 +524,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         id="sector_uuid"
                                         name="sector_uuid"
                                         type="text"
-                                        value={offer.sector?.name || ''}
+                                        value={offer.sector?.name ?? ''}
                                         readOnly
                                         className="bg-muted"
                                     />
@@ -521,7 +542,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         id="type_uuid"
                                         name="type_uuid"
                                         type="text"
-                                        value={offer.seasonality?.name || ''}
+                                        value={offer.seasonality?.name ?? ''}
                                         readOnly
                                         className="bg-muted"
                                     />
@@ -539,7 +560,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         id="order_type_uuid"
                                         name="order_type_uuid"
                                         type="text"
-                                        value={offer.typeOrder?.name || ''}
+                                        value={offer.typeOrder?.name ?? ''}
                                         readOnly
                                         className="bg-muted"
                                     />
@@ -565,11 +586,23 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         id="lasfamily_uuid"
                                         name="lasfamily_uuid"
                                         type="text"
-                                        value={
-                                            offer.lasFamily
-                                                ? `${offer.lasFamily.code || ''} - ${offer.lasFamily.name || ''}`
-                                                : ''
-                                        }
+                                        value={(() => {
+                                            if (offer.lasFamily == null) {
+                                                return '';
+                                            }
+                                            const code =
+                                                offer.lasFamily.code ?? '';
+                                            const name =
+                                                offer.lasFamily.name ?? '';
+                                            const hasCode = code !== '';
+                                            const hasName = name !== '';
+                                            if (!hasCode && !hasName) {
+                                                return '';
+                                            }
+                                            return `${code}${
+                                                hasCode ? ' - ' : ''
+                                            }${name}`;
+                                        })()}
                                         readOnly
                                         className="bg-muted"
                                     />
@@ -587,11 +620,23 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         id="lsresource_uuid"
                                         name="lsresource_uuid"
                                         type="text"
-                                        value={
-                                            offer.lsResource
-                                                ? `${offer.lsResource.code || ''} - ${offer.lsResource.name || ''}`
-                                                : ''
-                                        }
+                                        value={(() => {
+                                            if (offer.lsResource == null) {
+                                                return '';
+                                            }
+                                            const code =
+                                                offer.lsResource.code ?? '';
+                                            const name =
+                                                offer.lsResource.name ?? '';
+                                            const hasCode = code !== '';
+                                            const hasName = name !== '';
+                                            if (!hasCode && !hasName) {
+                                                return '';
+                                            }
+                                            return `${code}${
+                                                hasCode ? ' - ' : ''
+                                            }${name}`;
+                                        })()}
                                         readOnly
                                         className="bg-muted"
                                     />
@@ -609,11 +654,23 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         id="lasworkline_uuid"
                                         name="lasworkline_uuid"
                                         type="text"
-                                        value={
-                                            offer.lasWorkLine
-                                                ? `${offer.lasWorkLine.code || ''} - ${offer.lasWorkLine.name || ''}`
-                                                : ''
-                                        }
+                                        value={(() => {
+                                            if (offer.lasWorkLine == null) {
+                                                return '';
+                                            }
+                                            const code =
+                                                offer.lasWorkLine.code ?? '';
+                                            const name =
+                                                offer.lasWorkLine.name ?? '';
+                                            const hasCode = code !== '';
+                                            const hasName = name !== '';
+                                            if (!hasCode && !hasName) {
+                                                return '';
+                                            }
+                                            return `${code}${
+                                                hasCode ? ' - ' : ''
+                                            }${name}`;
+                                        })()}
                                         readOnly
                                         className="bg-muted"
                                     />
@@ -641,7 +698,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         id="article_code_ref"
                                         name="article_code_ref"
                                         type="text"
-                                        value={offer.article_code_ref || ''}
+                                        value={offer.article_code_ref ?? ''}
                                         readOnly
                                         className="bg-muted"
                                     />
@@ -661,7 +718,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         id="provisional_description"
                                         name="provisional_description"
                                         value={
-                                            offer.provisional_description || ''
+                                            offer.provisional_description ?? ''
                                         }
                                         readOnly
                                         className="bg-muted"
@@ -681,7 +738,7 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         id="unit_of_measure"
                                         name="unit_of_measure"
                                         type="text"
-                                        value={offer.unit_of_measure || ''}
+                                        value={offer.unit_of_measure ?? ''}
                                         readOnly
                                         className="bg-muted"
                                     />
@@ -808,15 +865,17 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                     <Textarea
                                         id="notes"
                                         name="notes"
-                                        value={offer.notes || ''}
+                                        value={offer.notes ?? ''}
                                         readOnly
                                         className={
-                                            offer.notes
+                                            offer.notes != null &&
+                                            offer.notes !== ''
                                                 ? 'bg-muted'
                                                 : 'bg-muted/50 text-muted-foreground italic'
                                         }
                                         placeholder={
-                                            offer.notes
+                                            offer.notes != null &&
+                                            offer.notes !== ''
                                                 ? undefined
                                                 : t('offers.show.notes_empty')
                                         }
@@ -898,7 +957,10 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                                             )}
                                                         </td>
                                                         <td className="px-4 py-3 text-right text-sm">
-                                                            {operation.filename ? (
+                                                            {operation.filename !=
+                                                                null &&
+                                                            operation.filename !==
+                                                                '' ? (
                                                                 <button
                                                                     type="button"
                                                                     className="inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-primary transition-colors hover:bg-muted/60 hover:text-primary/80"
@@ -1673,15 +1735,17 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                     <Textarea
                                         id="offer_notes"
                                         name="offer_notes"
-                                        value={offer.offer_notes || ''}
+                                        value={offer.offer_notes ?? ''}
                                         readOnly
                                         className={
-                                            offer.offer_notes
+                                            offer.offer_notes != null &&
+                                            offer.offer_notes !== ''
                                                 ? 'bg-muted'
                                                 : 'bg-muted/50 text-muted-foreground italic'
                                         }
                                         placeholder={
-                                            offer.offer_notes
+                                            offer.offer_notes != null &&
+                                            offer.offer_notes !== ''
                                                 ? undefined
                                                 : t('offers.show.notes_empty')
                                         }
@@ -1763,15 +1827,17 @@ export default function OffersShow({ offer }: OffersShowProps) {
                                         id="approval_status"
                                         name="approval_status"
                                         type="text"
-                                        value={offer.approval_status || ''}
+                                        value={offer.approval_status ?? ''}
                                         readOnly
                                         className={
-                                            offer.approval_status
+                                            offer.approval_status != null &&
+                                            offer.approval_status !== ''
                                                 ? 'bg-muted'
                                                 : 'bg-muted/50 text-muted-foreground italic'
                                         }
                                         placeholder={
-                                            offer.approval_status
+                                            offer.approval_status != null &&
+                                            offer.approval_status !== ''
                                                 ? undefined
                                                 : t('offers.show.not_specified')
                                         }

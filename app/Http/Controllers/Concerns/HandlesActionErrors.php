@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Concerns;
 
+use App\Http\Resources\Api\ApiResponseResource;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\ValidationException;
 
@@ -36,14 +37,21 @@ trait HandlesActionErrors
         try {
             return $callback();
         } catch (ValidationException $e) {
-            return response()->json([
+            return ApiResponseResource::error(
+                $e->getMessage(),
+                [
+                    'errors' => $e->errors(),
+                ]
+            )->additional([
                 'error' => $e->getMessage(),
                 'errors' => $e->errors(),
-            ], 422);
+            ])->response()->setStatusCode(422);
         } catch (\Exception $e) {
-            return response()->json([
+            return ApiResponseResource::error(
+                $e->getMessage()
+            )->additional([
                 'error' => $e->getMessage(),
-            ], 400);
+            ])->response()->setStatusCode(400);
         }
     }
 }

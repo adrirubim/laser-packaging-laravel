@@ -120,7 +120,7 @@ export default function Login({
                 )}
             </Form>
 
-            {status && (
+            {status != null && status !== '' && (
                 <div className="mb-4 text-center text-sm font-medium text-green-600">
                     {status}
                 </div>

@@ -11,6 +11,7 @@ Single entry point for repository documentation. All docs are in **English** and
 | Document | Description |
 |----------|-------------|
 | [../README.md](../README.md) | Project overview, features, stack, installation, commands |
+| [../ARCHITECTURE_OMEGA.md](../ARCHITECTURE_OMEGA.md) | Omega 2026 architecture (Domain Actions → Resources → Responses → Frontend types) |
 | [VERSION_STACK.md](VERSION_STACK.md) | Exact versions from lock files |
 | [PROJECT_STATUS.md](PROJECT_STATUS.md) | Quick status and links to full details |
 

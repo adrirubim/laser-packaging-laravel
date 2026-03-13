@@ -61,18 +61,25 @@ function TopArticlesTooltipContent({
     payload,
 }: TopArticlesTooltipProps) {
     const { t } = useTranslations();
-    if (!active || !payload || payload.length === 0) {
+    if (
+        active !== true ||
+        payload === null ||
+        payload === undefined ||
+        payload.length === 0
+    ) {
         return null;
     }
     const data = payload[0]?.payload;
-    if (!data) return null;
+    if (data === null || data === undefined) {
+        return null;
+    }
 
     const isDark =
-        typeof document !== 'undefined'
-            ? document.documentElement.classList.contains('dark') ||
-              (window.matchMedia &&
-                  window.matchMedia('(prefers-color-scheme: dark)').matches)
-            : false;
+        typeof document !== 'undefined' &&
+        (document.documentElement.classList.contains('dark') ||
+            (typeof window !== 'undefined' &&
+                typeof window.matchMedia === 'function' &&
+                window.matchMedia('(prefers-color-scheme: dark)').matches));
 
     const backgroundColor = isDark ? 'rgba(15, 23, 42, 0.97)' : '#ffffff';
     const borderColor = isDark
@@ -151,7 +158,7 @@ export function TopArticlesChart({ data, onBarClick }: TopArticlesChartProps) {
 
     const chartData: TopArticleChartRow[] = data.map((article) => ({
         name: article.cod_article_las,
-        description: article.article_descr || t('dashboard.no_description'),
+        description: article.article_descr ?? t('dashboard.no_description'),
         quantita: article.total_quantity,
         raw: article,
     }));
@@ -164,7 +171,11 @@ export function TopArticlesChart({ data, onBarClick }: TopArticlesChartProps) {
         const { x, y, payload } = props;
         // Find index from displayed article code
         const payloadValue = payload?.value;
-        if (!payloadValue) {
+        if (
+            payloadValue === null ||
+            payloadValue === undefined ||
+            payloadValue === ''
+        ) {
             return (
                 <text
                     x={x}
@@ -205,7 +216,12 @@ export function TopArticlesChart({ data, onBarClick }: TopArticlesChartProps) {
                 }}
                 onMouseLeave={() => setActiveIndex(null)}
                 onClick={() => {
-                    if (onBarClick && entry && index >= 0) {
+                    if (
+                        typeof onBarClick === 'function' &&
+                        entry !== null &&
+                        entry !== undefined &&
+                        index >= 0
+                    ) {
                         onBarClick(entry.raw);
                     }
                 }}
@@ -255,7 +271,11 @@ export function TopArticlesChart({ data, onBarClick }: TopArticlesChartProps) {
                     dataKey="quantita"
                     fill="#A5B4FC"
                     radius={[0, 4, 4, 0]}
-                    style={onBarClick ? { cursor: 'pointer' } : undefined}
+                    style={
+                        Boolean(onBarClick) === true
+                            ? { cursor: 'pointer' }
+                            : undefined
+                    }
                     onMouseLeave={() => setActiveIndex(null)}
                 >
                     {chartData.map((entry, index) => (
@@ -270,7 +290,7 @@ export function TopArticlesChart({ data, onBarClick }: TopArticlesChartProps) {
                             onMouseEnter={() => setActiveIndex(index)}
                             onMouseLeave={() => setActiveIndex(null)}
                             onClick={() => {
-                                if (onBarClick) {
+                                if (typeof onBarClick === 'function') {
                                     onBarClick(entry.raw);
                                 }
                             }}

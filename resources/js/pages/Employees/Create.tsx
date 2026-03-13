@@ -166,23 +166,32 @@ export default function EmployeesCreate({
                                                             )}
                                                             maxLength={255}
                                                             aria-invalid={
-                                                                nameValidation.error
+                                                                nameValidation.error !=
+                                                                    null &&
+                                                                nameValidation.error !==
+                                                                    ''
                                                                     ? 'true'
                                                                     : 'false'
                                                             }
                                                             className={
-                                                                nameValidation.error
+                                                                nameValidation.error !=
+                                                                    null &&
+                                                                nameValidation.error !==
+                                                                    ''
                                                                     ? 'border-destructive'
                                                                     : ''
                                                             }
                                                         />
-                                                        {nameValidation.error && (
-                                                            <p className="text-xs text-destructive">
-                                                                {
-                                                                    nameValidation.error
-                                                                }
-                                                            </p>
-                                                        )}
+                                                        {nameValidation.error !=
+                                                            null &&
+                                                            nameValidation.error !==
+                                                                '' && (
+                                                                <p className="text-xs text-destructive">
+                                                                    {
+                                                                        nameValidation.error
+                                                                    }
+                                                                </p>
+                                                            )}
                                                         <InputError
                                                             message={
                                                                 allErrors.name
@@ -217,23 +226,32 @@ export default function EmployeesCreate({
                                                             )}
                                                             maxLength={255}
                                                             aria-invalid={
-                                                                surnameValidation.error
+                                                                surnameValidation.error !=
+                                                                    null &&
+                                                                surnameValidation.error !==
+                                                                    ''
                                                                     ? 'true'
                                                                     : 'false'
                                                             }
                                                             className={
-                                                                surnameValidation.error
+                                                                surnameValidation.error !=
+                                                                    null &&
+                                                                surnameValidation.error !==
+                                                                    ''
                                                                     ? 'border-destructive'
                                                                     : ''
                                                             }
                                                         />
-                                                        {surnameValidation.error && (
-                                                            <p className="text-xs text-destructive">
-                                                                {
-                                                                    surnameValidation.error
-                                                                }
-                                                            </p>
-                                                        )}
+                                                        {surnameValidation.error !=
+                                                            null &&
+                                                            surnameValidation.error !==
+                                                                '' && (
+                                                                <p className="text-xs text-destructive">
+                                                                    {
+                                                                        surnameValidation.error
+                                                                    }
+                                                                </p>
+                                                            )}
                                                         <InputError
                                                             message={
                                                                 allErrors.surname
@@ -271,23 +289,32 @@ export default function EmployeesCreate({
                                                         )}
                                                         maxLength={255}
                                                         aria-invalid={
-                                                            matriculationNumberValidation.error
+                                                            matriculationNumberValidation.error !=
+                                                                null &&
+                                                            matriculationNumberValidation.error !==
+                                                                ''
                                                                 ? 'true'
                                                                 : 'false'
                                                         }
                                                         className={
-                                                            matriculationNumberValidation.error
+                                                            matriculationNumberValidation.error !=
+                                                                null &&
+                                                            matriculationNumberValidation.error !==
+                                                                ''
                                                                 ? 'border-destructive'
                                                                 : ''
                                                         }
                                                     />
-                                                    {matriculationNumberValidation.error && (
-                                                        <p className="text-xs text-destructive">
-                                                            {
-                                                                matriculationNumberValidation.error
-                                                            }
-                                                        </p>
-                                                    )}
+                                                    {matriculationNumberValidation.error !=
+                                                        null &&
+                                                        matriculationNumberValidation.error !==
+                                                            '' && (
+                                                            <p className="text-xs text-destructive">
+                                                                {
+                                                                    matriculationNumberValidation.error
+                                                                }
+                                                            </p>
+                                                        )}
                                                     <InputError
                                                         message={
                                                             allErrors.matriculation_number
@@ -322,23 +349,32 @@ export default function EmployeesCreate({
                                                             'employees.create.password_placeholder',
                                                         )}
                                                         aria-invalid={
-                                                            passwordValidation.error
+                                                            passwordValidation.error !=
+                                                                null &&
+                                                            passwordValidation.error !==
+                                                                ''
                                                                 ? 'true'
                                                                 : 'false'
                                                         }
                                                         className={
-                                                            passwordValidation.error
+                                                            passwordValidation.error !=
+                                                                null &&
+                                                            passwordValidation.error !==
+                                                                ''
                                                                 ? 'border-destructive'
                                                                 : ''
                                                         }
                                                     />
-                                                    {passwordValidation.error && (
-                                                        <p className="text-xs text-destructive">
-                                                            {
-                                                                passwordValidation.error
-                                                            }
-                                                        </p>
-                                                    )}
+                                                    {passwordValidation.error !=
+                                                        null &&
+                                                        passwordValidation.error !==
+                                                            '' && (
+                                                            <p className="text-xs text-destructive">
+                                                                {
+                                                                    passwordValidation.error
+                                                                }
+                                                            </p>
+                                                        )}
                                                     <InputError
                                                         message={
                                                             allErrors.password

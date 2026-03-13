@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\Api\ApiResponseResource;
 use App\Models\OfferOperation;
 use App\Models\OfferOperationCategory;
 use Illuminate\Http\Request;
@@ -209,8 +210,12 @@ class OfferOperationController extends Controller
             ->orderBy('codice_univoco')
             ->get(['uuid', 'codice', 'codice_univoco', 'descrizione', 'secondi_operazione']);
 
-        return response()->json([
-            'operations' => $operations,
-        ]);
+        return ApiResponseResource::success(
+            true,
+            null,
+            [
+                'operations' => $operations,
+            ]
+        )->response();
     }
 }

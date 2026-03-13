@@ -127,47 +127,49 @@ export default function PalletSheetsShow() {
                                 {palletSheet.code}
                             </p>
                         </div>
-                        {palletSheet.description && (
-                            <div>
-                                <Label className="text-sm font-medium text-muted-foreground">
-                                    {t(
-                                        'articles.pallet_sheets.show.fields.description',
-                                    )}
-                                </Label>
-                                <p className="mt-1 text-sm font-medium">
-                                    {palletSheet.description}
-                                </p>
-                            </div>
-                        )}
-                        {palletSheet.filename && (
-                            <div>
-                                <Label className="text-sm font-medium text-muted-foreground">
-                                    {t(
-                                        'articles.pallet_sheets.show.fields.filename',
-                                    )}
-                                </Label>
-                                <div className="mt-1 flex items-center gap-2">
-                                    <p className="text-sm font-medium">
-                                        {palletSheet.filename}
+                        {palletSheet.description != null &&
+                            palletSheet.description !== '' && (
+                                <div>
+                                    <Label className="text-sm font-medium text-muted-foreground">
+                                        {t(
+                                            'articles.pallet_sheets.show.fields.description',
+                                        )}
+                                    </Label>
+                                    <p className="mt-1 text-sm font-medium">
+                                        {palletSheet.description}
                                     </p>
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => {
-                                            window.location.href =
-                                                articles.palletSheets.downloadFile(
-                                                    {
-                                                        palletSheet:
-                                                            palletSheet.uuid,
-                                                    },
-                                                ).url;
-                                        }}
-                                    >
-                                        <Download className="h-4 w-4" />
-                                    </Button>
                                 </div>
-                            </div>
-                        )}
+                            )}
+                        {palletSheet.filename != null &&
+                            palletSheet.filename !== '' && (
+                                <div>
+                                    <Label className="text-sm font-medium text-muted-foreground">
+                                        {t(
+                                            'articles.pallet_sheets.show.fields.filename',
+                                        )}
+                                    </Label>
+                                    <div className="mt-1 flex items-center gap-2">
+                                        <p className="text-sm font-medium">
+                                            {palletSheet.filename}
+                                        </p>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => {
+                                                window.location.href =
+                                                    articles.palletSheets.downloadFile(
+                                                        {
+                                                            palletSheet:
+                                                                palletSheet.uuid,
+                                                        },
+                                                    ).url;
+                                            }}
+                                        >
+                                            <Download className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
                     </CardContent>
                 </Card>
 

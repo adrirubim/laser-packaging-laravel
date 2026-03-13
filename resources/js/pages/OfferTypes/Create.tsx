@@ -189,18 +189,24 @@ export default function OfferTypesCreate({
                                                             'offer_types.form.name_placeholder',
                                                         )}
                                                         className={
-                                                            nameValidation.error
+                                                            nameValidation.error !=
+                                                                null &&
+                                                            nameValidation.error !==
+                                                                ''
                                                                 ? 'border-destructive'
                                                                 : ''
                                                         }
                                                     />
-                                                    {nameValidation.error && (
-                                                        <InputError
-                                                            message={
-                                                                nameValidation.error
-                                                            }
-                                                        />
-                                                    )}
+                                                    {nameValidation.error !=
+                                                        null &&
+                                                        nameValidation.error !==
+                                                            '' && (
+                                                            <InputError
+                                                                message={
+                                                                    nameValidation.error
+                                                                }
+                                                            />
+                                                        )}
                                                     <InputError
                                                         message={allErrors.name}
                                                     />

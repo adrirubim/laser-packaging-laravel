@@ -92,7 +92,7 @@ export default function CustomerDivisionsShow({
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-2xl font-bold">{division.name}</h1>
-                        {division.code && (
+                        {division.code != null && division.code !== '' && (
                             <p className="mt-1 text-sm text-muted-foreground">
                                 {t('customer_divisions.show.code_label')}{' '}
                                 {division.code}
@@ -141,7 +141,7 @@ export default function CustomerDivisionsShow({
                                 </p>
                             </div>
 
-                            {division.code && (
+                            {division.code != null && division.code !== '' && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
                                         {t('common.code')}
@@ -162,7 +162,7 @@ export default function CustomerDivisionsShow({
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {division.customer && (
+                            {division.customer != null && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
                                         {t(
@@ -216,15 +216,18 @@ export default function CustomerDivisionsShow({
                                                 </p>
                                                 <p className="text-sm text-muted-foreground">
                                                     {address.city}{' '}
-                                                    {address.postal_code
+                                                    {address.postal_code !=
+                                                        null &&
+                                                    address.postal_code !== ''
                                                         ? `(${address.postal_code})`
                                                         : ''}
                                                 </p>
-                                                {address.co && (
-                                                    <p className="text-xs text-muted-foreground">
-                                                        c/o: {address.co}
-                                                    </p>
-                                                )}
+                                                {address.co != null &&
+                                                    address.co !== '' && (
+                                                        <p className="text-xs text-muted-foreground">
+                                                            c/o: {address.co}
+                                                        </p>
+                                                    )}
                                             </div>
                                             <Eye className="h-4 w-4 text-muted-foreground" />
                                         </Link>

@@ -147,7 +147,7 @@ export default function Profile({
                                     />
                                 </div>
 
-                                {auth.user.last_login_at && (
+                                {auth.user.last_login_at != null && (
                                     <p className="text-sm text-muted-foreground">
                                         {t('settings.profile.last_login', {
                                             date: new Date(

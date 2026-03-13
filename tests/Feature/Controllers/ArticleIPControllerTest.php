@@ -336,8 +336,9 @@ class ArticleIPControllerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJson([
-            'number' => '0006',
+            'success' => true,
         ]);
+        $response->assertJsonPath('data.number', '0006');
     }
 
     #[Test]
@@ -349,8 +350,9 @@ class ArticleIPControllerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJson([
-            'number' => '0001',
+            'success' => true,
         ]);
+        $response->assertJsonPath('data.number', '0001');
     }
 
     #[Test]

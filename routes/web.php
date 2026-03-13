@@ -21,6 +21,7 @@ Route::post('/locale', function (\Illuminate\Http\Request $request) {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('dashboard/stats', [\App\Http\Controllers\DashboardController::class, 'stats'])->name('dashboard.stats');
     Route::post('dashboard/alerts/acknowledge', [\App\Http\Controllers\DashboardController::class, 'acknowledgeAlert'])->name('dashboard.alerts.acknowledge');
 
     // Resource routes for main modules

@@ -4,59 +4,39 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
+use App\Http\Resources\ApiResponseResource;
 use App\Models\Employee;
 use App\Models\EmployeeContract;
+use Domain\Employees\Actions\DeleteEmployeeAction;
+use Domain\Employees\Actions\ListEmployeeContractsAction;
+use Domain\Employees\Actions\ListEmployeesAction;
+use Domain\Employees\Actions\StoreEmployeeAction;
+use Domain\Employees\Actions\ToggleEmployeePortalAction;
+use Domain\Employees\Actions\UpdateEmployeeAction;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use Inertia\Response;
 use Picqer\Barcode\BarcodeGeneratorHTML;
 
 class EmployeeController extends Controller
 {
+    public function __construct(
+        protected ListEmployeesAction $listEmployeesAction,
+        protected StoreEmployeeAction $storeEmployeeAction,
+        protected UpdateEmployeeAction $updateEmployeeAction,
+        protected DeleteEmployeeAction $deleteEmployeeAction,
+        protected ToggleEmployeePortalAction $toggleEmployeePortalAction,
+        protected ListEmployeeContractsAction $listEmployeeContractsAction,
+    ) {}
+
     /**
      * Display a listing of employees.
      */
     public function index(Request $request): Response
     {
-        $query = Employee::active();
-
-        // Filters
-        if ($request->has('portal_enabled')) {
-            $portalEnabled = $request->get('portal_enabled');
-            if ($portalEnabled === '1' || $portalEnabled === 'true') {
-                $query->portalEnabled();
-            } elseif ($portalEnabled === '0' || $portalEnabled === 'false') {
-                $query->where('portal_enabled', false);
-            }
-        }
-
-        // Search
-        if ($request->has('search')) {
-            $search = $request->get('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('matriculation_number', 'like', "%{$search}%")
-                    ->orWhere('name', 'like', "%{$search}%")
-                    ->orWhere('surname', 'like', "%{$search}%")
-                    ->orWhereRaw("CONCAT(name, ' ', surname) LIKE ?", ["%{$search}%"]);
-            });
-        }
-
-        // Ordinamento
-        $sortBy = $request->get('sort_by', 'surname');
-        $sortOrder = $request->get('sort_order', 'asc');
-
-        $allowedSortColumns = ['id', 'name', 'surname', 'matriculation_number'];
-        if (in_array($sortBy, $allowedSortColumns)) {
-            $query->orderBy($sortBy, $sortOrder);
-        } else {
-            $query->orderBy('surname', 'asc')->orderBy('name', 'asc');
-        }
-
-        $perPage = $request->get('per_page', 10);
-        $employees = $query->paginate($perPage);
+        $employees = $this->listEmployeesAction->execute($request->all());
 
         return Inertia::render('Employees/Index', [
             'employees' => $employees,
@@ -78,12 +58,7 @@ class EmployeeController extends Controller
     public function store(StoreEmployeeRequest $request)
     {
         $validated = $request->validated();
-
-        // Hash password with SHA512 (as in legacy system)
-        $validated['password'] = hash('sha512', $validated['password']);
-        $validated['portal_enabled'] = $validated['portal_enabled'] ?? false;
-
-        $employee = Employee::create($validated);
+        $this->storeEmployeeAction->execute($validated);
 
         return redirect()->route('employees.index')
             ->with('success', __('flash.employee.created'));
@@ -119,15 +94,7 @@ class EmployeeController extends Controller
     public function update(UpdateEmployeeRequest $request, Employee $employee)
     {
         $validated = $request->validated();
-
-        // Hash password only if a new one was provided
-        if (! empty($validated['password'])) {
-            $validated['password'] = hash('sha512', $validated['password']);
-        } else {
-            unset($validated['password']);
-        }
-
-        $employee->update($validated);
+        $this->updateEmployeeAction->execute($employee, $validated);
 
         return redirect()->route('employees.index')
             ->with('success', __('flash.employee.updated'));
@@ -138,15 +105,13 @@ class EmployeeController extends Controller
      */
     public function destroy(Employee $employee)
     {
-        // Check that employee has no active order processings
         if ($employee->orderProcessings()->where('removed', false)->exists()) {
             return back()->withErrors([
                 'error' => __('flash.cannot_delete_employee'),
             ]);
         }
 
-        // Soft delete
-        $employee->update(['removed' => true]);
+        $this->deleteEmployeeAction->execute($employee);
 
         return redirect()->route('employees.index')
             ->with('success', __('flash.employee.deleted'));
@@ -163,14 +128,12 @@ class EmployeeController extends Controller
             'confirm_password' => 'required|string|same:new_password',
         ]);
 
-        // Verify current password
         if (! $employee->verifyPassword($validated['current_password'])) {
             return back()->withErrors([
                 'current_password' => __('flash.employee.wrong_password'),
             ]);
         }
 
-        // Update password
         $employee->update([
             'password' => hash('sha512', $validated['new_password']),
         ]);
@@ -183,14 +146,9 @@ class EmployeeController extends Controller
      */
     public function togglePortal(Request $request, Employee $employee)
     {
-        $employee->update([
-            'portal_enabled' => ! $employee->portal_enabled,
-        ]);
+        $payload = $this->toggleEmployeePortalAction->execute($employee);
 
-        return response()->json([
-            'success' => true,
-            'portal_enabled' => $employee->portal_enabled,
-        ]);
+        return ApiResponseResource::success($payload, __('employees.portal_toggled'));
     }
 
     /**
@@ -285,12 +243,9 @@ class EmployeeController extends Controller
      */
     public function contracts(Employee $employee)
     {
-        $contracts = $employee->contracts()
-            ->where('removed', false)
-            ->orderBy('start_date', 'desc')
-            ->get();
+        $contracts = $this->listEmployeeContractsAction->execute($employee);
 
-        return response()->json($contracts);
+        return ApiResponseResource::success($contracts);
     }
 
     /**
@@ -425,10 +380,7 @@ class EmployeeController extends Controller
 
         $contract = $employee->contracts()->create($validated);
 
-        return response()->json([
-            'success' => true,
-            'contract' => $contract,
-        ]);
+        return ApiResponseResource::success($contract, __('flash.contract.created'));
     }
 
     /**
@@ -438,7 +390,7 @@ class EmployeeController extends Controller
     {
         // Verify that contract belongs to employee
         if ($contract->employee_uuid !== $employee->uuid) {
-            return response()->json(['error' => __('flash.contract_not_found')], 404);
+            return ApiResponseResource::error(__('flash.contract_not_found'), null, 404);
         }
 
         $validated = $request->validate([
@@ -450,10 +402,7 @@ class EmployeeController extends Controller
 
         $contract->update($validated);
 
-        return response()->json([
-            'success' => true,
-            'contract' => $contract,
-        ]);
+        return ApiResponseResource::success($contract->refresh(), __('flash.contract.updated'));
     }
 
     /**
@@ -463,12 +412,12 @@ class EmployeeController extends Controller
     {
         // Verify that contract belongs to employee
         if ($contract->employee_uuid !== $employee->uuid) {
-            return response()->json(['error' => __('flash.contract_not_found')], 404);
+            return ApiResponseResource::error(__('flash.contract_not_found'), null, 404);
         }
 
         $contract->update(['removed' => true]);
 
-        return response()->json(['success' => true]);
+        return ApiResponseResource::success(null, __('flash.contract.deleted'));
     }
 
     /**

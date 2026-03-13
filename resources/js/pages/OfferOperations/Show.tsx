@@ -35,7 +35,7 @@ type OfferOperationsShowProps = {
 };
 
 const getFileDisplayName = (path?: string | null): string => {
-    if (!path) return '—';
+    if (path == null || path === '') return '—';
     const base = path.split('/').pop() ?? path;
     const parts = base.split('_');
     return parts.length > 1 ? parts.slice(1).join('_') : base;
@@ -59,9 +59,12 @@ export default function OfferOperationsShow({
         },
         {
             title:
-                operation.codice ??
-                operation.descrizione ??
-                t('offer_operations.fallback_name'),
+                operation.codice != null && operation.codice !== ''
+                    ? operation.codice
+                    : operation.descrizione != null &&
+                        operation.descrizione !== ''
+                      ? operation.descrizione
+                      : t('offer_operations.fallback_name'),
             href: offerOperations.show({ offerOperation: operation.uuid }).url,
         },
     ];
@@ -81,15 +84,20 @@ export default function OfferOperationsShow({
     };
 
     const itemName =
-        operation.descrizione ??
-        operation.codice ??
-        t('offer_operations.fallback_name');
+        operation.descrizione != null && operation.descrizione !== ''
+            ? operation.descrizione
+            : operation.codice != null && operation.codice !== ''
+              ? operation.codice
+              : t('offer_operations.fallback_name');
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head
                 title={t('offer_operations.show.page_title', {
-                    code: operation.codice ?? operation.descrizione ?? '',
+                    code:
+                        operation.codice != null && operation.codice !== ''
+                            ? operation.codice
+                            : (operation.descrizione ?? ''),
                 })}
             />
 
@@ -97,20 +105,25 @@ export default function OfferOperationsShow({
                 <div className="flex items-center justify-between">
                     <div className="flex-1">
                         <h1 className="text-2xl font-bold">
-                            {operation.descrizione ??
-                                operation.codice ??
-                                t('offer_operations.fallback_name')}
+                            {operation.descrizione != null &&
+                            operation.descrizione !== ''
+                                ? operation.descrizione
+                                : operation.codice != null &&
+                                    operation.codice !== ''
+                                  ? operation.codice
+                                  : t('offer_operations.fallback_name')}
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            {operation.codice && (
-                                <>
-                                    {t('offer_operations.show.code_label')}{' '}
-                                    <span className="font-mono">
-                                        {operation.codice}
-                                    </span>{' '}
-                                    |{' '}
-                                </>
-                            )}
+                            {operation.codice != null &&
+                                operation.codice !== '' && (
+                                    <>
+                                        {t('offer_operations.show.code_label')}{' '}
+                                        <span className="font-mono">
+                                            {operation.codice}
+                                        </span>{' '}
+                                        |{' '}
+                                    </>
+                                )}
                             UUID:{' '}
                             <span className="font-mono">{operation.uuid}</span>
                         </p>
@@ -161,27 +174,31 @@ export default function OfferOperationsShow({
                                 </div>
                             )}
 
-                            {operation.codice && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t('offer_operations.show.code_label')}
-                                    </Label>
-                                    <p className="font-mono text-lg font-semibold">
-                                        {operation.codice}
-                                    </p>
-                                </div>
-                            )}
+                            {operation.codice != null &&
+                                operation.codice !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t(
+                                                'offer_operations.show.code_label',
+                                            )}
+                                        </Label>
+                                        <p className="font-mono text-lg font-semibold">
+                                            {operation.codice}
+                                        </p>
+                                    </div>
+                                )}
 
-                            {operation.descrizione && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t('common.description')}
-                                    </Label>
-                                    <p className="text-lg font-semibold">
-                                        {operation.descrizione}
-                                    </p>
-                                </div>
-                            )}
+                            {operation.descrizione != null &&
+                                operation.descrizione !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t('common.description')}
+                                        </Label>
+                                        <p className="text-lg font-semibold">
+                                            {operation.descrizione}
+                                        </p>
+                                    </div>
+                                )}
 
                             {operation.secondi_operazione !== undefined &&
                                 operation.secondi_operazione !== null && (
@@ -195,18 +212,21 @@ export default function OfferOperationsShow({
                                     </div>
                                 )}
 
-                            {operation.filename && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t(
-                                            'offer_operations.show.attachment_name',
-                                        )}
-                                    </Label>
-                                    <p className="font-mono">
-                                        {getFileDisplayName(operation.filename)}
-                                    </p>
-                                </div>
-                            )}
+                            {operation.filename != null &&
+                                operation.filename !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t(
+                                                'offer_operations.show.attachment_name',
+                                            )}
+                                        </Label>
+                                        <p className="font-mono">
+                                            {getFileDisplayName(
+                                                operation.filename,
+                                            )}
+                                        </p>
+                                    </div>
+                                )}
                         </CardContent>
                     </Card>
 

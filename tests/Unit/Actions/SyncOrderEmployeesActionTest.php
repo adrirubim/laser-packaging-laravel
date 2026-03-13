@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Actions;
 
-use App\Actions\SyncOrderEmployeesAction;
 use App\Models\Employee;
 use App\Models\OfferOrderEmployee;
 use App\Models\Order;
+use Domain\Orders\Actions\SyncOrderEmployeesAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;

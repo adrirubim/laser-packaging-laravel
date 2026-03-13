@@ -154,11 +154,16 @@ export default function MaterialsShow({ material }: MaterialsShowProps) {
                                                 <p className="font-mono font-medium">
                                                     {article.cod_article_las}
                                                 </p>
-                                                {article.article_descr && (
-                                                    <p className="text-sm text-muted-foreground">
-                                                        {article.article_descr}
-                                                    </p>
-                                                )}
+                                                {article.article_descr !=
+                                                    null &&
+                                                    article.article_descr !==
+                                                        '' && (
+                                                        <p className="text-sm text-muted-foreground">
+                                                            {
+                                                                article.article_descr
+                                                            }
+                                                        </p>
+                                                    )}
                                             </div>
                                         </div>
                                     ))}

@@ -50,7 +50,7 @@ export default function OperationalInstructionsShow({
             href: articles.operationalInstructions.index().url,
         },
         {
-            title: instruction.code + (instruction.number || ''),
+            title: instruction.code + (instruction.number ?? ''),
             href: articles.operationalInstructions.show({
                 operationalInstruction: instruction.uuid,
             }).url,
@@ -79,7 +79,7 @@ export default function OperationalInstructionsShow({
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head
                 title={t('operational_instructions.show.head_title', {
-                    code: instruction.code + (instruction.number || ''),
+                    code: instruction.code + (instruction.number ?? ''),
                 })}
             />
 
@@ -88,7 +88,7 @@ export default function OperationalInstructionsShow({
                     <div>
                         <h1 className="text-2xl font-semibold tracking-tight">
                             {instruction.code}
-                            {instruction.number || ''}
+                            {instruction.number ?? ''}
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
                             {t('operational_instructions.show.subtitle')}
@@ -147,54 +147,56 @@ export default function OperationalInstructionsShow({
                                     {instruction.code}
                                 </p>
                             </div>
-                            {instruction.number && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t(
-                                            'operational_instructions.show.th_number',
-                                        )}
-                                    </Label>
-                                    <p className="mt-1 text-sm font-medium">
-                                        {instruction.number}
-                                    </p>
-                                </div>
-                            )}
-                            {instruction.filename && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t(
-                                            'operational_instructions.show.th_filename',
-                                        )}
-                                    </Label>
-                                    <div className="mt-1 flex items-center gap-2">
-                                        <p className="text-sm font-medium">
-                                            {instruction.filename}
-                                        </p>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => {
-                                                window.location.href =
-                                                    articles.operationalInstructions.download(
-                                                        {
-                                                            operationalInstruction:
-                                                                instruction.uuid,
-                                                        },
-                                                    ).url;
-                                            }}
-                                            aria-label={t(
-                                                'operational_instructions.index.download',
+                            {instruction.number != null &&
+                                instruction.number !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t(
+                                                'operational_instructions.show.th_number',
                                             )}
-                                        >
-                                            <Download className="h-4 w-4" />
-                                        </Button>
+                                        </Label>
+                                        <p className="mt-1 text-sm font-medium">
+                                            {instruction.number}
+                                        </p>
                                     </div>
-                                </div>
-                            )}
+                                )}
+                            {instruction.filename != null &&
+                                instruction.filename !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t(
+                                                'operational_instructions.show.th_filename',
+                                            )}
+                                        </Label>
+                                        <div className="mt-1 flex items-center gap-2">
+                                            <p className="text-sm font-medium">
+                                                {instruction.filename}
+                                            </p>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => {
+                                                    window.location.href =
+                                                        articles.operationalInstructions.download(
+                                                            {
+                                                                operationalInstruction:
+                                                                    instruction.uuid,
+                                                            },
+                                                        ).url;
+                                                }}
+                                                aria-label={t(
+                                                    'operational_instructions.index.download',
+                                                )}
+                                            >
+                                                <Download className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
                         </CardContent>
                     </Card>
 
-                    {instruction.articles &&
+                    {instruction.articles != null &&
                         instruction.articles.length > 0 && (
                             <Card>
                                 <CardHeader>
@@ -243,7 +245,7 @@ export default function OperationalInstructionsShow({
                     description={t(
                         'operational_instructions.show.delete_confirm_description',
                         {
-                            code: instruction.code + (instruction.number || ''),
+                            code: instruction.code + (instruction.number ?? ''),
                         },
                     )}
                 />

@@ -90,8 +90,11 @@ export default function OfferOperationListsIndex() {
         router.get(
             offerOperationLists.index().url,
             {
-                search: value || undefined,
-                offer_uuid: filters.offer_uuid || undefined,
+                search: value != null && value !== '' ? value : undefined,
+                offer_uuid:
+                    filters.offer_uuid != null && filters.offer_uuid !== ''
+                        ? filters.offer_uuid
+                        : undefined,
             },
             {
                 preserveState: true,
@@ -104,7 +107,10 @@ export default function OfferOperationListsIndex() {
         router.get(
             offerOperationLists.index().url,
             {
-                offer_uuid: filters.offer_uuid || undefined,
+                offer_uuid:
+                    filters.offer_uuid != null && filters.offer_uuid !== ''
+                        ? filters.offer_uuid
+                        : undefined,
             },
             {
                 preserveState: true,
@@ -130,7 +136,7 @@ export default function OfferOperationListsIndex() {
                     title={t('offer_operation_lists.page_title')}
                     subtitle={t('offer_operation_lists.index.subtitle')}
                     createHref={
-                        filters.offer_uuid
+                        filters.offer_uuid != null && filters.offer_uuid !== ''
                             ? offerOperationLists.create().url +
                               `?offer_uuid=${filters.offer_uuid}`
                             : offerOperationLists.create().url
@@ -146,7 +152,7 @@ export default function OfferOperationListsIndex() {
                             {t('common.search')}
                         </label>
                         <SearchInput
-                            value={filters.search || ''}
+                            value={filters.search ?? ''}
                             onChange={handleSearchChange}
                             onClear={clearSearch}
                             placeholder={t(
@@ -205,14 +211,22 @@ export default function OfferOperationListsIndex() {
                                         </td>
                                         <td className="px-3 py-2 align-middle">
                                             <div className="font-mono text-xs">
-                                                {list.operation?.code ??
-                                                    t('common.not_available')}
+                                                {list.operation?.code != null &&
+                                                list.operation.code !== ''
+                                                    ? list.operation.code
+                                                    : t('common.not_available')}
                                             </div>
-                                            {list.operation?.description && (
-                                                <div className="text-xs text-muted-foreground">
-                                                    {list.operation.description}
-                                                </div>
-                                            )}
+                                            {list.operation?.description !=
+                                                null &&
+                                                list.operation.description !==
+                                                    '' && (
+                                                    <div className="text-xs text-muted-foreground">
+                                                        {
+                                                            list.operation
+                                                                .description
+                                                        }
+                                                    </div>
+                                                )}
                                         </td>
                                         <td className="px-3 py-2 align-middle font-mono text-xs">
                                             {list.num_op}

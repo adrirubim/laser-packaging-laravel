@@ -7,7 +7,7 @@ import {
 } from './../../../wayfinder';
 /**
  * @see \App\Http\Controllers\EmployeeController::index
- * @see app/Http/Controllers/EmployeeController.php:199
+ * @see app/Http/Controllers/EmployeeController.php:157
  * @route '/employees/contracts'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -22,7 +22,7 @@ index.definition = {
 
 /**
  * @see \App\Http\Controllers\EmployeeController::index
- * @see app/Http/Controllers/EmployeeController.php:199
+ * @see app/Http/Controllers/EmployeeController.php:157
  * @route '/employees/contracts'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -31,7 +31,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\EmployeeController::index
- * @see app/Http/Controllers/EmployeeController.php:199
+ * @see app/Http/Controllers/EmployeeController.php:157
  * @route '/employees/contracts'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -41,7 +41,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\EmployeeController::index
- * @see app/Http/Controllers/EmployeeController.php:199
+ * @see app/Http/Controllers/EmployeeController.php:157
  * @route '/employees/contracts'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -51,7 +51,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
  * @see \App\Http\Controllers\EmployeeController::index
- * @see app/Http/Controllers/EmployeeController.php:199
+ * @see app/Http/Controllers/EmployeeController.php:157
  * @route '/employees/contracts'
  */
 const indexForm = (
@@ -63,7 +63,7 @@ const indexForm = (
 
 /**
  * @see \App\Http\Controllers\EmployeeController::index
- * @see app/Http/Controllers/EmployeeController.php:199
+ * @see app/Http/Controllers/EmployeeController.php:157
  * @route '/employees/contracts'
  */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -73,7 +73,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\EmployeeController::index
- * @see app/Http/Controllers/EmployeeController.php:199
+ * @see app/Http/Controllers/EmployeeController.php:157
  * @route '/employees/contracts'
  */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -90,7 +90,7 @@ index.form = indexForm;
 
 /**
  * @see \App\Http\Controllers\EmployeeController::create
- * @see app/Http/Controllers/EmployeeController.php:300
+ * @see app/Http/Controllers/EmployeeController.php:255
  * @route '/employees/contracts/create'
  */
 export const create = (
@@ -107,7 +107,7 @@ create.definition = {
 
 /**
  * @see \App\Http\Controllers\EmployeeController::create
- * @see app/Http/Controllers/EmployeeController.php:300
+ * @see app/Http/Controllers/EmployeeController.php:255
  * @route '/employees/contracts/create'
  */
 create.url = (options?: RouteQueryOptions) => {
@@ -116,7 +116,7 @@ create.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\EmployeeController::create
- * @see app/Http/Controllers/EmployeeController.php:300
+ * @see app/Http/Controllers/EmployeeController.php:255
  * @route '/employees/contracts/create'
  */
 create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -126,7 +126,7 @@ create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\EmployeeController::create
- * @see app/Http/Controllers/EmployeeController.php:300
+ * @see app/Http/Controllers/EmployeeController.php:255
  * @route '/employees/contracts/create'
  */
 create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -136,7 +136,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
  * @see \App\Http\Controllers\EmployeeController::create
- * @see app/Http/Controllers/EmployeeController.php:300
+ * @see app/Http/Controllers/EmployeeController.php:255
  * @route '/employees/contracts/create'
  */
 const createForm = (
@@ -148,7 +148,7 @@ const createForm = (
 
 /**
  * @see \App\Http\Controllers\EmployeeController::create
- * @see app/Http/Controllers/EmployeeController.php:300
+ * @see app/Http/Controllers/EmployeeController.php:255
  * @route '/employees/contracts/create'
  */
 createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -158,7 +158,7 @@ createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\EmployeeController::create
- * @see app/Http/Controllers/EmployeeController.php:300
+ * @see app/Http/Controllers/EmployeeController.php:255
  * @route '/employees/contracts/create'
  */
 createForm.head = (
@@ -177,7 +177,7 @@ create.form = createForm;
 
 /**
  * @see \App\Http\Controllers\EmployeeController::store
- * @see app/Http/Controllers/EmployeeController.php:345
+ * @see app/Http/Controllers/EmployeeController.php:300
  * @route '/employees/contracts'
  */
 export const store = (
@@ -194,7 +194,7 @@ store.definition = {
 
 /**
  * @see \App\Http\Controllers\EmployeeController::store
- * @see app/Http/Controllers/EmployeeController.php:345
+ * @see app/Http/Controllers/EmployeeController.php:300
  * @route '/employees/contracts'
  */
 store.url = (options?: RouteQueryOptions) => {
@@ -203,7 +203,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\EmployeeController::store
- * @see app/Http/Controllers/EmployeeController.php:345
+ * @see app/Http/Controllers/EmployeeController.php:300
  * @route '/employees/contracts'
  */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -213,7 +213,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
  * @see \App\Http\Controllers\EmployeeController::store
- * @see app/Http/Controllers/EmployeeController.php:345
+ * @see app/Http/Controllers/EmployeeController.php:300
  * @route '/employees/contracts'
  */
 const storeForm = (
@@ -225,7 +225,7 @@ const storeForm = (
 
 /**
  * @see \App\Http\Controllers\EmployeeController::store
- * @see app/Http/Controllers/EmployeeController.php:345
+ * @see app/Http/Controllers/EmployeeController.php:300
  * @route '/employees/contracts'
  */
 storeForm.post = (
@@ -239,7 +239,7 @@ store.form = storeForm;
 
 /**
  * @see \App\Http\Controllers\EmployeeController::edit
- * @see app/Http/Controllers/EmployeeController.php:364
+ * @see app/Http/Controllers/EmployeeController.php:319
  * @route '/employees/contracts/{contract}/edit'
  */
 export const edit = (
@@ -261,7 +261,7 @@ edit.definition = {
 
 /**
  * @see \App\Http\Controllers\EmployeeController::edit
- * @see app/Http/Controllers/EmployeeController.php:364
+ * @see app/Http/Controllers/EmployeeController.php:319
  * @route '/employees/contracts/{contract}/edit'
  */
 edit.url = (
@@ -304,7 +304,7 @@ edit.url = (
 
 /**
  * @see \App\Http\Controllers\EmployeeController::edit
- * @see app/Http/Controllers/EmployeeController.php:364
+ * @see app/Http/Controllers/EmployeeController.php:319
  * @route '/employees/contracts/{contract}/edit'
  */
 edit.get = (
@@ -321,7 +321,7 @@ edit.get = (
 
 /**
  * @see \App\Http\Controllers\EmployeeController::edit
- * @see app/Http/Controllers/EmployeeController.php:364
+ * @see app/Http/Controllers/EmployeeController.php:319
  * @route '/employees/contracts/{contract}/edit'
  */
 edit.head = (
@@ -338,7 +338,7 @@ edit.head = (
 
 /**
  * @see \App\Http\Controllers\EmployeeController::edit
- * @see app/Http/Controllers/EmployeeController.php:364
+ * @see app/Http/Controllers/EmployeeController.php:319
  * @route '/employees/contracts/{contract}/edit'
  */
 const editForm = (
@@ -355,7 +355,7 @@ const editForm = (
 
 /**
  * @see \App\Http\Controllers\EmployeeController::edit
- * @see app/Http/Controllers/EmployeeController.php:364
+ * @see app/Http/Controllers/EmployeeController.php:319
  * @route '/employees/contracts/{contract}/edit'
  */
 editForm.get = (
@@ -372,7 +372,7 @@ editForm.get = (
 
 /**
  * @see \App\Http\Controllers\EmployeeController::edit
- * @see app/Http/Controllers/EmployeeController.php:364
+ * @see app/Http/Controllers/EmployeeController.php:319
  * @route '/employees/contracts/{contract}/edit'
  */
 editForm.head = (
@@ -396,7 +396,7 @@ edit.form = editForm;
 
 /**
  * @see \App\Http\Controllers\EmployeeController::update
- * @see app/Http/Controllers/EmployeeController.php:387
+ * @see app/Http/Controllers/EmployeeController.php:342
  * @route '/employees/contracts/{contract}'
  */
 export const update = (
@@ -418,7 +418,7 @@ update.definition = {
 
 /**
  * @see \App\Http\Controllers\EmployeeController::update
- * @see app/Http/Controllers/EmployeeController.php:387
+ * @see app/Http/Controllers/EmployeeController.php:342
  * @route '/employees/contracts/{contract}'
  */
 update.url = (
@@ -461,7 +461,7 @@ update.url = (
 
 /**
  * @see \App\Http\Controllers\EmployeeController::update
- * @see app/Http/Controllers/EmployeeController.php:387
+ * @see app/Http/Controllers/EmployeeController.php:342
  * @route '/employees/contracts/{contract}'
  */
 update.put = (
@@ -478,7 +478,7 @@ update.put = (
 
 /**
  * @see \App\Http\Controllers\EmployeeController::update
- * @see app/Http/Controllers/EmployeeController.php:387
+ * @see app/Http/Controllers/EmployeeController.php:342
  * @route '/employees/contracts/{contract}'
  */
 const updateForm = (
@@ -500,7 +500,7 @@ const updateForm = (
 
 /**
  * @see \App\Http\Controllers\EmployeeController::update
- * @see app/Http/Controllers/EmployeeController.php:387
+ * @see app/Http/Controllers/EmployeeController.php:342
  * @route '/employees/contracts/{contract}'
  */
 updateForm.put = (
@@ -524,7 +524,7 @@ update.form = updateForm;
 
 /**
  * @see \App\Http\Controllers\EmployeeController::destroy
- * @see app/Http/Controllers/EmployeeController.php:406
+ * @see app/Http/Controllers/EmployeeController.php:361
  * @route '/employees/contracts/{contract}'
  */
 export const destroy = (
@@ -546,7 +546,7 @@ destroy.definition = {
 
 /**
  * @see \App\Http\Controllers\EmployeeController::destroy
- * @see app/Http/Controllers/EmployeeController.php:406
+ * @see app/Http/Controllers/EmployeeController.php:361
  * @route '/employees/contracts/{contract}'
  */
 destroy.url = (
@@ -589,7 +589,7 @@ destroy.url = (
 
 /**
  * @see \App\Http\Controllers\EmployeeController::destroy
- * @see app/Http/Controllers/EmployeeController.php:406
+ * @see app/Http/Controllers/EmployeeController.php:361
  * @route '/employees/contracts/{contract}'
  */
 destroy.delete = (
@@ -606,7 +606,7 @@ destroy.delete = (
 
 /**
  * @see \App\Http\Controllers\EmployeeController::destroy
- * @see app/Http/Controllers/EmployeeController.php:406
+ * @see app/Http/Controllers/EmployeeController.php:361
  * @route '/employees/contracts/{contract}'
  */
 const destroyForm = (
@@ -628,7 +628,7 @@ const destroyForm = (
 
 /**
  * @see \App\Http\Controllers\EmployeeController::destroy
- * @see app/Http/Controllers/EmployeeController.php:406
+ * @see app/Http/Controllers/EmployeeController.php:361
  * @route '/employees/contracts/{contract}'
  */
 destroyForm.delete = (

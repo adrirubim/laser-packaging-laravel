@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
-use App\Actions\CreateOfferAction;
-use App\Actions\UpdateOfferAction;
 use App\Http\Requests\StoreOfferRequest;
 use App\Http\Requests\UpdateOfferRequest;
+use App\Http\Resources\Api\ApiResponseResource;
+use App\Http\Resources\OfferResource;
+use App\Http\Resources\Offers\OfferIndexResource;
 use App\Models\Customer;
 use App\Models\CustomerDivision;
 use App\Models\Offer;
@@ -13,7 +16,13 @@ use App\Repositories\ArticleRepository;
 use App\Repositories\OfferRepository;
 use App\Repositories\OrderRepository;
 use App\Services\OfferNumberService;
+use Domain\Offers\Actions\CreateOfferAction;
+use Domain\Offers\Actions\GenerateOfferPdfAction;
+use Domain\Offers\Actions\GetDivisionsForCustomerAction;
+use Domain\Offers\Actions\GetOfferDetailsAction;
+use Domain\Offers\Actions\UpdateOfferAction;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -32,13 +41,22 @@ class OfferController extends Controller
 
     protected UpdateOfferAction $updateOfferAction;
 
+    protected GetOfferDetailsAction $getOfferDetailsAction;
+
+    protected GenerateOfferPdfAction $generateOfferPdfAction;
+
+    protected GetDivisionsForCustomerAction $getDivisionsForCustomerAction;
+
     public function __construct(
         OfferNumberService $offerNumberService,
         ArticleRepository $articleRepository,
         OfferRepository $offerRepository,
         OrderRepository $orderRepository,
         CreateOfferAction $createOfferAction,
-        UpdateOfferAction $updateOfferAction
+        UpdateOfferAction $updateOfferAction,
+        GetOfferDetailsAction $getOfferDetailsAction,
+        GenerateOfferPdfAction $generateOfferPdfAction,
+        GetDivisionsForCustomerAction $getDivisionsForCustomerAction,
     ) {
         $this->offerNumberService = $offerNumberService;
         $this->articleRepository = $articleRepository;
@@ -46,6 +64,9 @@ class OfferController extends Controller
         $this->orderRepository = $orderRepository;
         $this->createOfferAction = $createOfferAction;
         $this->updateOfferAction = $updateOfferAction;
+        $this->getOfferDetailsAction = $getOfferDetailsAction;
+        $this->generateOfferPdfAction = $generateOfferPdfAction;
+        $this->getDivisionsForCustomerAction = $getDivisionsForCustomerAction;
     }
 
     /**
@@ -94,11 +115,20 @@ class OfferController extends Controller
             return $offer;
         });
 
+        $offersArray = $offers->toArray();
+        $offersArray['data'] = OfferIndexResource::collection($offers)->resolve();
+
         $customers = Customer::active()->orderBy('company_name')->get(['uuid', 'code', 'company_name']);
 
         return Inertia::render('Offers/Index', [
-            'offers' => $offers,
-            'customers' => $customers,
+            'offers' => $offersArray,
+            'customers' => $customers->map(
+                static fn ($customer) => [
+                    'uuid' => $customer->uuid,
+                    'code' => $customer->code,
+                    'company_name' => $customer->company_name,
+                ],
+            ),
             'filters' => $request->only(['search', 'customer_uuid', 'customerdivision_uuid', 'sort_by', 'sort_order']),
         ]);
     }
@@ -309,199 +339,10 @@ class OfferController extends Controller
                 ->first();
             $offer->setRelation('customerDivision', $customerDivision);
         }
-
-        // Combinare articoli di entrambe le relazioni (evitando duplicati)
-        $allArticles = $offer->articles->merge($offer->articlesDirect)->unique('uuid');
-
-        // Preparare operazioni con informazioni complete (come nel legacy)
-        $operationsList = [];
-        $totalSec = 0;
-
-        // Load operationList without applying scope that filters by removed
-        $operationLists = \App\Models\OfferOperationList::withoutGlobalScopes()
-            ->where('offer_uuid', $offer->uuid)
-            ->where('removed', false)
-            ->with('operation', 'operation.category')
-            ->get();
-
-        foreach ($operationLists as $operationList) {
-            $operation = $operationList->operation;
-            if (! $operation) {
-                continue;
-            }
-
-            $category = $operation->category;
-            $categoryName = $category ? ($category->code.' - '.$category->name) : '';
-
-            $opTotalSec = ($operation->secondi_operazione ?? 0) * $operationList->num_op;
-            $totalSec += $opTotalSec;
-
-            $operationsList[] = [
-                'uuid' => $operation->uuid,
-                'category' => [
-                    'uuid' => $category?->uuid,
-                    'name' => $categoryName,
-                ],
-                'codice_univoco' => $operation->codice_univoco ?? __('common.not_available'),
-                'descrizione' => $operation->descrizione ?? __('common.not_available'),
-                'secondi_operazione' => $operation->secondi_operazione ?? 0,
-                'num_op' => $operationList->num_op,
-                'total_sec' => $opTotalSec,
-                'filename' => $operation->filename ?? null,
-            ];
-        }
-
-        // Calculate fields as in legacy
-        $unexpected = $totalSec * 0.05;
-        $totalTheoreticalTime = $totalSec + $unexpected;
-
-        $theoreticalTime = 0;
-        if ($offer->piece > 0) {
-            $theoreticalTime = $totalTheoreticalTime / $offer->piece;
-        }
-
-        $productionTimeCfz = ($totalTheoreticalTime * 8) / 7;
-
-        $productionTime = 0;
-        if ($offer->piece > 0) {
-            $productionTime = $productionTimeCfz / $offer->piece;
-        }
-
-        $productionAverageCfz = 0;
-        if ($productionTimeCfz > 0) {
-            $productionAverageCfz = 3600 / $productionTimeCfz;
-        }
-
-        $productionAveragePz = $productionAverageCfz * $offer->piece;
-
-        // Calculate rate_cfz and rate_pz (as in Create.tsx)
-        $rateCfz = 0;
-        if ($productionAverageCfz > 0 && $offer->expected_revenue) {
-            $rateCfz = $offer->expected_revenue / $productionAverageCfz;
-        }
-
-        $ratePz = 0;
-        if ($offer->piece > 0) {
-            $ratePz = $rateCfz / $offer->piece;
-        }
-
-        $rateRoundingCfzPerc = 0;
-        if ($offer->rate_rounding_cfz > 0) {
-            $rateRoundingCfzPerc = ($offer->rate_increase_cfz / $offer->rate_rounding_cfz) * 100;
-        }
-
-        $finalRateCfz = ($offer->rate_increase_cfz ?? 0) + ($offer->rate_rounding_cfz ?? 0);
-
-        $finalRatePz = 0;
-        if ($offer->piece > 0) {
-            $finalRatePz = $finalRateCfz / $offer->piece;
-        }
-
-        $totalRateCfz = $finalRateCfz + ($offer->materials_euro ?? 0) + ($offer->logistics_euro ?? 0) + ($offer->other_euro ?? 0);
-
-        $totalRatePz = 0;
-        if ($offer->piece > 0) {
-            $totalRatePz = $totalRateCfz / $offer->piece;
-        }
-
-        // Add calculated fields to model
-        $offer->setAttribute('operations', $operationsList);
-        $offer->setAttribute('theoretical_time_cfz', $totalSec);
-        $offer->setAttribute('unexpected', $unexpected);
-        $offer->setAttribute('total_theoretical_time', $totalTheoreticalTime);
-        $offer->setAttribute('theoretical_time', $theoreticalTime);
-        $offer->setAttribute('production_time_cfz', $productionTimeCfz);
-        $offer->setAttribute('production_time', $productionTime);
-        $offer->setAttribute('production_average_cfz', $productionAverageCfz);
-        $offer->setAttribute('production_average_pz', $productionAveragePz);
-        $offer->setAttribute('rate_cfz', $rateCfz);
-        $offer->setAttribute('rate_pz', $ratePz);
-        $offer->setAttribute('rate_rounding_cfz_perc', $rateRoundingCfzPerc);
-        $offer->setAttribute('final_rate_cfz', $finalRateCfz);
-        $offer->setAttribute('final_rate_pz', $finalRatePz);
-        $offer->setAttribute('total_rate_cfz', $totalRateCfz);
-        $offer->setAttribute('total_rate_pz', $totalRatePz);
-        $offer->setAttribute('approval_status', $offer->approval_status_label);
-
-        // Ensure relations are included in serialization
-        $offer->setRelation('articles', $allArticles);
-
-        // Ensure relations load correctly (do not use loadMissing as it can overwrite)
-        // Verify and load relations that might not have been loaded
-        if ($offer->activity_uuid && ! $offer->activity) {
-            $activity = \App\Models\OfferActivity::withoutGlobalScopes()
-                ->where('uuid', $offer->activity_uuid)
-                ->first();
-            $offer->setRelation('activity', $activity);
-        }
-
-        if ($offer->sector_uuid && ! $offer->sector) {
-            $sector = \App\Models\OfferSector::withoutGlobalScopes()
-                ->where('uuid', $offer->sector_uuid)
-                ->first();
-            $offer->setRelation('sector', $sector);
-        }
-
-        if ($offer->seasonality_uuid && ! $offer->seasonality) {
-            $seasonality = \App\Models\OfferSeasonality::withoutGlobalScopes()
-                ->where('uuid', $offer->seasonality_uuid)
-                ->first();
-            $offer->setRelation('seasonality', $seasonality);
-        }
-
-        // Ensure UUIDs are explicitly included in serialization
-        $offerArray = $offer->toArray();
-        // Ensure UUID fields and relations are present
-        $offerArray['activity_uuid'] = $offer->activity_uuid;
-        $offerArray['sector_uuid'] = $offer->sector_uuid;
-        $offerArray['seasonality_uuid'] = $offer->seasonality_uuid;
-        $offerArray['order_type_uuid'] = $offer->order_type_uuid;
-        $offerArray['lasfamily_uuid'] = $offer->lasfamily_uuid;
-        $offerArray['lasworkline_uuid'] = $offer->lasworkline_uuid;
-        $offerArray['lsresource_uuid'] = $offer->lsresource_uuid;
-        $offerArray['customerdivision_uuid'] = $offer->customerdivision_uuid;
-
-        // Ensure relations are included in the array
-        if ($offer->typeOrder) {
-            $offerArray['typeOrder'] = [
-                'uuid' => $offer->typeOrder->uuid,
-                'name' => $offer->typeOrder->name,
-            ];
-        }
-
-        if ($offer->lasFamily) {
-            $offerArray['lasFamily'] = [
-                'uuid' => $offer->lasFamily->uuid,
-                'code' => $offer->lasFamily->code,
-                'name' => $offer->lasFamily->name,
-            ];
-        }
-
-        if ($offer->lasWorkLine) {
-            $offerArray['lasWorkLine'] = [
-                'uuid' => $offer->lasWorkLine->uuid,
-                'code' => $offer->lasWorkLine->code,
-                'name' => $offer->lasWorkLine->name,
-            ];
-        }
-
-        if ($offer->lsResource) {
-            $offerArray['lsResource'] = [
-                'uuid' => $offer->lsResource->uuid,
-                'code' => $offer->lsResource->code,
-                'name' => $offer->lsResource->name,
-            ];
-        }
-
-        if ($offer->customerDivision) {
-            $offerArray['customerDivision'] = [
-                'uuid' => $offer->customerDivision->uuid,
-                'name' => $offer->customerDivision->name,
-            ];
-        }
+        $offerDetailsDto = $this->getOfferDetailsAction->execute($offer);
 
         return Inertia::render('Offers/Show', [
-            'offer' => $offerArray,
+            'offer' => OfferResource::make($offerDetailsDto)->resolve(),
         ]);
     }
 
@@ -509,134 +350,19 @@ class OfferController extends Controller
      * Genera e scarica il PDF di un'offerta (equivalente a downloadPDF del legacy).
      * Usa wkhtmltopdf per generare il PDF da HTML.
      */
-    public function downloadPdf(Offer $offer)
+    public function downloadPdf(Offer $offer): HttpResponse
     {
-        // Create temp directory if it doesn't exist (as in legacy)
-        $tmpDir = storage_path('app/tmp/offers');
-        if (! is_dir($tmpDir)) {
-            mkdir($tmpDir, 0755, true);
-        }
+        $result = $this->generateOfferPdfAction->execute($offer);
 
-        // Load L&S resource if not loaded
-        if ($offer->lsresource_uuid && ! $offer->lsResource) {
-            $lsResource = \App\Models\OfferLsResource::withoutGlobalScopes()
-                ->where('uuid', $offer->lsresource_uuid)
-                ->first();
-            $offer->setRelation('lsResource', $lsResource);
-        }
-
-        // Load operationList without applying scope that filters by removed
-        $operationLists = \App\Models\OfferOperationList::withoutGlobalScopes()
-            ->where('offer_uuid', $offer->uuid)
-            ->where('removed', false)
-            ->with('operation')
-            ->get();
-
-        // Calculate total operation seconds (as in legacy)
-        $totalSec = 0;
-        foreach ($operationLists as $operationList) {
-            $operation = $operationList->operation;
-            if (! $operation) {
-                continue;
-            }
-
-            $secOp = (float) ($operation->secondi_operazione ?? 0);
-            $numOp = (float) ($operationList->num_op ?? 0);
-            $totalSec += $secOp * $numOp;
-        }
-
-        // Replicare calcoli del legacy downloadPDF
-        $unexpected = $totalSec * 0.05;
-        $totalTheoreticalTime = $totalSec + $unexpected;
-        $productionTimeCfz = ($totalTheoreticalTime * 8) / 7;
-
-        $productionAverageCfz = 0.0;
-        if ($productionTimeCfz > 0) {
-            $productionAverageCfz = 3600 / $productionTimeCfz;
-        }
-
-        $expectedWorkers = (float) ($offer->expected_workers ?? 0);
-        $hourlyProductivity = $expectedWorkers * $productionAverageCfz;
-
-        $rateIncreaseCfz = (float) ($offer->rate_increase_cfz ?? 0);
-        $rateRoundingCfz = (float) ($offer->rate_rounding_cfz ?? 0);
-        $lsSetupCost = (float) ($offer->ls_setup_cost ?? 0);
-        $quantity = (float) ($offer->quantity ?? 0);
-
-        $finalRateCfz = $rateIncreaseCfz + $rateRoundingCfz;
-        $runningCostCfz = $finalRateCfz - ($finalRateCfz * ($lsSetupCost / 100));
-        $setupCost = $finalRateCfz * ($lsSetupCost / 100) * $quantity;
-        $setupCostCfz = $finalRateCfz * ($lsSetupCost / 100);
-
-        $lsResource = $offer->lsResource;
-
-        $data = [
-            'offer_date' => optional($offer->offer_date)->format('d.m.Y'),
-            'offer_number' => $offer->offer_number,
-            'customer_ref' => $offer->customer_ref ?? '',
-            'provisional_description' => $offer->provisional_description ?? '',
-            'hourly_productivity' => round($hourlyProductivity, 2),
-            'ls_resource_code' => $lsResource?->code ?? '',
-            'ls_resource_description' => $lsResource?->name ?? '',
-            'final_rate_cfz' => $finalRateCfz,
-            'running_cost_cfz' => $runningCostCfz,
-            'setup_cost' => $setupCost,
-            'quantity' => $quantity,
-            'setup_cost_cfz' => $setupCostCfz,
-            'ls_other_costs' => (float) ($offer->ls_other_costs ?? 0),
-        ];
-
-        // Render Blade view to HTML (equivalent to legacy render2string)
-        $html = view('offers.pdf', $data)->render();
-
-        // Save HTML to temporary file
-        $tmpFile = $tmpDir.'/'.$offer->uuid.'.html';
-        file_put_contents($tmpFile, $html);
-
-        // Get wkhtmltopdf path from config or use default command
-        $wkhtmltopdfPath = config('app.wkhtmltopdf_path', 'wkhtmltopdf');
-
-        // Titolo del PDF
-        $pdfTitle = sprintf(
-            'Offerta n. %s del %s',
-            $offer->offer_number,
-            optional($offer->offer_date)->format('d.m.Y') ?? date('d.m.Y')
-        );
-
-        // Execute wkhtmltopdf (as in legacy)
-        // Command outputs PDF to stdout (-)
-        $command = sprintf(
-            'ulimit -n 4096; %s --title "%s" %s -',
-            escapeshellarg($wkhtmltopdfPath),
-            escapeshellarg($pdfTitle),
-            escapeshellarg($tmpFile)
-        );
-
-        Log::debug('[OFFER] PDF - Executing command: '.$command);
-
-        $pdf = shell_exec($command);
-
-        // Remove temporary file
-        if (file_exists($tmpFile)) {
-            @unlink($tmpFile);
-        }
-
-        if ($pdf === null || empty($pdf)) {
-            abort(500, __('flash.wkhtmltopdf_error'));
-        }
-
-        $fileName = sprintf('offerta_%s.pdf', $offer->offer_number);
-
-        // Use Content-Disposition: attachment to always force download dialog
-        // e evitare che il browser apra il PDF automaticamente
-        return response($pdf, 200, [
+        return response($result['pdf'], 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => sprintf('attachment; filename="%s"; filename*=UTF-8\'\'%s',
-                $fileName,
-                rawurlencode($fileName)
+            'Content-Disposition' => sprintf(
+                'attachment; filename="%s"; filename*=UTF-8\'\'%s',
+                $result['filename'],
+                rawurlencode($result['filename'])
             ),
-            'Content-Length' => strlen($pdf),
-            'X-Content-Type-Options' => 'nosniff', // Evitare che il browser tenti di aprire il file
+            'Content-Length' => strlen($result['pdf']),
+            'X-Content-Type-Options' => 'nosniff',
         ]);
     }
 
@@ -925,11 +651,14 @@ class OfferController extends Controller
             'customer_uuid' => 'required|exists:customer,uuid',
         ]);
 
-        $divisions = CustomerDivision::where('customer_uuid', $request->get('customer_uuid'))
-            ->where('removed', false)
-            ->orderBy('name')
-            ->get(['uuid', 'name']);
+        $divisions = $this->getDivisionsForCustomerAction->execute(
+            $request->get('customer_uuid'),
+        );
 
-        return response()->json($divisions);
+        return ApiResponseResource::success(
+            true,
+            null,
+            ['divisions' => $divisions],
+        )->response();
     }
 }

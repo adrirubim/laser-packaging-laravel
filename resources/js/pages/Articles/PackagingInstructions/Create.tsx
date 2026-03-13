@@ -20,6 +20,7 @@ import { useTranslations } from '@/hooks/use-translations';
 import AppLayout from '@/layouts/app-layout';
 import articles from '@/routes/articles/index';
 import { type BreadcrumbItem } from '@/types';
+import type { ApiResponse } from '@/types/DomainModels';
 import { Form, Head, router } from '@inertiajs/react';
 import { HelpCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -39,10 +40,17 @@ export default function PackagingInstructionsCreate({
     useEffect(() => {
         queueMicrotask(() => setIsLoadingNumber(true));
         fetch(articles.packagingInstructions.generateIcNumber().url)
-            .then((res) => res.json())
+            .then(
+                (res) => res.json() as Promise<ApiResponse<{ number: string }>>,
+            )
             .then((data) => {
-                if (data.number) {
-                    setIcNumber(data.number);
+                if (
+                    data.success === true &&
+                    data.data != null &&
+                    typeof data.data.number === 'string' &&
+                    data.data.number !== ''
+                ) {
+                    setIcNumber(data.data.number);
                 }
                 setIsLoadingNumber(false);
             })

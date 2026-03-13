@@ -60,7 +60,12 @@ type OrdersTrendTooltipProps = {
 function OrdersTrendTooltipContent(props: OrdersTrendTooltipProps) {
     const { active, payload, label, formatPeriod } = props;
     const { t } = useTranslations();
-    if (!active || !payload || payload.length === 0) {
+    if (
+        active !== true ||
+        payload === null ||
+        payload === undefined ||
+        payload.length === 0
+    ) {
         return null;
     }
 
@@ -200,7 +205,7 @@ export function OrdersTrendChart({
         );
         return {
             ...point,
-            previousCount: previousPoint?.count || 0,
+            previousCount: previousPoint?.count ?? 0,
         };
     });
 
@@ -229,11 +234,11 @@ export function OrdersTrendChart({
 
         // Detect dark/light theme to adjust tooltips.
         const isDark =
-            typeof document !== 'undefined'
-                ? document.documentElement.classList.contains('dark') ||
-                  (window.matchMedia &&
-                      window.matchMedia('(prefers-color-scheme: dark)').matches)
-                : false;
+            typeof document !== 'undefined' &&
+            (document.documentElement.classList.contains('dark') ||
+                (typeof window !== 'undefined' &&
+                    typeof window.matchMedia === 'function' &&
+                    window.matchMedia('(prefers-color-scheme: dark)').matches));
 
         const tooltipBackground = isDark
             ? 'rgba(15, 23, 42, 0.97)' // muy oscuro en dark
@@ -324,28 +329,39 @@ export function OrdersTrendChart({
                             cursor: onPointClick ? 'pointer' : 'default',
                         }}
                         name="count"
-                        style={onPointClick ? { cursor: 'pointer' } : undefined}
+                        style={
+                            Boolean(onPointClick) === true
+                                ? { cursor: 'pointer' }
+                                : undefined
+                        }
                         // Click su un punto della serie
                         onClick={(props) => {
                             const activeLabel = (
                                 props as { activeLabel?: string }
                             )?.activeLabel;
-                            if (onPointClick && activeLabel) {
+                            if (
+                                typeof onPointClick === 'function' &&
+                                activeLabel !== null &&
+                                activeLabel !== undefined &&
+                                activeLabel !== ''
+                            ) {
                                 onPointClick(String(activeLabel));
                             }
                         }}
                     />
-                    {previousPeriodData && previousPeriodData.length > 0 && (
-                        <Line
-                            type="monotone"
-                            dataKey="previousCount"
-                            stroke="#C4B5FD"
-                            strokeWidth={2}
-                            strokeDasharray="5 5"
-                            dot={{ fill: '#C4B5FD', r: 3 }}
-                            name="previousCount"
-                        />
-                    )}
+                    {previousPeriodData !== undefined &&
+                        previousPeriodData !== null &&
+                        previousPeriodData.length > 0 && (
+                            <Line
+                                type="monotone"
+                                dataKey="previousCount"
+                                stroke="#C4B5FD"
+                                strokeWidth={2}
+                                strokeDasharray="5 5"
+                                dot={{ fill: '#C4B5FD', r: 3 }}
+                                name="previousCount"
+                            />
+                        )}
                 </LineChart>
             </ResponsiveContainer>
         );
@@ -361,7 +377,8 @@ export function OrdersTrendChart({
                         </CardTitle>
                         <CardDescription className="text-xs text-foreground/80">
                             {t('dashboard.chart_trend_desc')}{' '}
-                            {previousPeriodData &&
+                            {previousPeriodData !== undefined &&
+                                previousPeriodData !== null &&
                                 previousPeriodData.length > 0 &&
                                 t('dashboard.chart_trend_desc_compare')}
                         </CardDescription>

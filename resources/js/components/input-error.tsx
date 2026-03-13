@@ -6,7 +6,10 @@ export default function InputError({
     className = '',
     ...props
 }: HTMLAttributes<HTMLParagraphElement> & { message?: string }) {
-    return message ? (
+    const hasMessage =
+        message !== null && message !== undefined && message !== '';
+
+    return hasMessage ? (
         <p
             {...props}
             className={cn('text-sm text-red-600 dark:text-red-400', className)}

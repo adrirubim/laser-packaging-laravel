@@ -97,9 +97,9 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 - ✅ **Production Portal** — Web frontend (Login, Dashboard, Order Detail) + REST API (9 endpoints)
 - ✅ **Production Planning** — Orders → Production Planning (API and UI for planning data, replan, calculations)
 - ✅ **UUID-Based Models** — All models use UUIDs as primary identifiers
-- ✅ **Service Layer** — Business logic in Services (codes, calculations, numbers)
-- ✅ **Repository Pattern** — 7 repositories for data access abstraction
-- ✅ **Action Classes** — 7 actions for complex flows (Create/Update Article, Order, Offer)
+- ✅ **Domain Actions & Services** — Business logic in `src/Domains/{Domain}/Actions` and Services (codes, calculations, numbers)
+- ✅ **Repository Pattern** — Repositories for data access abstraction and complex reads
+- ✅ **Action Classes** — Focused actions orchestrating complex flows (Create/Update Article, Order, Offer, Production Portal, Planning)
 - ✅ **Form Requests** — 32 classes for validation
 - ✅ **Enums** — Type-safe (OrderStatus, OrderLabelStatus)
 - ✅ **Centralized Messages** — `lang/{it,es,en}/` for auth, validation, pagination, and messages (multi-language)
@@ -323,23 +323,24 @@ See [docs/DATABASE.md](docs/DATABASE.md). Tests run against a **separate Postgre
 <a id="architecture"></a>
 ## 🏗 Architecture
 
-The project follows a **layered architecture** with clear separation of concerns.
+The project follows a **layered architecture** with clear separation of concerns, aligned with the **Omega 2026**
+rules described in `ARCHITECTURE_OMEGA.md` (this is the **primary architectural reference** for new developers).
 
 **Request flow:**
 
 ```
-Request → Controller → Service / Action → Repository → Model
+Request → Controller → Domain Action → Resource / Service → Repository → Model
                 ↓
          Inertia response (React pages)
 ```
 
-### Architecture Layers
+### Architecture Layers (Omega 2026)
 
-1. **Controllers** (`app/Http/Controllers/`) — Handle HTTP requests and responses, coordinate services/actions, return Inertia or JSON, apply middleware and authorization.
-2. **Services** (`app/Services/`) — Business logic (codes, calculations, number generation), orchestration.
-3. **Actions** (`app/Actions/`) — Complex flows (Create/Update Article, Order, Offer; syncs), transaction handling.
-4. **Repositories** (`app/Repositories/`) — Data access layer abstraction, complex query building.
-5. **Models** (`app/Models/`) — UUID-based Eloquent models.
+1. **Controllers** (`app/Http/Controllers/`) — Handle HTTP requests and responses, validate via Form Requests, call **Domain Actions**, and return Inertia or JSON (`ApiResponseResource`), applying middleware and authorization.
+2. **Domain Actions** (`src/Domains/{Domain}/Actions/`) — Encapsulate business use‑cases (create/update flows, planning operations, production portal flows, calculations); they are the only place where business rules should live.
+3. **Services** (`app/Services/`) — Application‑level services (codes, calculations, number generation, cross‑domain logic) used by Actions or controllers.
+4. **Repositories** (`app/Repositories/`) — Data access abstraction and complex query building over models.
+5. **Models** (`app/Models/`) — UUID-based Eloquent models with relationships, casts and scopes.
 
 ### Frontend Structure
 
@@ -350,8 +351,9 @@ Request → Controller → Service / Action → Repository → Model
 | `resources/js/layouts/` | Page layout wrappers |
 | `resources/js/hooks/` | Custom React hooks |
 | `resources/js/lib/` | API clients, utilities, validation |
+| `resources/js/types/DomainModels.d.ts` | Typed domain models synchronized with backend JSON Resources |
 
-Backend tree: `app/Http/Controllers/`, `app/Services/`, `app/Actions/`, `app/Repositories/`, `app/Models/`, `app/Enums/` (see repo).
+Backend tree (high level): `app/Http/Controllers/`, `src/Domains/*/Actions`, `app/Services/`, `app/Repositories/`, `app/Models/`, `app/Enums/` (see repo and `ARCHITECTURE_OMEGA.md` for details).
 
 ---
 

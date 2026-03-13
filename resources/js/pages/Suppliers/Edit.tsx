@@ -50,9 +50,9 @@ export default function SuppliersEdit({
     errors: serverErrors,
 }: SuppliersEditProps) {
     const { t } = useTranslations();
-    const [vatNumber, setVatNumber] = useState(supplier.vat_number || '');
-    const [postalCode, setPostalCode] = useState(supplier.postal_code || '');
-    const [province, setProvince] = useState(supplier.province || '');
+    const [vatNumber, setVatNumber] = useState(supplier.vat_number ?? '');
+    const [postalCode, setPostalCode] = useState(supplier.postal_code ?? '');
+    const [province, setProvince] = useState(supplier.province ?? '');
 
     const vatNumberValidation = useFieldValidation(vatNumber, [
         validationRules.vatNumber(),
@@ -232,23 +232,32 @@ export default function SuppliersEdit({
                                                             'suppliers.form.vat_aria',
                                                         )}
                                                         aria-invalid={
-                                                            vatNumberValidation.error
+                                                            vatNumberValidation.error !=
+                                                                null &&
+                                                            vatNumberValidation.error !==
+                                                                ''
                                                                 ? 'true'
                                                                 : 'false'
                                                         }
                                                         className={
-                                                            vatNumberValidation.error
+                                                            vatNumberValidation.error !=
+                                                                null &&
+                                                            vatNumberValidation.error !==
+                                                                ''
                                                                 ? 'border-destructive'
                                                                 : ''
                                                         }
                                                     />
-                                                    {vatNumberValidation.error && (
-                                                        <p className="text-xs text-destructive">
-                                                            {
-                                                                vatNumberValidation.error
-                                                            }
-                                                        </p>
-                                                    )}
+                                                    {vatNumberValidation.error !=
+                                                        null &&
+                                                        vatNumberValidation.error !==
+                                                            '' && (
+                                                            <p className="text-xs text-destructive">
+                                                                {
+                                                                    vatNumberValidation.error
+                                                                }
+                                                            </p>
+                                                        )}
                                                     <InputError
                                                         message={
                                                             allErrors.vat_number
@@ -347,23 +356,32 @@ export default function SuppliersEdit({
                                                             'suppliers.form.postal_code_aria',
                                                         )}
                                                         aria-invalid={
-                                                            postalCodeValidation.error
+                                                            postalCodeValidation.error !=
+                                                                null &&
+                                                            postalCodeValidation.error !==
+                                                                ''
                                                                 ? 'true'
                                                                 : 'false'
                                                         }
                                                         className={
-                                                            postalCodeValidation.error
+                                                            postalCodeValidation.error !=
+                                                                null &&
+                                                            postalCodeValidation.error !==
+                                                                ''
                                                                 ? 'border-destructive'
                                                                 : ''
                                                         }
                                                     />
-                                                    {postalCodeValidation.error && (
-                                                        <p className="text-xs text-destructive">
-                                                            {
-                                                                postalCodeValidation.error
-                                                            }
-                                                        </p>
-                                                    )}
+                                                    {postalCodeValidation.error !=
+                                                        null &&
+                                                        postalCodeValidation.error !==
+                                                            '' && (
+                                                            <p className="text-xs text-destructive">
+                                                                {
+                                                                    postalCodeValidation.error
+                                                                }
+                                                            </p>
+                                                        )}
                                                     <InputError
                                                         message={
                                                             allErrors.postal_code
@@ -437,23 +455,32 @@ export default function SuppliersEdit({
                                                                 'uppercase',
                                                         }}
                                                         aria-invalid={
-                                                            provinceValidation.error
+                                                            provinceValidation.error !=
+                                                                null &&
+                                                            provinceValidation.error !==
+                                                                ''
                                                                 ? 'true'
                                                                 : 'false'
                                                         }
                                                         className={
-                                                            provinceValidation.error
+                                                            provinceValidation.error !=
+                                                                null &&
+                                                            provinceValidation.error !==
+                                                                ''
                                                                 ? 'border-destructive'
                                                                 : ''
                                                         }
                                                     />
-                                                    {provinceValidation.error && (
-                                                        <p className="text-xs text-destructive">
-                                                            {
-                                                                provinceValidation.error
-                                                            }
-                                                        </p>
-                                                    )}
+                                                    {provinceValidation.error !=
+                                                        null &&
+                                                        provinceValidation.error !==
+                                                            '' && (
+                                                            <p className="text-xs text-destructive">
+                                                                {
+                                                                    provinceValidation.error
+                                                                }
+                                                            </p>
+                                                        )}
                                                     <InputError
                                                         message={
                                                             allErrors.province

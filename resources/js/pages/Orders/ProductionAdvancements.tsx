@@ -288,8 +288,10 @@ export default function ProductionAdvancements() {
                                             value={article.uuid}
                                         >
                                             {article.cod_article_las} -{' '}
-                                            {article.article_descr ||
-                                                t('common.no_description')}
+                                            {article.article_descr != null &&
+                                            article.article_descr !== ''
+                                                ? article.article_descr
+                                                : t('common.no_description')}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -327,15 +329,19 @@ export default function ProductionAdvancements() {
                                                             }
                                                         </div>
                                                         {order.article
-                                                            .article_descr && (
-                                                            <div className="text-xs">
-                                                                {
-                                                                    order
-                                                                        .article
-                                                                        .article_descr
-                                                                }
-                                                            </div>
-                                                        )}
+                                                            .article_descr !=
+                                                            null &&
+                                                            order.article
+                                                                .article_descr !==
+                                                                '' && (
+                                                                <div className="text-xs">
+                                                                    {
+                                                                        order
+                                                                            .article
+                                                                            .article_descr
+                                                                    }
+                                                                </div>
+                                                            )}
                                                     </div>
                                                 )}
                                             </div>
@@ -498,14 +504,19 @@ export default function ProductionAdvancements() {
                                                         }
                                                     </div>
                                                     {order.article
-                                                        .article_descr && (
-                                                        <div className="text-xs text-muted-foreground">
-                                                            {
-                                                                order.article
-                                                                    .article_descr
-                                                            }
-                                                        </div>
-                                                    )}
+                                                        .article_descr !=
+                                                        null &&
+                                                        order.article
+                                                            .article_descr !==
+                                                            '' && (
+                                                            <div className="text-xs text-muted-foreground">
+                                                                {
+                                                                    order
+                                                                        .article
+                                                                        .article_descr
+                                                                }
+                                                            </div>
+                                                        )}
                                                 </div>
                                             ) : (
                                                 <span className="text-muted-foreground">

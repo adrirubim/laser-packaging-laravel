@@ -1,48 +1,40 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreSupplierRequest;
 use App\Http\Requests\UpdateSupplierRequest;
-use App\Models\Supplier;
+use App\Http\Resources\SupplierResource;
+use Domain\Suppliers\Actions\CreateSupplierAction;
+use Domain\Suppliers\Actions\ListSuppliersAction;
+use Domain\Suppliers\Actions\SoftDeleteSupplierAction;
+use Domain\Suppliers\Actions\UpdateSupplierAction;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class SupplierController extends Controller
 {
+    public function __construct(
+        protected ListSuppliersAction $listSuppliers,
+        protected CreateSupplierAction $createSupplier,
+        protected UpdateSupplierAction $updateSupplier,
+        protected SoftDeleteSupplierAction $softDeleteSupplier,
+    ) {}
+
     /**
      * Display a listing of suppliers.
      */
     public function index(Request $request): Response
     {
-        $query = Supplier::active();
-
-        // Filtros
-        if ($request->has('search')) {
-            $search = $request->get('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('code', 'like', "%{$search}%")
-                    ->orWhere('company_name', 'like', "%{$search}%")
-                    ->orWhere('vat_number', 'like', "%{$search}%");
-            });
-        }
-
-        // Ordinamento
-        $sortBy = $request->get('sort_by', 'company_name');
-        $sortOrder = $request->get('sort_order', 'asc');
-
-        $allowedSorts = ['code', 'company_name', 'vat_number', 'city', 'province', 'country'];
-        if (in_array($sortBy, $allowedSorts)) {
-            $query->orderBy($sortBy, $sortOrder);
-        } else {
-            $query->orderBy('company_name', 'asc');
-        }
-
-        $suppliers = $query->paginate($request->get('per_page', 15));
+        $suppliers = $this->listSuppliers->execute($request->all());
+        $suppliersArray = $suppliers->toArray();
+        $suppliersArray['data'] = SupplierResource::collection($suppliers)->resolve();
 
         return Inertia::render('Suppliers/Index', [
-            'suppliers' => $suppliers,
+            'suppliers' => $suppliersArray,
             'filters' => $request->only(['search', 'sort_by', 'sort_order']),
         ]);
     }
@@ -60,9 +52,7 @@ class SupplierController extends Controller
      */
     public function store(StoreSupplierRequest $request)
     {
-        $validated = $request->validated();
-        $validated['removed'] = false;
-        $supplier = Supplier::create($validated);
+        $this->createSupplier->execute($request->validated());
 
         return redirect()->route('suppliers.index')
             ->with('success', __('flash.supplier.created'));
@@ -71,29 +61,33 @@ class SupplierController extends Controller
     /**
      * Display the specified supplier.
      */
-    public function show(Supplier $supplier): Response
+    public function show(\App\Models\Supplier $supplier): Response
     {
+        $supplierResource = SupplierResource::make($supplier)->toArray(request());
+
         return Inertia::render('Suppliers/Show', [
-            'supplier' => $supplier,
+            'supplier' => $supplierResource,
         ]);
     }
 
     /**
      * Show the form for editing the specified supplier.
      */
-    public function edit(Supplier $supplier): Response
+    public function edit(\App\Models\Supplier $supplier): Response
     {
+        $supplierResource = SupplierResource::make($supplier)->toArray(request());
+
         return Inertia::render('Suppliers/Edit', [
-            'supplier' => $supplier,
+            'supplier' => $supplierResource,
         ]);
     }
 
     /**
      * Update the specified supplier.
      */
-    public function update(UpdateSupplierRequest $request, Supplier $supplier)
+    public function update(UpdateSupplierRequest $request, \App\Models\Supplier $supplier)
     {
-        $supplier->update($request->validated());
+        $this->updateSupplier->execute($supplier, $request->validated());
 
         return redirect()->route('suppliers.index')
             ->with('success', __('flash.supplier.updated'));
@@ -102,9 +96,9 @@ class SupplierController extends Controller
     /**
      * Remove the specified supplier (soft delete).
      */
-    public function destroy(Supplier $supplier)
+    public function destroy(\App\Models\Supplier $supplier)
     {
-        $supplier->update(['removed' => true]);
+        $this->softDeleteSupplier->execute($supplier);
 
         return redirect()->route('suppliers.index')
             ->with('success', __('flash.supplier.deleted'));

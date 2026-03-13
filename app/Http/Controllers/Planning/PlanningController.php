@@ -1,14 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Planning;
 
 use App\Http\Controllers\Controller;
-use App\Models\Order;
-use App\Models\ProductionPlanning;
-use App\Services\Planning\PlanningCalculationService;
+use App\Http\Resources\PlanningBoardResource;
+use App\Http\Resources\PlanningSummaryResource;
 use App\Services\Planning\PlanningDataService;
-use App\Services\Planning\PlanningReplanService;
-use App\Services\Planning\PlanningWriteService;
+use Domain\Planning\Actions\CalculateHoursAction;
+use Domain\Planning\Actions\CheckTodayPlanningAction;
+use Domain\Planning\Actions\ForceRescheduleAction;
+use Domain\Planning\Actions\GetPlanningBoardAction;
+use Domain\Planning\Actions\SavePlanningCellAction;
+use Domain\Planning\Actions\SaveSummaryValueAction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -24,9 +29,12 @@ class PlanningController extends Controller
 {
     public function __construct(
         protected PlanningDataService $dataService,
-        protected PlanningWriteService $writeService,
-        protected PlanningCalculationService $calculationService,
-        protected PlanningReplanService $replanService
+        protected GetPlanningBoardAction $planningBoardAction,
+        protected SavePlanningCellAction $savePlanningCellAction,
+        protected SaveSummaryValueAction $saveSummaryValueAction,
+        protected CalculateHoursAction $calculateHoursAction,
+        protected CheckTodayPlanningAction $checkTodayPlanningAction,
+        protected ForceRescheduleAction $forceRescheduleAction,
     ) {}
 
     /**
@@ -52,15 +60,11 @@ class PlanningController extends Controller
             $startDate = $request->input('start_date', now()->startOfWeek()->format('Y-m-d 00:00:00'));
             $endDate = $request->input('end_date', now()->endOfWeek()->format('Y-m-d 23:59:59'));
 
-            $payload = $this->dataService->getData($startDate, $endDate);
+            $payload = $this->planningBoardAction->getData($startDate, $endDate);
 
-            return response()->json([
-                'error_code' => 0,
-                'lines' => $payload['lines'],
-                'planning' => $payload['planning'],
-                'contracts' => $payload['contracts'],
-                'summary' => $payload['summary'],
-            ]);
+            return response()->json(
+                PlanningBoardResource::make($payload)->resolve()
+            );
         } catch (Throwable $e) {
             Log::error('Planning data error: '.$e->getMessage(), [
                 'file' => $e->getFile(),
@@ -96,57 +100,32 @@ class PlanningController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'error_code' => -1,
-                'message' => __('planning.params_invalid'),
-                'errors' => $validator->errors()->toArray(),
-            ], 422);
+            return response()->json(
+                PlanningSummaryResource::make([
+                    'error_code' => -1,
+                    'message' => __('planning.params_invalid'),
+                    'errors' => $validator->errors()->toArray(),
+                ])->resolve(),
+                422
+            );
         }
 
         $data = $validator->validated();
 
-        // Verify order exists and belongs to the indicated line
-        $order = Order::query()
-            ->with(['article.offer'])
-            ->where('uuid', $data['order_uuid'])
-            ->first();
-
-        if (! $order) {
-            return response()->json([
-                'error_code' => -1,
-                'message' => __('planning.replan.order_not_found'),
-            ], 404);
-        }
-
-        $orderLineUuid = $order->article?->offer?->lasworkline_uuid ?? null;
-        if ($orderLineUuid !== $data['lasworkline_uuid']) {
-            return response()->json([
-                'error_code' => -1,
-                'message' => __('planning.replan.order_not_on_line'),
-                'errors' => ['lasworkline_uuid' => [__('planning.replan.order_line_mismatch')]],
-            ], 422);
-        }
-
-        $result = $this->writeService->savePlanningCell(
-            $data['order_uuid'],
-            $data['lasworkline_uuid'],
-            $data['date'],
-            $data['hour'],
-            $data['minute'],
-            $data['workers'],
-            $data['zoom_level'] ?? 'hour'
-        );
-
-        // Dopo savePlanning, ripianifica il futuro in base a remainingQty/ore necessarie.
-        // This can add or remove slots beyond the just-saved cell.
-        $replanResult = $this->replanService->replanFutureAfterManualEdit($data['order_uuid']);
-
-        return response()->json([
-            'error_code' => 0,
-            'message' => __('planning.saved'),
-            'planning_id' => $result['planning_id'],
-            'replan_result' => $replanResult,
+        $result = $this->savePlanningCellAction->execute([
+            'order_uuid' => $data['order_uuid'],
+            'lasworkline_uuid' => $data['lasworkline_uuid'],
+            'date' => $data['date'],
+            'hour' => $data['hour'],
+            'minute' => $data['minute'],
+            'workers' => $data['workers'],
+            'zoom_level' => $data['zoom_level'] ?? 'hour',
         ]);
+
+        return response()->json(
+            PlanningSummaryResource::make($result['payload'])->resolve(),
+            $result['status']
+        );
     }
 
     /**
@@ -167,30 +146,32 @@ class PlanningController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'error_code' => -1,
-                'message' => __('planning.params_invalid'),
-                'errors' => $validator->errors()->toArray(),
-            ], 422);
+            return response()->json(
+                PlanningSummaryResource::make([
+                    'error_code' => -1,
+                    'message' => __('planning.params_invalid'),
+                    'errors' => $validator->errors()->toArray(),
+                ])->resolve(),
+                422
+            );
         }
 
         $data = $validator->validated();
 
-        $result = $this->writeService->saveSummaryValue(
-            $data['summary_type'],
-            $data['date'],
-            $data['hour'],
-            $data['minute'],
-            $data['value'],
-            $data['reset'],
-            $data['zoom_level'] ?? 'hour'
-        );
-
-        return response()->json([
-            'error_code' => 0,
-            'message' => __('planning.summary_saved'),
-            'summary_id' => $result['summary_id'],
+        $result = $this->saveSummaryValueAction->execute([
+            'summary_type' => $data['summary_type'],
+            'date' => $data['date'],
+            'hour' => $data['hour'],
+            'minute' => $data['minute'],
+            'value' => $data['value'],
+            'reset' => $data['reset'],
+            'zoom_level' => $data['zoom_level'] ?? 'hour',
         ]);
+
+        return response()->json(
+            PlanningSummaryResource::make($result['payload'])->resolve(),
+            $result['status']
+        );
     }
 
     /**
@@ -205,28 +186,24 @@ class PlanningController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'error_code' => -1,
-                'message' => __('planning.params_invalid'),
-                'errors' => $validator->errors()->toArray(),
-            ], 422);
+            return response()->json(
+                PlanningSummaryResource::make([
+                    'error_code' => -1,
+                    'message' => __('planning.params_invalid'),
+                    'errors' => $validator->errors()->toArray(),
+                ])->resolve(),
+                422
+            );
         }
 
-        $order = Order::query()
-            ->with(['article.offer'])
-            ->where('uuid', $request->input('order_uuid'))
-            ->first();
+        $result = $this->calculateHoursAction->execute([
+            'order_uuid' => $request->input('order_uuid'),
+        ]);
 
-        if (! $order) {
-            return response()->json([
-                'error_code' => -1,
-                'message' => __('planning.replan.order_not_found'),
-            ], 404);
-        }
-
-        $result = $this->calculationService->calculateForOrder($order);
-
-        return response()->json($result);
+        return response()->json(
+            PlanningSummaryResource::make($result['payload'])->resolve(),
+            $result['status']
+        );
     }
 
     /**
@@ -238,41 +215,9 @@ class PlanningController extends Controller
     {
         $today = now()->toDateString();
 
-        $orderUuids = ProductionPlanning::query()
-            ->whereDate('date', '=', $today)
-            ->distinct()
-            ->pluck('order_uuid');
+        $result = $this->checkTodayPlanningAction->execute($today);
 
-        $orders = Order::query()
-            ->active()
-            ->whereIn('uuid', $orderUuids)
-            ->get();
-
-        $details = [];
-        $modified = 0;
-
-        foreach ($orders as $order) {
-            $result = $this->replanService->replanFutureAfterManualEdit($order->uuid);
-
-            $hasReplanChanges = ($result['quarters_added'] ?? 0) > 0 || ($result['quarters_removed'] ?? 0) > 0;
-            if ($hasReplanChanges) {
-                $modified++;
-            }
-
-            $details[] = [
-                'order_uuid' => $order->uuid,
-                'result' => $result,
-            ];
-        }
-
-        return response()->json([
-            'error_code' => 0,
-            'message' => __('planning.check_completed', ['checked' => $orders->count(), 'modified' => $modified]),
-            'date' => $today,
-            'orders_checked' => $orders->count(),
-            'orders_modified' => $modified,
-            'details' => $details,
-        ]);
+        return response()->json($result['payload'], $result['status']);
     }
 
     /**
@@ -287,38 +232,23 @@ class PlanningController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'error_code' => -1,
-                'message' => __('planning.params_invalid'),
-                'errors' => $validator->errors()->toArray(),
-            ], 422);
+            return response()->json(
+                PlanningSummaryResource::make([
+                    'error_code' => -1,
+                    'message' => __('planning.params_invalid'),
+                    'errors' => $validator->errors()->toArray(),
+                ])->resolve(),
+                422
+            );
         }
 
-        $orderUuid = $request->input('order_uuid');
-        $order = Order::query()->where('uuid', $orderUuid)->first();
-
-        if (! $order) {
-            return response()->json([
-                'error_code' => -1,
-                'message' => __('planning.replan.order_not_found'),
-            ], 404);
-        }
-
-        $result = $this->replanService->autoScheduleOrder($orderUuid, true);
-
-        if (! empty($result['error'])) {
-            return response()->json([
-                'error_code' => -1,
-                'message' => $result['message'] ?? __('planning.replan.reschedule_error'),
-                'order_uuid' => $orderUuid,
-            ], 422);
-        }
-
-        return response()->json([
-            'error_code' => 0,
-            'message' => __('planning.replan_completed'),
-            'order_uuid' => $orderUuid,
-            'result' => $result,
+        $result = $this->forceRescheduleAction->execute([
+            'order_uuid' => $request->input('order_uuid'),
         ]);
+
+        return response()->json(
+            PlanningSummaryResource::make($result['payload'])->resolve(),
+            $result['status']
+        );
     }
 }

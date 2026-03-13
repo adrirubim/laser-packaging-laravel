@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\CreateArticleAction;
-use App\Actions\UpdateArticleAction;
 use App\Enums\OrderLabelStatus;
 use App\Http\Controllers\Concerns\HandlesActionErrors;
+use App\Http\Resources\Api\ApiResponseResource;
 use App\Models\Article;
 use App\Models\Offer;
 use App\Repositories\ArticleRepository;
 use App\Repositories\OrderRepository;
 use App\Services\ArticleCodeService;
+use Domain\Articles\Actions\CreateArticleAction;
+use Domain\Articles\Actions\UpdateArticleAction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -552,7 +553,15 @@ class ArticleController extends Controller
 
             $lasCode = $this->articleCodeService->generateNextLAS($validated['offer_uuid']);
 
-            return response()->json(['las_code' => $lasCode]);
+            return ApiResponseResource::success(
+                true,
+                null,
+                [
+                    'las_code' => $lasCode,
+                ]
+            )->additional([
+                'las_code' => $lasCode,
+            ])->response();
         });
     }
 

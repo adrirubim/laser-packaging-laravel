@@ -274,154 +274,157 @@ export default function ArticlesCreate({
     const { props } = usePage<ArticlesCreateProps>();
     const { t } = useTranslations();
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
-    const actualSourceArticle = sourceArticle || props.sourceArticle;
+    const actualSourceArticle = sourceArticle ?? props.sourceArticle ?? null;
     const actualSelectedOfferUuid =
-        selectedOfferUuid ||
-        props.selectedOfferUuid ||
-        actualSourceArticle?.offer_uuid ||
+        selectedOfferUuid ??
+        props.selectedOfferUuid ??
+        actualSourceArticle?.offer_uuid ??
         '';
-    const actualUm = um || props.um;
-    const actualPiecesPerPackage = piecesPerPackage || props.piecesPerPackage;
-    const actualMediaValues = mediaValues || props.mediaValues;
+    const actualUm = um ?? props.um ?? '';
+    const actualPiecesPerPackage =
+        piecesPerPackage ?? props.piecesPerPackage ?? null;
+    const actualMediaValues = mediaValues ?? props.mediaValues ?? null;
     const actualCqModels =
-        cqModels.length > 0 ? cqModels : props.cqModels || [];
+        cqModels.length > 0 ? cqModels : (props.cqModels ?? []);
     const actualPalletSheets =
-        palletSheets.length > 0 ? palletSheets : props.palletSheets || [];
+        palletSheets.length > 0 ? palletSheets : (props.palletSheets ?? []);
     const actualLotAttributionList =
         lotAttributionList.length > 0
             ? lotAttributionList
-            : props.lotAttributionList || [];
+            : (props.lotAttributionList ?? []);
     const actualExpirationAttributionList =
         expirationAttributionList.length > 0
             ? expirationAttributionList
-            : props.expirationAttributionList || [];
-    const actualDbList = dbList.length > 0 ? dbList : props.dbList || [];
+            : (props.expirationAttributionList ?? []);
+    const actualDbList = dbList.length > 0 ? dbList : (props.dbList ?? []);
     const actualLabelsExternalList =
         labelsExternalList.length > 0
             ? labelsExternalList
-            : props.labelsExternalList || [];
+            : (props.labelsExternalList ?? []);
     const actualLabelsPvpList =
-        labelsPvpList.length > 0 ? labelsPvpList : props.labelsPvpList || [];
+        labelsPvpList.length > 0 ? labelsPvpList : (props.labelsPvpList ?? []);
     const actualLabelsIngredientList =
         labelsIngredientList.length > 0
             ? labelsIngredientList
-            : props.labelsIngredientList || [];
+            : (props.labelsIngredientList ?? []);
     const actualLabelsDataVariableList =
         labelsDataVariableList.length > 0
             ? labelsDataVariableList
-            : props.labelsDataVariableList || [];
+            : (props.labelsDataVariableList ?? []);
     const actualLabelOfJumpersList =
         labelOfJumpersList.length > 0
             ? labelOfJumpersList
-            : props.labelOfJumpersList || [];
+            : (props.labelOfJumpersList ?? []);
     const actualNominalWeightControlList =
         nominalWeightControlList.length > 0
             ? nominalWeightControlList
-            : props.nominalWeightControlList || [];
+            : (props.nominalWeightControlList ?? []);
     const actualObjectControlWeightList =
         objectControlWeightList.length > 0
             ? objectControlWeightList
-            : props.objectControlWeightList || [];
+            : (props.objectControlWeightList ?? []);
     const actualCustomerSamplesList =
         customerSamplesList.length > 0
             ? customerSamplesList
-            : props.customerSamplesList || [];
+            : (props.customerSamplesList ?? []);
 
     const [selectedOffer, setSelectedOffer] = useState<string>(
         actualSelectedOfferUuid,
     );
     const [codArticleLas, setCodArticleLas] = useState(
-        lasCode || props.lasCode || '',
+        lasCode ?? props.lasCode ?? '',
     );
     const [articleDescr, setArticleDescr] = useState(
-        actualSourceArticle?.article_descr ||
-            articleDescrFromOffer ||
-            props.articleDescrFromOffer ||
+        actualSourceArticle?.article_descr ??
+            articleDescrFromOffer ??
+            props.articleDescrFromOffer ??
             '',
     );
     // Piano Imballaggio: da articolo duplicato o da offerta (Pz) in Converti in Articolo
     const [planPackaging, setPlanPackaging] = useState(
-        actualSourceArticle?.plan_packaging?.toString() ||
+        actualSourceArticle?.plan_packaging?.toString() ??
             (actualPiecesPerPackage != null
                 ? String(actualPiecesPerPackage)
                 : ''),
     );
     const [palletPlans, setPalletPlans] = useState(
-        actualSourceArticle?.pallet_plans?.toString() || '',
+        actualSourceArticle?.pallet_plans?.toString() ?? '',
     );
-    const [visibilityCod, setVisibilityCod] = useState(
-        actualSourceArticle?.visibility_cod || false,
+    const [visibilityCod, setVisibilityCod] = useState<boolean>(
+        actualSourceArticle?.visibility_cod ?? false,
     );
-    const [stockManaged, setStockManaged] = useState(
-        actualSourceArticle?.stock_managed || false,
+    const [stockManaged, setStockManaged] = useState<boolean>(
+        actualSourceArticle?.stock_managed ?? false,
     );
     const [lotAttribution, setLotAttribution] = useState<string>(
-        actualSourceArticle?.lot_attribution?.toString() || '',
+        actualSourceArticle?.lot_attribution?.toString() ?? '',
     );
     const [expirationAttribution, setExpirationAttribution] = useState<string>(
-        actualSourceArticle?.expiration_attribution?.toString() || '',
+        actualSourceArticle?.expiration_attribution?.toString() ?? '',
     );
-    const [ean, setEan] = useState(actualSourceArticle?.ean || '');
+    const [ean, setEan] = useState(actualSourceArticle?.ean ?? '');
     const [db, setDb] = useState<string>(
-        actualSourceArticle?.db?.toString() || '',
+        actualSourceArticle?.db?.toString() ?? '',
     );
     const [labelsExternal, setLabelsExternal] = useState<string>(
-        actualSourceArticle?.labels_external?.toString() || '',
+        actualSourceArticle?.labels_external?.toString() ?? '',
     );
     const [labelsPvp, setLabelsPvp] = useState<string>(
-        actualSourceArticle?.labels_pvp?.toString() || '',
+        actualSourceArticle?.labels_pvp?.toString() ?? '',
     );
     const [valuePvp, setValuePvp] = useState(
-        actualSourceArticle?.value_pvp?.toString() || '',
+        actualSourceArticle?.value_pvp?.toString() ?? '',
     );
     const [labelsIngredient, setLabelsIngredient] = useState<string>(
-        actualSourceArticle?.labels_ingredient?.toString() || '',
+        actualSourceArticle?.labels_ingredient?.toString() ?? '',
     );
     const [labelsDataVariable, setLabelsDataVariable] = useState<string>(
-        actualSourceArticle?.labels_data_variable?.toString() || '',
+        actualSourceArticle?.labels_data_variable?.toString() ?? '',
     );
     const [labelOfJumpers, setLabelOfJumpers] = useState<string>(
-        actualSourceArticle?.label_of_jumpers?.toString() || '',
+        actualSourceArticle?.label_of_jumpers?.toString() ?? '',
     );
     const [weightKg, setWeightKg] = useState(
-        actualSourceArticle?.weight_kg?.toString() || '',
+        actualSourceArticle?.weight_kg?.toString() ?? '',
     );
     const [nominalWeightControl, setNominalWeightControl] = useState<string>(
-        actualSourceArticle?.nominal_weight_control?.toString() || '',
+        actualSourceArticle?.nominal_weight_control?.toString() ?? '',
     );
     const [weightUnitOfMeasur, setWeightUnitOfMeasur] = useState(
-        actualSourceArticle?.weight_unit_of_measur || '',
+        actualSourceArticle?.weight_unit_of_measur ?? '',
     );
     const [weightValue, setWeightValue] = useState(
-        actualSourceArticle?.weight_value?.toString() || '',
+        actualSourceArticle?.weight_value?.toString() ?? '',
     );
     const [objectControlWeight, setObjectControlWeight] = useState<string>(
-        actualSourceArticle?.object_control_weight?.toString() || '',
+        actualSourceArticle?.object_control_weight?.toString() ?? '',
     );
-    const [allergens, setAllergens] = useState(
-        actualSourceArticle?.allergens || false,
+    const [allergens, setAllergens] = useState<boolean>(
+        actualSourceArticle?.allergens ?? false,
     );
     const [palletSheet, setPalletSheet] = useState<string>(
-        actualSourceArticle?.pallet_sheet || '',
+        actualSourceArticle?.pallet_sheet ?? '',
     );
     const [modelUuid, setModelUuid] = useState<string>(
-        actualSourceArticle?.model_uuid || '',
+        actualSourceArticle?.model_uuid ?? '',
     );
     const [customerSamples, setCustomerSamples] = useState<string>(
-        actualSourceArticle?.customer_samples_list?.toString() || '',
+        actualSourceArticle?.customer_samples_list?.toString() ?? '',
     );
     const [lineLayoutFileName, setLineLayoutFileName] = useState<string | null>(
         null,
     );
     const [mediaRealeCfzHPz, setMediaRealeCfzHPz] = useState(
-        actualSourceArticle?.media_reale_cfz_h_pz?.toString() || '',
+        actualSourceArticle?.media_reale_cfz_h_pz?.toString() ?? '',
     );
 
     // Convert ISO date to yyyy-MM-dd for date input
     const formatDateForInput = (
         dateString: string | null | undefined,
     ): string => {
-        if (!dateString) return '';
+        if (dateString == null || dateString === '') {
+            return '';
+        }
         try {
             // If already in yyyy-MM-dd format, return as is
             if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
@@ -440,81 +443,90 @@ export default function ArticlesCreate({
     };
 
     const [productionApprovalCheckbox, setProductionApprovalCheckbox] =
-        useState(actualSourceArticle?.production_approval_checkbox || false);
+        useState<boolean>(
+            actualSourceArticle?.production_approval_checkbox ?? false,
+        );
     const [productionApprovalEmployee, setProductionApprovalEmployee] =
-        useState(actualSourceArticle?.production_approval_employee || '');
+        useState(actualSourceArticle?.production_approval_employee ?? '');
     const [productionApprovalDate, setProductionApprovalDate] = useState(
         formatDateForInput(actualSourceArticle?.production_approval_date),
     );
     const [productionApprovalNotes, setProductionApprovalNotes] = useState(
-        actualSourceArticle?.production_approval_notes || '',
+        actualSourceArticle?.production_approval_notes ?? '',
     );
-    const [approvQualityCheckbox, setApprovQualityCheckbox] = useState(
-        actualSourceArticle?.approv_quality_checkbox || false,
+    const [approvQualityCheckbox, setApprovQualityCheckbox] = useState<boolean>(
+        actualSourceArticle?.approv_quality_checkbox ?? false,
     );
     const [approvQualityEmployee, setApprovQualityEmployee] = useState(
-        actualSourceArticle?.approv_quality_employee || '',
+        actualSourceArticle?.approv_quality_employee ?? '',
     );
     const [approvQualityDate, setApprovQualityDate] = useState(
         formatDateForInput(actualSourceArticle?.approv_quality_date),
     );
     const [approvQualityNotes, setApprovQualityNotes] = useState(
-        actualSourceArticle?.approv_quality_notes || '',
+        actualSourceArticle?.approv_quality_notes ?? '',
     );
     const [commercialApprovalCheckbox, setCommercialApprovalCheckbox] =
-        useState(actualSourceArticle?.commercial_approval_checkbox || false);
+        useState<boolean>(
+            actualSourceArticle?.commercial_approval_checkbox ?? false,
+        );
     const [commercialApprovalEmployee, setCommercialApprovalEmployee] =
-        useState(actualSourceArticle?.commercial_approval_employee || '');
+        useState(actualSourceArticle?.commercial_approval_employee ?? '');
     const [commercialApprovalDate, setCommercialApprovalDate] = useState(
         formatDateForInput(actualSourceArticle?.commercial_approval_date),
     );
     const [commercialApprovalNotes, setCommercialApprovalNotes] = useState(
-        actualSourceArticle?.commercial_approval_notes || '',
+        actualSourceArticle?.commercial_approval_notes ?? '',
     );
     const [clientApprovalCheckbox, setClientApprovalCheckbox] = useState(
-        actualSourceArticle?.client_approval_checkbox || false,
+        actualSourceArticle?.client_approval_checkbox ?? false,
     );
     const [clientApprovalEmployee, setClientApprovalEmployee] = useState(
-        actualSourceArticle?.client_approval_employee || '',
+        actualSourceArticle?.client_approval_employee ?? '',
     );
     const [clientApprovalDate, setClientApprovalDate] = useState(
         formatDateForInput(actualSourceArticle?.client_approval_date),
     );
     const [clientApprovalNotes, setClientApprovalNotes] = useState(
-        actualSourceArticle?.client_approval_notes || '',
+        actualSourceArticle?.client_approval_notes ?? '',
     );
 
     // State for many-to-many relations
     const actualMachinery =
-        machinery && machinery.length > 0 ? machinery : props.machinery || [];
+        Array.isArray(machinery) && machinery.length > 0
+            ? machinery
+            : (props.machinery ?? []);
     const actualMaterials =
-        materials && materials.length > 0 ? materials : props.materials || [];
+        Array.isArray(materials) && materials.length > 0
+            ? materials
+            : (props.materials ?? []);
     const actualCriticalIssues =
-        criticalIssues && criticalIssues.length > 0
+        Array.isArray(criticalIssues) && criticalIssues.length > 0
             ? criticalIssues
-            : props.criticalIssues || [];
+            : (props.criticalIssues ?? []);
     const actualPackagingInstructions =
-        packagingInstructions && packagingInstructions.length > 0
+        Array.isArray(packagingInstructions) && packagingInstructions.length > 0
             ? packagingInstructions
-            : props.packagingInstructions || [];
+            : (props.packagingInstructions ?? []);
     const actualOperatingInstructions =
-        operatingInstructions && operatingInstructions.length > 0
+        Array.isArray(operatingInstructions) && operatingInstructions.length > 0
             ? operatingInstructions
-            : props.operatingInstructions || [];
+            : (props.operatingInstructions ?? []);
     const actualPalletizingInstructions =
-        palletizingInstructions && palletizingInstructions.length > 0
+        Array.isArray(palletizingInstructions) &&
+        palletizingInstructions.length > 0
             ? palletizingInstructions
-            : props.palletizingInstructions || [];
+            : (props.palletizingInstructions ?? []);
 
     const [machineryRows, setMachineryRows] = useState<MachineryRow[]>(() => {
         if (
-            actualSourceArticle?.machinery &&
+            Array.isArray(actualSourceArticle?.machinery) &&
             actualSourceArticle.machinery.length > 0
         ) {
             return actualSourceArticle.machinery.map((m, idx) => ({
                 id: `machinery-${idx}`,
                 machineryUuid: m.uuid,
-                value: (m as { pivot?: { value?: string } }).pivot?.value || '',
+                value: (m as { pivot?: { value?: string } }).pivot?.value ?? '',
                 valueType: null,
             }));
         }
@@ -523,7 +535,7 @@ export default function ArticlesCreate({
 
     const [materialRows, setMaterialRows] = useState<MaterialRow[]>(() => {
         if (
-            actualSourceArticle?.materials &&
+            Array.isArray(actualSourceArticle?.materials) &&
             actualSourceArticle.materials.length > 0
         ) {
             return actualSourceArticle.materials.map((m, idx) => ({
@@ -701,16 +713,19 @@ export default function ArticlesCreate({
     // Update values when offer changes from props
     useEffect(() => {
         if (
-            props.selectedOfferUuid &&
+            props.selectedOfferUuid != null &&
             props.selectedOfferUuid !== selectedOffer
         ) {
             const uuid = props.selectedOfferUuid;
             queueMicrotask(() => setSelectedOffer(uuid));
         }
-        if (props.um && props.um !== actualUm) {
+        if (props.um != null && props.um !== actualUm) {
             // um updates automatically from props
         }
-        if (props.mediaValues && props.mediaValues !== actualMediaValues) {
+        if (
+            props.mediaValues != null &&
+            props.mediaValues !== actualMediaValues
+        ) {
             // mediaValues updates automatically from props
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps -- sync from props only, avoid loops
@@ -769,9 +784,9 @@ export default function ArticlesCreate({
 
     const handleMachineryChange = (id: string, machineryUuid: string) => {
         const machinery = actualMachinery.find((m) => m.uuid === machineryUuid);
-        const valueType = machinery?.valuetype || null;
+        const valueType = machinery?.valuetype ?? null;
         updateMachineryRow(id, 'machineryUuid', machineryUuid);
-        updateMachineryRow(id, 'valueType', valueType || '');
+        updateMachineryRow(id, 'valueType', valueType ?? '');
         // Resettare il valore quando cambia il macchinario
         updateMachineryRow(id, 'value', '');
     };
@@ -1245,7 +1260,7 @@ export default function ArticlesCreate({
                                                                             offer.offer_number
                                                                         }{' '}
                                                                         -{' '}
-                                                                        {offer.description ||
+                                                                        {offer.description ??
                                                                             t(
                                                                                 'common.no_description',
                                                                             )}
@@ -1284,23 +1299,32 @@ export default function ArticlesCreate({
                                                         )}
                                                         maxLength={255}
                                                         aria-invalid={
-                                                            codArticleLasValidation.error
+                                                            codArticleLasValidation.error !=
+                                                                null &&
+                                                            codArticleLasValidation.error !==
+                                                                ''
                                                                 ? 'true'
                                                                 : 'false'
                                                         }
                                                         className={
-                                                            codArticleLasValidation.error
+                                                            codArticleLasValidation.error !=
+                                                                null &&
+                                                            codArticleLasValidation.error !==
+                                                                ''
                                                                 ? 'border-destructive'
                                                                 : ''
                                                         }
                                                     />
-                                                    {codArticleLasValidation.error && (
-                                                        <p className="text-xs text-destructive">
-                                                            {
-                                                                codArticleLasValidation.error
-                                                            }
-                                                        </p>
-                                                    )}
+                                                    {codArticleLasValidation.error !=
+                                                        null &&
+                                                        codArticleLasValidation.error !==
+                                                            '' && (
+                                                            <p className="text-xs text-destructive">
+                                                                {
+                                                                    codArticleLasValidation.error
+                                                                }
+                                                            </p>
+                                                        )}
                                                     <InputError
                                                         message={
                                                             allErrors.cod_article_las
@@ -1335,23 +1359,32 @@ export default function ArticlesCreate({
                                                         )}
                                                         maxLength={255}
                                                         aria-invalid={
-                                                            articleDescrValidation.error
+                                                            articleDescrValidation.error !=
+                                                                null &&
+                                                            articleDescrValidation.error !==
+                                                                ''
                                                                 ? 'true'
                                                                 : 'false'
                                                         }
                                                         className={
-                                                            articleDescrValidation.error
+                                                            articleDescrValidation.error !=
+                                                                null &&
+                                                            articleDescrValidation.error !==
+                                                                ''
                                                                 ? 'border-destructive'
                                                                 : ''
                                                         }
                                                     />
-                                                    {articleDescrValidation.error && (
-                                                        <p className="text-xs text-destructive">
-                                                            {
-                                                                articleDescrValidation.error
-                                                            }
-                                                        </p>
-                                                    )}
+                                                    {articleDescrValidation.error !=
+                                                        null &&
+                                                        articleDescrValidation.error !==
+                                                            '' && (
+                                                            <p className="text-xs text-destructive">
+                                                                {
+                                                                    articleDescrValidation.error
+                                                                }
+                                                            </p>
+                                                        )}
                                                     <InputError
                                                         message={
                                                             allErrors.article_descr
@@ -1369,9 +1402,9 @@ export default function ArticlesCreate({
                                                         id="cod_article_client"
                                                         name="cod_article_client"
                                                         defaultValue={
-                                                            actualSourceArticle?.cod_article_client ||
-                                                            codArticleClientFromOffer ||
-                                                            props.codArticleClientFromOffer ||
+                                                            actualSourceArticle?.cod_article_client ??
+                                                            codArticleClientFromOffer ??
+                                                            props.codArticleClientFromOffer ??
                                                             ''
                                                         }
                                                         placeholder={t(
@@ -1395,9 +1428,9 @@ export default function ArticlesCreate({
                                                         id="additional_descr"
                                                         name="additional_descr"
                                                         defaultValue={
-                                                            actualSourceArticle?.additional_descr ||
-                                                            additionalDescrFromOffer ||
-                                                            props.additionalDescrFromOffer ||
+                                                            actualSourceArticle?.additional_descr ??
+                                                            additionalDescrFromOffer ??
+                                                            props.additionalDescrFromOffer ??
                                                             ''
                                                         }
                                                         placeholder={t(
@@ -1640,7 +1673,7 @@ export default function ArticlesCreate({
                                                     <Select
                                                         name="article_category"
                                                         defaultValue={
-                                                            actualSourceArticle?.article_category ||
+                                                            actualSourceArticle?.article_category ??
                                                             undefined
                                                         }
                                                     >
@@ -1686,7 +1719,7 @@ export default function ArticlesCreate({
                                                     <Select
                                                         name="pallet_uuid"
                                                         defaultValue={
-                                                            actualSourceArticle?.pallet_uuid ||
+                                                            actualSourceArticle?.pallet_uuid ??
                                                             undefined
                                                         }
                                                     >
@@ -1712,7 +1745,7 @@ export default function ArticlesCreate({
                                                                             pallet.cod
                                                                         }{' '}
                                                                         -{' '}
-                                                                        {pallet.description ||
+                                                                        {pallet.description ??
                                                                             t(
                                                                                 'common.no_description',
                                                                             )}
@@ -1753,23 +1786,32 @@ export default function ArticlesCreate({
                                                             'articles.edit.placeholder_plan',
                                                         )}
                                                         aria-invalid={
-                                                            planPackagingValidation.error
+                                                            planPackagingValidation.error !=
+                                                                null &&
+                                                            planPackagingValidation.error !==
+                                                                ''
                                                                 ? 'true'
                                                                 : 'false'
                                                         }
                                                         className={
-                                                            planPackagingValidation.error
+                                                            planPackagingValidation.error !=
+                                                                null &&
+                                                            planPackagingValidation.error !==
+                                                                ''
                                                                 ? 'border-destructive'
                                                                 : ''
                                                         }
                                                     />
-                                                    {planPackagingValidation.error && (
-                                                        <p className="text-xs text-destructive">
-                                                            {
-                                                                planPackagingValidation.error
-                                                            }
-                                                        </p>
-                                                    )}
+                                                    {planPackagingValidation.error !=
+                                                        null &&
+                                                        planPackagingValidation.error !==
+                                                            '' && (
+                                                            <p className="text-xs text-destructive">
+                                                                {
+                                                                    planPackagingValidation.error
+                                                                }
+                                                            </p>
+                                                        )}
                                                     <p className="text-xs text-muted-foreground">
                                                         {t(
                                                             'articles.edit.plan_help',
@@ -1807,23 +1849,32 @@ export default function ArticlesCreate({
                                                             'articles.edit.placeholder_plan',
                                                         )}
                                                         aria-invalid={
-                                                            palletPlansValidation.error
+                                                            palletPlansValidation.error !=
+                                                                null &&
+                                                            palletPlansValidation.error !==
+                                                                ''
                                                                 ? 'true'
                                                                 : 'false'
                                                         }
                                                         className={
-                                                            palletPlansValidation.error
+                                                            palletPlansValidation.error !=
+                                                                null &&
+                                                            palletPlansValidation.error !==
+                                                                ''
                                                                 ? 'border-destructive'
                                                                 : ''
                                                         }
                                                     />
-                                                    {palletPlansValidation.error && (
-                                                        <p className="text-xs text-destructive">
-                                                            {
-                                                                palletPlansValidation.error
-                                                            }
-                                                        </p>
-                                                    )}
+                                                    {palletPlansValidation.error !=
+                                                        null &&
+                                                        palletPlansValidation.error !==
+                                                            '' && (
+                                                            <p className="text-xs text-destructive">
+                                                                {
+                                                                    palletPlansValidation.error
+                                                                }
+                                                            </p>
+                                                        )}
                                                     <p className="text-xs text-muted-foreground">
                                                         {t(
                                                             'articles.edit.pallet_plans_help',
@@ -1858,35 +1909,41 @@ export default function ArticlesCreate({
                                                             );
                                                         }}
                                                     />
-                                                    {actualSourceArticle?.line_layout && (
-                                                        <p className="text-xs text-muted-foreground">
-                                                            {t(
-                                                                'articles.edit.current_attachment',
-                                                            )}
-                                                            :{' '}
-                                                            {
-                                                                actualSourceArticle.line_layout
-                                                            }{' '}
-                                                            (
-                                                            {t(
-                                                                'articles.edit.current_attachment_copied_if_no_new',
-                                                            )}
-                                                            )
-                                                        </p>
-                                                    )}
-                                                    {lineLayoutFileName && (
-                                                        <p className="text-xs text-muted-foreground">
-                                                            {t(
-                                                                'articles.edit.new_attachment_selected',
-                                                            )}
-                                                            :{' '}
-                                                            <span className="font-mono">
+                                                    {actualSourceArticle?.line_layout !=
+                                                        null &&
+                                                        actualSourceArticle.line_layout !==
+                                                            '' && (
+                                                            <p className="text-xs text-muted-foreground">
+                                                                {t(
+                                                                    'articles.edit.current_attachment',
+                                                                )}
+                                                                :{' '}
                                                                 {
-                                                                    lineLayoutFileName
-                                                                }
-                                                            </span>
-                                                        </p>
-                                                    )}
+                                                                    actualSourceArticle.line_layout
+                                                                }{' '}
+                                                                (
+                                                                {t(
+                                                                    'articles.edit.current_attachment_copied_if_no_new',
+                                                                )}
+                                                                )
+                                                            </p>
+                                                        )}
+                                                    {lineLayoutFileName !=
+                                                        null &&
+                                                        lineLayoutFileName !==
+                                                            '' && (
+                                                            <p className="text-xs text-muted-foreground">
+                                                                {t(
+                                                                    'articles.edit.new_attachment_selected',
+                                                                )}
+                                                                :{' '}
+                                                                <span className="font-mono">
+                                                                    {
+                                                                        lineLayoutFileName
+                                                                    }
+                                                                </span>
+                                                            </p>
+                                                        )}
                                                     <InputError
                                                         message={
                                                             allErrors.line_layout_file
@@ -1916,11 +1973,14 @@ export default function ArticlesCreate({
                                                                                 row.machineryUuid,
                                                                         );
                                                                     const valueType =
-                                                                        selectedMachinery?.valuetype ||
-                                                                        row.valueType ||
+                                                                        selectedMachinery?.valuetype ??
+                                                                        row.valueType ??
                                                                         '';
                                                                     const isListType =
-                                                                        valueType &&
+                                                                        valueType !==
+                                                                            null &&
+                                                                        valueType !==
+                                                                            '' &&
                                                                         valueType.includes(
                                                                             ',',
                                                                         ) &&
@@ -1990,9 +2050,12 @@ export default function ArticlesCreate({
                                                                                                         machinery.cod
                                                                                                     }{' '}
                                                                                                     -{' '}
-                                                                                                    {machinery.description ||
+                                                                                                    {machinery.description ??
                                                                                                         ''}{' '}
-                                                                                                    {machinery.parameter
+                                                                                                    {machinery.parameter !=
+                                                                                                        null &&
+                                                                                                    machinery.parameter !==
+                                                                                                        ''
                                                                                                         ? `- ${machinery.parameter}`
                                                                                                         : ''}
                                                                                                 </SelectItem>
@@ -2195,7 +2258,10 @@ export default function ArticlesCreate({
                                                                                                 {
                                                                                                     instruction.code
                                                                                                 }{' '}
-                                                                                                {instruction.number
+                                                                                                {instruction.number !=
+                                                                                                    null &&
+                                                                                                instruction.number !==
+                                                                                                    ''
                                                                                                     ? `- ${instruction.number}`
                                                                                                     : ''}
                                                                                             </SelectItem>
@@ -2293,7 +2359,10 @@ export default function ArticlesCreate({
                                                                                                 {
                                                                                                     instruction.code
                                                                                                 }{' '}
-                                                                                                {instruction.number
+                                                                                                {instruction.number !=
+                                                                                                    null &&
+                                                                                                instruction.number !==
+                                                                                                    ''
                                                                                                     ? `- ${instruction.number}`
                                                                                                     : ''}
                                                                                             </SelectItem>
@@ -2391,7 +2460,10 @@ export default function ArticlesCreate({
                                                                                                 {
                                                                                                     instruction.code
                                                                                                 }{' '}
-                                                                                                {instruction.number
+                                                                                                {instruction.number !=
+                                                                                                    null &&
+                                                                                                instruction.number !==
+                                                                                                    ''
                                                                                                     ? `- ${instruction.number}`
                                                                                                     : ''}
                                                                                             </SelectItem>
@@ -2490,7 +2562,7 @@ export default function ArticlesCreate({
                                                                                                     material.cod
                                                                                                 }{' '}
                                                                                                 -{' '}
-                                                                                                {material.description ||
+                                                                                                {material.description ??
                                                                                                     t(
                                                                                                         'common.no_description',
                                                                                                     )}
@@ -2686,7 +2758,7 @@ export default function ArticlesCreate({
                                                                                                     material.cod
                                                                                                 }{' '}
                                                                                                 -{' '}
-                                                                                                {material.description ||
+                                                                                                {material.description ??
                                                                                                     t(
                                                                                                         'common.no_description',
                                                                                                     )}
@@ -3311,7 +3383,7 @@ export default function ArticlesCreate({
                                                                                     sheet.code
                                                                                 }{' '}
                                                                                 -{' '}
-                                                                                {sheet.description ||
+                                                                                {sheet.description ??
                                                                                     t(
                                                                                         'common.no_description',
                                                                                     )}
@@ -3365,7 +3437,7 @@ export default function ArticlesCreate({
                                                                                     model.cod_model
                                                                                 }{' '}
                                                                                 -{' '}
-                                                                                {model.description_model ||
+                                                                                {model.description_model ??
                                                                                     t(
                                                                                         'common.no_description',
                                                                                     )}
@@ -3526,8 +3598,17 @@ export default function ArticlesCreate({
                                                                             id="media_reale_pz_h_ps"
                                                                             name="media_reale_pz_h_ps"
                                                                             value={
-                                                                                mediaRealeCfzHPz &&
-                                                                                actualPiecesPerPackage
+                                                                                mediaRealeCfzHPz !==
+                                                                                    null &&
+                                                                                mediaRealeCfzHPz !==
+                                                                                    '' &&
+                                                                                !Number.isNaN(
+                                                                                    Number(
+                                                                                        mediaRealeCfzHPz,
+                                                                                    ),
+                                                                                ) &&
+                                                                                actualPiecesPerPackage !=
+                                                                                    null
                                                                                     ? (
                                                                                           parseFloat(
                                                                                               mediaRealeCfzHPz,

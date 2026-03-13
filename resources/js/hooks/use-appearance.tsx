@@ -21,7 +21,12 @@ const setCookie = (name: string, value: string, days = 365): void => {
 const getStoredAppearance = (): Appearance => {
     if (typeof window === 'undefined') return 'system';
 
-    return (localStorage.getItem('appearance') as Appearance) || 'system';
+    const stored = localStorage.getItem('appearance') as
+        | Appearance
+        | null
+        | undefined;
+
+    return stored !== null && stored !== undefined ? stored : 'system';
 };
 
 const isDarkMode = (appearance: Appearance): boolean => {
@@ -60,11 +65,15 @@ export function initializeTheme(serverAppearance?: Appearance): void {
     if (typeof window === 'undefined') return;
 
     const stored = localStorage.getItem('appearance');
-    if (!stored && serverAppearance) {
+    const hasStored = stored !== null && stored !== undefined;
+    const hasServerAppearance =
+        serverAppearance !== undefined && serverAppearance !== null;
+
+    if (!hasStored && hasServerAppearance) {
         localStorage.setItem('appearance', serverAppearance);
         setCookie('appearance', serverAppearance);
         currentAppearance = serverAppearance;
-    } else if (!stored) {
+    } else if (!hasStored) {
         localStorage.setItem('appearance', 'system');
         setCookie('appearance', 'system');
         currentAppearance = 'system';

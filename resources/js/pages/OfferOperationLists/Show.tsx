@@ -94,8 +94,10 @@ export default function OfferOperationListsShow({
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
                             {t('offer_operation_lists.show.operation_label')}{' '}
-                            {operationList.operation?.code ||
-                                t('common.not_available')}{' '}
+                            {operationList.operation?.code != null &&
+                            operationList.operation.code !== ''
+                                ? operationList.operation.code
+                                : t('common.not_available')}{' '}
                             | {t('common.uuid')}:{' '}
                             <span className="font-mono">
                                 {operationList.uuid}
@@ -160,18 +162,23 @@ export default function OfferOperationListsShow({
                                     {t('offer_operation_lists.table.offer')}
                                 </Label>
                                 <p className="font-mono text-lg font-semibold">
-                                    {operationList.offer?.offer_number ||
-                                        t('common.not_available')}
+                                    {operationList.offer?.offer_number !=
+                                        null &&
+                                    operationList.offer.offer_number !== ''
+                                        ? operationList.offer.offer_number
+                                        : t('common.not_available')}
                                 </p>
-                                {operationList.offer
-                                    ?.provisional_description && (
-                                    <p className="text-sm text-muted-foreground">
-                                        {
-                                            operationList.offer
-                                                .provisional_description
-                                        }
-                                    </p>
-                                )}
+                                {operationList.offer?.provisional_description !=
+                                    null &&
+                                    operationList.offer
+                                        .provisional_description !== '' && (
+                                        <p className="text-sm text-muted-foreground">
+                                            {
+                                                operationList.offer
+                                                    .provisional_description
+                                            }
+                                        </p>
+                                    )}
                             </div>
 
                             <div>
@@ -179,14 +186,21 @@ export default function OfferOperationListsShow({
                                     {t('offer_operation_lists.table.operation')}
                                 </Label>
                                 <p className="font-mono text-lg font-semibold">
-                                    {operationList.operation?.code ||
-                                        t('common.not_available')}
+                                    {operationList.operation?.code != null &&
+                                    operationList.operation.code !== ''
+                                        ? operationList.operation.code
+                                        : t('common.not_available')}
                                 </p>
-                                {operationList.operation?.description && (
-                                    <p className="text-sm text-muted-foreground">
-                                        {operationList.operation.description}
-                                    </p>
-                                )}
+                                {operationList.operation?.description != null &&
+                                    operationList.operation.description !==
+                                        '' && (
+                                        <p className="text-sm text-muted-foreground">
+                                            {
+                                                operationList.operation
+                                                    .description
+                                            }
+                                        </p>
+                                    )}
                             </div>
 
                             <div>

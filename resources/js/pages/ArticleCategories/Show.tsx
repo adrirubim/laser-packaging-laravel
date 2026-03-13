@@ -151,51 +151,58 @@ export default function ArticleCategoriesShow({
                         </CardContent>
                     </Card>
 
-                    {category.articles && category.articles.length > 0 && (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>
-                                    {t(
-                                        'article_categories.show.articles_title',
-                                    )}
-                                </CardTitle>
-                                <CardDescription>
-                                    {t(
-                                        'article_categories.show.articles_count',
-                                        { count: category.articles.length },
-                                    )}
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="max-h-[300px] space-y-2 overflow-y-auto">
-                                    {category.articles.map((article) => (
-                                        <div
-                                            key={article.id}
-                                            className="flex items-center justify-between rounded-md border border-sidebar-border/70 p-2 transition-colors hover:bg-muted/40"
-                                        >
-                                            <div className="flex min-w-0 flex-1 items-center gap-2">
-                                                <Package className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-                                                <div className="min-w-0 flex-1">
-                                                    <div className="truncate text-sm font-medium">
-                                                        {
-                                                            article.cod_article_las
-                                                        }
-                                                    </div>
-                                                    {article.article_descr && (
-                                                        <div className="truncate text-xs text-muted-foreground">
+                    {category.articles !== null &&
+                        category.articles !== undefined &&
+                        category.articles.length > 0 && (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>
+                                        {t(
+                                            'article_categories.show.articles_title',
+                                        )}
+                                    </CardTitle>
+                                    <CardDescription>
+                                        {t(
+                                            'article_categories.show.articles_count',
+                                            { count: category.articles.length },
+                                        )}
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="max-h-[300px] space-y-2 overflow-y-auto">
+                                        {category.articles.map((article) => (
+                                            <div
+                                                key={article.id}
+                                                className="flex items-center justify-between rounded-md border border-sidebar-border/70 p-2 transition-colors hover:bg-muted/40"
+                                            >
+                                                <div className="flex min-w-0 flex-1 items-center gap-2">
+                                                    <Package className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+                                                    <div className="min-w-0 flex-1">
+                                                        <div className="truncate text-sm font-medium">
                                                             {
-                                                                article.article_descr
+                                                                article.cod_article_las
                                                             }
                                                         </div>
-                                                    )}
+                                                        {article.article_descr !==
+                                                            null &&
+                                                            article.article_descr !==
+                                                                undefined &&
+                                                            article.article_descr !==
+                                                                '' && (
+                                                                <div className="truncate text-xs text-muted-foreground">
+                                                                    {
+                                                                        article.article_descr
+                                                                    }
+                                                                </div>
+                                                            )}
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </CardContent>
-                        </Card>
-                    )}
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
                 </div>
 
                 <ConfirmDeleteDialog

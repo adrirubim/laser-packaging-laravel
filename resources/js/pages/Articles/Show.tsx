@@ -279,20 +279,21 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             <h1 className="text-2xl font-bold">
                                 {article.cod_article_las}
                             </h1>
-                            {article.category && (
+                            {article.category != null && (
                                 <Badge variant="secondary">
                                     {article.category.name}
                                 </Badge>
                             )}
                         </div>
-                        {article.article_descr && (
-                            <p className="text-sm text-muted-foreground">
-                                {article.article_descr}
-                            </p>
-                        )}
+                        {article.article_descr != null &&
+                            article.article_descr !== '' && (
+                                <p className="text-sm text-muted-foreground">
+                                    {article.article_descr}
+                                </p>
+                            )}
                     </div>
                     <div className="flex items-center gap-2">
-                        {article.offer && (
+                        {article.offer != null && (
                             <Button asChild variant="outline" size="sm">
                                 <Link
                                     href={
@@ -335,24 +336,25 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                 {t('common.duplicate')}
                             </Link>
                         </Button>
-                        {article.line_layout && (
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                    window.location.href =
-                                        articles.downloadLineLayout({
-                                            article: article.uuid,
-                                        }).url;
-                                }}
-                                aria-label={t(
-                                    'articles.show.download_line_layout',
-                                )}
-                            >
-                                <Download className="mr-2 h-4 w-4" />
-                                {t('articles.show.download_layout')}
-                            </Button>
-                        )}
+                        {article.line_layout != null &&
+                            article.line_layout !== '' && (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                        window.location.href =
+                                            articles.downloadLineLayout({
+                                                article: article.uuid,
+                                            }).url;
+                                    }}
+                                    aria-label={t(
+                                        'articles.show.download_line_layout',
+                                    )}
+                                >
+                                    <Download className="mr-2 h-4 w-4" />
+                                    {t('articles.show.download_layout')}
+                                </Button>
+                            )}
                         <Button
                             variant="destructive"
                             size="sm"
@@ -386,38 +388,41 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                 </p>
                             </div>
 
-                            {article.cod_article_client && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t('common.code_customer')}
-                                    </Label>
-                                    <p className="font-mono">
-                                        {article.cod_article_client}
-                                    </p>
-                                </div>
-                            )}
+                            {article.cod_article_client != null &&
+                                article.cod_article_client !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t('common.code_customer')}
+                                        </Label>
+                                        <p className="font-mono">
+                                            {article.cod_article_client}
+                                        </p>
+                                    </div>
+                                )}
 
-                            {article.article_descr && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t('common.description')}
-                                    </Label>
-                                    <p>{article.article_descr}</p>
-                                </div>
-                            )}
+                            {article.article_descr != null &&
+                                article.article_descr !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t('common.description')}
+                                        </Label>
+                                        <p>{article.article_descr}</p>
+                                    </div>
+                                )}
 
-                            {article.additional_descr && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t(
-                                            'articles.show.basic_info.additional_description',
-                                        )}
-                                    </Label>
-                                    <p>{article.additional_descr}</p>
-                                </div>
-                            )}
+                            {article.additional_descr != null &&
+                                article.additional_descr !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t(
+                                                'articles.show.basic_info.additional_description',
+                                            )}
+                                        </Label>
+                                        <p>{article.additional_descr}</p>
+                                    </div>
+                                )}
 
-                            {article.category && (
+                            {article.category != null && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
                                         {t('common.category')}
@@ -428,7 +433,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
 
                             <div className="flex items-center space-x-2 pt-2">
                                 <Checkbox
-                                    checked={article.visibility_cod || false}
+                                    checked={article.visibility_cod ?? false}
                                     disabled
                                 />
                                 <Label className="text-sm font-medium">
@@ -438,7 +443,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
 
                             <div className="flex items-center space-x-2">
                                 <Checkbox
-                                    checked={article.stock_managed || false}
+                                    checked={article.stock_managed ?? false}
                                     disabled
                                 />
                                 <Label className="text-sm font-medium">
@@ -458,7 +463,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {article.offer && (
+                            {article.offer != null && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
                                         {t('common.offer')}
@@ -466,15 +471,16 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                     <p className="font-mono">
                                         {article.offer.offer_number}
                                     </p>
-                                    {article.offer.description && (
-                                        <p className="mt-1 text-sm text-muted-foreground">
-                                            {article.offer.description}
-                                        </p>
-                                    )}
+                                    {article.offer.description != null &&
+                                        article.offer.description !== '' && (
+                                            <p className="mt-1 text-sm text-muted-foreground">
+                                                {article.offer.description}
+                                            </p>
+                                        )}
                                 </div>
                             )}
 
-                            {article.um && (
+                            {article.um != null && article.um !== '' && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
                                         {t('articles.show.unit')}
@@ -506,7 +512,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                     </div>
                                 )}
 
-                            {article.ean && (
+                            {article.ean != null && article.ean !== '' && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
                                         {t('articles.show.ean')}
@@ -525,23 +531,24 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                     </div>
                                 )}
 
-                            {article.line_layout && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t('articles.show.line_layout')}
-                                    </Label>
-                                    <div className="flex items-center gap-2">
-                                        <p className="font-mono text-sm">
-                                            {article.line_layout}
-                                        </p>
+                            {article.line_layout != null &&
+                                article.line_layout !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t('articles.show.line_layout')}
+                                        </Label>
+                                        <div className="flex items-center gap-2">
+                                            <p className="font-mono text-sm">
+                                                {article.line_layout}
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
                         </CardContent>
                     </Card>
                 </div>
 
-                {article.machinery && article.machinery.length > 0 && (
+                {article.machinery != null && article.machinery.length > 0 && (
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
@@ -563,32 +570,35 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                             <p className="font-mono font-medium">
                                                 {machine.code}
                                             </p>
-                                            {machine.description && (
-                                                <p className="text-sm text-muted-foreground">
-                                                    {machine.description}
-                                                </p>
-                                            )}
-                                            {machine.parameter && (
-                                                <p className="mt-1 text-xs text-muted-foreground">
-                                                    {t(
-                                                        'articles.show.parameter',
-                                                    )}
-                                                    : {machine.parameter}
-                                                </p>
-                                            )}
+                                            {machine.description != null &&
+                                                machine.description !== '' && (
+                                                    <p className="text-sm text-muted-foreground">
+                                                        {machine.description}
+                                                    </p>
+                                                )}
+                                            {machine.parameter != null &&
+                                                machine.parameter !== '' && (
+                                                    <p className="mt-1 text-xs text-muted-foreground">
+                                                        {t(
+                                                            'articles.show.parameter',
+                                                        )}
+                                                        : {machine.parameter}
+                                                    </p>
+                                                )}
                                         </div>
-                                        {machine.value && (
-                                            <div className="ml-4">
-                                                <Label className="text-xs text-muted-foreground">
-                                                    {t(
-                                                        'articles.show.weight_control.value',
-                                                    )}
-                                                </Label>
-                                                <p className="font-mono text-sm">
-                                                    {machine.value}
-                                                </p>
-                                            </div>
-                                        )}
+                                        {machine.value != null &&
+                                            machine.value !== '' && (
+                                                <div className="ml-4">
+                                                    <Label className="text-xs text-muted-foreground">
+                                                        {t(
+                                                            'articles.show.weight_control.value',
+                                                        )}
+                                                    </Label>
+                                                    <p className="font-mono text-sm">
+                                                        {machine.value}
+                                                    </p>
+                                                </div>
+                                            )}
                                     </div>
                                 ))}
                             </div>
@@ -596,7 +606,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                     </Card>
                 )}
 
-                {article.packaging_instructions &&
+                {article.packaging_instructions != null &&
                     article.packaging_instructions.length > 0 && (
                         <Card>
                             <CardHeader>
@@ -614,110 +624,128 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             <CardContent>
                                 <div className="space-y-2">
                                     {article.packaging_instructions.map(
-                                        (instruction) => (
-                                            <div
-                                                key={instruction.uuid}
-                                                className="flex items-center justify-between gap-2 rounded border p-2"
-                                            >
-                                                <div className="flex min-w-0 items-center gap-2">
-                                                    <p className="truncate font-mono font-medium">
-                                                        {instruction.code}
-                                                        {instruction.number ||
-                                                            ''}
-                                                    </p>
-                                                    {instruction.filename && (
-                                                        <span className="shrink-0 text-xs text-muted-foreground">
-                                                            (
-                                                            {
-                                                                instruction.filename
-                                                            }
-                                                            )
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger
-                                                        asChild
-                                                    >
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="h-8 w-8 shrink-0"
-                                                            aria-label={t(
-                                                                'common.open_actions_menu',
-                                                            )}
-                                                        >
-                                                            <MoreHorizontal className="h-4 w-4" />
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
-                                                        <DropdownMenuItem
-                                                            onSelect={(e) => {
-                                                                e.preventDefault();
-                                                                router.visit(
-                                                                    articles.packagingInstructions.show(
-                                                                        {
-                                                                            packagingInstruction:
-                                                                                instruction.uuid,
-                                                                        },
-                                                                    ).url,
-                                                                );
-                                                            }}
-                                                        >
-                                                            <Eye className="mr-2 h-4 w-4" />
-                                                            {t('common.view')}
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem
-                                                            onSelect={(e) => {
-                                                                e.preventDefault();
-                                                                router.visit(
-                                                                    articles.packagingInstructions.edit(
-                                                                        {
-                                                                            packagingInstruction:
-                                                                                instruction.uuid,
-                                                                        },
-                                                                    ).url,
-                                                                );
-                                                            }}
-                                                        >
-                                                            <Edit className="mr-2 h-4 w-4" />
-                                                            {t('common.edit')}
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem
-                                                            disabled={
-                                                                !instruction.filename
-                                                            }
-                                                            onSelect={(e) => {
-                                                                e.preventDefault();
-                                                                if (
-                                                                    !instruction.filename
+                                        (instruction) => {
+                                            const hasFilename =
+                                                instruction.filename != null &&
+                                                instruction.filename !== '';
+
+                                            return (
+                                                <div
+                                                    key={instruction.uuid}
+                                                    className="flex items-center justify-between gap-2 rounded border p-2"
+                                                >
+                                                    <div className="flex min-w-0 items-center gap-2">
+                                                        <p className="truncate font-mono font-medium">
+                                                            {instruction.code}
+                                                            {instruction.number ??
+                                                                ''}
+                                                        </p>
+                                                        {hasFilename && (
+                                                            <span className="shrink-0 text-xs text-muted-foreground">
+                                                                (
+                                                                {
+                                                                    instruction.filename
+                                                                }
                                                                 )
-                                                                    return;
-                                                                window.location.href =
-                                                                    articles.packagingInstructions.download(
-                                                                        {
-                                                                            packagingInstruction:
-                                                                                instruction.uuid,
-                                                                        },
-                                                                    ).url;
-                                                            }}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger
+                                                            asChild
                                                         >
-                                                            <Download className="mr-2 h-4 w-4" />
-                                                            {t(
-                                                                'articles.show.download_attachment',
-                                                            )}
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </div>
-                                        ),
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="h-8 w-8 shrink-0"
+                                                                aria-label={t(
+                                                                    'common.open_actions_menu',
+                                                                )}
+                                                            >
+                                                                <MoreHorizontal className="h-4 w-4" />
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end">
+                                                            <DropdownMenuItem
+                                                                onSelect={(
+                                                                    e,
+                                                                ) => {
+                                                                    e.preventDefault();
+                                                                    router.visit(
+                                                                        articles.packagingInstructions.show(
+                                                                            {
+                                                                                packagingInstruction:
+                                                                                    instruction.uuid,
+                                                                            },
+                                                                        ).url,
+                                                                    );
+                                                                }}
+                                                            >
+                                                                <Eye className="mr-2 h-4 w-4" />
+                                                                {t(
+                                                                    'common.view',
+                                                                )}
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem
+                                                                onSelect={(
+                                                                    e,
+                                                                ) => {
+                                                                    e.preventDefault();
+                                                                    router.visit(
+                                                                        articles.packagingInstructions.edit(
+                                                                            {
+                                                                                packagingInstruction:
+                                                                                    instruction.uuid,
+                                                                            },
+                                                                        ).url,
+                                                                    );
+                                                                }}
+                                                            >
+                                                                <Edit className="mr-2 h-4 w-4" />
+                                                                {t(
+                                                                    'common.edit',
+                                                                )}
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem
+                                                                disabled={
+                                                                    hasFilename ===
+                                                                    false
+                                                                }
+                                                                onSelect={(
+                                                                    e,
+                                                                ) => {
+                                                                    e.preventDefault();
+                                                                    if (
+                                                                        hasFilename ===
+                                                                        false
+                                                                    )
+                                                                        return;
+                                                                    window.location.href =
+                                                                        articles.packagingInstructions.download(
+                                                                            {
+                                                                                packagingInstruction:
+                                                                                    instruction.uuid,
+                                                                            },
+                                                                        ).url;
+                                                                }}
+                                                            >
+                                                                <Download className="mr-2 h-4 w-4" />
+                                                                {t(
+                                                                    'articles.show.download_attachment',
+                                                                )}
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </div>
+                                            );
+                                        },
                                     )}
                                 </div>
                             </CardContent>
                         </Card>
                     )}
 
-                {article.palletizing_instructions &&
+                {article.palletizing_instructions != null &&
                     article.palletizing_instructions.length > 0 && (
                         <Card>
                             <CardHeader>
@@ -735,29 +763,41 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             <CardContent className="space-y-6">
                                 {article.palletizing_instructions.map(
                                     (instruction) => {
-                                        const volume =
-                                            instruction.length_cm &&
-                                            instruction.depth_cm &&
-                                            instruction.height_cm
-                                                ? (instruction.length_cm *
-                                                      instruction.depth_cm *
-                                                      instruction.height_cm) /
-                                                  1000
-                                                : null;
-                                        const colliPerPallet =
-                                            instruction.plan_packaging &&
-                                            instruction.pallet_plans
-                                                ? instruction.plan_packaging *
-                                                  instruction.pallet_plans
-                                                : null;
-                                        const unitaPerPallet =
-                                            instruction.units_per_neck &&
-                                            instruction.plan_packaging &&
-                                            instruction.pallet_plans
-                                                ? instruction.units_per_neck *
-                                                  instruction.plan_packaging *
-                                                  instruction.pallet_plans
-                                                : null;
+                                        const hasDimensions =
+                                            instruction.length_cm != null &&
+                                            instruction.depth_cm != null &&
+                                            instruction.height_cm != null;
+                                        const volume = hasDimensions
+                                            ? ((instruction.length_cm ?? 0) *
+                                                  (instruction.depth_cm ?? 0) *
+                                                  (instruction.height_cm ??
+                                                      0)) /
+                                              1000
+                                            : null;
+
+                                        const hasColliPerPallet =
+                                            instruction.plan_packaging !=
+                                                null &&
+                                            instruction.pallet_plans != null;
+                                        const colliPerPallet = hasColliPerPallet
+                                            ? (instruction.plan_packaging ??
+                                                  0) *
+                                              (instruction.pallet_plans ?? 0)
+                                            : null;
+
+                                        const hasUnitaPerPallet =
+                                            instruction.units_per_neck !=
+                                                null &&
+                                            instruction.plan_packaging !=
+                                                null &&
+                                            instruction.pallet_plans != null;
+                                        const unitaPerPallet = hasUnitaPerPallet
+                                            ? (instruction.units_per_neck ??
+                                                  0) *
+                                              (instruction.plan_packaging ??
+                                                  0) *
+                                              (instruction.pallet_plans ?? 0)
+                                            : null;
 
                                         return (
                                             <div
@@ -776,19 +816,22 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                                                 {
                                                                     instruction.code
                                                                 }
-                                                                {instruction.number ||
+                                                                {instruction.number ??
                                                                     ''}
                                                             </p>
                                                         </div>
-                                                        {instruction.filename && (
-                                                            <span className="shrink-0 text-xs text-muted-foreground">
-                                                                (
-                                                                {
-                                                                    instruction.filename
-                                                                }
-                                                                )
-                                                            </span>
-                                                        )}
+                                                        {instruction.filename !=
+                                                            null &&
+                                                            instruction.filename !==
+                                                                '' && (
+                                                                <span className="shrink-0 text-xs text-muted-foreground">
+                                                                    (
+                                                                    {
+                                                                        instruction.filename
+                                                                    }
+                                                                    )
+                                                                </span>
+                                                            )}
                                                     </div>
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger
@@ -848,16 +891,23 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                                             </DropdownMenuItem>
                                                             <DropdownMenuItem
                                                                 disabled={
-                                                                    !instruction.filename
+                                                                    instruction.filename ==
+                                                                        null ||
+                                                                    instruction.filename ===
+                                                                        ''
                                                                 }
                                                                 onSelect={(
                                                                     e,
                                                                 ) => {
                                                                     e.preventDefault();
                                                                     if (
-                                                                        !instruction.filename
-                                                                    )
+                                                                        instruction.filename ==
+                                                                            null ||
+                                                                        instruction.filename ===
+                                                                            ''
+                                                                    ) {
                                                                         return;
+                                                                    }
                                                                     window.location.href =
                                                                         articles.palletizationInstructions.download(
                                                                             {
@@ -1131,18 +1181,21 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                                 <div className="flex min-w-0 items-center gap-2">
                                                     <p className="truncate font-mono font-medium">
                                                         {instruction.code}
-                                                        {instruction.number ||
+                                                        {instruction.number ??
                                                             ''}
                                                     </p>
-                                                    {instruction.filename && (
-                                                        <span className="shrink-0 text-xs text-muted-foreground">
-                                                            (
-                                                            {
-                                                                instruction.filename
-                                                            }
-                                                            )
-                                                        </span>
-                                                    )}
+                                                    {instruction.filename !=
+                                                        null &&
+                                                        instruction.filename !==
+                                                            '' && (
+                                                            <span className="shrink-0 text-xs text-muted-foreground">
+                                                                (
+                                                                {
+                                                                    instruction.filename
+                                                                }
+                                                                )
+                                                            </span>
+                                                        )}
                                                 </div>
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger
@@ -1194,14 +1247,21 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem
                                                             disabled={
-                                                                !instruction.filename
+                                                                instruction.filename ==
+                                                                    null ||
+                                                                instruction.filename ===
+                                                                    ''
                                                             }
                                                             onSelect={(e) => {
                                                                 e.preventDefault();
                                                                 if (
-                                                                    !instruction.filename
-                                                                )
+                                                                    instruction.filename ==
+                                                                        null ||
+                                                                    instruction.filename ===
+                                                                        ''
+                                                                ) {
                                                                     return;
+                                                                }
                                                                 window.location.href =
                                                                     articles.operationalInstructions.download(
                                                                         {
@@ -1349,7 +1409,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
 
                             <div className="flex items-center space-x-2 pt-2">
                                 <Checkbox
-                                    checked={article.allergens || false}
+                                    checked={article.allergens ?? false}
                                     disabled
                                 />
                                 <Label className="text-sm font-medium">
@@ -1360,7 +1420,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                     </Card>
                 </div>
 
-                {article.critical_issues &&
+                {article.critical_issues != null &&
                     article.critical_issues.length > 0 && (
                         <Card>
                             <CardHeader>
@@ -1382,16 +1442,25 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                         >
                                             <div className="min-w-0 flex-1">
                                                 <p className="font-mono font-medium">
-                                                    {issue.code ||
-                                                        issue.name ||
-                                                        '—'}
+                                                    {issue.code != null &&
+                                                    issue.code !== ''
+                                                        ? issue.code
+                                                        : issue.name != null &&
+                                                            issue.name !== ''
+                                                          ? issue.name
+                                                          : '—'}
                                                 </p>
                                                 <p className="text-sm text-muted-foreground">
-                                                    {issue.description ||
-                                                        issue.name ||
-                                                        t(
-                                                            'common.no_description',
-                                                        )}
+                                                    {issue.description !=
+                                                        null &&
+                                                    issue.description !== ''
+                                                        ? issue.description
+                                                        : issue.name != null &&
+                                                            issue.name !== ''
+                                                          ? issue.name
+                                                          : t(
+                                                                'common.no_description',
+                                                            )}
                                                 </p>
                                             </div>
                                         </div>
@@ -1423,14 +1492,15 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                 </div>
                             )}
 
-                        {article.weight_unit_of_measur && (
-                            <div>
-                                <Label className="text-sm font-medium text-muted-foreground">
-                                    {t('articles.show.unit')}
-                                </Label>
-                                <p>{article.weight_unit_of_measur}</p>
-                            </div>
-                        )}
+                        {article.weight_unit_of_measur != null &&
+                            article.weight_unit_of_measur !== '' && (
+                                <div>
+                                    <Label className="text-sm font-medium text-muted-foreground">
+                                        {t('articles.show.unit')}
+                                    </Label>
+                                    <p>{article.weight_unit_of_measur}</p>
+                                </div>
+                            )}
 
                         {article.weight_value !== null &&
                             article.weight_value !== undefined && (
@@ -1515,7 +1585,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {article.pallet_type && (
+                            {article.pallet_type != null && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
                                         {t('articles.show.pallet_type_label')}
@@ -1523,11 +1593,16 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                     <p className="font-mono">
                                         {article.pallet_type.cod}
                                     </p>
-                                    {article.pallet_type.description && (
-                                        <p className="mt-1 text-sm text-muted-foreground">
-                                            {article.pallet_type.description}
-                                        </p>
-                                    )}
+                                    {article.pallet_type.description != null &&
+                                        article.pallet_type.description !==
+                                            '' && (
+                                            <p className="mt-1 text-sm text-muted-foreground">
+                                                {
+                                                    article.pallet_type
+                                                        .description
+                                                }
+                                            </p>
+                                        )}
                                 </div>
                             )}
 
@@ -1551,7 +1626,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                     </div>
                                 )}
 
-                            {article.pallet_sheet && (
+                            {article.pallet_sheet != null && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
                                         {t('articles.show.pallet_sheet')}
@@ -1560,15 +1635,18 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                         <p className="font-mono">
                                             {article.pallet_sheet.code}
                                         </p>
-                                        {article.pallet_sheet.description && (
-                                            <span className="text-sm text-muted-foreground">
-                                                -{' '}
-                                                {
-                                                    article.pallet_sheet
-                                                        .description
-                                                }
-                                            </span>
-                                        )}
+                                        {article.pallet_sheet.description !=
+                                            null &&
+                                            article.pallet_sheet.description !==
+                                                '' && (
+                                                <span className="text-sm text-muted-foreground">
+                                                    -{' '}
+                                                    {
+                                                        article.pallet_sheet
+                                                            .description
+                                                    }
+                                                </span>
+                                            )}
                                         <Button
                                             variant="outline"
                                             size="sm"
@@ -1579,7 +1657,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                                             palletSheet:
                                                                 article
                                                                     .pallet_sheet
-                                                                    ?.uuid ||
+                                                                    ?.uuid ??
                                                                 '',
                                                         },
                                                     ).url;
@@ -1592,7 +1670,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                 </div>
                             )}
 
-                            {article.model && (
+                            {article.model != null && (
                                 <div>
                                     <Label className="text-sm font-medium text-muted-foreground">
                                         {t('articles.show.model_cq')}
@@ -1601,15 +1679,18 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                         <p className="font-mono">
                                             {article.model.cod_model}
                                         </p>
-                                        {article.model.description_model && (
-                                            <span className="text-sm text-muted-foreground">
-                                                -{' '}
-                                                {
-                                                    article.model
-                                                        .description_model
-                                                }
-                                            </span>
-                                        )}
+                                        {article.model.description_model !=
+                                            null &&
+                                            article.model.description_model !==
+                                                '' && (
+                                                <span className="text-sm text-muted-foreground">
+                                                    -{' '}
+                                                    {
+                                                        article.model
+                                                            .description_model
+                                                    }
+                                                </span>
+                                            )}
                                         <Button
                                             variant="outline"
                                             size="sm"
@@ -1619,7 +1700,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                                         {
                                                             cqModel:
                                                                 article.model
-                                                                    ?.uuid ||
+                                                                    ?.uuid ??
                                                                 '',
                                                         },
                                                     ).url;
@@ -1720,15 +1801,20 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                                                     </p>
                                                                     {checkMaterial
                                                                         .material
-                                                                        .description && (
-                                                                        <p className="text-xs text-muted-foreground">
-                                                                            {
-                                                                                checkMaterial
-                                                                                    .material
-                                                                                    .description
-                                                                            }
-                                                                        </p>
-                                                                    )}
+                                                                        .description !=
+                                                                        null &&
+                                                                        checkMaterial
+                                                                            .material
+                                                                            .description !==
+                                                                            '' && (
+                                                                            <p className="text-xs text-muted-foreground">
+                                                                                {
+                                                                                    checkMaterial
+                                                                                        .material
+                                                                                        .description
+                                                                                }
+                                                                            </p>
+                                                                        )}
                                                                 </div>
                                                             ) : (
                                                                 <p className="text-muted-foreground">
@@ -1738,7 +1824,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                                         </td>
                                                         <td className="p-2">
                                                             <p className="font-mono">
-                                                                {checkMaterial.um ||
+                                                                {checkMaterial.um ??
                                                                     '-'}
                                                             </p>
                                                         </td>
@@ -1888,49 +1974,56 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                 {t('articles.show.approval_production')}
                             </Label>
                             <div className="flex items-center space-x-2">
-                                {article.production_approval_checkbox ? (
+                                {article.production_approval_checkbox ===
+                                true ? (
                                     <CheckCircle2 className="h-5 w-5 text-green-600" />
                                 ) : (
                                     <XCircle className="h-5 w-5 text-gray-400" />
                                 )}
                                 <Label className="text-sm font-medium">
-                                    {article.production_approval_checkbox
+                                    {article.production_approval_checkbox ===
+                                    true
                                         ? t('common.approved')
                                         : t('common.not_approved')}
                                 </Label>
                             </div>
-                            {article.production_approval_employee && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t('articles.show.attendant')}
-                                    </Label>
-                                    <p>
-                                        {article.production_approval_employee}
-                                    </p>
-                                </div>
-                            )}
-                            {article.production_approval_date && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t('articles.show.date')}
-                                    </Label>
-                                    <p>
-                                        {new Date(
-                                            article.production_approval_date,
-                                        ).toLocaleDateString('it-IT')}
-                                    </p>
-                                </div>
-                            )}
-                            {article.production_approval_notes && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t('articles.show.notes')}
-                                    </Label>
-                                    <p className="text-sm whitespace-pre-wrap">
-                                        {article.production_approval_notes}
-                                    </p>
-                                </div>
-                            )}
+                            {article.production_approval_employee != null &&
+                                article.production_approval_employee !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t('articles.show.attendant')}
+                                        </Label>
+                                        <p>
+                                            {
+                                                article.production_approval_employee
+                                            }
+                                        </p>
+                                    </div>
+                                )}
+                            {article.production_approval_date != null &&
+                                article.production_approval_date !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t('articles.show.date')}
+                                        </Label>
+                                        <p>
+                                            {new Date(
+                                                article.production_approval_date,
+                                            ).toLocaleDateString('it-IT')}
+                                        </p>
+                                    </div>
+                                )}
+                            {article.production_approval_notes != null &&
+                                article.production_approval_notes !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t('articles.show.notes')}
+                                        </Label>
+                                        <p className="text-sm whitespace-pre-wrap">
+                                            {article.production_approval_notes}
+                                        </p>
+                                    </div>
+                                )}
                         </div>
 
                         {/* Quality Approval */}
@@ -1939,47 +2032,50 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                 {t('articles.show.approval_quality')}
                             </Label>
                             <div className="flex items-center space-x-2">
-                                {article.approv_quality_checkbox ? (
+                                {article.approv_quality_checkbox === true ? (
                                     <CheckCircle2 className="h-5 w-5 text-green-600" />
                                 ) : (
                                     <XCircle className="h-5 w-5 text-gray-400" />
                                 )}
                                 <Label className="text-sm font-medium">
-                                    {article.approv_quality_checkbox
+                                    {article.approv_quality_checkbox === true
                                         ? t('common.approved')
                                         : t('common.not_approved')}
                                 </Label>
                             </div>
-                            {article.approv_quality_employee && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t('articles.show.attendant')}
-                                    </Label>
-                                    <p>{article.approv_quality_employee}</p>
-                                </div>
-                            )}
-                            {article.approv_quality_date && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t('articles.show.date')}
-                                    </Label>
-                                    <p>
-                                        {new Date(
-                                            article.approv_quality_date,
-                                        ).toLocaleDateString('it-IT')}
-                                    </p>
-                                </div>
-                            )}
-                            {article.approv_quality_notes && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t('articles.show.notes')}
-                                    </Label>
-                                    <p className="text-sm whitespace-pre-wrap">
-                                        {article.approv_quality_notes}
-                                    </p>
-                                </div>
-                            )}
+                            {article.approv_quality_employee != null &&
+                                article.approv_quality_employee !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t('articles.show.attendant')}
+                                        </Label>
+                                        <p>{article.approv_quality_employee}</p>
+                                    </div>
+                                )}
+                            {article.approv_quality_date != null &&
+                                article.approv_quality_date !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t('articles.show.date')}
+                                        </Label>
+                                        <p>
+                                            {new Date(
+                                                article.approv_quality_date,
+                                            ).toLocaleDateString('it-IT')}
+                                        </p>
+                                    </div>
+                                )}
+                            {article.approv_quality_notes != null &&
+                                article.approv_quality_notes !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t('articles.show.notes')}
+                                        </Label>
+                                        <p className="text-sm whitespace-pre-wrap">
+                                            {article.approv_quality_notes}
+                                        </p>
+                                    </div>
+                                )}
                         </div>
 
                         {/* Approvazione Commerciale */}
@@ -1988,49 +2084,56 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                 {t('articles.show.approval_commercial')}
                             </Label>
                             <div className="flex items-center space-x-2">
-                                {article.commercial_approval_checkbox ? (
+                                {article.commercial_approval_checkbox ===
+                                true ? (
                                     <CheckCircle2 className="h-5 w-5 text-green-600" />
                                 ) : (
                                     <XCircle className="h-5 w-5 text-gray-400" />
                                 )}
                                 <Label className="text-sm font-medium">
-                                    {article.commercial_approval_checkbox
+                                    {article.commercial_approval_checkbox ===
+                                    true
                                         ? t('common.approved')
                                         : t('common.not_approved')}
                                 </Label>
                             </div>
-                            {article.commercial_approval_employee && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t('articles.show.attendant')}
-                                    </Label>
-                                    <p>
-                                        {article.commercial_approval_employee}
-                                    </p>
-                                </div>
-                            )}
-                            {article.commercial_approval_date && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t('articles.show.date')}
-                                    </Label>
-                                    <p>
-                                        {new Date(
-                                            article.commercial_approval_date,
-                                        ).toLocaleDateString('it-IT')}
-                                    </p>
-                                </div>
-                            )}
-                            {article.commercial_approval_notes && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t('articles.show.notes')}
-                                    </Label>
-                                    <p className="text-sm whitespace-pre-wrap">
-                                        {article.commercial_approval_notes}
-                                    </p>
-                                </div>
-                            )}
+                            {article.commercial_approval_employee != null &&
+                                article.commercial_approval_employee !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t('articles.show.attendant')}
+                                        </Label>
+                                        <p>
+                                            {
+                                                article.commercial_approval_employee
+                                            }
+                                        </p>
+                                    </div>
+                                )}
+                            {article.commercial_approval_date != null &&
+                                article.commercial_approval_date !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t('articles.show.date')}
+                                        </Label>
+                                        <p>
+                                            {new Date(
+                                                article.commercial_approval_date,
+                                            ).toLocaleDateString('it-IT')}
+                                        </p>
+                                    </div>
+                                )}
+                            {article.commercial_approval_notes != null &&
+                                article.commercial_approval_notes !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t('articles.show.notes')}
+                                        </Label>
+                                        <p className="text-sm whitespace-pre-wrap">
+                                            {article.commercial_approval_notes}
+                                        </p>
+                                    </div>
+                                )}
                         </div>
 
                         {/* Customer Approval */}
@@ -2039,53 +2142,58 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                                 {t('articles.show.approval_client')}
                             </Label>
                             <div className="flex items-center space-x-2">
-                                {article.client_approval_checkbox ? (
+                                {article.client_approval_checkbox === true ? (
                                     <CheckCircle2 className="h-5 w-5 text-green-600" />
                                 ) : (
                                     <XCircle className="h-5 w-5 text-gray-400" />
                                 )}
                                 <Label className="text-sm font-medium">
-                                    {article.client_approval_checkbox
+                                    {article.client_approval_checkbox === true
                                         ? t('common.approved')
                                         : t('common.not_approved')}
                                 </Label>
                             </div>
-                            {article.client_approval_employee && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t('articles.show.attendant')}
-                                    </Label>
-                                    <p>{article.client_approval_employee}</p>
-                                </div>
-                            )}
-                            {article.client_approval_date && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t('articles.show.date')}
-                                    </Label>
-                                    <p>
-                                        {new Date(
-                                            article.client_approval_date,
-                                        ).toLocaleDateString('it-IT')}
-                                    </p>
-                                </div>
-                            )}
-                            {article.client_approval_notes && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t('articles.show.notes')}
-                                    </Label>
-                                    <p className="text-sm whitespace-pre-wrap">
-                                        {article.client_approval_notes}
-                                    </p>
-                                </div>
-                            )}
+                            {article.client_approval_employee != null &&
+                                article.client_approval_employee !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t('articles.show.attendant')}
+                                        </Label>
+                                        <p>
+                                            {article.client_approval_employee}
+                                        </p>
+                                    </div>
+                                )}
+                            {article.client_approval_date != null &&
+                                article.client_approval_date !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t('articles.show.date')}
+                                        </Label>
+                                        <p>
+                                            {new Date(
+                                                article.client_approval_date,
+                                            ).toLocaleDateString('it-IT')}
+                                        </p>
+                                    </div>
+                                )}
+                            {article.client_approval_notes != null &&
+                                article.client_approval_notes !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t('articles.show.notes')}
+                                        </Label>
+                                        <p className="text-sm whitespace-pre-wrap">
+                                            {article.client_approval_notes}
+                                        </p>
+                                    </div>
+                                )}
                         </div>
 
                         {/* Spunta Approvazione */}
                         <div className="flex items-center space-x-2 pt-2">
                             <Checkbox
-                                checked={article.check_approval || false}
+                                checked={article.check_approval ?? false}
                                 disabled
                             />
                             <Label className="text-sm font-medium">
@@ -2095,10 +2203,13 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                     </CardContent>
                 </Card>
 
-                {(article.weight_kg ||
-                    article.length_cm ||
-                    article.depth_cm ||
-                    article.height_cm) && (
+                {(article.weight_kg != null &&
+                    !Number.isNaN(article.weight_kg)) ||
+                (article.length_cm != null &&
+                    !Number.isNaN(article.length_cm)) ||
+                (article.depth_cm != null && !Number.isNaN(article.depth_cm)) ||
+                (article.height_cm != null &&
+                    !Number.isNaN(article.height_cm)) ? (
                     <Card>
                         <CardHeader>
                             <CardTitle>
@@ -2171,7 +2282,7 @@ export default function ArticlesShow({ article }: ArticlesShowProps) {
                             </div>
                         </CardContent>
                     </Card>
-                )}
+                ) : null}
 
                 {article.orders && article.orders.length > 0 && (
                     <Card>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCustomerShippingAddressRequest;
 use App\Http\Requests\UpdateCustomerShippingAddressRequest;
+use App\Http\Resources\Api\ApiResponseResource;
 use App\Models\Customer;
 use App\Models\CustomerDivision;
 use App\Models\CustomerShippingAddress;
@@ -182,9 +183,15 @@ class CustomerShippingAddressController extends Controller
 
         // If it's an AJAX/Inertia request, return JSON
         if ($request->wantsJson() || $request->header('X-Inertia')) {
-            return response()->json([
+            return ApiResponseResource::success(
+                true,
+                null,
+                [
+                    'customer_divisions' => $divisions,
+                ]
+            )->additional([
                 'customer_divisions' => $divisions,
-            ]);
+            ])->response();
         }
 
         // Return as Inertia props for consistency

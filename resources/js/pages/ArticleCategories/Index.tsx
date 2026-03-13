@@ -105,7 +105,12 @@ export default function ArticleCategoriesIndex() {
     };
 
     const handleDeleteConfirm = () => {
-        if (!deleteDialog.category) return;
+        if (
+            deleteDialog.category === null ||
+            deleteDialog.category === undefined
+        ) {
+            return;
+        }
 
         setIsDeleting(true);
         router.delete(

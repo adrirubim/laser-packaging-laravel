@@ -137,7 +137,7 @@ export default function MachineryIndex() {
                             {t('common.search')}
                         </label>
                         <SearchInput
-                            value={filters.search || ''}
+                            value={filters.search ?? ''}
                             onChange={handleSearchChange}
                             onClear={clearSearch}
                             placeholder={t('machinery.search_placeholder')}
@@ -185,7 +185,9 @@ export default function MachineryIndex() {
                                                 <div className="flex-1">
                                                     <h3 className="font-medium">
                                                         {mach.cod}
-                                                        {mach.description
+                                                        {mach.description !=
+                                                            null &&
+                                                        mach.description !== ''
                                                             ? ` - ${mach.description}`
                                                             : ''}
                                                     </h3>
@@ -202,8 +204,12 @@ export default function MachineryIndex() {
                                                                 :{' '}
                                                             </span>
                                                             <span>
-                                                                {mach.parameter ||
-                                                                    '-'}
+                                                                {mach.parameter !=
+                                                                    null &&
+                                                                mach.parameter !==
+                                                                    ''
+                                                                    ? mach.parameter
+                                                                    : '-'}
                                                             </span>
                                                         </div>
                                                         <div>
@@ -332,12 +338,16 @@ export default function MachineryIndex() {
                                                 </td>
                                                 <td className="px-3 py-2 align-middle">
                                                     {mach.cod}{' '}
-                                                    {mach.description
+                                                    {mach.description != null &&
+                                                    mach.description !== ''
                                                         ? ` - ${mach.description}`
                                                         : ''}
                                                 </td>
                                                 <td className="px-3 py-2 align-middle text-xs">
-                                                    {mach.parameter || (
+                                                    {mach.parameter != null &&
+                                                    mach.parameter !== '' ? (
+                                                        mach.parameter
+                                                    ) : (
                                                         <span className="text-muted-foreground">
                                                             -
                                                         </span>

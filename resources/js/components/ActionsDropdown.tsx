@@ -28,9 +28,13 @@ export function ActionsDropdown({
     extraItems,
 }: ActionsDropdownProps) {
     const { t } = useTranslations();
-    const hasAnyAction = viewHref || editHref || extraItems || onDelete;
+    const hasAnyAction =
+        Boolean(viewHref) === true ||
+        Boolean(editHref) === true ||
+        Boolean(extraItems) === true ||
+        Boolean(onDelete) === true;
 
-    if (!hasAnyAction) {
+    if (hasAnyAction !== true) {
         return null;
     }
 
@@ -47,31 +51,37 @@ export function ActionsDropdown({
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-                {viewHref && (
-                    <DropdownMenuItem asChild>
-                        <Link href={viewHref}>
-                            <Eye className="mr-2 h-4 w-4" />
-                            {t('common.view')}
-                        </Link>
-                    </DropdownMenuItem>
-                )}
-                {editHref && (
-                    <DropdownMenuItem asChild>
-                        <Link href={editHref}>
-                            <Edit className="mr-2 h-4 w-4" />
-                            {t('common.edit')}
-                        </Link>
-                    </DropdownMenuItem>
-                )}
+                {viewHref !== null &&
+                    viewHref !== undefined &&
+                    viewHref !== '' && (
+                        <DropdownMenuItem asChild>
+                            <Link href={viewHref}>
+                                <Eye className="mr-2 h-4 w-4" />
+                                {t('common.view')}
+                            </Link>
+                        </DropdownMenuItem>
+                    )}
+                {editHref !== null &&
+                    editHref !== undefined &&
+                    editHref !== '' && (
+                        <DropdownMenuItem asChild>
+                            <Link href={editHref}>
+                                <Edit className="mr-2 h-4 w-4" />
+                                {t('common.edit')}
+                            </Link>
+                        </DropdownMenuItem>
+                    )}
 
-                {extraItems}
+                {extraItems !== null && extraItems !== undefined && extraItems}
 
-                {onDelete && (
+                {Boolean(onDelete) === true && (
                     <DropdownMenuItem
                         variant="destructive"
                         onSelect={(e) => {
                             e.preventDefault();
-                            onDelete();
+                            if (typeof onDelete === 'function') {
+                                onDelete();
+                            }
                         }}
                     >
                         <Trash2 className="mr-2 h-4 w-4" />

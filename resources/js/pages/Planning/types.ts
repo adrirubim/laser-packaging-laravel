@@ -1,54 +1,29 @@
 /** Tipi condivisi per la vista Planning (toolbar, legenda, griglia). */
 
+import type {
+    DomainPlanningBoard,
+    DomainPlanningContract,
+    DomainPlanningLine,
+    DomainPlanningOrder,
+    DomainPlanningRow,
+    DomainPlanningSummary,
+    DomainPlanningSummaryRow,
+} from '@/types/DomainModels';
+
 export type RangeMode = 'day' | 'week' | 'month';
 export type ZoomLevel = 'hour' | 'quarter';
 
-// --- Dominio ---
+// --- Dominio (alias dei modelli di dominio strict) ---
 
-export type PlanningOrder = {
-    uuid: string;
-    code: string;
-    article_code?: string;
-    description?: string;
-    delivery_requested_date?: number;
-    quantity: number;
-    worked_quantity: number;
-    status: number;
-    shift_mode?: number;
-    shift_morning?: boolean;
-    shift_afternoon?: boolean;
-    work_saturday?: boolean;
-};
+export type PlanningOrder = DomainPlanningOrder;
 
-export type PlanningLine = {
-    uuid: string;
-    code: string;
-    name: string;
-    orders: PlanningOrder[];
-};
+export type PlanningLine = DomainPlanningLine;
 
-export type PlanningRow = {
-    id: number | null;
-    order_uuid: string;
-    lasworkline_uuid: string;
-    date: string | null;
-    hours: string;
-};
+export type PlanningRow = DomainPlanningRow;
 
-export type PlanningSummaryRow = {
-    id: number | null;
-    date: string | null;
-    summary_type: string;
-    hours: string;
-};
+export type PlanningSummaryRow = DomainPlanningSummaryRow;
 
-export type PlanningContract = {
-    id: number;
-    employee_uuid: string;
-    qualifica: number;
-    start_date: number | null;
-    end_date: number | null;
-};
+export type PlanningContract = DomainPlanningContract;
 
 export type BoardDay = {
     dateStr: string;
@@ -68,14 +43,7 @@ export type SlotColumn = {
 
 // --- API responses ---
 
-export type PlanningDataResponse = {
-    error_code: number;
-    message?: string;
-    lines?: PlanningLine[];
-    planning?: PlanningRow[];
-    contracts?: PlanningContract[];
-    summary?: PlanningSummaryRow[];
-};
+export type PlanningDataResponse = DomainPlanningBoard;
 
 export type ReplanResult = {
     message?: string;
@@ -84,16 +52,16 @@ export type ReplanResult = {
 };
 
 export type SavePlanningResponse = {
-    error_code: number;
-    message?: string;
-    planning_id?: number;
+    error_code: DomainPlanningSummary['error_code'];
+    message: DomainPlanningSummary['message'];
+    planning_id: DomainPlanningSummary['planning_id'];
     replan_result?: ReplanResult;
 };
 
 export type SaveSummaryResponse = {
-    error_code: number;
-    message?: string;
-    summary_id?: number;
+    error_code: DomainPlanningSummary['error_code'];
+    message: DomainPlanningSummary['message'];
+    summary_id: DomainPlanningSummary['summary_id'];
 };
 
 export type BoardOccupancy = Record<string, Record<string, number>>;

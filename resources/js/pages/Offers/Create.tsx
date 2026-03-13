@@ -393,7 +393,7 @@ export default function OffersCreate() {
 
     const handleCustomerChange = (customerUuid: string) => {
         setSelectedCustomer(customerUuid);
-        if (customerUuid) {
+        if (customerUuid !== '') {
             router.get(
                 offers.create().url,
                 { customer_uuid: customerUuid },
@@ -404,8 +404,13 @@ export default function OffersCreate() {
                     onSuccess: (page) => {
                         const props =
                             page.props as unknown as OffersCreateProps;
-                        if (props && 'divisions' in props) {
-                            setDivisions(props.divisions || []);
+                        if (props != null && 'divisions' in props) {
+                            const divisionsValue = props.divisions;
+                            setDivisions(
+                                Array.isArray(divisionsValue)
+                                    ? divisionsValue
+                                    : [],
+                            );
                         }
                     },
                 },
@@ -614,10 +619,10 @@ export default function OffersCreate() {
     // Funzione per caricare le operazioni di una categoria (dichiarata prima dell'effect che la usa)
     const loadOperationsForCategory = useCallback(
         async (categoryUuid: string) => {
-            if (!categoryUuid) {
+            if (categoryUuid === '') {
                 return;
             }
-            if (operationsByCategory[categoryUuid]) {
+            if (operationsByCategory[categoryUuid] != null) {
                 return;
             }
             try {
@@ -626,10 +631,19 @@ export default function OffersCreate() {
                 );
                 if (response.ok) {
                     const data = await response.json();
-                    if (data.operations) {
+                    if (
+                        Array.isArray(
+                            (data as { operations?: unknown }).operations,
+                        )
+                    ) {
+                        const operations = (
+                            data as {
+                                operations: Operation[];
+                            }
+                        ).operations;
                         setOperationsByCategory((prev) => ({
                             ...prev,
-                            [categoryUuid]: data.operations,
+                            [categoryUuid]: operations,
                         }));
                     }
                 }
@@ -643,197 +657,241 @@ export default function OffersCreate() {
     // Recalculate when relevant values change
     // Prefill form if sourceOffer exists (duplication)
     useEffect(() => {
-        if (sourceOffer) {
-            queueMicrotask(() => {
-                if (sourceOffer.customer_uuid) {
-                    setSelectedCustomer(sourceOffer.customer_uuid);
-                }
-                if (sourceOffer.customerdivision_uuid) {
-                    setSelectedDivision(sourceOffer.customerdivision_uuid);
-                }
-                if (sourceOffer.activity_uuid) {
-                    setSelectedActivity(sourceOffer.activity_uuid);
-                }
-                if (sourceOffer.sector_uuid) {
-                    setSelectedSector(sourceOffer.sector_uuid);
-                }
-                if (sourceOffer.seasonality_uuid) {
-                    setSelectedSeasonality(sourceOffer.seasonality_uuid);
-                }
-                if (sourceOffer.order_type_uuid) {
-                    setSelectedOrderType(sourceOffer.order_type_uuid);
-                }
-                if (sourceOffer.lasfamily_uuid) {
-                    setSelectedLasFamily(sourceOffer.lasfamily_uuid);
-                }
-                if (sourceOffer.lasworkline_uuid) {
-                    setSelectedLasWorkLine(sourceOffer.lasworkline_uuid);
-                }
-                if (sourceOffer.lsresource_uuid) {
-                    setSelectedLsResource(sourceOffer.lsresource_uuid);
-                }
-                if (sourceOffer.offer_date) {
-                    setOfferDate(sourceOffer.offer_date);
-                }
-                if (sourceOffer.validity_date) {
-                    setValidityDate(sourceOffer.validity_date);
-                }
-                if (sourceOffer.offer_number) {
-                    setOfferNumberValue(sourceOffer.offer_number);
-                }
-                if (
-                    sourceOffer.quantity !== undefined &&
-                    sourceOffer.quantity !== null
-                ) {
-                    setQuantityValue(sourceOffer.quantity.toString());
-                }
-                if (
-                    sourceOffer.piece !== undefined &&
-                    sourceOffer.piece !== null
-                ) {
-                    setPieceValue(sourceOffer.piece.toString());
-                }
-                if (
-                    sourceOffer.declared_weight_cfz !== undefined &&
-                    sourceOffer.declared_weight_cfz !== null
-                ) {
-                    setDeclaredWeightCfz(
-                        formatNumber(sourceOffer.declared_weight_cfz),
-                    );
-                }
-                if (
-                    sourceOffer.declared_weight_pz !== undefined &&
-                    sourceOffer.declared_weight_pz !== null
-                ) {
-                    setDeclaredWeightPz(
-                        formatNumber(sourceOffer.declared_weight_pz),
-                    );
-                }
-                if (
-                    sourceOffer.expected_workers !== undefined &&
-                    sourceOffer.expected_workers !== null
-                ) {
-                    setExpectedWorkers(sourceOffer.expected_workers.toString());
-                }
-                if (
-                    sourceOffer.expected_revenue !== undefined &&
-                    sourceOffer.expected_revenue !== null
-                ) {
-                    setExpectedRevenue(
-                        formatNumber(sourceOffer.expected_revenue),
-                    );
-                }
-                if (
-                    sourceOffer.rate_rounding_cfz !== undefined &&
-                    sourceOffer.rate_rounding_cfz !== null
-                ) {
-                    setRateRoundingCfz(
-                        formatNumber(sourceOffer.rate_rounding_cfz),
-                    );
-                }
-                if (
-                    sourceOffer.rate_increase_cfz !== undefined &&
-                    sourceOffer.rate_increase_cfz !== null
-                ) {
-                    setRateIncreaseCfz(
-                        formatNumber(sourceOffer.rate_increase_cfz),
-                    );
-                }
-                if (
-                    sourceOffer.materials_euro !== undefined &&
-                    sourceOffer.materials_euro !== null
-                ) {
-                    setMaterialsEuro(formatNumber(sourceOffer.materials_euro));
-                }
-                if (
-                    sourceOffer.logistics_euro !== undefined &&
-                    sourceOffer.logistics_euro !== null
-                ) {
-                    setLogisticsEuro(formatNumber(sourceOffer.logistics_euro));
-                }
-                if (
-                    sourceOffer.other_euro !== undefined &&
-                    sourceOffer.other_euro !== null
-                ) {
-                    setOtherEuro(formatNumber(sourceOffer.other_euro));
-                }
-                if (sourceOffer.customer_ref) {
-                    setCustomerRef(sourceOffer.customer_ref);
-                }
-                if (sourceOffer.article_code_ref) {
-                    setArticleCodeRef(sourceOffer.article_code_ref);
-                }
-                if (sourceOffer.provisional_description) {
-                    setProvisionalDescription(
-                        sourceOffer.provisional_description,
-                    );
-                }
-                if (sourceOffer.unit_of_measure) {
-                    setUnitOfMeasure(sourceOffer.unit_of_measure);
-                }
-                if (sourceOffer.notes) {
-                    setNotes(sourceOffer.notes);
-                }
-                if (sourceOffer.offer_notes) {
-                    setOfferNotes(sourceOffer.offer_notes);
-                }
-                if (
-                    sourceOffer.ls_setup_cost !== undefined &&
-                    sourceOffer.ls_setup_cost !== null
-                ) {
-                    setLsSetupCost(sourceOffer.ls_setup_cost.toString());
-                }
-                if (
-                    sourceOffer.ls_other_costs !== undefined &&
-                    sourceOffer.ls_other_costs !== null
-                ) {
-                    setLsOtherCosts(formatNumber(sourceOffer.ls_other_costs));
-                }
-                if (
-                    sourceOffer.approval_status !== undefined &&
-                    sourceOffer.approval_status !== null
-                ) {
-                    setApprovalStatus(sourceOffer.approval_status.toString());
-                }
-                // Load operations
-                if (
-                    sourceOffer.operations &&
-                    sourceOffer.operations.length > 0
-                ) {
-                    const rows: OperationRow[] = sourceOffer.operations.map(
-                        (op, index) => {
-                            const secOp = op.operation?.secondi_operazione || 0;
-                            const numOp = op.num_op || 0;
-                            const totalSec = secOp * numOp;
-                            return {
-                                id: `op-${index}`,
-                                categoryUuid: op.operation?.category_uuid || '',
-                                operationUuid: op.offeroperation_uuid,
-                                secOp: secOp,
-                                numOp: numOp,
-                                totalSec: totalSec,
-                            };
-                        },
-                    );
-                    setOperationRows(rows);
-
-                    // Load operations by category for selects
-                    const categoryUuids = new Set<string>();
-                    sourceOffer.operations.forEach((op) => {
-                        if (op.operation?.category_uuid) {
-                            categoryUuids.add(op.operation.category_uuid);
-                        }
-                    });
-
-                    // Load operations by category asynchronously
-                    setTimeout(() => {
-                        categoryUuids.forEach((categoryUuid) => {
-                            loadOperationsForCategory(categoryUuid);
-                        });
-                    }, 100);
-                }
-            });
+        if (sourceOffer == null) {
+            return;
         }
+
+        queueMicrotask(() => {
+            if (
+                sourceOffer.customer_uuid != null &&
+                sourceOffer.customer_uuid !== ''
+            ) {
+                setSelectedCustomer(sourceOffer.customer_uuid);
+            }
+            if (
+                sourceOffer.customerdivision_uuid != null &&
+                sourceOffer.customerdivision_uuid !== ''
+            ) {
+                setSelectedDivision(sourceOffer.customerdivision_uuid);
+            }
+            if (
+                sourceOffer.activity_uuid != null &&
+                sourceOffer.activity_uuid !== ''
+            ) {
+                setSelectedActivity(sourceOffer.activity_uuid);
+            }
+            if (
+                sourceOffer.sector_uuid != null &&
+                sourceOffer.sector_uuid !== ''
+            ) {
+                setSelectedSector(sourceOffer.sector_uuid);
+            }
+            if (
+                sourceOffer.seasonality_uuid != null &&
+                sourceOffer.seasonality_uuid !== ''
+            ) {
+                setSelectedSeasonality(sourceOffer.seasonality_uuid);
+            }
+            if (
+                sourceOffer.order_type_uuid != null &&
+                sourceOffer.order_type_uuid !== ''
+            ) {
+                setSelectedOrderType(sourceOffer.order_type_uuid);
+            }
+            if (
+                sourceOffer.lasfamily_uuid != null &&
+                sourceOffer.lasfamily_uuid !== ''
+            ) {
+                setSelectedLasFamily(sourceOffer.lasfamily_uuid);
+            }
+            if (
+                sourceOffer.lasworkline_uuid != null &&
+                sourceOffer.lasworkline_uuid !== ''
+            ) {
+                setSelectedLasWorkLine(sourceOffer.lasworkline_uuid);
+            }
+            if (
+                sourceOffer.lsresource_uuid != null &&
+                sourceOffer.lsresource_uuid !== ''
+            ) {
+                setSelectedLsResource(sourceOffer.lsresource_uuid);
+            }
+            if (
+                sourceOffer.offer_date != null &&
+                sourceOffer.offer_date !== ''
+            ) {
+                setOfferDate(sourceOffer.offer_date);
+            }
+            if (
+                sourceOffer.validity_date != null &&
+                sourceOffer.validity_date !== ''
+            ) {
+                setValidityDate(sourceOffer.validity_date);
+            }
+            if (
+                sourceOffer.offer_number != null &&
+                sourceOffer.offer_number !== ''
+            ) {
+                setOfferNumberValue(sourceOffer.offer_number);
+            }
+            if (
+                sourceOffer.quantity !== undefined &&
+                sourceOffer.quantity !== null
+            ) {
+                setQuantityValue(sourceOffer.quantity.toString());
+            }
+            if (sourceOffer.piece !== undefined && sourceOffer.piece !== null) {
+                setPieceValue(sourceOffer.piece.toString());
+            }
+            if (
+                sourceOffer.declared_weight_cfz !== undefined &&
+                sourceOffer.declared_weight_cfz !== null
+            ) {
+                setDeclaredWeightCfz(
+                    formatNumber(sourceOffer.declared_weight_cfz),
+                );
+            }
+            if (
+                sourceOffer.declared_weight_pz !== undefined &&
+                sourceOffer.declared_weight_pz !== null
+            ) {
+                setDeclaredWeightPz(
+                    formatNumber(sourceOffer.declared_weight_pz),
+                );
+            }
+            if (
+                sourceOffer.expected_workers !== undefined &&
+                sourceOffer.expected_workers !== null
+            ) {
+                setExpectedWorkers(sourceOffer.expected_workers.toString());
+            }
+            if (
+                sourceOffer.expected_revenue !== undefined &&
+                sourceOffer.expected_revenue !== null
+            ) {
+                setExpectedRevenue(formatNumber(sourceOffer.expected_revenue));
+            }
+            if (
+                sourceOffer.rate_rounding_cfz !== undefined &&
+                sourceOffer.rate_rounding_cfz !== null
+            ) {
+                setRateRoundingCfz(formatNumber(sourceOffer.rate_rounding_cfz));
+            }
+            if (
+                sourceOffer.rate_increase_cfz !== undefined &&
+                sourceOffer.rate_increase_cfz !== null
+            ) {
+                setRateIncreaseCfz(formatNumber(sourceOffer.rate_increase_cfz));
+            }
+            if (
+                sourceOffer.materials_euro !== undefined &&
+                sourceOffer.materials_euro !== null
+            ) {
+                setMaterialsEuro(formatNumber(sourceOffer.materials_euro));
+            }
+            if (
+                sourceOffer.logistics_euro !== undefined &&
+                sourceOffer.logistics_euro !== null
+            ) {
+                setLogisticsEuro(formatNumber(sourceOffer.logistics_euro));
+            }
+            if (
+                sourceOffer.other_euro !== undefined &&
+                sourceOffer.other_euro !== null
+            ) {
+                setOtherEuro(formatNumber(sourceOffer.other_euro));
+            }
+            if (
+                sourceOffer.customer_ref != null &&
+                sourceOffer.customer_ref !== ''
+            ) {
+                setCustomerRef(sourceOffer.customer_ref);
+            }
+            if (
+                sourceOffer.article_code_ref != null &&
+                sourceOffer.article_code_ref !== ''
+            ) {
+                setArticleCodeRef(sourceOffer.article_code_ref);
+            }
+            if (
+                sourceOffer.provisional_description != null &&
+                sourceOffer.provisional_description !== ''
+            ) {
+                setProvisionalDescription(sourceOffer.provisional_description);
+            }
+            if (
+                sourceOffer.unit_of_measure != null &&
+                sourceOffer.unit_of_measure !== ''
+            ) {
+                setUnitOfMeasure(sourceOffer.unit_of_measure);
+            }
+            if (sourceOffer.notes != null && sourceOffer.notes !== '') {
+                setNotes(sourceOffer.notes);
+            }
+            if (
+                sourceOffer.offer_notes != null &&
+                sourceOffer.offer_notes !== ''
+            ) {
+                setOfferNotes(sourceOffer.offer_notes);
+            }
+            if (
+                sourceOffer.ls_setup_cost !== undefined &&
+                sourceOffer.ls_setup_cost !== null
+            ) {
+                setLsSetupCost(sourceOffer.ls_setup_cost.toString());
+            }
+            if (
+                sourceOffer.ls_other_costs !== undefined &&
+                sourceOffer.ls_other_costs !== null
+            ) {
+                setLsOtherCosts(formatNumber(sourceOffer.ls_other_costs));
+            }
+            if (
+                sourceOffer.approval_status !== undefined &&
+                sourceOffer.approval_status !== null
+            ) {
+                setApprovalStatus(sourceOffer.approval_status.toString());
+            }
+
+            // Load operations
+            if (
+                sourceOffer.operations != null &&
+                sourceOffer.operations.length > 0
+            ) {
+                const rows: OperationRow[] = sourceOffer.operations.map(
+                    (op, index) => {
+                        const secOp = op.operation?.secondi_operazione ?? 0;
+                        const numOp = op.num_op ?? 0;
+                        const totalSec = secOp * numOp;
+                        return {
+                            id: `op-${index}`,
+                            categoryUuid: op.operation?.category_uuid ?? '',
+                            operationUuid: op.offeroperation_uuid,
+                            secOp: secOp,
+                            numOp: numOp,
+                            totalSec: totalSec,
+                        };
+                    },
+                );
+                setOperationRows(rows);
+
+                // Load operations by category for selects
+                const categoryUuids = new Set<string>();
+                sourceOffer.operations.forEach((op) => {
+                    const categoryUuid = op.operation?.category_uuid ?? '';
+                    if (categoryUuid !== '') {
+                        categoryUuids.add(categoryUuid);
+                    }
+                });
+
+                // Load operations by category asynchronously
+                setTimeout(() => {
+                    categoryUuids.forEach((categoryUuid) => {
+                        loadOperationsForCategory(categoryUuid);
+                    });
+                }, 100);
+            }
+        });
     }, [sourceOffer, loadOperationsForCategory]);
 
     useEffect(() => {
@@ -859,8 +917,10 @@ export default function OffersCreate() {
                     '/offers/operation-categories/load-categories',
                 );
                 if (response.ok) {
-                    const data = await response.json();
-                    if (data.categories) {
+                    const data = (await response.json()) as {
+                        categories?: unknown;
+                    };
+                    if (Array.isArray(data.categories)) {
                         setOperationCategories(data.categories);
                     }
                 }
@@ -934,12 +994,13 @@ export default function OffersCreate() {
                                 currentRows.map((currentRow) => {
                                     if (
                                         currentRow.id === id &&
-                                        currentRow.operationUuid
+                                        currentRow.operationUuid != null &&
+                                        currentRow.operationUuid !== ''
                                     ) {
                                         const ops =
                                             operationsByCategory[
                                                 categoryUuid
-                                            ] || [];
+                                            ] ?? [];
                                         const selectedOp = ops.find(
                                             (op) =>
                                                 op.uuid ===
@@ -947,9 +1008,9 @@ export default function OffersCreate() {
                                         );
                                         if (selectedOp) {
                                             const secOp =
-                                                selectedOp.secondi_operazione ||
+                                                selectedOp.secondi_operazione ??
                                                 0;
-                                            const numOp = currentRow.numOp || 1;
+                                            const numOp = currentRow.numOp ?? 1;
                                             return {
                                                 ...currentRow,
                                                 secOp,
@@ -963,8 +1024,9 @@ export default function OffersCreate() {
                         };
 
                         // If operations are already loaded, update immediately
-                        if (operationsByCategory[categoryUuid]) {
-                            const ops = operationsByCategory[categoryUuid];
+                        if (operationsByCategory[categoryUuid] != null) {
+                            const ops =
+                                operationsByCategory[categoryUuid] ?? [];
                             const selectedOp = ops.find(
                                 (op) => op.uuid === updates.operationUuid,
                             );
@@ -1003,23 +1065,29 @@ export default function OffersCreate() {
         queueMicrotask(() =>
             setOperationRows((prevRows) =>
                 prevRows.map((row) => {
+                    const rowOperationUuid = row.operationUuid ?? '';
+                    const rowCategoryUuid = row.categoryUuid ?? '';
+
+                    const operations =
+                        rowCategoryUuid !== ''
+                            ? operationsByCategory[rowCategoryUuid]
+                            : undefined;
+
                     if (
-                        row.operationUuid &&
-                        row.categoryUuid &&
-                        operationsByCategory[row.categoryUuid]
+                        rowOperationUuid !== '' &&
+                        rowCategoryUuid !== '' &&
+                        operations != null
                     ) {
-                        const operations =
-                            operationsByCategory[row.categoryUuid];
                         const selectedOperation = operations.find(
-                            (op) => op.uuid === row.operationUuid,
+                            (op) => op.uuid === rowOperationUuid,
                         );
                         if (
                             selectedOperation &&
                             row.secOp !== selectedOperation.secondi_operazione
                         ) {
                             const secOp =
-                                selectedOperation.secondi_operazione || 0;
-                            const numOp = row.numOp || 1;
+                                selectedOperation.secondi_operazione ?? 0;
+                            const numOp = row.numOp ?? 1;
                             return {
                                 ...row,
                                 secOp,
@@ -1027,14 +1095,16 @@ export default function OffersCreate() {
                             };
                         }
                     }
+
                     // Recalculate total if numOp changed
                     if (
-                        row.secOp &&
-                        row.numOp &&
+                        row.secOp != null &&
+                        row.numOp != null &&
                         row.totalSec !== row.secOp * row.numOp
                     ) {
                         return { ...row, totalSec: row.secOp * row.numOp };
                     }
+
                     return row;
                 }),
             ),
@@ -1265,12 +1335,20 @@ export default function OffersCreate() {
                                         if (operationRows.length > 0) {
                                             transformed.operations =
                                                 operationRows
-                                                    .filter(
-                                                        (row) =>
-                                                            row.operationUuid &&
-                                                            row.numOp &&
-                                                            row.numOp > 0,
-                                                    )
+                                                    .filter((row) => {
+                                                        const hasOperationUuid =
+                                                            row.operationUuid !=
+                                                                null &&
+                                                            row.operationUuid !==
+                                                                '';
+                                                        const hasNumOp =
+                                                            row.numOp != null &&
+                                                            row.numOp > 0;
+                                                        return (
+                                                            hasOperationUuid &&
+                                                            hasNumOp
+                                                        );
+                                                    })
                                                     .map((row) => ({
                                                         offeroperation_uuid:
                                                             row.operationUuid,
@@ -1340,25 +1418,32 @@ export default function OffersCreate() {
                                                                         e,
                                                                     );
                                                                     if (
-                                                                        offerNumberValidation.onFocus
+                                                                        offerNumberValidation.onFocus !=
+                                                                        null
                                                                     ) {
                                                                         offerNumberValidation.onFocus();
                                                                     }
                                                                 }}
                                                                 required
                                                                 className={
-                                                                    offerNumberValidation.error
+                                                                    offerNumberValidation.error !=
+                                                                        null &&
+                                                                    offerNumberValidation.error !==
+                                                                        ''
                                                                         ? 'border-destructive'
                                                                         : ''
                                                                 }
                                                             />
-                                                            {offerNumberValidation.error && (
-                                                                <InputError
-                                                                    message={
-                                                                        offerNumberValidation.error
-                                                                    }
-                                                                />
-                                                            )}
+                                                            {offerNumberValidation.error !=
+                                                                null &&
+                                                                offerNumberValidation.error !==
+                                                                    '' && (
+                                                                    <InputError
+                                                                        message={
+                                                                            offerNumberValidation.error
+                                                                        }
+                                                                    />
+                                                                )}
                                                             <InputError
                                                                 message={
                                                                     allErrors.offer_number
@@ -2137,15 +2222,25 @@ export default function OffersCreate() {
                                                                 }}
                                                                 required
                                                                 min="0"
-                                                                className={`text-right ${quantityValidation.error ? 'border-destructive' : ''}`}
+                                                                className={`text-right ${
+                                                                    quantityValidation.error !=
+                                                                        null &&
+                                                                    quantityValidation.error !==
+                                                                        ''
+                                                                        ? 'border-destructive'
+                                                                        : ''
+                                                                }`}
                                                             />
-                                                            {quantityValidation.error && (
-                                                                <InputError
-                                                                    message={
-                                                                        quantityValidation.error
-                                                                    }
-                                                                />
-                                                            )}
+                                                            {quantityValidation.error !=
+                                                                null &&
+                                                                quantityValidation.error !==
+                                                                    '' && (
+                                                                    <InputError
+                                                                        message={
+                                                                            quantityValidation.error
+                                                                        }
+                                                                    />
+                                                                )}
                                                             <InputError
                                                                 message={
                                                                     allErrors.quantity
@@ -2193,22 +2288,33 @@ export default function OffersCreate() {
                                                                         e,
                                                                     );
                                                                     if (
-                                                                        pieceValidation.onFocus
+                                                                        pieceValidation.onFocus !=
+                                                                        null
                                                                     ) {
                                                                         pieceValidation.onFocus();
                                                                     }
                                                                 }}
                                                                 required
                                                                 min="0"
-                                                                className={`text-right ${pieceValidation.error ? 'border-destructive' : ''}`}
+                                                                className={`text-right ${
+                                                                    pieceValidation.error !=
+                                                                        null &&
+                                                                    pieceValidation.error !==
+                                                                        ''
+                                                                        ? 'border-destructive'
+                                                                        : ''
+                                                                }`}
                                                             />
-                                                            {pieceValidation.error && (
-                                                                <InputError
-                                                                    message={
-                                                                        pieceValidation.error
-                                                                    }
-                                                                />
-                                                            )}
+                                                            {pieceValidation.error !=
+                                                                null &&
+                                                                pieceValidation.error !==
+                                                                    '' && (
+                                                                    <InputError
+                                                                        message={
+                                                                            pieceValidation.error
+                                                                        }
+                                                                    />
+                                                                )}
                                                             <InputError
                                                                 message={
                                                                     allErrors.piece
@@ -2439,7 +2545,7 @@ export default function OffersCreate() {
                                                                                         operationsByCategory[
                                                                                             row
                                                                                                 .categoryUuid
-                                                                                        ] ||
+                                                                                        ] ??
                                                                                         []
                                                                                     ).map(
                                                                                         (

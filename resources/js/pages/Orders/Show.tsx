@@ -366,22 +366,24 @@ export default function OrdersShow({ order }: OrdersShowProps) {
                                     <p className="text-lg font-semibold">
                                         {order.article.cod_article_las}
                                     </p>
-                                    {order.article.article_descr && (
-                                        <p className="text-sm text-muted-foreground">
-                                            {order.article.article_descr}
-                                        </p>
-                                    )}
+                                    {order.article.article_descr != null &&
+                                        order.article.article_descr !== '' && (
+                                            <p className="text-sm text-muted-foreground">
+                                                {order.article.article_descr}
+                                            </p>
+                                        )}
                                 </div>
                             )}
 
-                            {order.article?.um && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t('orders.labels.um')}
-                                    </Label>
-                                    <p>{order.article.um}</p>
-                                </div>
-                            )}
+                            {order.article?.um != null &&
+                                order.article.um !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t('orders.labels.um')}
+                                        </Label>
+                                        <p>{order.article.um}</p>
+                                    </div>
+                                )}
 
                             {order.line !== null &&
                                 order.line !== undefined && (
@@ -393,24 +395,28 @@ export default function OrdersShow({ order }: OrdersShowProps) {
                                     </div>
                                 )}
 
-                            {order.number_customer_reference_order && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t('orders.show.reference_client')}
-                                    </Label>
-                                    <p>
-                                        {order.number_customer_reference_order}
-                                    </p>
-                                </div>
-                            )}
+                            {order.number_customer_reference_order != null &&
+                                order.number_customer_reference_order !==
+                                    '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t('orders.show.reference_client')}
+                                        </Label>
+                                        <p>
+                                            {
+                                                order.number_customer_reference_order
+                                            }
+                                        </p>
+                                    </div>
+                                )}
 
                             <div>
                                 <Label className="text-sm font-medium text-muted-foreground">
                                     {t('orders.show.quantity')}
                                 </Label>
                                 <p>
-                                    {order.worked_quantity || 0} /{' '}
-                                    {order.quantity || 0}
+                                    {order.worked_quantity ?? 0} /{' '}
+                                    {order.quantity ?? 0}
                                     {order.remain_quantity !== undefined &&
                                         order.remain_quantity !== null && (
                                             <span className="ml-2 text-muted-foreground">
@@ -492,7 +498,10 @@ export default function OrdersShow({ order }: OrdersShowProps) {
                                             order.shippingAddress.city,
                                             order.shippingAddress.postal_code,
                                         ]
-                                            .filter(Boolean)
+                                            .filter(
+                                                (part) =>
+                                                    part != null && part !== '',
+                                            )
                                             .join(', ')}
                                     </p>
                                 </div>
@@ -502,22 +511,30 @@ export default function OrdersShow({ order }: OrdersShowProps) {
 
                     {((order.type_lot !== null &&
                         order.type_lot !== undefined) ||
-                        order.lot ||
-                        order.expiration_date ||
+                        (order.lot != null && order.lot !== '') ||
+                        (order.expiration_date != null &&
+                            order.expiration_date !== '') ||
                         order.external_labels != null ||
                         order.pvp_labels != null ||
                         order.ingredients_labels != null ||
                         order.variable_data_labels != null ||
                         order.label_of_jumpers != null ||
-                        order.indications_for_shop ||
-                        order.indications_for_production ||
-                        order.indications_for_delivery ||
-                        order.delivery_requested_date ||
-                        order.expected_production_start_date ||
-                        order.article?.palletSheet ||
-                        order.article?.materials?.length ||
-                        order.status_semaforo ||
-                        order.motivazione) && (
+                        (order.indications_for_shop != null &&
+                            order.indications_for_shop !== '') ||
+                        (order.indications_for_production != null &&
+                            order.indications_for_production !== '') ||
+                        (order.indications_for_delivery != null &&
+                            order.indications_for_delivery !== '') ||
+                        (order.delivery_requested_date != null &&
+                            order.delivery_requested_date !== '') ||
+                        (order.expected_production_start_date != null &&
+                            order.expected_production_start_date !== '') ||
+                        order.article?.palletSheet != null ||
+                        (order.article?.materials != null &&
+                            order.article.materials.length > 0) ||
+                        order.status_semaforo != null ||
+                        (order.motivazione != null &&
+                            order.motivazione !== '')) && (
                         <Card className="md:col-span-2">
                             <CardHeader>
                                 <CardTitle>
@@ -536,20 +553,24 @@ export default function OrdersShow({ order }: OrdersShowProps) {
                                                     {t('orders.show.lot_type')}
                                                 </Label>
                                                 <p>
-                                                    {getLotTypeOptionKey(
-                                                        order.type_lot,
-                                                    )
-                                                        ? t(
-                                                              getLotTypeOptionKey(
-                                                                  order.type_lot,
-                                                              )!,
-                                                          )
-                                                        : ''}
+                                                    {(() => {
+                                                        const key =
+                                                            getLotTypeOptionKey(
+                                                                order.type_lot,
+                                                            );
+                                                        if (
+                                                            key != null &&
+                                                            key !== ''
+                                                        ) {
+                                                            return t(key);
+                                                        }
+                                                        return '';
+                                                    })()}
                                                 </p>
                                             </div>
                                         )}
 
-                                    {order.lot && (
+                                    {order.lot != null && order.lot !== '' && (
                                         <div>
                                             <Label className="text-sm font-medium text-muted-foreground">
                                                 {t('orders.labels.lot')}
@@ -558,50 +579,56 @@ export default function OrdersShow({ order }: OrdersShowProps) {
                                         </div>
                                     )}
 
-                                    {order.expiration_date && (
-                                        <div>
-                                            <Label className="text-sm font-medium text-muted-foreground">
-                                                {t(
-                                                    'orders.show.expiration_date',
-                                                )}
-                                            </Label>
-                                            <p>
-                                                {new Date(
-                                                    order.expiration_date,
-                                                ).toLocaleDateString()}
-                                            </p>
-                                        </div>
-                                    )}
+                                    {order.expiration_date != null &&
+                                        order.expiration_date !== '' && (
+                                            <div>
+                                                <Label className="text-sm font-medium text-muted-foreground">
+                                                    {t(
+                                                        'orders.show.expiration_date',
+                                                    )}
+                                                </Label>
+                                                <p>
+                                                    {new Date(
+                                                        order.expiration_date,
+                                                    ).toLocaleDateString()}
+                                                </p>
+                                            </div>
+                                        )}
 
-                                    {order.delivery_requested_date && (
-                                        <div>
-                                            <Label className="text-sm font-medium text-muted-foreground">
-                                                {t(
-                                                    'orders.show.delivery_requested',
-                                                )}
-                                            </Label>
-                                            <p>
-                                                {new Date(
-                                                    order.delivery_requested_date,
-                                                ).toLocaleDateString()}
-                                            </p>
-                                        </div>
-                                    )}
+                                    {order.delivery_requested_date != null &&
+                                        order.delivery_requested_date !==
+                                            '' && (
+                                            <div>
+                                                <Label className="text-sm font-medium text-muted-foreground">
+                                                    {t(
+                                                        'orders.show.delivery_requested',
+                                                    )}
+                                                </Label>
+                                                <p>
+                                                    {new Date(
+                                                        order.delivery_requested_date,
+                                                    ).toLocaleDateString()}
+                                                </p>
+                                            </div>
+                                        )}
 
-                                    {order.expected_production_start_date && (
-                                        <div>
-                                            <Label className="text-sm font-medium text-muted-foreground">
-                                                {t(
-                                                    'orders.show.expected_production_start',
-                                                )}
-                                            </Label>
-                                            <p>
-                                                {new Date(
-                                                    order.expected_production_start_date,
-                                                ).toLocaleDateString()}
-                                            </p>
-                                        </div>
-                                    )}
+                                    {order.expected_production_start_date !=
+                                        null &&
+                                        order.expected_production_start_date !==
+                                            '' && (
+                                            <div>
+                                                <Label className="text-sm font-medium text-muted-foreground">
+                                                    {t(
+                                                        'orders.show.expected_production_start',
+                                                    )}
+                                                </Label>
+                                                <p>
+                                                    {new Date(
+                                                        order.expected_production_start_date,
+                                                    ).toLocaleDateString()}
+                                                </p>
+                                            </div>
+                                        )}
 
                                     <div className="md:col-span-2">
                                         <Label className="mb-2 block text-sm font-medium text-muted-foreground">
@@ -621,15 +648,19 @@ export default function OrdersShow({ order }: OrdersShowProps) {
                                                         'orders.show.labels_external',
                                                     )}
                                                     :{' '}
-                                                    {getLabelOptionKey(
-                                                        order.external_labels,
-                                                    )
-                                                        ? t(
-                                                              getLabelOptionKey(
-                                                                  order.external_labels,
-                                                              )!,
-                                                          )
-                                                        : ''}
+                                                    {(() => {
+                                                        const key =
+                                                            getLabelOptionKey(
+                                                                order.external_labels,
+                                                            );
+                                                        if (
+                                                            key != null &&
+                                                            key !== ''
+                                                        ) {
+                                                            return t(key);
+                                                        }
+                                                        return '';
+                                                    })()}
                                                 </span>
                                             )}
                                             {order.pvp_labels != null && (
@@ -644,15 +675,19 @@ export default function OrdersShow({ order }: OrdersShowProps) {
                                                         'orders.show.labels_pvp',
                                                     )}
                                                     :{' '}
-                                                    {getLabelOptionKey(
-                                                        order.pvp_labels,
-                                                    )
-                                                        ? t(
-                                                              getLabelOptionKey(
-                                                                  order.pvp_labels,
-                                                              )!,
-                                                          )
-                                                        : ''}
+                                                    {(() => {
+                                                        const key =
+                                                            getLabelOptionKey(
+                                                                order.pvp_labels,
+                                                            );
+                                                        if (
+                                                            key != null &&
+                                                            key !== ''
+                                                        ) {
+                                                            return t(key);
+                                                        }
+                                                        return '';
+                                                    })()}
                                                 </span>
                                             )}
                                             {order.ingredients_labels !=
@@ -669,15 +704,19 @@ export default function OrdersShow({ order }: OrdersShowProps) {
                                                         'orders.show.labels_ingredients',
                                                     )}
                                                     :{' '}
-                                                    {getLabelOptionKey(
-                                                        order.ingredients_labels,
-                                                    )
-                                                        ? t(
-                                                              getLabelOptionKey(
-                                                                  order.ingredients_labels,
-                                                              )!,
-                                                          )
-                                                        : ''}
+                                                    {(() => {
+                                                        const key =
+                                                            getLabelOptionKey(
+                                                                order.ingredients_labels,
+                                                            );
+                                                        if (
+                                                            key != null &&
+                                                            key !== ''
+                                                        ) {
+                                                            return t(key);
+                                                        }
+                                                        return '';
+                                                    })()}
                                                 </span>
                                             )}
                                             {order.variable_data_labels !=
@@ -694,15 +733,19 @@ export default function OrdersShow({ order }: OrdersShowProps) {
                                                         'orders.show.labels_variable',
                                                     )}
                                                     :{' '}
-                                                    {getLabelOptionKey(
-                                                        order.variable_data_labels,
-                                                    )
-                                                        ? t(
-                                                              getLabelOptionKey(
-                                                                  order.variable_data_labels,
-                                                              )!,
-                                                          )
-                                                        : ''}
+                                                    {(() => {
+                                                        const key =
+                                                            getLabelOptionKey(
+                                                                order.variable_data_labels,
+                                                            );
+                                                        if (
+                                                            key != null &&
+                                                            key !== ''
+                                                        ) {
+                                                            return t(key);
+                                                        }
+                                                        return '';
+                                                    })()}
                                                 </span>
                                             )}
                                             {order.label_of_jumpers != null && (
@@ -718,21 +761,25 @@ export default function OrdersShow({ order }: OrdersShowProps) {
                                                         'orders.show.labels_jumper',
                                                     )}
                                                     :{' '}
-                                                    {getLabelOptionKey(
-                                                        order.label_of_jumpers,
-                                                    )
-                                                        ? t(
-                                                              getLabelOptionKey(
-                                                                  order.label_of_jumpers,
-                                                              )!,
-                                                          )
-                                                        : ''}
+                                                    {(() => {
+                                                        const key =
+                                                            getLabelOptionKey(
+                                                                order.label_of_jumpers,
+                                                            );
+                                                        if (
+                                                            key != null &&
+                                                            key !== ''
+                                                        ) {
+                                                            return t(key);
+                                                        }
+                                                        return '';
+                                                    })()}
                                                 </span>
                                             )}
                                         </div>
                                     </div>
 
-                                    {order.status_semaforo &&
+                                    {order.status_semaforo != null &&
                                         (order.status_semaforo.etichette !=
                                             null ||
                                             order.status_semaforo.packaging !=
@@ -882,16 +929,19 @@ export default function OrdersShow({ order }: OrdersShowProps) {
                                             </div>
                                         )}
 
-                                    {order.motivazione && (
-                                        <div className="md:col-span-2">
-                                            <Label className="text-sm font-medium text-muted-foreground">
-                                                {t('orders.show.motivazione')}
-                                            </Label>
-                                            <p className="rounded-md border border-yellow-200 bg-yellow-50 p-3 whitespace-pre-wrap dark:border-yellow-800 dark:bg-yellow-900/20">
-                                                {order.motivazione}
-                                            </p>
-                                        </div>
-                                    )}
+                                    {order.motivazione != null &&
+                                        order.motivazione !== '' && (
+                                            <div className="md:col-span-2">
+                                                <Label className="text-sm font-medium text-muted-foreground">
+                                                    {t(
+                                                        'orders.show.motivazione',
+                                                    )}
+                                                </Label>
+                                                <p className="rounded-md border border-yellow-200 bg-yellow-50 p-3 whitespace-pre-wrap dark:border-yellow-800 dark:bg-yellow-900/20">
+                                                    {order.motivazione}
+                                                </p>
+                                            </div>
+                                        )}
 
                                     {order.article?.palletSheet && (
                                         <div className="md:col-span-2">
@@ -906,27 +956,35 @@ export default function OrdersShow({ order }: OrdersShowProps) {
                                                     }{' '}
                                                     -{' '}
                                                     {order.article.palletSheet
-                                                        .description || ''}
+                                                        .description ?? ''}
                                                 </p>
                                                 <Button
                                                     type="button"
                                                     variant="outline"
                                                     size="sm"
-                                                    onClick={() =>
+                                                    onClick={() => {
+                                                        const palletSheetUuid =
+                                                            order.article
+                                                                ?.palletSheet
+                                                                ?.uuid;
+                                                        if (
+                                                            palletSheetUuid ==
+                                                                null ||
+                                                            palletSheetUuid ===
+                                                                ''
+                                                        ) {
+                                                            return;
+                                                        }
                                                         window.open(
                                                             articles.palletSheets.downloadFile(
                                                                 {
                                                                     palletSheet:
-                                                                        order
-                                                                            .article
-                                                                            ?.palletSheet
-                                                                            ?.uuid ||
-                                                                        '',
+                                                                        palletSheetUuid,
                                                                 },
                                                             ).url,
                                                             '_blank',
-                                                        )
-                                                    }
+                                                        );
+                                                    }}
                                                 >
                                                     <Download className="mr-2 h-4 w-4" />
                                                     {t(
@@ -959,7 +1017,7 @@ export default function OrdersShow({ order }: OrdersShowProps) {
                                                                         material.cod
                                                                     }{' '}
                                                                     -{' '}
-                                                                    {material.description ||
+                                                                    {material.description ??
                                                                         ''}
                                                                 </p>
                                                             </div>
@@ -969,46 +1027,53 @@ export default function OrdersShow({ order }: OrdersShowProps) {
                                             </div>
                                         )}
 
-                                    {order.indications_for_shop && (
-                                        <div className="md:col-span-2">
-                                            <Label className="text-sm font-medium text-muted-foreground">
-                                                {t(
-                                                    'orders.show.indications_shop',
-                                                )}
-                                            </Label>
-                                            <p className="whitespace-pre-wrap">
-                                                {order.indications_for_shop}
-                                            </p>
-                                        </div>
-                                    )}
+                                    {order.indications_for_shop != null &&
+                                        order.indications_for_shop !== '' && (
+                                            <div className="md:col-span-2">
+                                                <Label className="text-sm font-medium text-muted-foreground">
+                                                    {t(
+                                                        'orders.show.indications_shop',
+                                                    )}
+                                                </Label>
+                                                <p className="whitespace-pre-wrap">
+                                                    {order.indications_for_shop}
+                                                </p>
+                                            </div>
+                                        )}
 
-                                    {order.indications_for_production && (
-                                        <div className="md:col-span-2">
-                                            <Label className="text-sm font-medium text-muted-foreground">
-                                                {t(
-                                                    'orders.show.indications_production',
-                                                )}
-                                            </Label>
-                                            <p className="whitespace-pre-wrap">
-                                                {
-                                                    order.indications_for_production
-                                                }
-                                            </p>
-                                        </div>
-                                    )}
+                                    {order.indications_for_production != null &&
+                                        order.indications_for_production !==
+                                            '' && (
+                                            <div className="md:col-span-2">
+                                                <Label className="text-sm font-medium text-muted-foreground">
+                                                    {t(
+                                                        'orders.show.indications_production',
+                                                    )}
+                                                </Label>
+                                                <p className="whitespace-pre-wrap">
+                                                    {
+                                                        order.indications_for_production
+                                                    }
+                                                </p>
+                                            </div>
+                                        )}
 
-                                    {order.indications_for_delivery && (
-                                        <div className="md:col-span-2">
-                                            <Label className="text-sm font-medium text-muted-foreground">
-                                                {t(
-                                                    'orders.show.indications_delivery',
-                                                )}
-                                            </Label>
-                                            <p className="whitespace-pre-wrap">
-                                                {order.indications_for_delivery}
-                                            </p>
-                                        </div>
-                                    )}
+                                    {order.indications_for_delivery != null &&
+                                        order.indications_for_delivery !==
+                                            '' && (
+                                            <div className="md:col-span-2">
+                                                <Label className="text-sm font-medium text-muted-foreground">
+                                                    {t(
+                                                        'orders.show.indications_delivery',
+                                                    )}
+                                                </Label>
+                                                <p className="whitespace-pre-wrap">
+                                                    {
+                                                        order.indications_for_delivery
+                                                    }
+                                                </p>
+                                            </div>
+                                        )}
                                 </div>
                             </CardContent>
                         </Card>

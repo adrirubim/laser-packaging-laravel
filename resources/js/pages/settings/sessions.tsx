@@ -50,7 +50,9 @@ export default function Sessions({
     };
 
     const getDeviceInfo = (ua: string | null) => {
-        if (!ua) return t('settings.sessions.current_session');
+        if (ua == null || ua === '') {
+            return t('settings.sessions.current_session');
+        }
         if (ua.includes('Mobile') && !ua.includes('iPad')) return 'Mobile';
         if (ua.includes('iPad') || ua.includes('Tablet')) return 'Tablet';
         return 'Desktop';
@@ -69,7 +71,7 @@ export default function Sessions({
                         description={t('settings.sessions.description')}
                     />
 
-                    {lastLoginAt && (
+                    {lastLoginAt != null && lastLoginAt !== '' && (
                         <p className="text-sm text-muted-foreground">
                             {t('settings.sessions.last_login', {
                                 date: new Date(lastLoginAt).toLocaleString(

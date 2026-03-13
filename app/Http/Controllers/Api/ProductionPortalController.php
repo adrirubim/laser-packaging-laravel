@@ -1,27 +1,40 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\ApiResponseResource;
 use App\Models\Employee;
 use App\Models\EmployeePortalToken;
-use App\Models\FoglioPallet;
-use App\Models\Order;
-use App\Models\ProductionOrderProcessing;
 use App\Services\PalletCalculationService;
-use App\Services\Planning\PlanningReplanService;
+use Domain\Production\Actions\AuthenticateEmployeeAction;
+use Domain\Production\Actions\ConfirmAutocontrolloAction;
+use Domain\Production\Actions\GetEmployeeOrderListAction;
+use Domain\Production\Actions\GetProductionOrderInfoAction;
+use Domain\Production\Actions\ProcessPalletQuantityAction;
+use Domain\Production\Actions\RegisterManualQuantityAction;
+use Domain\Production\Actions\SuspendOrderAction;
+use Domain\Production\Actions\UpdateOrderWorkedQuantityAction;
+use Domain\Production\DTOs\PalletMovementDto;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class ProductionPortalController extends Controller
 {
-    protected PalletCalculationService $palletCalculationService;
-
-    public function __construct(PalletCalculationService $palletCalculationService)
-    {
-        $this->palletCalculationService = $palletCalculationService;
-    }
+    public function __construct(
+        protected PalletCalculationService $palletCalculationService,
+        protected ProcessPalletQuantityAction $processPalletQuantityAction,
+        protected AuthenticateEmployeeAction $authenticateEmployeeAction,
+        protected UpdateOrderWorkedQuantityAction $updateOrderWorkedQuantityAction,
+        protected RegisterManualQuantityAction $registerManualQuantityAction,
+        protected SuspendOrderAction $suspendOrderAction,
+        protected ConfirmAutocontrolloAction $confirmAutocontrolloAction,
+        protected GetEmployeeOrderListAction $getEmployeeOrderListAction,
+        protected GetProductionOrderInfoAction $getProductionOrderInfoAction,
+    ) {}
 
     /**
      * Helper: Get employee from token
@@ -51,123 +64,47 @@ class ProductionPortalController extends Controller
     }
 
     /**
-     * Helper: Update order worked_quantity and status
-     */
-    protected function updateOrderWorkedQuantity(string $orderUuid): void
-    {
-        $processedQuantity = ProductionOrderProcessing::loadProcessedQuantity($orderUuid);
-
-        $order = Order::where('uuid', $orderUuid)
-            ->where('removed', false)
-            ->first();
-
-        if ($order) {
-            $order->worked_quantity = $processedQuantity;
-
-            // Automatic status change: if status <= 2 and worked_quantity > 0, set to 3
-            if ($order->status <= Order::STATUS_LANCIATO && $processedQuantity > 0) {
-                $order->status = Order::STATUS_IN_AVANZAMENTO;
-            }
-
-            $order->save();
-
-            // Mirror Pianificazione Produzione: reajustar planning al cambiar worked_quantity desde el portal
-            app(PlanningReplanService::class)->adjustForWorkedQuantity($order->uuid);
-        }
-    }
-
-    /**
-     * Helper: Generate print URL for foglio pallet
-     */
-    protected function generatePrintUrl(?string $foglioPalletUuid): ?string
-    {
-        if (empty($foglioPalletUuid)) {
-            return null;
-        }
-
-        try {
-            $foglioPallet = FoglioPallet::where('uuid', $foglioPalletUuid)
-                ->where('removed', false)
-                ->first();
-
-            if ($foglioPallet && ! empty($foglioPallet->filename)) {
-                // Generate print URL (adapt based on file implementation)
-                return route('api.production.foglio-pallet.print', ['uuid' => $foglioPallet->uuid]);
-            }
-        } catch (\Exception $e) {
-            // In caso di errore, restituire null
-        }
-
-        return null;
-    }
-
-    /**
      * 1. Authenticate with EAN codes
      * POST /api/production/authenticate
      */
-    public function authenticate(Request $request)
+    public function authenticate(Request $request): JsonResponse
     {
-        $request->validate([
+        $validated = $request->validate([
             'employee_number' => 'required|string',
             'order_number' => 'required|string',
         ]);
 
-        // Strip leading zeros from both EANs
-        $employeeNumber = ltrim($request->get('employee_number'), '0');
-        $orderNumber = ltrim($request->get('order_number'), '0');
+        $result = $this->authenticateEmployeeAction->execute(
+            $validated['employee_number'],
+            $validated['order_number'],
+        );
 
-        // Find employee by ID
-        $employee = Employee::where('id', $employeeNumber)
-            ->where('removed', false)
-            ->where('portal_enabled', true)
-            ->first();
-
-        if (! $employee) {
-            return response()->json(['error' => __('production_portal.employee_not_found')], 404);
+        if ($result['success'] === false) {
+            return ApiResponseResource::error(
+                $result['message'] ?? '',
+                null
+            )->additional([
+                'error' => $result['message'] ?? '',
+            ])->response()->setStatusCode($result['status']);
         }
 
-        // Find order by ID
-        $order = Order::where('id', $orderNumber)
-            ->where('removed', false)
-            ->first();
-
-        if (! $order) {
-            return response()->json(['error' => __('planning.replan.order_not_found')], 404);
-        }
-
-        // Verify: order must be in status 2 or 3
-        if ($order->status !== Order::STATUS_LANCIATO && $order->status !== Order::STATUS_IN_AVANZAMENTO) {
-            return response()->json(['error' => __('production_portal.order_invalid_status')], 400);
-        }
-
-        // Generate temporary token (base64 encoded)
-        $token = base64_encode(Str::random(32).'|'.time());
-
-        // Save token in employeeportaltoken
-        EmployeePortalToken::create([
-            'employee_uuid' => $employee->uuid,
-            'token' => $token,
-        ]);
-
-        return response()->json([
+        return ApiResponseResource::success(
+            true,
+            null,
+            $result['data']
+        )->additional([
             'ok' => 1,
-            'order_uuid' => $order->uuid,
-            'autocontrollo' => $order->autocontrollo ? 1 : 0,
-            'employee' => [
-                'uuid' => $employee->uuid,
-                'name' => $employee->name,
-                'surname' => $employee->surname,
-                'matriculation_number' => $employee->matriculation_number,
-                'token' => $token,
-            ],
-        ]);
+            'order_uuid' => $result['data']['order_uuid'] ?? null,
+            'autocontrollo' => $result['data']['autocontrollo'] ?? 0,
+            'employee' => $result['data']['employee'] ?? null,
+        ])->response()->setStatusCode($result['status']);
     }
 
     /**
      * 2. Login with matriculation number and password
      * POST /api/production/login
      */
-    public function login(Request $request)
+    public function login(Request $request): JsonResponse
     {
         $request->validate([
             'matriculation_number' => 'required|string',
@@ -180,7 +117,11 @@ class ProductionPortalController extends Controller
             ->first();
 
         if (! $employee || ! $employee->verifyPassword($request->get('password'))) {
-            return response()->json(['error' => __('production_portal.invalid_credentials')], 401);
+            return ApiResponseResource::error(
+                __('production_portal.invalid_credentials')
+            )->additional([
+                'error' => __('production_portal.invalid_credentials'),
+            ])->response()->setStatusCode(401);
         }
 
         // Generate temporary token
@@ -192,7 +133,19 @@ class ProductionPortalController extends Controller
             'token' => $token,
         ]);
 
-        return response()->json([
+        return ApiResponseResource::success(
+            true,
+            null,
+            [
+                'employee' => [
+                    'uuid' => $employee->uuid,
+                    'name' => $employee->name,
+                    'surname' => $employee->surname,
+                    'matriculation_number' => $employee->matriculation_number,
+                    'token' => $token,
+                ],
+            ]
+        )->additional([
             'ok' => 1,
             'employee' => [
                 'uuid' => $employee->uuid,
@@ -201,151 +154,118 @@ class ProductionPortalController extends Controller
                 'matriculation_number' => $employee->matriculation_number,
                 'token' => $token,
             ],
-        ]);
+        ])->response();
     }
 
     /**
      * 3. Check token validity
      * POST /api/production/check-token
      */
-    public function checkToken(Request $request)
+    public function checkToken(Request $request): JsonResponse
     {
         $token = $request->get('token') ?? $request->input('user_data.token');
 
         if (empty($token)) {
-            return response()->json(['error' => __('production_portal.token_not_provided')], 400);
+            return ApiResponseResource::error(
+                __('production_portal.token_not_provided')
+            )->additional([
+                'error' => __('production_portal.token_not_provided'),
+            ])->response()->setStatusCode(400);
         }
 
         $employee = $this->getEmployeeFromToken($token);
 
         if (! $employee) {
-            return response()->json(['error' => __('production_portal.token_invalid_expired')], 401);
+            return ApiResponseResource::error(
+                __('production_portal.token_invalid_expired')
+            )->additional([
+                'error' => __('production_portal.token_invalid_expired'),
+            ])->response()->setStatusCode(401);
         }
 
-        return response()->json(['ok' => 1]);
+        return ApiResponseResource::success(
+            true,
+            null,
+            ['ok' => 1]
+        )->additional([
+            'ok' => 1,
+        ])->response();
     }
 
     /**
      * 4. Add complete pallet quantity
      * POST /api/production/add-pallet-quantity
      */
-    public function addPalletQuantity(Request $request)
+    public function addPalletQuantity(Request $request): JsonResponse
     {
-        $request->validate([
+        $validated = $request->validate([
             'order_uuid' => 'required|string|exists:orderorder,uuid',
             'token' => 'required|string',
         ]);
 
-        $employee = $this->getEmployeeFromToken($request->get('token'));
-        if (! $employee) {
-            return response()->json(['error' => __('production_portal.token_invalid_expired')], 401);
+        $employee = $this->getEmployeeFromToken($validated['token']);
+        if ($employee === null) {
+            return ApiResponseResource::error(
+                __('production_portal.token_invalid_expired')
+            )->additional([
+                'error' => __('production_portal.token_invalid_expired'),
+            ])->response()->setStatusCode(401);
         }
 
-        return DB::transaction(function () use ($request, $employee) {
-            $order = Order::where('uuid', $request->get('order_uuid'))
-                ->where('removed', false)
-                ->with('article')
-                ->firstOrFail();
+        $dto = new PalletMovementDto(
+            orderUuid: $validated['order_uuid'],
+            employeeUuid: $employee->uuid,
+        );
 
-            $article = $order->article;
-            if (! $article) {
-                return response()->json(['error' => __('services.pallet.order_has_no_article')], 400);
-            }
+        $response = $this->processPalletQuantityAction->execute($dto);
 
-            // Calculate quantity per pallet
-            $palletQuantity = $this->palletCalculationService->getPalletQuantity($article->uuid);
+        $this->updateOrderWorkedQuantityAction->execute($validated['order_uuid']);
 
-            // Calculate processed quantity
-            $processedQuantity = $this->palletCalculationService->getProcessedQuantity($order->uuid);
-
-            // Calculate quantity to add: pallet_quantity - (processed % pallet_quantity)
-            $quantityToAdd = $palletQuantity - ((int) $processedQuantity % $palletQuantity);
-
-            // Record processing
-            ProductionOrderProcessing::create([
-                'employee_uuid' => $employee->uuid,
-                'order_uuid' => $order->uuid,
-                'quantity' => $quantityToAdd,
-                'processed_datetime' => now(),
-            ]);
-
-            // Update worked_quantity and status
-            $this->updateOrderWorkedQuantity($order->uuid);
-
-            // Verify if pallet is completed
-            $newProcessedQuantity = $processedQuantity + $quantityToAdd;
-            $printUrl = null;
-
-            if ($newProcessedQuantity % $palletQuantity === 0 && ! empty($article->pallet_sheet)) {
-                $printUrl = $this->generatePrintUrl($article->pallet_sheet);
-            } else {
-                $printUrl = null;
-            }
-
-            return response()->json([
-                'ok' => 1,
-                'print_url' => $printUrl,
-            ]);
-        });
+        return $response;
     }
 
     /**
      * 5. Add manual quantity
      * POST /api/production/add-manual-quantity
      */
-    public function addManualQuantity(Request $request)
+    public function addManualQuantity(Request $request): JsonResponse
     {
-        $request->validate([
+        $validated = $request->validate([
             'order_uuid' => 'required|string|exists:orderorder,uuid',
             'quantity' => 'required|numeric|min:0.01',
             'token' => 'required|string',
         ]);
 
-        $employee = $this->getEmployeeFromToken($request->get('token'));
+        $employee = $this->getEmployeeFromToken($validated['token']);
         if (! $employee) {
-            return response()->json(['error' => __('production_portal.token_invalid_expired')], 401);
+            return ApiResponseResource::error(
+                __('production_portal.token_invalid_expired')
+            )->additional([
+                'error' => __('production_portal.token_invalid_expired'),
+            ])->response()->setStatusCode(401);
         }
 
-        return DB::transaction(function () use ($request, $employee) {
-            $order = Order::where('uuid', $request->get('order_uuid'))
-                ->where('removed', false)
-                ->with('article')
-                ->firstOrFail();
+        $result = $this->registerManualQuantityAction->execute(
+            $validated['order_uuid'],
+            $employee->uuid,
+            (float) $validated['quantity'],
+        );
 
-            $quantity = (float) $request->get('quantity');
-
-            // Calculate quantity to complete pallet
-            $quantityToFinishPallet = $this->palletCalculationService->getQuantityToFinishPallet($order->uuid);
-
-            // Record processing
-            ProductionOrderProcessing::create([
-                'employee_uuid' => $employee->uuid,
-                'order_uuid' => $order->uuid,
-                'quantity' => $quantity,
-                'processed_datetime' => now(),
-            ]);
-
-            // Update worked_quantity and status
-            $this->updateOrderWorkedQuantity($order->uuid);
-
-            // If quantity >= quantity_to_finish_pallet and article has pallet sheet, generate print URL
-            $printUrl = null;
-            if ($quantity >= $quantityToFinishPallet && $order->article && ! empty($order->article->pallet_sheet)) {
-                $printUrl = $this->generatePrintUrl($order->article->pallet_sheet);
-            }
-
-            return response()->json([
-                'ok' => 1,
-                'print_url' => $printUrl,
-            ]);
-        });
+        return ApiResponseResource::success(
+            $result['success'],
+            $result['message'],
+            $result['data']
+        )->additional([
+            'ok' => $result['success'] === true ? 1 : 0,
+            'print_url' => $result['data']['print_url'] ?? null,
+        ])->response()->setStatusCode($result['status']);
     }
 
     /**
      * 6. Suspend order
      * POST /api/production/suspend-order
      */
-    public function suspendOrder(Request $request)
+    public function suspendOrder(Request $request): JsonResponse
     {
         $request->validate([
             'order_uuid' => 'required|string|exists:orderorder,uuid',
@@ -354,26 +274,29 @@ class ProductionPortalController extends Controller
 
         $employee = $this->getEmployeeFromToken($request->get('token'));
         if (! $employee) {
-            return response()->json(['error' => __('production_portal.token_invalid_expired')], 401);
+            return ApiResponseResource::error(
+                __('production_portal.token_invalid_expired')
+            )->additional([
+                'error' => __('production_portal.token_invalid_expired'),
+            ])->response()->setStatusCode(401);
         }
 
-        $order = Order::where('uuid', $request->get('order_uuid'))
-            ->where('removed', false)
-            ->firstOrFail();
+        $this->suspendOrderAction->execute($request->get('order_uuid'));
 
-        // Impostare stato a 4 (Sospeso)
-        $order->status = Order::STATUS_SOSPESO;
-        $order->motivazione = 'Autocontrollo Non Superato';
-        $order->save();
-
-        return response()->json(['ok' => 1]);
+        return ApiResponseResource::success(
+            true,
+            null,
+            ['ok' => 1]
+        )->additional([
+            'ok' => 1,
+        ])->response();
     }
 
     /**
      * 7. Confirm autocontrollo
      * POST /api/production/confirm-autocontrollo
      */
-    public function confirmAutocontrollo(Request $request)
+    public function confirmAutocontrollo(Request $request): JsonResponse
     {
         $request->validate([
             'order_uuid' => 'required|string|exists:orderorder,uuid',
@@ -382,25 +305,29 @@ class ProductionPortalController extends Controller
 
         $employee = $this->getEmployeeFromToken($request->get('token'));
         if (! $employee) {
-            return response()->json(['error' => __('production_portal.token_invalid_expired')], 401);
+            return ApiResponseResource::error(
+                __('production_portal.token_invalid_expired')
+            )->additional([
+                'error' => __('production_portal.token_invalid_expired'),
+            ])->response()->setStatusCode(401);
         }
 
-        $order = Order::where('uuid', $request->get('order_uuid'))
-            ->where('removed', false)
-            ->firstOrFail();
+        $this->confirmAutocontrolloAction->execute($request->get('order_uuid'));
 
-        // Marcar autocontrollo = 1
-        $order->autocontrollo = true;
-        $order->save();
-
-        return response()->json(['ok' => 1]);
+        return ApiResponseResource::success(
+            true,
+            null,
+            ['ok' => 1]
+        )->additional([
+            'ok' => 1,
+        ])->response();
     }
 
     /**
      * 8. Get employee order list
      * POST /api/production/employee-order-list
      */
-    public function getEmployeeOrderList(Request $request)
+    public function getEmployeeOrderList(Request $request): JsonResponse
     {
         $request->validate([
             'token' => 'required|string',
@@ -408,65 +335,32 @@ class ProductionPortalController extends Controller
 
         $employee = $this->getEmployeeFromToken($request->get('token'));
         if (! $employee) {
-            return response()->json(['error' => __('production_portal.token_invalid_expired')], 401);
+            return ApiResponseResource::error(
+                __('production_portal.token_invalid_expired')
+            )->additional([
+                'error' => __('production_portal.token_invalid_expired'),
+            ])->response()->setStatusCode(401);
         }
 
-        // Get orders with status 2 or 3
-        $orders = Order::whereIn('status', [Order::STATUS_LANCIATO, Order::STATUS_IN_AVANZAMENTO])
-            ->where('removed', false)
-            ->with([
-                'article.offer.customer',
-                'article.offer.customerDivision',
-                'shippingAddress',
-            ])
-            ->get();
+        $ordersData = $this->getEmployeeOrderListAction->execute();
 
-        // Arricchire con dati e calcolare remain_quantity
-        $ordersData = $orders->map(function ($order) {
-            $remainQuantity = $order->quantity - $order->worked_quantity;
-
-            return [
-                'uuid' => $order->uuid,
-                'order_production_number' => $order->order_production_number,
-                'number_customer_reference_order' => $order->number_customer_reference_order,
-                'quantity' => $order->quantity,
-                'worked_quantity' => $order->worked_quantity,
-                'remain_quantity' => $remainQuantity,
-                'status' => $order->status,
-                'status_label' => $order->status_label,
-                'autocontrollo' => $order->autocontrollo ? 1 : 0,
-                'article' => $order->article ? [
-                    'uuid' => $order->article->uuid,
-                    'cod_article_las' => $order->article->cod_article_las,
-                    'article_descr' => $order->article->article_descr,
-                ] : null,
-                'customer' => $order->article && $order->article->offer && $order->article->offer->customer ? [
-                    'uuid' => $order->article->offer->customer->uuid,
-                    'company_name' => $order->article->offer->customer->company_name,
-                ] : null,
-                'division' => $order->article && $order->article->offer && $order->article->offer->customerDivision ? [
-                    'uuid' => $order->article->offer->customerDivision->uuid,
-                    'name' => $order->article->offer->customerDivision->name,
-                ] : null,
-                'shipping_address' => $order->shippingAddress ? [
-                    'uuid' => $order->shippingAddress->uuid,
-                    'street' => $order->shippingAddress->street,
-                    'city' => $order->shippingAddress->city,
-                ] : null,
-            ];
-        });
-
-        return response()->json([
+        return ApiResponseResource::success(
+            true,
+            null,
+            [
+                'order' => $ordersData,
+            ]
+        )->additional([
             'ok' => 1,
             'order' => $ordersData,
-        ]);
+        ])->response();
     }
 
     /**
      * 9. Get complete order information
      * POST /api/production/get-info
      */
-    public function getInfo(Request $request)
+    public function getInfo(Request $request): JsonResponse
     {
         $request->validate([
             'order_uuid' => 'required|string|exists:orderorder,uuid',
@@ -475,70 +369,24 @@ class ProductionPortalController extends Controller
 
         $employee = $this->getEmployeeFromToken($request->get('token'));
         if (! $employee) {
-            return response()->json(['error' => __('production_portal.token_invalid_expired')], 401);
+            return ApiResponseResource::error(
+                __('production_portal.token_invalid_expired')
+            )->additional([
+                'error' => __('production_portal.token_invalid_expired'),
+            ])->response()->setStatusCode(401);
         }
 
-        $order = Order::where('uuid', $request->get('order_uuid'))
-            ->where('removed', false)
-            ->with([
-                'article.offer.lasWorkLine',
-                'article.palletType',
-                'article.offer.customer',
-                'article.offer.customerDivision',
-                'shippingAddress',
-            ])
-            ->firstOrFail();
+        $payload = $this->getProductionOrderInfoAction->execute($request->get('order_uuid'));
 
-        $remainQuantity = $order->quantity - $order->worked_quantity;
-
-        return response()->json([
+        return ApiResponseResource::success(
+            true,
+            null,
+            [
+                'order' => $payload,
+            ]
+        )->additional([
             'ok' => 1,
-            'order' => [
-                'uuid' => $order->uuid,
-                'order_production_number' => $order->order_production_number,
-                'number_customer_reference_order' => $order->number_customer_reference_order,
-                'quantity' => $order->quantity,
-                'worked_quantity' => $order->worked_quantity,
-                'remain_quantity' => $remainQuantity,
-                'status' => $order->status,
-                'status_label' => $order->status_label,
-                'autocontrollo' => $order->autocontrollo ? 1 : 0,
-                'article' => $order->article ? [
-                    'uuid' => $order->article->uuid,
-                    'cod_article_las' => $order->article->cod_article_las,
-                    'article_descr' => $order->article->article_descr,
-                    'plan_packaging' => $order->article->plan_packaging,
-                    'pallet_plans' => $order->article->pallet_plans,
-                ] : null,
-                'offer' => $order->article && $order->article->offer ? [
-                    'uuid' => $order->article->offer->uuid,
-                    'offer_number' => $order->article->offer->offer_number,
-                ] : null,
-                'las_work_line' => $order->article && $order->article->offer && $order->article->offer->lasWorkLine ? [
-                    'uuid' => $order->article->offer->lasWorkLine->uuid,
-                    'code' => $order->article->offer->lasWorkLine->code,
-                    'name' => $order->article->offer->lasWorkLine->name,
-                ] : null,
-                'pallet_type' => $order->article && $order->article->palletType ? [
-                    'uuid' => $order->article->palletType->uuid,
-                    'cod' => $order->article->palletType->cod,
-                    'description' => $order->article->palletType->description,
-                ] : null,
-                'customer' => $order->article && $order->article->offer && $order->article->offer->customer ? [
-                    'uuid' => $order->article->offer->customer->uuid,
-                    'company_name' => $order->article->offer->customer->company_name,
-                ] : null,
-                'division' => $order->article && $order->article->offer && $order->article->offer->customerDivision ? [
-                    'uuid' => $order->article->offer->customerDivision->uuid,
-                    'name' => $order->article->offer->customerDivision->name,
-                ] : null,
-                'shipping_address' => $order->shippingAddress ? [
-                    'uuid' => $order->shippingAddress->uuid,
-                    'street' => $order->shippingAddress->street,
-                    'city' => $order->shippingAddress->city,
-                    'postal_code' => $order->shippingAddress->postal_code,
-                ] : null,
-            ],
-        ]);
+            'order' => $payload,
+        ])->response();
     }
 }

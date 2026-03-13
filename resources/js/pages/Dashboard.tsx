@@ -56,6 +56,7 @@ import orders from '@/routes/orders/index';
 import planning from '@/routes/planning/index';
 import productionPortal from '@/routes/production-portal/index';
 import { type BreadcrumbItem } from '@/types';
+import { type DomainDashboardStats } from '@/types/DomainModels';
 import { Head, Link, router } from '@inertiajs/react';
 import {
     AlertTriangle,
@@ -82,137 +83,7 @@ import {
 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-type Order = {
-    id: number;
-    uuid: string;
-    order_production_number: string;
-    status: number;
-    status_label: string;
-    quantity: number;
-    worked_quantity: number;
-    delivery_requested_date?: string | null;
-    days_until_delivery?: number;
-    is_overdue?: boolean;
-    article?: {
-        cod_article_las: string;
-        article_descr?: string | null;
-    } | null;
-    customer?: string | null;
-    created_at?: string | null;
-};
-
-type TopCustomer = {
-    id: number;
-    uuid: string;
-    company_name: string;
-    order_count: number;
-};
-
-type TopArticle = {
-    id: number;
-    uuid: string;
-    cod_article_las: string;
-    article_descr?: string | null;
-    total_quantity: number;
-};
-
-type Alert = {
-    type: string;
-    severity: 'low' | 'medium' | 'high' | 'critical';
-    title: string;
-    message: string;
-    count: number;
-    first_order_uuid?: string; // UUID of first overdue order (alert type 'overdue')
-    /** Situation signature (e.g. count|first_uuid); used for persistent ack in backend. */
-    signature?: string;
-    /** Scope hash (filters); used for persistent ack in backend. */
-    scope_hash?: string;
-};
-
-type PerformanceMetrics = {
-    completion_rate: number;
-    avg_production_time_days: number;
-    orders_per_day: number;
-    total_orders: number;
-    completed_orders: number;
-};
-
-type ComparisonStats = {
-    orders: {
-        current: number;
-        previous: number;
-        change: number;
-        change_percentage: number;
-    };
-    production: {
-        current: number;
-        previous: number;
-        change: number;
-    };
-} | null;
-
-type CustomerForFilter = {
-    uuid: string;
-    label: string;
-    code?: string;
-};
-
-type OrderStatusForFilter = {
-    value: string;
-    label: string;
-};
-
-type DashboardProps = {
-    statistics: {
-        orders: {
-            total: number;
-            pianificato: number;
-            in_allestimento: number;
-            lanciato: number;
-            in_avanzamento: number;
-            sospeso: number;
-            completato: number;
-        };
-        offers: {
-            total: number;
-            active: number;
-        };
-        articles: {
-            total: number;
-        };
-        customers: {
-            total: number;
-        };
-        production: {
-            total_quantity: number;
-            worked_quantity: number;
-            progress_percentage: number;
-        };
-    };
-    urgentOrders: Order[];
-    recentOrders: Order[];
-    topCustomers: TopCustomer[];
-    topArticles: TopArticle[];
-    performanceMetrics: PerformanceMetrics;
-    alerts: Alert[];
-    comparisonStats: ComparisonStats;
-    ordersTrend: Array<{ period: string; count: number }>;
-    previousTrend?: Array<{ period: string; count: number }> | null;
-    productionProgressData: Array<{
-        orderNumber: string;
-        worked: number;
-        total: number;
-        progress: number;
-        isUrgent: boolean;
-        daysUntilDelivery?: number;
-    }>;
-    dateFilter: string;
-    customerFilter?: string | null;
-    statusFilter?: string[] | null;
-    customersForFilter: CustomerForFilter[];
-    orderStatusesForFilter: OrderStatusForFilter[];
-    advancementsCountToday: number;
-};
+type DashboardProps = DomainDashboardStats;
 
 const ALERT_SEVERITY_COLORS = {
     low: 'border-blue-500/40 bg-blue-500/5 text-blue-700 dark:text-blue-300',
@@ -257,7 +128,9 @@ function buildDashboardParams(
     extra?: Record<string, string>,
 ): Record<string, string> {
     const params: Record<string, string> = { date_filter: dateFilter };
-    if (customerFilter) params.customer_uuid = customerFilter;
+    if (customerFilter != null && customerFilter !== '') {
+        params.customer_uuid = customerFilter;
+    }
     if (statusFilter.length > 0) params.statuses = statusFilter.join(',');
     if (extra) Object.assign(params, extra);
     return params;
@@ -285,7 +158,9 @@ export default function Dashboard({
     const { t } = useTranslations();
     const [dateFilter, setDateFilter] = useState(initialDateFilter);
     const [customerFilter, setCustomerFilter] = useState<string | null>(
-        initialCustomerFilter || null,
+        initialCustomerFilter != null && initialCustomerFilter !== ''
+            ? initialCustomerFilter
+            : null,
     );
     const [statusFilter, setStatusFilter] = useState<string[]>(
         initialStatusFilter || [],
@@ -315,7 +190,11 @@ export default function Dashboard({
     useEffect(() => {
         const id = setTimeout(() => {
             setDateFilter(initialDateFilter);
-            setCustomerFilter(initialCustomerFilter || null);
+            setCustomerFilter(
+                initialCustomerFilter != null && initialCustomerFilter !== ''
+                    ? initialCustomerFilter
+                    : null,
+            );
             setStatusFilter(initialStatusFilter ?? []);
         }, 0);
         return () => clearTimeout(id);
@@ -507,27 +386,31 @@ export default function Dashboard({
     // Memoize export function to avoid recreation on every render
     const handleExport = useCallback(() => {
         const timestamp = new Date().toISOString().split('T')[0];
+
+        const customerFilterLabel =
+            customerFilter != null && customerFilter !== ''
+                ? (customersForFilter.find((c) => c.uuid === customerFilter)
+                      ?.label ?? null)
+                : null;
+
         const csv = [
             [t('dashboard.export_csv_title'), ''],
             [t('dashboard.export_generated'), new Date().toLocaleString()],
             [t('dashboard.export_date_filter'), dateFilter],
-            customerFilter
-                ? [
-                      t('dashboard.export_customer_filter'),
-                      customersForFilter.find((c) => c.uuid === customerFilter)
-                          ?.label || t('dashboard.export_nd'),
-                  ]
+            customerFilterLabel != null && customerFilterLabel !== ''
+                ? [t('dashboard.export_customer_filter'), customerFilterLabel]
                 : null,
             statusFilter.length > 0
                 ? [
                       t('dashboard.export_status_filter'),
                       statusFilter
-                          .map(
-                              (s) =>
+                          .map((s) => {
+                              const label =
                                   orderStatusesForFilter.find(
                                       (st) => st.value === s,
-                                  )?.label || s,
-                          )
+                                  )?.label ?? null;
+                              return label != null && label !== '' ? label : s;
+                          })
                           .join(', '),
                   ]
                 : null,
@@ -885,7 +768,12 @@ export default function Dashboard({
 
                             {/* Customer filter */}
                             <Select
-                                value={customerFilter || 'all'}
+                                value={
+                                    customerFilter != null &&
+                                    customerFilter !== ''
+                                        ? customerFilter
+                                        : 'all'
+                                }
                                 onValueChange={handleCustomerFilterChange}
                             >
                                 <SelectTrigger
@@ -1291,8 +1179,9 @@ export default function Dashboard({
                                                         )}
                                                     </p>
                                                     <div className="flex flex-wrap items-center gap-2">
-                                                        {actionable &&
-                                                            ctaLabel && (
+                                                        {actionable === true &&
+                                                            ctaLabel != null &&
+                                                            ctaLabel !== '' && (
                                                                 <Link
                                                                     href={
                                                                         alertUrl
@@ -2191,13 +2080,24 @@ export default function Dashboard({
                                                 )
                                             }
                                             className={`group flex w-full cursor-pointer items-center justify-between rounded-lg border bg-white p-3 text-left transition-all hover:shadow-sm focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-none dark:bg-slate-900/50 ${
-                                                order.is_overdue
+                                                order.is_overdue === true
                                                     ? 'border-red-500/50 hover:bg-red-50/70 dark:hover:bg-red-950/15'
-                                                    : order.days_until_delivery &&
-                                                        order.days_until_delivery <=
-                                                            3
-                                                      ? 'border-orange-500/50 hover:bg-orange-50/70 dark:hover:bg-orange-950/15'
-                                                      : 'border-orange-200/60 hover:bg-orange-50/40 dark:border-orange-900/60 dark:hover:bg-orange-950/10'
+                                                    : (() => {
+                                                          const raw =
+                                                              order.days_until_delivery;
+                                                          const hasValidDays =
+                                                              raw != null &&
+                                                              !Number.isNaN(
+                                                                  Number(raw),
+                                                              );
+                                                          if (
+                                                              hasValidDays &&
+                                                              Number(raw) <= 3
+                                                          ) {
+                                                              return 'border-orange-500/50 hover:bg-orange-50/70 dark:hover:bg-orange-950/15';
+                                                          }
+                                                          return 'border-orange-200/60 hover:bg-orange-50/40 dark:border-orange-900/60 dark:hover:bg-orange-950/10';
+                                                      })()
                                             }`}
                                         >
                                             <div className="min-w-0 flex-1">
@@ -2232,7 +2132,8 @@ export default function Dashboard({
                                                             ),
                                                         )}
                                                     </Badge>
-                                                    {order.is_overdue && (
+                                                    {order.is_overdue ===
+                                                        true && (
                                                         <Badge
                                                             variant="destructive"
                                                             className="text-xs"
@@ -2251,47 +2152,57 @@ export default function Dashboard({
                                                         }{' '}
                                                         -{' '}
                                                         {order.article
-                                                            .article_descr ||
-                                                            t(
-                                                                'dashboard.no_description',
+                                                            .article_descr !=
+                                                            null &&
+                                                        order.article
+                                                            .article_descr !==
+                                                            ''
+                                                            ? order.article
+                                                                  .article_descr
+                                                            : t(
+                                                                  'dashboard.no_description',
+                                                              )}
+                                                    </p>
+                                                )}
+                                                {order.delivery_requested_date !=
+                                                    null &&
+                                                    order.delivery_requested_date !==
+                                                        '' && (
+                                                        <p
+                                                            className={`mt-1 text-xs ${
+                                                                order.is_overdue ===
+                                                                true
+                                                                    ? 'font-semibold text-red-600'
+                                                                    : 'text-foreground/75'
+                                                            }`}
+                                                        >
+                                                            {t(
+                                                                'dashboard.delivery',
+                                                            )}{' '}
+                                                            {
+                                                                order.delivery_requested_date
+                                                            }
+                                                            {order.days_until_delivery !==
+                                                                undefined && (
+                                                                <span className="ml-2">
+                                                                    (
+                                                                    {(() => {
+                                                                        const days =
+                                                                            Math.round(
+                                                                                Number(
+                                                                                    order.days_until_delivery,
+                                                                                ),
+                                                                            );
+                                                                        return days <
+                                                                            0
+                                                                            ? `${Math.abs(days)} ${t('dashboard.days_overdue')}`
+                                                                            : `${days} ${t('dashboard.days_remaining')}`;
+                                                                    })()}
+                                                                    )
+                                                                </span>
                                                             )}
-                                                    </p>
-                                                )}
-                                                {order.delivery_requested_date && (
-                                                    <p
-                                                        className={`mt-1 text-xs ${
-                                                            order.is_overdue
-                                                                ? 'font-semibold text-red-600'
-                                                                : 'text-foreground/75'
-                                                        }`}
-                                                    >
-                                                        {t(
-                                                            'dashboard.delivery',
-                                                        )}{' '}
-                                                        {
-                                                            order.delivery_requested_date
-                                                        }
-                                                        {order.days_until_delivery !==
-                                                            undefined && (
-                                                            <span className="ml-2">
-                                                                (
-                                                                {(() => {
-                                                                    const days =
-                                                                        Math.round(
-                                                                            Number(
-                                                                                order.days_until_delivery,
-                                                                            ),
-                                                                        );
-                                                                    return days <
-                                                                        0
-                                                                        ? `${Math.abs(days)} ${t('dashboard.days_overdue')}`
-                                                                        : `${days} ${t('dashboard.days_remaining')}`;
-                                                                })()}
-                                                                )
-                                                            </span>
-                                                        )}
-                                                    </p>
-                                                )}
+                                                        </p>
+                                                    )}
                                             </div>
                                             <div className="ml-2 flex items-center text-muted-foreground group-hover:text-foreground">
                                                 <Eye
@@ -2397,25 +2308,33 @@ export default function Dashboard({
                                                         }{' '}
                                                         -{' '}
                                                         {order.article
-                                                            .article_descr ||
-                                                            t(
-                                                                'dashboard.no_description',
-                                                            )}
+                                                            .article_descr !=
+                                                            null &&
+                                                        order.article
+                                                            .article_descr !==
+                                                            ''
+                                                            ? order.article
+                                                                  .article_descr
+                                                            : t(
+                                                                  'dashboard.no_description',
+                                                              )}
                                                     </p>
                                                 )}
-                                                {order.customer && (
-                                                    <p className="text-xs text-foreground/75">
-                                                        {t(
-                                                            'dashboard.customer_label',
-                                                        )}{' '}
-                                                        {order.customer}
-                                                    </p>
-                                                )}
-                                                {order.created_at && (
-                                                    <p className="mt-1 text-xs text-foreground/75">
-                                                        {order.created_at}
-                                                    </p>
-                                                )}
+                                                {order.customer != null &&
+                                                    order.customer !== '' && (
+                                                        <p className="text-xs text-foreground/75">
+                                                            {t(
+                                                                'dashboard.customer_label',
+                                                            )}{' '}
+                                                            {order.customer}
+                                                        </p>
+                                                    )}
+                                                {order.created_at != null &&
+                                                    order.created_at !== '' && (
+                                                        <p className="mt-1 text-xs text-foreground/75">
+                                                            {order.created_at}
+                                                        </p>
+                                                    )}
                                             </div>
                                             <div className="ml-2 flex items-center text-muted-foreground group-hover:text-foreground">
                                                 <Eye

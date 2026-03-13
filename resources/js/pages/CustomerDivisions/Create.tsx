@@ -289,18 +289,24 @@ export default function CustomerDivisionsCreate({
                                                         maxLength={255}
                                                         aria-describedby="email-help"
                                                         aria-invalid={
-                                                            emailValidation.error
+                                                            emailValidation.error !=
+                                                                null &&
+                                                            emailValidation.error !==
+                                                                ''
                                                                 ? 'true'
                                                                 : 'false'
                                                         }
                                                     />
-                                                    {emailValidation.error && (
-                                                        <p className="text-xs text-destructive">
-                                                            {
-                                                                emailValidation.error
-                                                            }
-                                                        </p>
-                                                    )}
+                                                    {emailValidation.error !=
+                                                        null &&
+                                                        emailValidation.error !==
+                                                            '' && (
+                                                            <p className="text-xs text-destructive">
+                                                                {
+                                                                    emailValidation.error
+                                                                }
+                                                            </p>
+                                                        )}
                                                     <p
                                                         id="email-help"
                                                         className="text-xs text-muted-foreground"

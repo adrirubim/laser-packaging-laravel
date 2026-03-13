@@ -27,7 +27,7 @@ export default function AuthSplitLayout({
                     <AppLogoIcon className="mr-2 size-8 text-white" />
                     Laser Packaging
                 </Link>
-                {quote && (
+                {quote !== null && quote !== undefined && (
                     <div className="relative z-20 mt-auto">
                         <blockquote className="space-y-2">
                             <p className="text-lg">

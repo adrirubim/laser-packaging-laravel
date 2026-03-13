@@ -22,7 +22,9 @@ declare global {
  * Get token from session (passed from backend)
  */
 function getToken(): string | null {
-    return window.__PRODUCTION_PORTAL_TOKEN__ ?? null;
+    const token = window.__PRODUCTION_PORTAL_TOKEN__;
+
+    return token !== null && token !== undefined && token !== '' ? token : null;
 }
 
 /**
@@ -35,7 +37,7 @@ export async function callProductionApi(
 ): Promise<unknown> {
     const token = getToken();
 
-    if (!token) {
+    if (token == null || token === '') {
         throw new Error('No token available');
     }
 
@@ -48,7 +50,7 @@ export async function callProductionApi(
                 'X-CSRF-TOKEN':
                     document
                         .querySelector('meta[name="csrf-token"]')
-                        ?.getAttribute('content') || '',
+                        ?.getAttribute('content') ?? '',
             },
             body: JSON.stringify({ ...data, token }),
         });
@@ -56,8 +58,13 @@ export async function callProductionApi(
         const result = await response.json();
 
         if (!response.ok) {
+            const errorMessage =
+                typeof result.error === 'string' && result.error !== ''
+                    ? result.error
+                    : 'production_portal.error_request';
+
             throw new ProductionPortalError(
-                result.error || 'production_portal.error_request',
+                errorMessage,
                 'production_portal.error_request',
             );
         }
@@ -67,7 +74,7 @@ export async function callProductionApi(
         if (error instanceof ProductionPortalError) {
             throw error;
         }
-        if (error instanceof Error && error.message) {
+        if (error instanceof Error && error.message !== '') {
             throw error;
         }
         throw new ProductionPortalError(

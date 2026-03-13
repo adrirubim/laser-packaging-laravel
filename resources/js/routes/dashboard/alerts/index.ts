@@ -6,7 +6,7 @@ import {
 } from './../../../wayfinder';
 /**
  * @see \App\Http\Controllers\DashboardController::acknowledge
- * @see app/Http/Controllers/DashboardController.php:132
+ * @see app/Http/Controllers/DashboardController.php:64
  * @route '/dashboard/alerts/acknowledge'
  */
 export const acknowledge = (
@@ -23,7 +23,7 @@ acknowledge.definition = {
 
 /**
  * @see \App\Http\Controllers\DashboardController::acknowledge
- * @see app/Http/Controllers/DashboardController.php:132
+ * @see app/Http/Controllers/DashboardController.php:64
  * @route '/dashboard/alerts/acknowledge'
  */
 acknowledge.url = (options?: RouteQueryOptions) => {
@@ -32,7 +32,7 @@ acknowledge.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\DashboardController::acknowledge
- * @see app/Http/Controllers/DashboardController.php:132
+ * @see app/Http/Controllers/DashboardController.php:64
  * @route '/dashboard/alerts/acknowledge'
  */
 acknowledge.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -42,7 +42,7 @@ acknowledge.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
  * @see \App\Http\Controllers\DashboardController::acknowledge
- * @see app/Http/Controllers/DashboardController.php:132
+ * @see app/Http/Controllers/DashboardController.php:64
  * @route '/dashboard/alerts/acknowledge'
  */
 const acknowledgeForm = (
@@ -54,7 +54,7 @@ const acknowledgeForm = (
 
 /**
  * @see \App\Http\Controllers\DashboardController::acknowledge
- * @see app/Http/Controllers/DashboardController.php:132
+ * @see app/Http/Controllers/DashboardController.php:64
  * @route '/dashboard/alerts/acknowledge'
  */
 acknowledgeForm.post = (

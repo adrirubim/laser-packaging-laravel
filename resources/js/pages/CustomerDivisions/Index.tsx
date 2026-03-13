@@ -300,30 +300,32 @@ export default function CustomerDivisionsIndex() {
                                             />
                                         </div>
                                         <div className="grid grid-cols-2 gap-2 text-xs">
-                                            {division.email && (
-                                                <div>
-                                                    <span className="text-muted-foreground">
-                                                        {t(
-                                                            'customer_divisions.index.mobile_email_label',
-                                                        )}{' '}
-                                                    </span>
-                                                    <span>
-                                                        {division.email}
-                                                    </span>
-                                                </div>
-                                            )}
-                                            {division.contacts && (
-                                                <div>
-                                                    <span className="text-muted-foreground">
-                                                        {t(
-                                                            'customer_divisions.index.mobile_contacts_label',
-                                                        )}{' '}
-                                                    </span>
-                                                    <span>
-                                                        {division.contacts}
-                                                    </span>
-                                                </div>
-                                            )}
+                                            {division.email != null &&
+                                                division.email !== '' && (
+                                                    <div>
+                                                        <span className="text-muted-foreground">
+                                                            {t(
+                                                                'customer_divisions.index.mobile_email_label',
+                                                            )}{' '}
+                                                        </span>
+                                                        <span>
+                                                            {division.email}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            {division.contacts != null &&
+                                                division.contacts !== '' && (
+                                                    <div>
+                                                        <span className="text-muted-foreground">
+                                                            {t(
+                                                                'customer_divisions.index.mobile_contacts_label',
+                                                            )}{' '}
+                                                        </span>
+                                                        <span>
+                                                            {division.contacts}
+                                                        </span>
+                                                    </div>
+                                                )}
                                         </div>
                                     </div>
                                 ))

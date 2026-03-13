@@ -143,10 +143,14 @@ export default function OfferOperationListsCreate({
                                                                             offer.offer_number
                                                                         }{' '}
                                                                         -{' '}
-                                                                        {offer.provisional_description ||
-                                                                            t(
-                                                                                'offer_operation_lists.create.no_description',
-                                                                            )}
+                                                                        {offer.provisional_description !=
+                                                                            null &&
+                                                                        offer.provisional_description !==
+                                                                            ''
+                                                                            ? offer.provisional_description
+                                                                            : t(
+                                                                                  'offer_operation_lists.create.no_description',
+                                                                              )}
                                                                     </SelectItem>
                                                                 ),
                                                             )}
@@ -194,10 +198,14 @@ export default function OfferOperationListsCreate({
                                                                             operation.code
                                                                         }{' '}
                                                                         -{' '}
-                                                                        {operation.description ||
-                                                                            t(
-                                                                                'common.no_description',
-                                                                            )}
+                                                                        {operation.description !=
+                                                                            null &&
+                                                                        operation.description !==
+                                                                            ''
+                                                                            ? operation.description
+                                                                            : t(
+                                                                                  'common.no_description',
+                                                                              )}
                                                                     </SelectItem>
                                                                 ),
                                                             )}

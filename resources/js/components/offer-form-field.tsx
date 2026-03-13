@@ -52,9 +52,11 @@ export default function OfferFormField({
 
     return (
         <div className="grid gap-2">
-            {children || (
+            {children !== null && children !== undefined ? (
+                children
+            ) : (
                 <Label htmlFor={inputId}>
-                    {label} {required && '*'}
+                    {label} {required === true && '*'}
                 </Label>
             )}
             {type === 'textarea' ? (
@@ -69,7 +71,13 @@ export default function OfferFormField({
                     rows={rows}
                     disabled={disabled}
                     maxLength={maxLength}
-                    aria-describedby={helpText ? helpId : undefined}
+                    aria-describedby={
+                        helpText !== null &&
+                        helpText !== undefined &&
+                        helpText !== ''
+                            ? helpId
+                            : undefined
+                    }
                     className={className}
                 />
             ) : (
@@ -87,16 +95,24 @@ export default function OfferFormField({
                     min={min}
                     step={step}
                     accept={accept}
-                    aria-describedby={helpText ? helpId : undefined}
+                    aria-describedby={
+                        helpText !== null &&
+                        helpText !== undefined &&
+                        helpText !== ''
+                            ? helpId
+                            : undefined
+                    }
                     className={className}
                 />
             )}
-            {helpText && (
+            {helpText !== null && helpText !== undefined && helpText !== '' && (
                 <p id={helpId} className="text-xs text-muted-foreground">
                     {helpText}
                 </p>
             )}
-            {error && <InputError message={error} />}
+            {error !== null && error !== undefined && error !== '' && (
+                <InputError message={error} />
+            )}
         </div>
     );
 }

@@ -61,6 +61,8 @@ describe('PlanningDayGridView', () => {
                 onSaveSummaryCell={async () => {}}
                 savingCellKey={null}
                 savingSummaryKey={null}
+                cellValidationError={null}
+                summaryValidationError={null}
             />,
         );
 

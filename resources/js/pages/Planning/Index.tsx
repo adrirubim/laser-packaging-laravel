@@ -11,6 +11,13 @@ import api from '@/routes/api';
 import orders from '@/routes/orders/index';
 import planningRoutes from '@/routes/planning';
 import type { BreadcrumbItem, PageProps } from '@/types';
+import type {
+    DomainPlanningBoard,
+    DomainPlanningContract,
+    DomainPlanningLine,
+    DomainPlanningRow,
+    DomainPlanningSummaryRow,
+} from '@/types/DomainModels';
 import { Head } from '@inertiajs/react';
 import {
     Suspense,
@@ -29,11 +36,6 @@ import PlanningToolbar from './PlanningToolbar';
 import type {
     BoardDay,
     BoardOccupancy,
-    PlanningContract,
-    PlanningDataResponse,
-    PlanningLine,
-    PlanningRow,
-    PlanningSummaryRow,
     RangeMode,
     SavePlanningResponse,
     SaveSummaryResponse,
@@ -83,10 +85,10 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
     const [zoomLevel, setZoomLevel] = useState<ZoomLevel>('hour');
     const containerRef = useRef<HTMLDivElement | null>(null);
 
-    const [lines, setLines] = useState<PlanningLine[]>([]);
-    const [planning, setPlanning] = useState<PlanningRow[]>([]);
-    const [summaries, setSummaries] = useState<PlanningSummaryRow[]>([]);
-    const [contracts, setContracts] = useState<PlanningContract[]>([]);
+    const [lines, setLines] = useState<DomainPlanningLine[]>([]);
+    const [planning, setPlanning] = useState<DomainPlanningRow[]>([]);
+    const [summaries, setSummaries] = useState<DomainPlanningSummaryRow[]>([]);
+    const [contracts, setContracts] = useState<DomainPlanningContract[]>([]);
     const [loading, setLoading] = useState(false);
     const [toolbarLoading, setToolbarLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -111,7 +113,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
     } | null>(null);
 
     useEffect(() => {
-        if (loading) {
+        if (loading === true) {
             const timeoutId = window.setTimeout(() => {
                 setToolbarLoading(true);
             }, 180);
@@ -213,7 +215,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                     }),
                 });
 
-                if (!response.ok) {
+                if (response.ok === false) {
                     const text = await response.text();
                     throw new Error(
                         t('planning.error_load', {
@@ -223,11 +225,9 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                     );
                 }
 
-                const json = (await response.json()) as PlanningDataResponse;
+                const json = (await response.json()) as DomainPlanningBoard;
                 if (json.error_code !== 0) {
-                    throw new Error(
-                        json.message || t('planning.error_unknown'),
-                    );
+                    throw new Error(t('planning.error_unknown'));
                 }
 
                 setLines(json.lines ?? []);
@@ -238,7 +238,10 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                 return;
             } catch (e) {
                 const err = e as Error;
-                const message = err.message || t('planning.error_load_generic');
+                const message =
+                    err.message !== ''
+                        ? err.message
+                        : t('planning.error_load_generic');
                 if (attempt === maxRetries) {
                     setError(message);
                     setLoading(false);
@@ -277,7 +280,10 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
 
                 // Calcola il valore precedente (per Undo) solo se richiesto
                 let previousWorkers = 0;
-                if (!options?.skipUndo) {
+                const shouldComputePrevious =
+                    options?.skipUndo === false ||
+                    options?.skipUndo === undefined;
+                if (shouldComputePrevious) {
                     const timeKey = (h: number, mm: number) =>
                         String(h * 100 + mm);
                     const keysToSet =
@@ -290,7 +296,8 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                         if (
                             row.order_uuid !== orderUuid ||
                             row.lasworkline_uuid !== lineUuid ||
-                            !row.date ||
+                            row.date == null ||
+                            row.date === '' ||
                             row.date.slice(0, 10) !== dateOnly
                         ) {
                             continue;
@@ -353,7 +360,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                 const json = (await response
                     .json()
                     .catch(() => ({}))) as SavePlanningResponse;
-                if (!response.ok || json.error_code !== 0) {
+                if (response.ok === false || json.error_code !== 0) {
                     setError(json.message ?? t('planning.error_save'));
                     return;
                 }
@@ -379,7 +386,8 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                         if (
                             row.order_uuid !== orderUuid ||
                             row.lasworkline_uuid !== lineUuid ||
-                            !row.date ||
+                            row.date == null ||
+                            row.date === '' ||
                             row.date.slice(0, 10) !== dateOnly
                         )
                             return row;
@@ -401,7 +409,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                         }
                         return { ...row, hours: JSON.stringify(nextHours) };
                     });
-                    if (!found && newValue > 0) {
+                    if (found === false && newValue > 0) {
                         const nextHours: Record<string, number> = {};
                         for (const k of keysToSet) nextHours[k] = newValue;
                         next.push({
@@ -416,7 +424,10 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                 });
                 setError(null);
                 const showUndoToast =
-                    !options?.skipUndo && previousWorkers > 0 && newValue <= 0;
+                    (options?.skipUndo === false ||
+                        options?.skipUndo === undefined) &&
+                    previousWorkers > 0 &&
+                    newValue <= 0;
                 if (showUndoToast) {
                     toast.success(t('planning.toast_cell_cleared'), {
                         action: {
@@ -518,7 +529,8 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                     const slotKey = hour * 100 + minute;
                     return prev.map((row) => {
                         if (
-                            !row.date ||
+                            row.date == null ||
+                            row.date === '' ||
                             row.date.slice(0, 10) !== dateStr ||
                             row.summary_type !== summaryType
                         )
@@ -557,9 +569,9 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
         const result: BoardOccupancy = {};
 
         for (const row of planning) {
-            if (!row.date) continue;
+            if (row.date == null || row.date === '') continue;
             const dateStr = row.date.slice(0, 10);
-            if (!dateSet.has(dateStr)) continue;
+            if (dateSet.has(dateStr) === false) continue;
             let workersSum = 0;
             try {
                 const hoursObj = JSON.parse(row.hours || '{}') as Record<
@@ -575,7 +587,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                 // ignore parse errors; treat as 0
             }
             if (workersSum <= 0) continue;
-            if (!result[row.lasworkline_uuid]) {
+            if (result[row.lasworkline_uuid] == null) {
                 result[row.lasworkline_uuid] = {};
             }
             result[row.lasworkline_uuid][dateStr] =
@@ -593,9 +605,9 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
         const dateSet = new Set(rangeDays.map((d) => d.dateStr));
         const result: Record<string, Record<string, number>> = {};
         for (const row of planning) {
-            if (!row.date) continue;
+            if (row.date == null || row.date === '') continue;
             const dateStr = row.date.slice(0, 10);
-            if (!dateSet.has(dateStr)) continue;
+            if (dateSet.has(dateStr) === false) continue;
             let workersSum = 0;
             try {
                 const hoursObj = JSON.parse(row.hours || '{}') as Record<
@@ -610,7 +622,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                 /* ignore */
             }
             if (workersSum <= 0) continue;
-            if (!result[row.order_uuid]) result[row.order_uuid] = {};
+            if (result[row.order_uuid] == null) result[row.order_uuid] = {};
             result[row.order_uuid][dateStr] =
                 (result[row.order_uuid][dateStr] ?? 0) + workersSum;
         }
@@ -631,8 +643,11 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
 
     const summaryData = useMemo(() => {
         const map: Record<string, number> = {};
+        if (summaries.length === 0) {
+            return map;
+        }
         for (const row of summaries) {
-            if (!row.date) continue;
+            if (row.date == null || row.date === '') continue;
             const dateStr = row.date.slice(0, 10);
             let hoursObj: Record<string, number>;
             try {
@@ -728,7 +743,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
     const planningData = useMemo(() => {
         const map: Record<string, number> = {};
         for (const row of planning) {
-            if (!row.date) continue;
+            if (row.date == null || row.date === '') continue;
             const dateStr = row.date.slice(0, 10);
             let hoursObj: Record<string, number>;
             try {
@@ -756,7 +771,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
     const totalsByTimestamp: Record<string, number> = useMemo(() => {
         const out: Record<string, number> = {};
         for (const col of slotColumns) {
-            if (col.isWeekend) continue;
+            if (col.isWeekend === true) continue;
             let sum = 0;
             for (const line of lines) {
                 for (const order of line.orders ?? []) {
@@ -871,7 +886,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
     const summaryValuesByDay = useMemo(() => {
         const byDay: Record<string, Record<string, number>> = {};
         for (const day of rangeDays) {
-            if (day.isWeekend) continue;
+            if (day.isWeekend === true) continue;
             const contractCounts = countContractsByQualifica(
                 day.dateStr,
                 contracts,
@@ -968,7 +983,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                         formatDateRangeLabel={formatDateRangeLabel}
                     />
 
-                    {infoMessage ? (
+                    {infoMessage != null && infoMessage !== '' ? (
                         <div
                             role="status"
                             aria-live="polite"
@@ -978,7 +993,7 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                         </div>
                     ) : null}
 
-                    {error ? (
+                    {error != null && error !== '' ? (
                         <div
                             role="alert"
                             aria-live="assertive"

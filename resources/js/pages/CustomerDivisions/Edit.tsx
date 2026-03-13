@@ -46,7 +46,7 @@ export default function CustomerDivisionsEdit({
     errors: serverErrors,
 }: CustomerDivisionsEditProps) {
     const { t } = useTranslations();
-    const [email, setEmail] = useState(division.email || '');
+    const [email, setEmail] = useState(division.email ?? '');
 
     const emailValidation = useFieldValidation(email, [
         validationRules.email(),
@@ -259,18 +259,24 @@ export default function CustomerDivisionsEdit({
                                                         maxLength={255}
                                                         aria-describedby="email-help"
                                                         aria-invalid={
-                                                            emailValidation.error
+                                                            emailValidation.error !=
+                                                                null &&
+                                                            emailValidation.error !==
+                                                                ''
                                                                 ? 'true'
                                                                 : 'false'
                                                         }
                                                     />
-                                                    {emailValidation.error && (
-                                                        <p className="text-xs text-destructive">
-                                                            {
-                                                                emailValidation.error
-                                                            }
-                                                        </p>
-                                                    )}
+                                                    {emailValidation.error !=
+                                                        null &&
+                                                        emailValidation.error !==
+                                                            '' && (
+                                                            <p className="text-xs text-destructive">
+                                                                {
+                                                                    emailValidation.error
+                                                                }
+                                                            </p>
+                                                        )}
                                                     <p
                                                         id="email-help"
                                                         className="text-xs text-muted-foreground"

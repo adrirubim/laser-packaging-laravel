@@ -236,7 +236,10 @@ const PlanningMonthSummary = memo(function PlanningMonthSummary({
                                                                     title={`${order.code} - ${order.article_code ?? ''}`}
                                                                 >
                                                                     {order.code}
-                                                                    {order.article_code
+                                                                    {order.article_code !=
+                                                                        null &&
+                                                                    order.article_code !==
+                                                                        ''
                                                                         ? ` — ${order.article_code}`
                                                                         : ''}
                                                                 </span>
@@ -309,9 +312,10 @@ const PlanningMonthSummary = memo(function PlanningMonthSummary({
 
                                             const values =
                                                 summaryValuesByDay[day.dateStr];
-                                            const value = values
-                                                ? (values[row.id] ?? 0)
-                                                : 0;
+                                            const value =
+                                                values != null
+                                                    ? (values[row.id] ?? 0)
+                                                    : 0;
                                             const isDisponibiliWarning =
                                                 row.id === 'disponibili' &&
                                                 value !== 0;
@@ -321,7 +325,7 @@ const PlanningMonthSummary = memo(function PlanningMonthSummary({
                                                 summaryKeyRiepilogo;
 
                                             if (
-                                                row.editable &&
+                                                row.editable === true &&
                                                 isSummaryEditing
                                             ) {
                                                 return (
@@ -395,7 +399,7 @@ const PlanningMonthSummary = memo(function PlanningMonthSummary({
                                                 );
                                             }
 
-                                            if (row.editable) {
+                                            if (row.editable === true) {
                                                 return (
                                                     <td
                                                         key={day.dateStr}

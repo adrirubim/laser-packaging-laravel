@@ -192,20 +192,25 @@ export default function CQModelsEdit({
                                                             'articles.cq_models.form.attachment_label',
                                                         )}
                                                     </FormLabel>
-                                                    {cqModel.filename && (
-                                                        <div className="mb-2 rounded-md bg-muted p-2">
-                                                            <p className="mb-1 text-xs text-muted-foreground">
-                                                                {t(
-                                                                    'articles.cq_models.edit.current_attachment',
-                                                                )}
-                                                            </p>
-                                                            <p className="font-mono text-sm">
-                                                                {
-                                                                    cqModel.filename
-                                                                }
-                                                            </p>
-                                                        </div>
-                                                    )}
+                                                    {cqModel.filename !==
+                                                        null &&
+                                                        cqModel.filename !==
+                                                            undefined &&
+                                                        cqModel.filename !==
+                                                            '' && (
+                                                            <div className="mb-2 rounded-md bg-muted p-2">
+                                                                <p className="mb-1 text-xs text-muted-foreground">
+                                                                    {t(
+                                                                        'articles.cq_models.edit.current_attachment',
+                                                                    )}
+                                                                </p>
+                                                                <p className="font-mono text-sm">
+                                                                    {
+                                                                        cqModel.filename
+                                                                    }
+                                                                </p>
+                                                            </div>
+                                                        )}
                                                     <Input
                                                         id="filename"
                                                         name="filename"
@@ -228,7 +233,11 @@ export default function CQModelsEdit({
                                                         id="filename-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        {cqModel.filename
+                                                        {cqModel.filename !==
+                                                            null &&
+                                                        cqModel.filename !==
+                                                            undefined &&
+                                                        cqModel.filename !== ''
                                                             ? t(
                                                                   'articles.cq_models.edit.attachment_replace_help',
                                                               )
@@ -236,18 +245,21 @@ export default function CQModelsEdit({
                                                                   'articles.cq_models.edit.attachment_help',
                                                               )}
                                                     </p>
-                                                    {selectedFileName && (
-                                                        <p className="text-xs text-muted-foreground">
-                                                            {t(
-                                                                'articles.cq_models.edit.new_attachment_selected',
-                                                            )}{' '}
-                                                            <span className="font-mono">
-                                                                {
-                                                                    selectedFileName
-                                                                }
-                                                            </span>
-                                                        </p>
-                                                    )}
+                                                    {selectedFileName !==
+                                                        null &&
+                                                        selectedFileName !==
+                                                            '' && (
+                                                            <p className="text-xs text-muted-foreground">
+                                                                {t(
+                                                                    'articles.cq_models.edit.new_attachment_selected',
+                                                                )}{' '}
+                                                                <span className="font-mono">
+                                                                    {
+                                                                        selectedFileName
+                                                                    }
+                                                                </span>
+                                                            </p>
+                                                        )}
                                                     <InputError
                                                         message={
                                                             allErrors.filename

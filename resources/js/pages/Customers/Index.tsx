@@ -322,52 +322,62 @@ export default function CustomersIndex() {
                                             />
                                         </div>
                                         <div className="grid grid-cols-2 gap-2 text-xs">
-                                            {customer.vat_number && (
-                                                <div>
-                                                    <span className="text-muted-foreground">
-                                                        {t(
-                                                            'customers.index.mobile_vat_label',
-                                                        )}{' '}
-                                                    </span>
-                                                    <span>
-                                                        {customer.vat_number}
-                                                    </span>
-                                                </div>
-                                            )}
-                                            {customer.city && (
-                                                <div>
-                                                    <span className="text-muted-foreground">
-                                                        {t(
-                                                            'customers.index.mobile_city_label',
-                                                        )}{' '}
-                                                    </span>
-                                                    <span>{customer.city}</span>
-                                                </div>
-                                            )}
-                                            {customer.province && (
-                                                <div>
-                                                    <span className="text-muted-foreground">
-                                                        {t(
-                                                            'customers.index.mobile_province_label',
-                                                        )}{' '}
-                                                    </span>
-                                                    <span>
-                                                        {customer.province}
-                                                    </span>
-                                                </div>
-                                            )}
-                                            {customer.postal_code && (
-                                                <div>
-                                                    <span className="text-muted-foreground">
-                                                        {t(
-                                                            'customers.index.mobile_cap_label',
-                                                        )}{' '}
-                                                    </span>
-                                                    <span>
-                                                        {customer.postal_code}
-                                                    </span>
-                                                </div>
-                                            )}
+                                            {customer.vat_number != null &&
+                                                customer.vat_number !== '' && (
+                                                    <div>
+                                                        <span className="text-muted-foreground">
+                                                            {t(
+                                                                'customers.index.mobile_vat_label',
+                                                            )}{' '}
+                                                        </span>
+                                                        <span>
+                                                            {
+                                                                customer.vat_number
+                                                            }
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            {customer.city != null &&
+                                                customer.city !== '' && (
+                                                    <div>
+                                                        <span className="text-muted-foreground">
+                                                            {t(
+                                                                'customers.index.mobile_city_label',
+                                                            )}{' '}
+                                                        </span>
+                                                        <span>
+                                                            {customer.city}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            {customer.province != null &&
+                                                customer.province !== '' && (
+                                                    <div>
+                                                        <span className="text-muted-foreground">
+                                                            {t(
+                                                                'customers.index.mobile_province_label',
+                                                            )}{' '}
+                                                        </span>
+                                                        <span>
+                                                            {customer.province}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            {customer.postal_code != null &&
+                                                customer.postal_code !== '' && (
+                                                    <div>
+                                                        <span className="text-muted-foreground">
+                                                            {t(
+                                                                'customers.index.mobile_cap_label',
+                                                            )}{' '}
+                                                        </span>
+                                                        <span>
+                                                            {
+                                                                customer.postal_code
+                                                            }
+                                                        </span>
+                                                    </div>
+                                                )}
                                         </div>
                                     </div>
                                 ))
@@ -526,8 +536,10 @@ export default function CustomersIndex() {
                     title={t('customers.delete_title')}
                     description={t('customers.delete_description')}
                     itemName={
-                        deleteDialog.customer?.company_name ||
-                        deleteDialog.customer?.code
+                        deleteDialog.customer?.company_name != null &&
+                        deleteDialog.customer?.company_name !== ''
+                            ? deleteDialog.customer.company_name
+                            : (deleteDialog.customer?.code ?? '')
                     }
                     isLoading={isDeleting}
                 />

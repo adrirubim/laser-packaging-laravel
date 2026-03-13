@@ -68,10 +68,23 @@ export default function CQModelsIndex() {
         router.get(
             articles.cqModels.index().url,
             {
-                search: value || undefined,
-                per_page: filters.per_page || undefined,
-                sort_by: filters.sort_by || undefined,
-                sort_order: filters.sort_order || undefined,
+                search:
+                    value !== null && value !== undefined && value !== ''
+                        ? value
+                        : undefined,
+                per_page:
+                    filters.per_page !== null &&
+                    filters.per_page !== undefined &&
+                    filters.per_page !== ''
+                        ? filters.per_page
+                        : undefined,
+                sort_by:
+                    filters.sort_by !== null &&
+                    filters.sort_by !== undefined &&
+                    filters.sort_by !== ''
+                        ? filters.sort_by
+                        : undefined,
+                sort_order: filters.sort_order,
             },
             {
                 preserveState: true,
@@ -105,7 +118,9 @@ export default function CQModelsIndex() {
     };
 
     const handleDeleteConfirm = () => {
-        if (!deleteDialog.model) return;
+        if (deleteDialog.model === null || deleteDialog.model === undefined) {
+            return;
+        }
 
         setIsDeleting(true);
         router.delete(
@@ -150,7 +165,7 @@ export default function CQModelsIndex() {
 
                 <div className="flex flex-col gap-3 rounded-xl border border-sidebar-border/70 bg-card p-4 dark:border-sidebar-border">
                     <SearchInput
-                        value={filters.search || ''}
+                        value={filters.search ?? ''}
                         onChange={handleSearchChange}
                         placeholder={t('articles.cq_models.search_placeholder')}
                     />
@@ -253,7 +268,11 @@ export default function CQModelsIndex() {
                                             {model.description_model}
                                         </td>
                                         <td className="px-3 py-2">
-                                            {model.filename || (
+                                            {model.filename !== null &&
+                                            model.filename !== undefined &&
+                                            model.filename !== '' ? (
+                                                model.filename
+                                            ) : (
                                                 <span className="text-muted-foreground">
                                                     -
                                                 </span>
@@ -275,7 +294,10 @@ export default function CQModelsIndex() {
                                                     handleDeleteClick(model)
                                                 }
                                                 extraItems={
-                                                    model.filename ? (
+                                                    model.filename !== null &&
+                                                    model.filename !==
+                                                        undefined &&
+                                                    model.filename !== '' ? (
                                                         <DropdownMenuItem
                                                             onSelect={(e) => {
                                                                 e.preventDefault();

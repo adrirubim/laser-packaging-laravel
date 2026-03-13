@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\ProductionPortalController;
 use App\Http\Controllers\Planning\PlanningController;
+use App\Http\Resources\Api\ApiResponseResource;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -63,5 +64,8 @@ Route::prefix('planning')->group(function () {
 // Route for pallet sheet printing (if implemented)
 Route::get('/production/foglio-pallet/{uuid}/print', function ($uuid) {
     // TODO: Implement PDF generation or printing
-    return response()->json(['message' => 'Print functionality not yet implemented']);
+    return ApiResponseResource::success(
+        true,
+        'Print functionality not yet implemented'
+    )->response();
 })->name('api.production.foglio-pallet.print');

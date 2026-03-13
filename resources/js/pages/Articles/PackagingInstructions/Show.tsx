@@ -39,7 +39,7 @@ export default function PackagingInstructionsShow({
     const { t } = useTranslations();
     const [isDeleting, setIsDeleting] = useState(false);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-    const instructionCode = instruction.code + (instruction.number || '');
+    const instructionCode = instruction.code + (instruction.number ?? '');
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
@@ -89,7 +89,7 @@ export default function PackagingInstructionsShow({
                     <div>
                         <h1 className="text-2xl font-semibold tracking-tight">
                             {instruction.code}
-                            {instruction.number || ''}
+                            {instruction.number ?? ''}
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
                             {t('articles.packaging_instructions.show.subtitle')}
@@ -148,51 +148,53 @@ export default function PackagingInstructionsShow({
                                     {instruction.code}
                                 </p>
                             </div>
-                            {instruction.number && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t(
-                                            'articles.packaging_instructions.show.fields.number',
-                                        )}
-                                    </Label>
-                                    <p className="mt-1 text-sm font-medium">
-                                        {instruction.number}
-                                    </p>
-                                </div>
-                            )}
-                            {instruction.filename && (
-                                <div>
-                                    <Label className="text-sm font-medium text-muted-foreground">
-                                        {t(
-                                            'articles.packaging_instructions.show.fields.filename',
-                                        )}
-                                    </Label>
-                                    <div className="mt-1 flex items-center gap-2">
-                                        <p className="text-sm font-medium">
-                                            {instruction.filename}
+                            {instruction.number != null &&
+                                instruction.number !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t(
+                                                'articles.packaging_instructions.show.fields.number',
+                                            )}
+                                        </Label>
+                                        <p className="mt-1 text-sm font-medium">
+                                            {instruction.number}
                                         </p>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => {
-                                                window.location.href =
-                                                    articles.packagingInstructions.download(
-                                                        {
-                                                            packagingInstruction:
-                                                                instruction.uuid,
-                                                        },
-                                                    ).url;
-                                            }}
-                                        >
-                                            <Download className="h-4 w-4" />
-                                        </Button>
                                     </div>
-                                </div>
-                            )}
+                                )}
+                            {instruction.filename != null &&
+                                instruction.filename !== '' && (
+                                    <div>
+                                        <Label className="text-sm font-medium text-muted-foreground">
+                                            {t(
+                                                'articles.packaging_instructions.show.fields.filename',
+                                            )}
+                                        </Label>
+                                        <div className="mt-1 flex items-center gap-2">
+                                            <p className="text-sm font-medium">
+                                                {instruction.filename}
+                                            </p>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => {
+                                                    window.location.href =
+                                                        articles.packagingInstructions.download(
+                                                            {
+                                                                packagingInstruction:
+                                                                    instruction.uuid,
+                                                            },
+                                                        ).url;
+                                                }}
+                                            >
+                                                <Download className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
                         </CardContent>
                     </Card>
 
-                    {instruction.articles &&
+                    {instruction.articles != null &&
                         instruction.articles.length > 0 && (
                             <Card>
                                 <CardHeader>

@@ -60,18 +60,25 @@ function TopCustomersTooltipContent({
     payload,
 }: TopCustomersTooltipProps) {
     const { t } = useTranslations();
-    if (!active || !payload || payload.length === 0) {
+    if (
+        active !== true ||
+        payload === null ||
+        payload === undefined ||
+        payload.length === 0
+    ) {
         return null;
     }
     const data = payload[0]?.payload;
-    if (!data) return null;
+    if (data === null || data === undefined) {
+        return null;
+    }
 
     const isDark =
-        typeof document !== 'undefined'
-            ? document.documentElement.classList.contains('dark') ||
-              (window.matchMedia &&
-                  window.matchMedia('(prefers-color-scheme: dark)').matches)
-            : false;
+        typeof document !== 'undefined' &&
+        (document.documentElement.classList.contains('dark') ||
+            (typeof window !== 'undefined' &&
+                typeof window.matchMedia === 'function' &&
+                window.matchMedia('(prefers-color-scheme: dark)').matches));
 
     const backgroundColor = isDark ? 'rgba(15, 23, 42, 0.97)' : '#ffffff';
     const borderColor = isDark
@@ -159,7 +166,11 @@ export function TopCustomersChart({
         const { x, y, payload } = props;
         // Cercare l'indice dal nome mostrato sull'asse Y
         const payloadValue = payload?.value;
-        if (!payloadValue) {
+        if (
+            payloadValue === null ||
+            payloadValue === undefined ||
+            payloadValue === ''
+        ) {
             return (
                 <text
                     x={x}
@@ -199,7 +210,12 @@ export function TopCustomersChart({
                 }}
                 onMouseLeave={() => setActiveIndex(null)}
                 onClick={() => {
-                    if (onBarClick && entry && index >= 0) {
+                    if (
+                        typeof onBarClick === 'function' &&
+                        entry !== null &&
+                        entry !== undefined &&
+                        index >= 0
+                    ) {
                         onBarClick(entry.raw);
                     }
                 }}
@@ -249,7 +265,11 @@ export function TopCustomersChart({
                     dataKey="ordini"
                     fill="#6EE7B7"
                     radius={[0, 4, 4, 0]}
-                    style={onBarClick ? { cursor: 'pointer' } : undefined}
+                    style={
+                        Boolean(onBarClick) === true
+                            ? { cursor: 'pointer' }
+                            : undefined
+                    }
                     onMouseLeave={() => setActiveIndex(null)}
                 >
                     {chartData.map((entry, index) => (
@@ -264,7 +284,7 @@ export function TopCustomersChart({
                             onMouseEnter={() => setActiveIndex(index)}
                             onMouseLeave={() => setActiveIndex(null)}
                             onClick={() => {
-                                if (onBarClick) {
+                                if (typeof onBarClick === 'function') {
                                     onBarClick(entry.raw);
                                 }
                             }}

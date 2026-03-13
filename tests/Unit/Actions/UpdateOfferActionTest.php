@@ -2,13 +2,13 @@
 
 namespace Tests\Unit\Actions;
 
-use App\Actions\UpdateOfferAction;
 use App\Models\Offer;
 use App\Models\OfferOperation;
 use App\Models\OfferOperationList;
 use App\Repositories\ArticleRepository;
 use App\Repositories\OrderRepository;
 use App\Services\OfferNumberService;
+use Domain\Offers\Actions\UpdateOfferAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;

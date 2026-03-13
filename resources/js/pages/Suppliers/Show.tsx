@@ -140,14 +140,15 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
                                 </p>
                             </div>
 
-                            {supplier.vat_number && (
-                                <div>
-                                    <FormLabel className="text-sm font-medium text-muted-foreground">
-                                        {t('suppliers.table.vat')}
-                                    </FormLabel>
-                                    <p>{supplier.vat_number}</p>
-                                </div>
-                            )}
+                            {supplier.vat_number != null &&
+                                supplier.vat_number !== '' && (
+                                    <div>
+                                        <FormLabel className="text-sm font-medium text-muted-foreground">
+                                            {t('suppliers.table.vat')}
+                                        </FormLabel>
+                                        <p>{supplier.vat_number}</p>
+                                    </div>
+                                )}
                         </CardContent>
                     </Card>
 
@@ -161,7 +162,7 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {supplier.co && (
+                            {supplier.co != null && supplier.co !== '' && (
                                 <div>
                                     <FormLabel className="text-sm font-medium text-muted-foreground">
                                         {t('suppliers.table.co')}
@@ -170,57 +171,64 @@ export default function SuppliersShow({ supplier }: SuppliersShowProps) {
                                 </div>
                             )}
 
-                            {supplier.street && (
-                                <div>
-                                    <FormLabel className="text-sm font-medium text-muted-foreground">
-                                        {t('suppliers.table.street')}
-                                    </FormLabel>
-                                    <p>{supplier.street}</p>
-                                </div>
-                            )}
+                            {supplier.street != null &&
+                                supplier.street !== '' && (
+                                    <div>
+                                        <FormLabel className="text-sm font-medium text-muted-foreground">
+                                            {t('suppliers.table.street')}
+                                        </FormLabel>
+                                        <p>{supplier.street}</p>
+                                    </div>
+                                )}
 
-                            {(supplier.city || supplier.postal_code) && (
+                            {(supplier.city != null && supplier.city !== '') ||
+                            (supplier.postal_code != null &&
+                                supplier.postal_code !== '') ? (
                                 <div>
                                     <FormLabel className="text-sm font-medium text-muted-foreground">
                                         {t('suppliers.show.city_cap_label')}
                                     </FormLabel>
                                     <p>
                                         {supplier.city ?? ''}{' '}
-                                        {supplier.postal_code
+                                        {supplier.postal_code != null &&
+                                        supplier.postal_code !== ''
                                             ? `(${supplier.postal_code})`
                                             : ''}
                                     </p>
                                 </div>
-                            )}
+                            ) : null}
 
-                            {supplier.province && (
-                                <div>
-                                    <FormLabel className="text-sm font-medium text-muted-foreground">
-                                        {t('suppliers.show.province_label')}
-                                    </FormLabel>
-                                    <p>{supplier.province}</p>
-                                </div>
-                            )}
+                            {supplier.province != null &&
+                                supplier.province !== '' && (
+                                    <div>
+                                        <FormLabel className="text-sm font-medium text-muted-foreground">
+                                            {t('suppliers.show.province_label')}
+                                        </FormLabel>
+                                        <p>{supplier.province}</p>
+                                    </div>
+                                )}
 
-                            {supplier.country && (
-                                <div>
-                                    <FormLabel className="text-sm font-medium text-muted-foreground">
-                                        {t('suppliers.show.country_label')}
-                                    </FormLabel>
-                                    <p>{supplier.country}</p>
-                                </div>
-                            )}
+                            {supplier.country != null &&
+                                supplier.country !== '' && (
+                                    <div>
+                                        <FormLabel className="text-sm font-medium text-muted-foreground">
+                                            {t('suppliers.show.country_label')}
+                                        </FormLabel>
+                                        <p>{supplier.country}</p>
+                                    </div>
+                                )}
 
-                            {supplier.contacts && (
-                                <div>
-                                    <FormLabel className="text-sm font-medium text-muted-foreground">
-                                        {t('suppliers.table.contacts')}
-                                    </FormLabel>
-                                    <p className="whitespace-pre-wrap">
-                                        {supplier.contacts}
-                                    </p>
-                                </div>
-                            )}
+                            {supplier.contacts != null &&
+                                supplier.contacts !== '' && (
+                                    <div>
+                                        <FormLabel className="text-sm font-medium text-muted-foreground">
+                                            {t('suppliers.table.contacts')}
+                                        </FormLabel>
+                                        <p className="whitespace-pre-wrap">
+                                            {supplier.contacts}
+                                        </p>
+                                    </div>
+                                )}
                         </CardContent>
                     </Card>
                 </div>

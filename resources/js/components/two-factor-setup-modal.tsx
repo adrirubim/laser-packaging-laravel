@@ -77,7 +77,7 @@ function TwoFactorSetupStep({
                     <div className="mx-auto flex max-w-md overflow-hidden">
                         <div className="mx-auto aspect-square w-64 rounded-lg border border-border">
                             <div className="z-10 flex h-full w-full items-center justify-center p-5">
-                                {qrCodeSvg ? (
+                                {qrCodeSvg != null && qrCodeSvg !== '' ? (
                                     <div
                                         className="aspect-square w-full rounded-lg bg-white p-2 [&_svg]:size-full"
                                         dangerouslySetInnerHTML={{
@@ -112,7 +112,7 @@ function TwoFactorSetupStep({
 
                     <div className="flex w-full space-x-2">
                         <div className="flex w-full items-stretch overflow-hidden rounded-xl border border-border">
-                            {!manualSetupKey ? (
+                            {manualSetupKey == null || manualSetupKey === '' ? (
                                 <div className="flex h-full w-full items-center justify-center bg-muted p-3">
                                     <Spinner />
                                 </div>
@@ -305,7 +305,7 @@ export default function TwoFactorSetupModal({
     }, [twoFactorEnabled, clearSetupData]);
 
     useEffect(() => {
-        if (isOpen && !qrCodeSvg) {
+        if (isOpen && (qrCodeSvg == null || qrCodeSvg === '')) {
             fetchSetupData();
         }
     }, [isOpen, qrCodeSvg, fetchSetupData]);

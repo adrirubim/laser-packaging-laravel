@@ -396,30 +396,32 @@ export default function OffersIndex() {
                                                 '—'}
                                         </p>
                                         <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted-foreground">
-                                            {offer.offer_date && (
-                                                <span>
-                                                    {t(
-                                                        'offers.index.mobile_date_label',
-                                                    )}{' '}
-                                                    {new Date(
-                                                        offer.offer_date,
-                                                    ).toLocaleDateString(
-                                                        'it-IT',
-                                                    )}
-                                                </span>
-                                            )}
-                                            {offer.validity_date && (
-                                                <span>
-                                                    {t(
-                                                        'offers.index.mobile_validity_label',
-                                                    )}{' '}
-                                                    {new Date(
-                                                        offer.validity_date,
-                                                    ).toLocaleDateString(
-                                                        'it-IT',
-                                                    )}
-                                                </span>
-                                            )}
+                                            {offer.offer_date != null &&
+                                                offer.offer_date !== '' && (
+                                                    <span>
+                                                        {t(
+                                                            'offers.index.mobile_date_label',
+                                                        )}{' '}
+                                                        {new Date(
+                                                            offer.offer_date,
+                                                        ).toLocaleDateString(
+                                                            'it-IT',
+                                                        )}
+                                                    </span>
+                                                )}
+                                            {offer.validity_date != null &&
+                                                offer.validity_date !== '' && (
+                                                    <span>
+                                                        {t(
+                                                            'offers.index.mobile_validity_label',
+                                                        )}{' '}
+                                                        {new Date(
+                                                            offer.validity_date,
+                                                        ).toLocaleDateString(
+                                                            'it-IT',
+                                                        )}
+                                                    </span>
+                                                )}
                                         </div>
                                         <p className="mt-1 text-xs text-muted-foreground">
                                             {offer.approval_status_label ??
@@ -612,14 +614,16 @@ export default function OffersIndex() {
                                             {offer.offer_number}
                                         </td>
                                         <td className="px-3 py-2 align-middle text-xs">
-                                            {offer.offer_date
+                                            {offer.offer_date != null &&
+                                            offer.offer_date !== ''
                                                 ? new Date(
                                                       offer.offer_date,
                                                   ).toLocaleDateString('it-IT')
                                                 : '—'}
                                         </td>
                                         <td className="px-3 py-2 align-middle text-xs">
-                                            {offer.validity_date
+                                            {offer.validity_date != null &&
+                                            offer.validity_date !== ''
                                                 ? new Date(
                                                       offer.validity_date,
                                                   ).toLocaleDateString('it-IT')

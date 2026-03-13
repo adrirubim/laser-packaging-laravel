@@ -40,11 +40,13 @@ export default function ConfirmDeleteDialog({
                     <AlertDialogTitle>{title}</AlertDialogTitle>
                     <AlertDialogDescription>
                         {description}
-                        {itemName && (
-                            <span className="mt-2 block font-semibold text-foreground">
-                                {itemName}
-                            </span>
-                        )}
+                        {itemName !== null &&
+                            itemName !== undefined &&
+                            itemName !== '' && (
+                                <span className="mt-2 block font-semibold text-foreground">
+                                    {itemName}
+                                </span>
+                            )}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

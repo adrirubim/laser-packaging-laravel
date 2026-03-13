@@ -9,7 +9,11 @@ export function useClipboard(): [CopiedValue, CopyFn] {
     const [copiedText, setCopiedText] = useState<CopiedValue>(null);
 
     const copy: CopyFn = useCallback(async (text) => {
-        if (!navigator?.clipboard) {
+        if (
+            navigator === null ||
+            navigator === undefined ||
+            navigator.clipboard === undefined
+        ) {
             console.warn('Clipboard not supported');
 
             return false;

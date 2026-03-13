@@ -164,10 +164,14 @@ export default function OfferOperationListsEdit() {
                                                                             offer.offer_number
                                                                         }{' '}
                                                                         -{' '}
-                                                                        {offer.provisional_description ||
-                                                                            t(
-                                                                                'offer_operation_lists.edit.no_description',
-                                                                            )}
+                                                                        {offer.provisional_description !=
+                                                                            null &&
+                                                                        offer.provisional_description !==
+                                                                            ''
+                                                                            ? offer.provisional_description
+                                                                            : t(
+                                                                                  'offer_operation_lists.edit.no_description',
+                                                                              )}
                                                                     </SelectItem>
                                                                 ),
                                                             )}
@@ -218,10 +222,14 @@ export default function OfferOperationListsEdit() {
                                                                             operation.code
                                                                         }{' '}
                                                                         -{' '}
-                                                                        {operation.description ||
-                                                                            t(
-                                                                                'offer_operation_lists.edit.no_description',
-                                                                            )}
+                                                                        {operation.description !=
+                                                                            null &&
+                                                                        operation.description !==
+                                                                            ''
+                                                                            ? operation.description
+                                                                            : t(
+                                                                                  'offer_operation_lists.edit.no_description',
+                                                                              )}
                                                                     </SelectItem>
                                                                 ),
                                                             )}

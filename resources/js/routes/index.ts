@@ -314,7 +314,7 @@ home.form = homeForm;
 
 /**
  * @see \App\Http\Controllers\DashboardController::dashboard
- * @see app/Http/Controllers/DashboardController.php:23
+ * @see app/Http/Controllers/DashboardController.php:21
  * @route '/dashboard'
  */
 export const dashboard = (
@@ -331,7 +331,7 @@ dashboard.definition = {
 
 /**
  * @see \App\Http\Controllers\DashboardController::dashboard
- * @see app/Http/Controllers/DashboardController.php:23
+ * @see app/Http/Controllers/DashboardController.php:21
  * @route '/dashboard'
  */
 dashboard.url = (options?: RouteQueryOptions) => {
@@ -340,7 +340,7 @@ dashboard.url = (options?: RouteQueryOptions) => {
 
 /**
  * @see \App\Http\Controllers\DashboardController::dashboard
- * @see app/Http/Controllers/DashboardController.php:23
+ * @see app/Http/Controllers/DashboardController.php:21
  * @route '/dashboard'
  */
 dashboard.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -350,7 +350,7 @@ dashboard.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
  * @see \App\Http\Controllers\DashboardController::dashboard
- * @see app/Http/Controllers/DashboardController.php:23
+ * @see app/Http/Controllers/DashboardController.php:21
  * @route '/dashboard'
  */
 dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -360,7 +360,7 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
  * @see \App\Http\Controllers\DashboardController::dashboard
- * @see app/Http/Controllers/DashboardController.php:23
+ * @see app/Http/Controllers/DashboardController.php:21
  * @route '/dashboard'
  */
 const dashboardForm = (
@@ -372,7 +372,7 @@ const dashboardForm = (
 
 /**
  * @see \App\Http\Controllers\DashboardController::dashboard
- * @see app/Http/Controllers/DashboardController.php:23
+ * @see app/Http/Controllers/DashboardController.php:21
  * @route '/dashboard'
  */
 dashboardForm.get = (
@@ -384,7 +384,7 @@ dashboardForm.get = (
 
 /**
  * @see \App\Http\Controllers\DashboardController::dashboard
- * @see app/Http/Controllers/DashboardController.php:23
+ * @see app/Http/Controllers/DashboardController.php:21
  * @route '/dashboard'
  */
 dashboardForm.head = (

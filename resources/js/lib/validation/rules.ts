@@ -10,7 +10,7 @@ export const validationRules = {
         message: string = 'Questo campo è obbligatorio',
     ): ((val: string) => string | null) => {
         return (val: string) => {
-            if (!val || val.trim() === '') {
+            if (val === null || val === undefined || val.trim() === '') {
                 return message;
             }
             return null;
@@ -25,8 +25,20 @@ export const validationRules = {
         message?: string,
     ): ((val: string) => string | null) => {
         return (val: string) => {
-            if (val && val.length < min) {
-                return message || `Deve contenere almeno ${min} caratteri`;
+            if (
+                val !== null &&
+                val !== undefined &&
+                val !== '' &&
+                val.length < min
+            ) {
+                if (
+                    message !== null &&
+                    message !== undefined &&
+                    message !== ''
+                ) {
+                    return message;
+                }
+                return `Deve contenere almeno ${min} caratteri`;
             }
             return null;
         };
@@ -40,8 +52,20 @@ export const validationRules = {
         message?: string,
     ): ((val: string) => string | null) => {
         return (val: string) => {
-            if (val && val.length > max) {
-                return message || `Non può superare ${max} caratteri`;
+            if (
+                val !== null &&
+                val !== undefined &&
+                val !== '' &&
+                val.length > max
+            ) {
+                if (
+                    message !== null &&
+                    message !== undefined &&
+                    message !== ''
+                ) {
+                    return message;
+                }
+                return `Non può superare ${max} caratteri`;
             }
             return null;
         };
@@ -55,10 +79,20 @@ export const validationRules = {
         message?: string,
     ): ((val: string) => string | null) => {
         return (val: string) => {
-            if (val && val.length !== length) {
-                return (
-                    message || `Deve contenere esattamente ${length} caratteri`
-                );
+            if (
+                val !== null &&
+                val !== undefined &&
+                val !== '' &&
+                val.length !== length
+            ) {
+                if (
+                    message !== null &&
+                    message !== undefined &&
+                    message !== ''
+                ) {
+                    return message;
+                }
+                return `Deve contenere esattamente ${length} caratteri`;
             }
             return null;
         };
@@ -71,7 +105,7 @@ export const validationRules = {
         message: string = 'Inserire un indirizzo email valido',
     ): ((val: string) => string | null) => {
         return (val: string) => {
-            if (val && val.trim() !== '') {
+            if (val !== null && val !== undefined && val.trim() !== '') {
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 if (!emailRegex.test(val)) {
                     return message;
@@ -88,7 +122,12 @@ export const validationRules = {
         message: string = 'Deve contenere solo numeri',
     ): ((val: string) => string | null) => {
         return (val: string) => {
-            if (val && !/^\d+$/.test(val)) {
+            if (
+                val !== null &&
+                val !== undefined &&
+                val !== '' &&
+                !/^\d+$/.test(val)
+            ) {
                 return message;
             }
             return null;
@@ -102,7 +141,7 @@ export const validationRules = {
         message: string = 'Il CAP deve contenere esattamente 5 cifre',
     ): ((val: string) => string | null) => {
         return (val: string) => {
-            if (val && val.trim() !== '') {
+            if (val !== null && val !== undefined && val.trim() !== '') {
                 if (!/^\d{5}$/.test(val)) {
                     return message;
                 }
@@ -118,7 +157,7 @@ export const validationRules = {
         message: string = 'La Partita IVA deve contenere esattamente 11 cifre',
     ): ((val: string) => string | null) => {
         return (val: string) => {
-            if (val && val.trim() !== '') {
+            if (val !== null && val !== undefined && val.trim() !== '') {
                 if (!/^\d{11}$/.test(val)) {
                     return message;
                 }
@@ -134,7 +173,7 @@ export const validationRules = {
         message: string = 'La provincia deve essere di 2 lettere maiuscole',
     ): ((val: string) => string | null) => {
         return (val: string) => {
-            if (val && val.trim() !== '') {
+            if (val !== null && val !== undefined && val.trim() !== '') {
                 if (!/^[A-Z]{2}$/.test(val)) {
                     return message;
                 }
@@ -151,7 +190,7 @@ export const validationRules = {
         message: string,
     ): ((val: string) => string | null) => {
         return (val: string) => {
-            if (val && val.trim() !== '') {
+            if (val !== null && val !== undefined && val.trim() !== '') {
                 if (!regex.test(val)) {
                     return message;
                 }

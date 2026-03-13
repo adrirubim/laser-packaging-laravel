@@ -230,7 +230,10 @@ export default function ProductionOrderProcessingCreate({
                                                         {
                                                             order.order_production_number
                                                         }
-                                                        {order.article_descr &&
+                                                        {order.article_descr !=
+                                                            null &&
+                                                            order.article_descr !==
+                                                                '' &&
                                                             ` - ${order.article_descr}`}
                                                     </SelectItem>
                                                 ))}

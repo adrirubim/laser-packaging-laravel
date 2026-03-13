@@ -193,7 +193,7 @@ export default function OffersEdit() {
 
     const [divisions, setDivisions] = useState<Division[]>(initialDivisions);
     const [selectedCustomer, setSelectedCustomer] = useState<string>(
-        offer.customer_uuid || '',
+        offer.customer_uuid ?? '',
     );
 
     // Format numbers in Italian format (comma decimals, period thousands)
@@ -260,66 +260,76 @@ export default function OffersEdit() {
 
     // Inizializzare valori dall'offerta
     const [offerNumberValue, setOfferNumberValue] = useState<string>(
-        offer.offer_number || '',
+        offer.offer_number ?? '',
     );
     const [quantityValue, setQuantityValue] = useState<string>(
-        offer.quantity ? formatNumber(offer.quantity) : '',
+        offer.quantity != null ? formatNumber(offer.quantity) : '',
     );
     const [pieceValue, setPieceValue] = useState<string>(
-        offer.piece ? formatNumber(offer.piece) : '',
+        offer.piece != null ? formatNumber(offer.piece) : '',
     );
     const [declaredWeightCfz, setDeclaredWeightCfz] = useState<string>(
-        offer.declared_weight_cfz
+        offer.declared_weight_cfz != null
             ? formatNumber(offer.declared_weight_cfz)
             : '',
     );
     const [declaredWeightPz, setDeclaredWeightPz] = useState<string>(
-        offer.declared_weight_pz ? formatNumber(offer.declared_weight_pz) : '',
+        offer.declared_weight_pz != null
+            ? formatNumber(offer.declared_weight_pz)
+            : '',
     );
     const [expectedWorkers, setExpectedWorkers] = useState<string>(
-        offer.expected_workers ? formatInteger(offer.expected_workers) : '',
+        offer.expected_workers != null
+            ? formatInteger(offer.expected_workers)
+            : '',
     );
     const [expectedRevenue, setExpectedRevenue] = useState<string>(
-        offer.expected_revenue ? formatNumber(offer.expected_revenue) : '',
+        offer.expected_revenue != null
+            ? formatNumber(offer.expected_revenue)
+            : '',
     );
     const [rateRoundingCfz, setRateRoundingCfz] = useState<string>(
-        offer.rate_rounding_cfz ? formatNumber(offer.rate_rounding_cfz) : '',
+        offer.rate_rounding_cfz != null
+            ? formatNumber(offer.rate_rounding_cfz)
+            : '',
     );
     const [rateIncreaseCfz, setRateIncreaseCfz] = useState<string>(
-        offer.rate_increase_cfz ? formatNumber(offer.rate_increase_cfz) : '',
+        offer.rate_increase_cfz != null
+            ? formatNumber(offer.rate_increase_cfz)
+            : '',
     );
     const [materialsEuro, setMaterialsEuro] = useState<string>(
-        offer.materials_euro ? formatNumber(offer.materials_euro) : '',
+        offer.materials_euro != null ? formatNumber(offer.materials_euro) : '',
     );
     const [logisticsEuro, setLogisticsEuro] = useState<string>(
-        offer.logistics_euro ? formatNumber(offer.logistics_euro) : '',
+        offer.logistics_euro != null ? formatNumber(offer.logistics_euro) : '',
     );
     const [otherEuro, setOtherEuro] = useState<string>(
-        offer.other_euro ? formatNumber(offer.other_euro) : '',
+        offer.other_euro != null ? formatNumber(offer.other_euro) : '',
     );
     const [customerRef, setCustomerRef] = useState<string>(
-        offer.customer_ref || '',
+        offer.customer_ref ?? '',
     );
     const [articleCodeRef, setArticleCodeRef] = useState<string>(
-        offer.article_code_ref || '',
+        offer.article_code_ref ?? '',
     );
     const [provisionalDescription, setProvisionalDescription] =
-        useState<string>(offer.provisional_description || '');
+        useState<string>(offer.provisional_description ?? '');
     const [unitOfMeasure, setUnitOfMeasure] = useState<string>(
-        offer.unit_of_measure || '',
+        offer.unit_of_measure ?? '',
     );
-    const [notes, setNotes] = useState<string>(offer.notes || '');
+    const [notes, setNotes] = useState<string>(offer.notes ?? '');
     const [offerNotes, setOfferNotes] = useState<string>(
-        offer.offer_notes || '',
+        offer.offer_notes ?? '',
     );
     const [lsSetupCost, setLsSetupCost] = useState<string>(
-        offer.ls_setup_cost ? formatNumber(offer.ls_setup_cost) : '',
+        offer.ls_setup_cost != null ? formatNumber(offer.ls_setup_cost) : '',
     );
     const [lsOtherCosts, setLsOtherCosts] = useState<string>(
-        offer.ls_other_costs ? formatNumber(offer.ls_other_costs) : '',
+        offer.ls_other_costs != null ? formatNumber(offer.ls_other_costs) : '',
     );
     const [approvalStatus, setApprovalStatus] = useState<string>(
-        offer.approval_status?.toString() || '',
+        offer.approval_status?.toString() ?? '',
     );
 
     // Operaciones
@@ -407,7 +417,7 @@ export default function OffersEdit() {
 
     const handleCustomerChange = (customerUuid: string) => {
         setSelectedCustomer(customerUuid);
-        if (customerUuid) {
+        if (customerUuid !== '') {
             router.get(
                 offers.edit({ offer: offer.uuid }).url,
                 { customer_uuid: customerUuid },
@@ -417,8 +427,13 @@ export default function OffersEdit() {
                     only: ['divisions'],
                     onSuccess: (page) => {
                         const props = page.props as unknown as OffersEditProps;
-                        if (props && 'divisions' in props) {
-                            setDivisions(props.divisions || []);
+                        if (props != null && 'divisions' in props) {
+                            const divisionsValue = props.divisions;
+                            setDivisions(
+                                Array.isArray(divisionsValue)
+                                    ? divisionsValue
+                                    : [],
+                            );
                         }
                     },
                 },
@@ -443,7 +458,7 @@ export default function OffersEdit() {
         // Calculate total operation seconds
         let totalSecOps = 0;
         operationRows.forEach((row) => {
-            if (row.secOp && row.numOp) {
+            if (row.secOp != null && row.numOp != null) {
                 totalSecOps += row.secOp * row.numOp;
             }
         });
@@ -567,8 +582,10 @@ export default function OffersEdit() {
                     '/offers/operation-categories/load-categories',
                 );
                 if (response.ok) {
-                    const data = await response.json();
-                    if (data.categories) {
+                    const data = (await response.json()) as {
+                        categories?: unknown;
+                    };
+                    if (Array.isArray(data.categories)) {
                         setOperationCategories(data.categories);
                     }
                 }
@@ -581,18 +598,20 @@ export default function OffersEdit() {
 
     const loadOperationsForCategory = useCallback(
         async (categoryUuid: string) => {
-            if (!categoryUuid) return;
-            if (operationsByCategory[categoryUuid]) return;
+            if (categoryUuid === '') return;
+            if (operationsByCategory[categoryUuid] != null) return;
             try {
                 const response = await fetch(
                     `/offers/operations/load-category-operations?category_uuid=${categoryUuid}`,
                 );
                 if (response.ok) {
-                    const data = await response.json();
-                    if (data.operations) {
+                    const data = (await response.json()) as {
+                        operations?: Operation[];
+                    };
+                    if (Array.isArray(data.operations)) {
                         setOperationsByCategory((prev) => ({
                             ...prev,
-                            [categoryUuid]: data.operations,
+                            [categoryUuid]: data.operations ?? [],
                         }));
                     }
                 }
@@ -605,21 +624,23 @@ export default function OffersEdit() {
 
     // Load existing operations on mount
     useEffect(() => {
-        if (existingOperations && existingOperations.length > 0) {
+        if (existingOperations != null && existingOperations.length > 0) {
             const loadedRows: OperationRow[] = existingOperations.map((op) => ({
-                id: op.uuid || Math.random().toString(36).substr(2, 9),
-                categoryUuid: op.category_uuid || '',
-                operationUuid: op.operation_uuid || '',
-                secOp: op.secondi_operazione || 0,
-                numOp: op.num_op || 0,
-                totalSec: op.total_sec || 0,
+                id: op.uuid ?? Math.random().toString(36).substr(2, 9),
+                categoryUuid: op.category_uuid ?? '',
+                operationUuid: op.operation_uuid ?? '',
+                secOp: op.secondi_operazione ?? 0,
+                numOp: op.num_op ?? 0,
+                totalSec: op.total_sec ?? 0,
             }));
             queueMicrotask(() => setOperationRows(loadedRows));
 
             // Load operations for each unique category
             const uniqueCategoryUuids = [
                 ...new Set(
-                    loadedRows.map((row) => row.categoryUuid).filter(Boolean),
+                    loadedRows
+                        .map((row) => row.categoryUuid)
+                        .filter((uuid) => uuid != null && uuid !== ''),
                 ),
             ];
             uniqueCategoryUuids.forEach((categoryUuid) => {
@@ -681,14 +702,15 @@ export default function OffersEdit() {
                     ) {
                         const categoryUuid =
                             updated.categoryUuid || row.categoryUuid;
-                        if (operationsByCategory[categoryUuid]) {
-                            const ops = operationsByCategory[categoryUuid];
+                        if (operationsByCategory[categoryUuid] != null) {
+                            const ops =
+                                operationsByCategory[categoryUuid] ?? [];
                             const selectedOp = ops.find(
                                 (op) => op.uuid === updates.operationUuid,
                             );
                             if (selectedOp) {
                                 updated.secOp =
-                                    selectedOp.secondi_operazione || 0;
+                                    selectedOp.secondi_operazione ?? 0;
                                 updated.numOp = 1;
                                 updated.totalSec =
                                     updated.secOp * updated.numOp;
@@ -699,12 +721,13 @@ export default function OffersEdit() {
                                     currentRows.map((currentRow) => {
                                         if (
                                             currentRow.id === id &&
-                                            currentRow.operationUuid
+                                            currentRow.operationUuid != null &&
+                                            currentRow.operationUuid !== ''
                                         ) {
                                             const ops =
                                                 operationsByCategory[
                                                     categoryUuid
-                                                ] || [];
+                                                ] ?? [];
                                             const selectedOp = ops.find(
                                                 (op) =>
                                                     op.uuid ===
@@ -712,10 +735,10 @@ export default function OffersEdit() {
                                             );
                                             if (selectedOp) {
                                                 const secOp =
-                                                    selectedOp.secondi_operazione ||
+                                                    selectedOp.secondi_operazione ??
                                                     0;
                                                 const numOp =
-                                                    currentRow.numOp || 1;
+                                                    currentRow.numOp ?? 1;
                                                 return {
                                                     ...currentRow,
                                                     secOp,
@@ -750,29 +773,36 @@ export default function OffersEdit() {
         queueMicrotask(() => {
             setOperationRows((prevRows) =>
                 prevRows.map((row) => {
+                    const rowOperationUuid = row.operationUuid ?? '';
+                    const rowCategoryUuid = row.categoryUuid ?? '';
+
+                    const operations =
+                        rowCategoryUuid !== ''
+                            ? operationsByCategory[rowCategoryUuid]
+                            : undefined;
+
                     if (
-                        row.operationUuid &&
-                        row.categoryUuid &&
-                        operationsByCategory[row.categoryUuid]
+                        rowOperationUuid !== '' &&
+                        rowCategoryUuid !== '' &&
+                        operations != null
                     ) {
-                        const operations =
-                            operationsByCategory[row.categoryUuid];
                         const selectedOperation = operations.find(
-                            (op) => op.uuid === row.operationUuid,
+                            (op) => op.uuid === rowOperationUuid,
                         );
                         if (
                             selectedOperation &&
                             row.secOp !== selectedOperation.secondi_operazione
                         ) {
                             const secOp =
-                                selectedOperation.secondi_operazione || 0;
-                            const numOp = row.numOp || 1;
+                                selectedOperation.secondi_operazione ?? 0;
+                            const numOp = row.numOp ?? 1;
                             return { ...row, secOp, totalSec: secOp * numOp };
                         }
                     }
+
                     if (
-                        row.secOp &&
-                        row.numOp &&
+                        row.secOp != null &&
+                        row.numOp != null &&
                         row.totalSec !== row.secOp * row.numOp
                     ) {
                         return { ...row, totalSec: row.secOp * row.numOp };
@@ -968,12 +998,14 @@ export default function OffersEdit() {
 
                         if (operationRows.length > 0) {
                             transformed.operations = operationRows
-                                .filter(
-                                    (row) =>
-                                        row.operationUuid &&
-                                        row.numOp &&
-                                        row.numOp > 0,
-                                )
+                                .filter((row) => {
+                                    const hasOperationUuid =
+                                        row.operationUuid != null &&
+                                        row.operationUuid !== '';
+                                    const hasNumOp =
+                                        row.numOp != null && row.numOp > 0;
+                                    return hasOperationUuid && hasNumOp;
+                                })
                                 .map((row) => ({
                                     offeroperation_uuid: row.operationUuid,
                                     num_op: Math.round(row.numOp), // Ensure it's an integer
@@ -1040,25 +1072,32 @@ export default function OffersEdit() {
                                                         onFocus={(e) => {
                                                             handleInputFocus(e);
                                                             if (
-                                                                offerNumberValidation.onFocus
+                                                                offerNumberValidation.onFocus !=
+                                                                null
                                                             ) {
                                                                 offerNumberValidation.onFocus();
                                                             }
                                                         }}
                                                         required
                                                         className={
-                                                            offerNumberValidation.error
+                                                            offerNumberValidation.error !=
+                                                                null &&
+                                                            offerNumberValidation.error !==
+                                                                ''
                                                                 ? 'border-destructive'
                                                                 : ''
                                                         }
                                                     />
-                                                    {offerNumberValidation.error && (
-                                                        <InputError
-                                                            message={
-                                                                offerNumberValidation.error
-                                                            }
-                                                        />
-                                                    )}
+                                                    {offerNumberValidation.error !=
+                                                        null &&
+                                                        offerNumberValidation.error !==
+                                                            '' && (
+                                                            <InputError
+                                                                message={
+                                                                    offerNumberValidation.error
+                                                                }
+                                                            />
+                                                        )}
                                                     <InputError
                                                         message={
                                                             allErrors.offer_number
@@ -1082,7 +1121,10 @@ export default function OffersEdit() {
                                                         min="2005-01-01"
                                                         max="2099-12-31"
                                                         defaultValue={
-                                                            offer.offer_date
+                                                            offer.offer_date !=
+                                                                null &&
+                                                            offer.offer_date !==
+                                                                ''
                                                                 ? offer.offer_date.split(
                                                                       'T',
                                                                   )[0]
@@ -1113,7 +1155,10 @@ export default function OffersEdit() {
                                                         min="2005-01-01"
                                                         max="2099-12-31"
                                                         defaultValue={
-                                                            offer.validity_date
+                                                            offer.validity_date !=
+                                                                null &&
+                                                            offer.validity_date !==
+                                                                ''
                                                                 ? offer.validity_date.split(
                                                                       'T',
                                                                   )[0]
@@ -1140,8 +1185,12 @@ export default function OffersEdit() {
                                                     <Select
                                                         name="customer_uuid"
                                                         defaultValue={
-                                                            offer.customer_uuid ||
-                                                            undefined
+                                                            offer.customer_uuid !=
+                                                                null &&
+                                                            offer.customer_uuid !==
+                                                                ''
+                                                                ? offer.customer_uuid
+                                                                : undefined
                                                         }
                                                         onValueChange={
                                                             handleCustomerChange
@@ -1197,12 +1246,17 @@ export default function OffersEdit() {
                                                     <Select
                                                         name="customerdivision_uuid"
                                                         defaultValue={
-                                                            offer.customerdivision_uuid ||
-                                                            undefined
+                                                            offer.customerdivision_uuid !=
+                                                                null &&
+                                                            offer.customerdivision_uuid !==
+                                                                ''
+                                                                ? offer.customerdivision_uuid
+                                                                : undefined
                                                         }
                                                         required
                                                         disabled={
-                                                            !selectedCustomer ||
+                                                            selectedCustomer ===
+                                                                '' ||
                                                             divisions.length ===
                                                                 0
                                                         }
@@ -1210,7 +1264,8 @@ export default function OffersEdit() {
                                                         <SelectTrigger>
                                                             <SelectValue
                                                                 placeholder={
-                                                                    !selectedCustomer
+                                                                    selectedCustomer ===
+                                                                    ''
                                                                         ? t(
                                                                               'offers.form.select_division',
                                                                           )
@@ -1263,8 +1318,12 @@ export default function OffersEdit() {
                                                     <Select
                                                         name="activity_uuid"
                                                         defaultValue={
-                                                            offer.activity_uuid ||
-                                                            undefined
+                                                            offer.activity_uuid !=
+                                                                null &&
+                                                            offer.activity_uuid !==
+                                                                ''
+                                                                ? offer.activity_uuid
+                                                                : undefined
                                                         }
                                                         required
                                                     >
@@ -1313,8 +1372,12 @@ export default function OffersEdit() {
                                                     <Select
                                                         name="sector_uuid"
                                                         defaultValue={
-                                                            offer.sector_uuid ||
-                                                            undefined
+                                                            offer.sector_uuid !=
+                                                                null &&
+                                                            offer.sector_uuid !==
+                                                                ''
+                                                                ? offer.sector_uuid
+                                                                : undefined
                                                         }
                                                         required
                                                     >
@@ -1363,8 +1426,12 @@ export default function OffersEdit() {
                                                     <Select
                                                         name="seasonality_uuid"
                                                         defaultValue={
-                                                            offer.seasonality_uuid ||
-                                                            undefined
+                                                            offer.seasonality_uuid !=
+                                                                null &&
+                                                            offer.seasonality_uuid !==
+                                                                ''
+                                                                ? offer.seasonality_uuid
+                                                                : undefined
                                                         }
                                                         required
                                                     >
@@ -1415,8 +1482,12 @@ export default function OffersEdit() {
                                                     <Select
                                                         name="order_type_uuid"
                                                         defaultValue={
-                                                            offer.order_type_uuid ||
-                                                            undefined
+                                                            offer.order_type_uuid !=
+                                                                null &&
+                                                            offer.order_type_uuid !==
+                                                                ''
+                                                                ? offer.order_type_uuid
+                                                                : undefined
                                                         }
                                                         required
                                                     >
@@ -1465,8 +1536,12 @@ export default function OffersEdit() {
                                                     <Select
                                                         name="lasfamily_uuid"
                                                         defaultValue={
-                                                            offer.lasfamily_uuid ||
-                                                            undefined
+                                                            offer.lasfamily_uuid !=
+                                                                null &&
+                                                            offer.lasfamily_uuid !==
+                                                                ''
+                                                                ? offer.lasfamily_uuid
+                                                                : undefined
                                                         }
                                                         required
                                                     >
@@ -1543,8 +1618,12 @@ export default function OffersEdit() {
                                                     <Select
                                                         name="lsresource_uuid"
                                                         defaultValue={
-                                                            offer.lsresource_uuid ||
-                                                            undefined
+                                                            offer.lsresource_uuid !=
+                                                                null &&
+                                                            offer.lsresource_uuid !==
+                                                                ''
+                                                                ? offer.lsresource_uuid
+                                                                : undefined
                                                         }
                                                     >
                                                         <SelectTrigger>
@@ -1596,8 +1675,12 @@ export default function OffersEdit() {
                                                     <Select
                                                         name="lasworkline_uuid"
                                                         defaultValue={
-                                                            offer.lasworkline_uuid ||
-                                                            undefined
+                                                            offer.lasworkline_uuid !=
+                                                                null &&
+                                                            offer.lasworkline_uuid !==
+                                                                ''
+                                                                ? offer.lasworkline_uuid
+                                                                : undefined
                                                         }
                                                         required
                                                     >
@@ -1758,15 +1841,25 @@ export default function OffersEdit() {
                                                         }}
                                                         required
                                                         min="0"
-                                                        className={`text-right ${quantityValidation.error ? 'border-destructive' : ''}`}
+                                                        className={`text-right ${
+                                                            quantityValidation.error !=
+                                                                null &&
+                                                            quantityValidation.error !==
+                                                                ''
+                                                                ? 'border-destructive'
+                                                                : ''
+                                                        }`}
                                                     />
-                                                    {quantityValidation.error && (
-                                                        <InputError
-                                                            message={
-                                                                quantityValidation.error
-                                                            }
-                                                        />
-                                                    )}
+                                                    {quantityValidation.error !=
+                                                        null &&
+                                                        quantityValidation.error !==
+                                                            '' && (
+                                                            <InputError
+                                                                message={
+                                                                    quantityValidation.error
+                                                                }
+                                                            />
+                                                        )}
                                                     <InputError
                                                         message={
                                                             allErrors.quantity
@@ -1804,22 +1897,33 @@ export default function OffersEdit() {
                                                         onFocus={(e) => {
                                                             handleInputFocus(e);
                                                             if (
-                                                                pieceValidation.onFocus
+                                                                pieceValidation.onFocus !=
+                                                                null
                                                             ) {
                                                                 pieceValidation.onFocus();
                                                             }
                                                         }}
                                                         required
                                                         min="0"
-                                                        className={`text-right ${pieceValidation.error ? 'border-destructive' : ''}`}
+                                                        className={`text-right ${
+                                                            pieceValidation.error !=
+                                                                null &&
+                                                            pieceValidation.error !==
+                                                                ''
+                                                                ? 'border-destructive'
+                                                                : ''
+                                                        }`}
                                                     />
-                                                    {pieceValidation.error && (
-                                                        <InputError
-                                                            message={
-                                                                pieceValidation.error
-                                                            }
-                                                        />
-                                                    )}
+                                                    {pieceValidation.error !=
+                                                        null &&
+                                                        pieceValidation.error !==
+                                                            '' && (
+                                                            <InputError
+                                                                message={
+                                                                    pieceValidation.error
+                                                                }
+                                                            />
+                                                        )}
                                                     <InputError
                                                         message={
                                                             allErrors.piece
@@ -2040,7 +2144,7 @@ export default function OffersEdit() {
                                                                                 operationsByCategory[
                                                                                     row
                                                                                         .categoryUuid
-                                                                                ] ||
+                                                                                ] ??
                                                                                 []
                                                                             ).map(
                                                                                 (

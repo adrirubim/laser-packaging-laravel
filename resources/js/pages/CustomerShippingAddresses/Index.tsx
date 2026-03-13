@@ -330,56 +330,65 @@ export default function CustomerShippingAddressesIndex() {
                                                 />
                                             </div>
                                             <div className="grid grid-cols-2 gap-2 text-xs">
-                                                {address.city && (
-                                                    <div>
-                                                        <span className="text-muted-foreground">
-                                                            {t(
-                                                                'customer_shipping_addresses.index.mobile_city_label',
-                                                            )}{' '}
-                                                        </span>
-                                                        <span>
-                                                            {address.city}
-                                                        </span>
-                                                    </div>
-                                                )}
-                                                {address.postal_code && (
-                                                    <div>
-                                                        <span className="text-muted-foreground">
-                                                            {t(
-                                                                'customer_shipping_addresses.index.mobile_cap_label',
-                                                            )}{' '}
-                                                        </span>
-                                                        <span>
-                                                            {
-                                                                address.postal_code
-                                                            }
-                                                        </span>
-                                                    </div>
-                                                )}
-                                                {address.province && (
-                                                    <div>
-                                                        <span className="text-muted-foreground">
-                                                            {t(
-                                                                'customer_shipping_addresses.index.mobile_province_label',
-                                                            )}{' '}
-                                                        </span>
-                                                        <span>
-                                                            {address.province}
-                                                        </span>
-                                                    </div>
-                                                )}
-                                                {address.country && (
-                                                    <div>
-                                                        <span className="text-muted-foreground">
-                                                            {t(
-                                                                'customer_shipping_addresses.index.mobile_country_label',
-                                                            )}{' '}
-                                                        </span>
-                                                        <span>
-                                                            {address.country}
-                                                        </span>
-                                                    </div>
-                                                )}
+                                                {address.city != null &&
+                                                    address.city !== '' && (
+                                                        <div>
+                                                            <span className="text-muted-foreground">
+                                                                {t(
+                                                                    'customer_shipping_addresses.index.mobile_city_label',
+                                                                )}{' '}
+                                                            </span>
+                                                            <span>
+                                                                {address.city}
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                {address.postal_code != null &&
+                                                    address.postal_code !==
+                                                        '' && (
+                                                        <div>
+                                                            <span className="text-muted-foreground">
+                                                                {t(
+                                                                    'customer_shipping_addresses.index.mobile_cap_label',
+                                                                )}{' '}
+                                                            </span>
+                                                            <span>
+                                                                {
+                                                                    address.postal_code
+                                                                }
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                {address.province != null &&
+                                                    address.province !== '' && (
+                                                        <div>
+                                                            <span className="text-muted-foreground">
+                                                                {t(
+                                                                    'customer_shipping_addresses.index.mobile_province_label',
+                                                                )}{' '}
+                                                            </span>
+                                                            <span>
+                                                                {
+                                                                    address.province
+                                                                }
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                {address.country != null &&
+                                                    address.country !== '' && (
+                                                        <div>
+                                                            <span className="text-muted-foreground">
+                                                                {t(
+                                                                    'customer_shipping_addresses.index.mobile_country_label',
+                                                                )}{' '}
+                                                            </span>
+                                                            <span>
+                                                                {
+                                                                    address.country
+                                                                }
+                                                            </span>
+                                                        </div>
+                                                    )}
                                             </div>
                                         </div>
                                     );

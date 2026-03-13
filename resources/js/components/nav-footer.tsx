@@ -20,7 +20,7 @@ export function NavFooter({
     return (
         <SidebarGroup
             {...props}
-            className={`group-data-[collapsible=icon]:p-0 ${className || ''}`}
+            className={`group-data-[collapsible=icon]:p-0 ${className ?? ''}`}
         >
             <SidebarGroupContent>
                 <SidebarMenu>
@@ -35,12 +35,13 @@ export function NavFooter({
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
-                                    {item.icon && (
-                                        <Icon
-                                            iconNode={item.icon}
-                                            className="h-5 w-5"
-                                        />
-                                    )}
+                                    {item.icon !== null &&
+                                        item.icon !== undefined && (
+                                            <Icon
+                                                iconNode={item.icon}
+                                                className="h-5 w-5"
+                                            />
+                                        )}
                                     <span>{item.title}</span>
                                 </a>
                             </SidebarMenuButton>

@@ -266,8 +266,10 @@ export default function LsResourcesIndex() {
                         code: deleteDialog.resource?.code ?? '',
                     })}
                     itemName={
-                        deleteDialog.resource?.name ||
-                        deleteDialog.resource?.code
+                        deleteDialog.resource?.name != null &&
+                        deleteDialog.resource?.name !== ''
+                            ? deleteDialog.resource.name
+                            : (deleteDialog.resource?.code ?? '')
                     }
                     isLoading={isDeleting}
                 />

@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Actions;
 
-use App\Actions\UpdateOrderAction;
 use App\Enums\OrderStatus;
 use App\Models\Order;
 use App\Services\OrderProductionNumberService;
+use Domain\Orders\Actions\UpdateOrderAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;

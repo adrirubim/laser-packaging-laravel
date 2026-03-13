@@ -158,17 +158,20 @@ export default function ContractsCreate({
                                             {t(
                                                 'employees.contracts.create_proroga_prefix',
                                             )}{' '}
-                                            {prorogaContract.employee_name ??
+                                            {prorogaContract?.employee_name ??
                                                 t(
                                                     'employees.contracts.employee_fallback',
                                                 )}
-                                            {prorogaContract.supplier_name &&
+                                            {prorogaContract?.supplier_name !=
+                                                null &&
+                                                prorogaContract.supplier_name !==
+                                                    '' &&
                                                 ` – ${prorogaContract.supplier_name}`}
                                             .{' '}
                                             {t(
                                                 'employees.contracts.create_proroga_suggested_start',
                                             )}{' '}
-                                            {prorogaContract.start_date}.
+                                            {prorogaContract?.start_date}.
                                         </>
                                     ) : (
                                         t(
@@ -216,12 +219,18 @@ export default function ContractsCreate({
                                                     >
                                                         <SelectTrigger
                                                             className={
-                                                                employeeValidation.error
+                                                                employeeValidation.error !=
+                                                                    null &&
+                                                                employeeValidation.error !==
+                                                                    ''
                                                                     ? 'border-destructive'
                                                                     : ''
                                                             }
                                                             aria-invalid={
-                                                                employeeValidation.error
+                                                                employeeValidation.error !=
+                                                                    null &&
+                                                                employeeValidation.error !==
+                                                                    ''
                                                                     ? 'true'
                                                                     : 'false'
                                                             }
@@ -262,13 +271,16 @@ export default function ContractsCreate({
                                                                 ))}
                                                         </SelectContent>
                                                     </Select>
-                                                    {employeeValidation.error && (
-                                                        <p className="text-xs text-destructive">
-                                                            {
-                                                                employeeValidation.error
-                                                            }
-                                                        </p>
-                                                    )}
+                                                    {employeeValidation.error !=
+                                                        null &&
+                                                        employeeValidation.error !==
+                                                            '' && (
+                                                            <p className="text-xs text-destructive">
+                                                                {
+                                                                    employeeValidation.error
+                                                                }
+                                                            </p>
+                                                        )}
                                                     <InputError
                                                         message={
                                                             allErrors.employee_uuid
@@ -299,12 +311,18 @@ export default function ContractsCreate({
                                                     >
                                                         <SelectTrigger
                                                             className={
-                                                                supplierValidation.error
+                                                                supplierValidation.error !=
+                                                                    null &&
+                                                                supplierValidation.error !==
+                                                                    ''
                                                                     ? 'border-destructive'
                                                                     : ''
                                                             }
                                                             aria-invalid={
-                                                                supplierValidation.error
+                                                                supplierValidation.error !=
+                                                                    null &&
+                                                                supplierValidation.error !==
+                                                                    ''
                                                                     ? 'true'
                                                                     : 'false'
                                                             }
@@ -342,13 +360,16 @@ export default function ContractsCreate({
                                                                 ))}
                                                         </SelectContent>
                                                     </Select>
-                                                    {supplierValidation.error && (
-                                                        <p className="text-xs text-destructive">
-                                                            {
-                                                                supplierValidation.error
-                                                            }
-                                                        </p>
-                                                    )}
+                                                    {supplierValidation.error !=
+                                                        null &&
+                                                        supplierValidation.error !==
+                                                            '' && (
+                                                            <p className="text-xs text-destructive">
+                                                                {
+                                                                    supplierValidation.error
+                                                                }
+                                                            </p>
+                                                        )}
                                                     <InputError
                                                         message={
                                                             allErrors.supplier_uuid
@@ -383,23 +404,32 @@ export default function ContractsCreate({
                                                             }
                                                             required
                                                             aria-invalid={
-                                                                startDateValidation.error
+                                                                startDateValidation.error !=
+                                                                    null &&
+                                                                startDateValidation.error !==
+                                                                    ''
                                                                     ? 'true'
                                                                     : 'false'
                                                             }
                                                             className={
-                                                                startDateValidation.error
+                                                                startDateValidation.error !=
+                                                                    null &&
+                                                                startDateValidation.error !==
+                                                                    ''
                                                                     ? 'border-destructive'
                                                                     : ''
                                                             }
                                                         />
-                                                        {startDateValidation.error && (
-                                                            <p className="text-xs text-destructive">
-                                                                {
-                                                                    startDateValidation.error
-                                                                }
-                                                            </p>
-                                                        )}
+                                                        {startDateValidation.error !=
+                                                            null &&
+                                                            startDateValidation.error !==
+                                                                '' && (
+                                                                <p className="text-xs text-destructive">
+                                                                    {
+                                                                        startDateValidation.error
+                                                                    }
+                                                                </p>
+                                                            )}
                                                         <InputError
                                                             message={
                                                                 allErrors.start_date

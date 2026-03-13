@@ -46,7 +46,7 @@ export default function PackagingInstructionsEdit({
         null,
     );
     const [showCloseConfirm, setShowCloseConfirm] = useState(false);
-    const instructionCode = instruction.code + (instruction.number || '');
+    const instructionCode = instruction.code + (instruction.number ?? '');
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
@@ -191,20 +191,23 @@ export default function PackagingInstructionsEdit({
                                                             'articles.packaging_instructions.form.attachment_label',
                                                         )}
                                                     </FormLabel>
-                                                    {instruction.filename && (
-                                                        <div className="mb-2 rounded-md bg-muted p-2">
-                                                            <p className="mb-1 text-xs text-muted-foreground">
-                                                                {t(
-                                                                    'articles.packaging_instructions.edit.current_attachment',
-                                                                )}
-                                                            </p>
-                                                            <p className="font-mono text-sm">
-                                                                {
-                                                                    instruction.filename
-                                                                }
-                                                            </p>
-                                                        </div>
-                                                    )}
+                                                    {instruction.filename !=
+                                                        null &&
+                                                        instruction.filename !==
+                                                            '' && (
+                                                            <div className="mb-2 rounded-md bg-muted p-2">
+                                                                <p className="mb-1 text-xs text-muted-foreground">
+                                                                    {t(
+                                                                        'articles.packaging_instructions.edit.current_attachment',
+                                                                    )}
+                                                                </p>
+                                                                <p className="font-mono text-sm">
+                                                                    {
+                                                                        instruction.filename
+                                                                    }
+                                                                </p>
+                                                            </div>
+                                                        )}
                                                     <Input
                                                         id="filename"
                                                         name="filename"
@@ -227,7 +230,10 @@ export default function PackagingInstructionsEdit({
                                                         id="filename-help"
                                                         className="text-xs text-muted-foreground"
                                                     >
-                                                        {instruction.filename
+                                                        {instruction.filename !=
+                                                            null &&
+                                                        instruction.filename !==
+                                                            ''
                                                             ? t(
                                                                   'articles.packaging_instructions.edit.attachment_replace_help',
                                                               )
@@ -235,18 +241,20 @@ export default function PackagingInstructionsEdit({
                                                                   'articles.packaging_instructions.edit.attachment_help',
                                                               )}
                                                     </p>
-                                                    {selectedFileName && (
-                                                        <p className="text-xs text-muted-foreground">
-                                                            {t(
-                                                                'articles.packaging_instructions.edit.new_attachment_selected',
-                                                            )}{' '}
-                                                            <span className="font-mono">
-                                                                {
-                                                                    selectedFileName
-                                                                }
-                                                            </span>
-                                                        </p>
-                                                    )}
+                                                    {selectedFileName != null &&
+                                                        selectedFileName !==
+                                                            '' && (
+                                                            <p className="text-xs text-muted-foreground">
+                                                                {t(
+                                                                    'articles.packaging_instructions.edit.new_attachment_selected',
+                                                                )}{' '}
+                                                                <span className="font-mono">
+                                                                    {
+                                                                        selectedFileName
+                                                                    }
+                                                                </span>
+                                                            </p>
+                                                        )}
                                                     <InputError
                                                         message={
                                                             allErrors.filename

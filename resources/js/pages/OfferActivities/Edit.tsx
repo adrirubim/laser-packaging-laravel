@@ -147,18 +147,24 @@ export default function OfferActivitiesEdit({
                                                         maxLength={255}
                                                         aria-describedby="name-help"
                                                         className={
-                                                            nameValidation.error
+                                                            nameValidation.error !=
+                                                                null &&
+                                                            nameValidation.error !==
+                                                                ''
                                                                 ? 'border-destructive'
                                                                 : ''
                                                         }
                                                     />
-                                                    {nameValidation.error && (
-                                                        <InputError
-                                                            message={
-                                                                nameValidation.error
-                                                            }
-                                                        />
-                                                    )}
+                                                    {nameValidation.error !=
+                                                        null &&
+                                                        nameValidation.error !==
+                                                            '' && (
+                                                            <InputError
+                                                                message={
+                                                                    nameValidation.error
+                                                                }
+                                                            />
+                                                        )}
                                                     <p
                                                         id="name-help"
                                                         className="text-xs text-muted-foreground"

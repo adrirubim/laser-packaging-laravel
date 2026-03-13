@@ -123,11 +123,11 @@ export default function ProductionOrderProcessingIndex() {
     // Initialize quantity values from filters
     useEffect(() => {
         queueMicrotask(() => {
-            if (filters.min_quantity) {
+            if (filters.min_quantity != null && filters.min_quantity !== '') {
                 const val = parseDecimal(filters.min_quantity);
                 if (val > 0) setMinQuantity(val);
             }
-            if (filters.max_quantity) {
+            if (filters.max_quantity != null && filters.max_quantity !== '') {
                 const val = parseDecimal(filters.max_quantity);
                 if (val > 0) setMaxQuantity(val);
             }
@@ -137,11 +137,12 @@ export default function ProductionOrderProcessingIndex() {
     // Calculate number of active filters
     const activeFiltersCount = useMemo(() => {
         let count = 0;
-        if (filters.search) count++;
-        if (filters.employee_uuid) count++;
-        if (filters.order_uuid) count++;
-        if (filters.date_from) count++;
-        if (filters.date_to) count++;
+        if (filters.search != null && filters.search !== '') count++;
+        if (filters.employee_uuid != null && filters.employee_uuid !== '')
+            count++;
+        if (filters.order_uuid != null && filters.order_uuid !== '') count++;
+        if (filters.date_from != null && filters.date_from !== '') count++;
+        if (filters.date_to != null && filters.date_to !== '') count++;
         if (
             minQuantity !== '' &&
             minQuantity !== null &&
@@ -347,10 +348,11 @@ export default function ProductionOrderProcessingIndex() {
             processing.employee
                 ? `${processing.employee.name} ${processing.employee.surname}`
                 : '',
-            processing.employee?.matriculation_number || '',
-            processing.order?.order_production_number || '',
+            processing.employee?.matriculation_number ?? '',
+            processing.order?.order_production_number ?? '',
             formatDecimal(processing.quantity, 2, ''),
-            processing.processed_datetime
+            processing.processed_datetime != null &&
+            processing.processed_datetime !== ''
                 ? new Date(processing.processed_datetime).toLocaleString(
                       dateLocale,
                   )
@@ -444,67 +446,82 @@ export default function ProductionOrderProcessingIndex() {
                             <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
                                 {activeFiltersCount}
                             </span>
-                            {filters.search && (
-                                <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
-                                    {t(
-                                        'production_order_processing.search_filter_label',
-                                    )}
-                                    : "{filters.search}"
-                                    <button
-                                        onClick={() => {
-                                            setSearchValue('');
-                                            applyFilters({ search: undefined });
-                                        }}
-                                        className="hover:opacity-70"
-                                    >
-                                        <X className="h-3 w-3" />
-                                    </button>
-                                </span>
-                            )}
-                            {filters.employee_uuid && (
-                                <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
-                                    {t(
-                                        'production_order_processing.personnel_selected',
-                                    )}
-                                    <button
-                                        onClick={() => {
-                                            setSelectedEmployee('');
-                                            applyFilters({
-                                                employee_uuid: undefined,
-                                            });
-                                        }}
-                                        className="hover:opacity-70"
-                                    >
-                                        <X className="h-3 w-3" />
-                                    </button>
-                                </span>
-                            )}
-                            {filters.order_uuid && (
-                                <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
-                                    {t(
-                                        'production_order_processing.order_selected',
-                                    )}
-                                    <button
-                                        onClick={() => {
-                                            setSelectedOrder('');
-                                            applyFilters({
-                                                order_uuid: undefined,
-                                            });
-                                        }}
-                                        className="hover:opacity-70"
-                                    >
-                                        <X className="h-3 w-3" />
-                                    </button>
-                                </span>
-                            )}
-                            {(filters.date_from || filters.date_to) && (
+                            {filters.search != null &&
+                                filters.search !== '' && (
+                                    <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
+                                        {t(
+                                            'production_order_processing.search_filter_label',
+                                        )}
+                                        : "{filters.search}"
+                                        <button
+                                            onClick={() => {
+                                                setSearchValue('');
+                                                applyFilters({
+                                                    search: undefined,
+                                                });
+                                            }}
+                                            className="hover:opacity-70"
+                                        >
+                                            <X className="h-3 w-3" />
+                                        </button>
+                                    </span>
+                                )}
+                            {filters.employee_uuid != null &&
+                                filters.employee_uuid !== '' && (
+                                    <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
+                                        {t(
+                                            'production_order_processing.personnel_selected',
+                                        )}
+                                        <button
+                                            onClick={() => {
+                                                setSelectedEmployee('');
+                                                applyFilters({
+                                                    employee_uuid: undefined,
+                                                });
+                                            }}
+                                            className="hover:opacity-70"
+                                        >
+                                            <X className="h-3 w-3" />
+                                        </button>
+                                    </span>
+                                )}
+                            {filters.order_uuid != null &&
+                                filters.order_uuid !== '' && (
+                                    <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
+                                        {t(
+                                            'production_order_processing.order_selected',
+                                        )}
+                                        <button
+                                            onClick={() => {
+                                                setSelectedOrder('');
+                                                applyFilters({
+                                                    order_uuid: undefined,
+                                                });
+                                            }}
+                                            className="hover:opacity-70"
+                                        >
+                                            <X className="h-3 w-3" />
+                                        </button>
+                                    </span>
+                                )}
+                            {(filters.date_from != null &&
+                                filters.date_from !== '') ||
+                            (filters.date_to != null &&
+                                filters.date_to !== '') ? (
                                 <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs">
                                     {t(
                                         'production_order_processing.date_filter_label',
                                     )}
                                     :{' '}
-                                    {filters.date_from || t('common.ellipsis')}{' '}
-                                    - {filters.date_to || t('common.ellipsis')}
+                                    {filters.date_from != null &&
+                                    filters.date_from !== ''
+                                        ? filters.date_from
+                                        : t('common.ellipsis')}{' '}
+                                    -{' '}
+                                    {filters.date_to != null &&
+                                    filters.date_to !== ''
+                                        ? filters.date_to
+                                        : t('common.ellipsis')}
                                     <button
                                         onClick={() => {
                                             setDateFrom('');
@@ -519,7 +536,7 @@ export default function ProductionOrderProcessingIndex() {
                                         <X className="h-3 w-3" />
                                     </button>
                                 </span>
-                            )}
+                            ) : null}
                             {minQuantity !== '' &&
                                 minQuantity !== null &&
                                 minQuantity !== undefined && (
@@ -720,7 +737,7 @@ export default function ProductionOrderProcessingIndex() {
                                 {t('common.items_per_page')}
                             </label>
                             <Select
-                                value={String(filters.per_page || '10')}
+                                value={String(filters.per_page ?? '10')}
                                 onValueChange={(value) =>
                                     applyFilters({ per_page: value })
                                 }
@@ -843,9 +860,9 @@ export default function ProductionOrderProcessingIndex() {
                     <div className="flex items-center gap-3">
                         <div>
                             {t('production_order_processing.results_range', {
-                                from: processingsPaginated.from || 0,
-                                to: processingsPaginated.to || 0,
-                                total: processingsPaginated.total || 0,
+                                from: processingsPaginated.from ?? 0,
+                                to: processingsPaginated.to ?? 0,
+                                total: processingsPaginated.total ?? 0,
                             })}
                         </div>
                     </div>
@@ -1152,7 +1169,10 @@ export default function ProductionOrderProcessingIndex() {
                                 onClick={() => {
                                     const firstLink =
                                         processingsPaginated.links[0];
-                                    if (firstLink?.url) {
+                                    if (
+                                        firstLink?.url != null &&
+                                        firstLink.url !== ''
+                                    ) {
                                         router.get(
                                             firstLink.url,
                                             {},
@@ -1171,11 +1191,14 @@ export default function ProductionOrderProcessingIndex() {
                         <button
                             onClick={() => {
                                 const prevLink =
-                                    processingsPaginated.links.find((l) =>
-                                        l.label.includes('&laquo;'),
+                                    processingsPaginated.links.find(
+                                        (l) =>
+                                            l.label != null &&
+                                            l.label.includes('&laquo;'),
                                     );
                                 if (
-                                    prevLink?.url &&
+                                    prevLink?.url != null &&
+                                    prevLink.url !== '' &&
                                     processingsPaginated.current_page > 1
                                 ) {
                                     router.get(
@@ -1200,11 +1223,14 @@ export default function ProductionOrderProcessingIndex() {
                         <button
                             onClick={() => {
                                 const nextLink =
-                                    processingsPaginated.links.find((l) =>
-                                        l.label.includes('&raquo;'),
+                                    processingsPaginated.links.find(
+                                        (l) =>
+                                            l.label != null &&
+                                            l.label.includes('&raquo;'),
                                     );
                                 if (
-                                    nextLink?.url &&
+                                    nextLink?.url != null &&
+                                    nextLink.url !== '' &&
                                     processingsPaginated.current_page <
                                         processingsPaginated.last_page
                                 ) {
@@ -1240,7 +1266,10 @@ export default function ProductionOrderProcessingIndex() {
                                             processingsPaginated.links.length -
                                                 1
                                         ];
-                                    if (lastLink?.url) {
+                                    if (
+                                        lastLink?.url != null &&
+                                        lastLink.url !== ''
+                                    ) {
                                         router.get(
                                             lastLink.url,
                                             {},

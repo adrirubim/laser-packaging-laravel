@@ -115,8 +115,11 @@ const PlanningDayGridView = memo(function PlanningDayGridView({
             string,
             ReturnType<typeof countContractsByQualifica>
         > = {};
+        if (slotColumns.length === 0 || contracts.length === 0) {
+            return map;
+        }
         for (const col of slotColumns) {
-            if (!map[col.dateStr]) {
+            if (map[col.dateStr] == null) {
                 map[col.dateStr] = countContractsByQualifica(
                     col.dateStr,
                     contracts,
@@ -233,7 +236,7 @@ const PlanningDayGridView = memo(function PlanningDayGridView({
                     cellKey,
                     e.shiftKey ? 'left' : 'right',
                 );
-                if (nextKey) {
+                if (nextKey != null && nextKey !== '') {
                     if (validVal) {
                         void onSavePlanningCell(cellKey, val).then(() => {
                             setEditingCellKey(nextKey);
@@ -260,7 +263,7 @@ const PlanningDayGridView = memo(function PlanningDayGridView({
                     cellKey,
                     e.shiftKey ? 'up' : 'down',
                 );
-                if (nextKey) {
+                if (nextKey != null && nextKey !== '') {
                     if (validVal) {
                         void onSavePlanningCell(cellKey, val).then(() => {
                             setEditingCellKey(nextKey);
@@ -305,7 +308,7 @@ const PlanningDayGridView = memo(function PlanningDayGridView({
                     summaryKey,
                     e.shiftKey ? 'left' : 'right',
                 );
-                if (nextKey) {
+                if (nextKey != null && nextKey !== '') {
                     void onSaveSummaryCell(
                         summaryKey,
                         editingSummaryValue,
@@ -347,7 +350,7 @@ const PlanningDayGridView = memo(function PlanningDayGridView({
                     summaryKey,
                     e.shiftKey ? 'up' : 'down',
                 );
-                if (nextKey) {
+                if (nextKey != null && nextKey !== '') {
                     void onSaveSummaryCell(
                         summaryKey,
                         editingSummaryValue,
@@ -608,7 +611,11 @@ const PlanningDayGridView = memo(function PlanningDayGridView({
                                         (order, orderIdx) => {
                                             const isFirstOrder = orderIdx === 0;
                                             const deliveryDateStr =
-                                                order.delivery_requested_date
+                                                order.delivery_requested_date !=
+                                                    null &&
+                                                !Number.isNaN(
+                                                    order.delivery_requested_date,
+                                                )
                                                     ? new Date(
                                                           order.delivery_requested_date *
                                                               1000,
@@ -637,20 +644,33 @@ const PlanningDayGridView = memo(function PlanningDayGridView({
                                                     </td>
                                                     <td
                                                         className="sticky left-[8rem] z-10 bg-card py-1.5 pr-2 pl-2 text-xs text-muted-foreground shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)]"
-                                                        title={
-                                                            [
+                                                        title={(() => {
+                                                            const parts = [
                                                                 order.code,
                                                                 order.article_code,
                                                                 order.description,
-                                                            ]
-                                                                .filter(Boolean)
-                                                                .join(' — ') ||
-                                                            order.code
-                                                        }
+                                                            ].filter(
+                                                                (part) =>
+                                                                    part !=
+                                                                        null &&
+                                                                    part !== '',
+                                                            );
+                                                            if (
+                                                                parts.length > 0
+                                                            ) {
+                                                                return parts.join(
+                                                                    ' — ',
+                                                                );
+                                                            }
+                                                            return order.code;
+                                                        })()}
                                                     >
                                                         <span className="block truncate">
                                                             {order.code}
-                                                            {order.article_code
+                                                            {order.article_code !=
+                                                                null &&
+                                                            order.article_code !==
+                                                                ''
                                                                 ? ` — ${order.article_code}`
                                                                 : ''}
                                                         </span>
@@ -675,11 +695,13 @@ const PlanningDayGridView = memo(function PlanningDayGridView({
                                                                     colDayOfWeek,
                                                                 );
                                                             const isOverdue =
-                                                                !!deliveryDateStr &&
+                                                                deliveryDateStr !=
+                                                                    null &&
                                                                 col.dateStr >
                                                                     deliveryDateStr;
                                                             const isDeadlineBorder =
-                                                                !!deliveryDateStr &&
+                                                                deliveryDateStr !=
+                                                                    null &&
                                                                 col.dateStr <=
                                                                     deliveryDateStr &&
                                                                 colIdx <

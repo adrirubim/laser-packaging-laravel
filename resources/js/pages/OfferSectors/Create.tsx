@@ -125,18 +125,21 @@ export default function OfferSectorsCreate({
                                                     'offer_sectors.form.name_placeholder',
                                                 )}
                                                 className={
-                                                    nameValidation.error
+                                                    nameValidation.error !=
+                                                        null &&
+                                                    nameValidation.error !== ''
                                                         ? 'border-destructive'
                                                         : ''
                                                 }
                                             />
-                                            {nameValidation.error && (
-                                                <InputError
-                                                    message={
-                                                        nameValidation.error
-                                                    }
-                                                />
-                                            )}
+                                            {nameValidation.error != null &&
+                                                nameValidation.error !== '' && (
+                                                    <InputError
+                                                        message={
+                                                            nameValidation.error
+                                                        }
+                                                    />
+                                                )}
                                             <InputError
                                                 message={allErrors.name}
                                             />

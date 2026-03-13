@@ -67,7 +67,10 @@ export default function CriticalIssuesIndex() {
                     criticalIssues.index().url,
                     {
                         ...filters,
-                        search: searchValue || undefined,
+                        search:
+                            searchValue != null && searchValue !== ''
+                                ? searchValue
+                                : undefined,
                     },
                     {
                         preserveState: true,
@@ -129,6 +132,8 @@ export default function CriticalIssuesIndex() {
     };
 
     const { prevLink, nextLink, pageLinks } = getPaginationLinks();
+    const hasPrevUrl = prevLink?.url != null && prevLink.url !== '';
+    const hasNextUrl = nextLink?.url != null && nextLink.url !== '';
 
     const breadcrumbs: BreadcrumbItem[] = [
         {
@@ -173,14 +178,16 @@ export default function CriticalIssuesIndex() {
                                 {isSearching && (
                                     <Loader2 className="absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 transform animate-spin text-muted-foreground" />
                                 )}
-                                {searchValue && !isSearching && (
-                                    <button
-                                        onClick={clearSearch}
-                                        className="absolute top-1/2 right-3 -translate-y-1/2 transform transition-opacity hover:opacity-70"
-                                    >
-                                        <X className="h-4 w-4 text-muted-foreground" />
-                                    </button>
-                                )}
+                                {searchValue != null &&
+                                    searchValue !== '' &&
+                                    !isSearching && (
+                                        <button
+                                            onClick={clearSearch}
+                                            className="absolute top-1/2 right-3 -translate-y-1/2 transform transition-opacity hover:opacity-70"
+                                        >
+                                            <X className="h-4 w-4 text-muted-foreground" />
+                                        </button>
+                                    )}
                             </div>
                         </div>
                     </div>
@@ -330,9 +337,11 @@ export default function CriticalIssuesIndex() {
                         <div className="flex items-center gap-2">
                             {prevLink && (
                                 <Link
-                                    href={prevLink.url || '#'}
+                                    href={
+                                        hasPrevUrl ? (prevLink.url ?? '#') : '#'
+                                    }
                                     className={`inline-flex items-center rounded-md px-3 py-1.5 text-xs font-medium ${
-                                        prevLink.url
+                                        hasPrevUrl
                                             ? 'bg-background text-foreground hover:bg-muted'
                                             : 'cursor-not-allowed bg-muted text-muted-foreground'
                                     }`}
@@ -341,27 +350,34 @@ export default function CriticalIssuesIndex() {
                                     {t('common.previous')}
                                 </Link>
                             )}
-                            {pageLinks.map((link, index) => (
-                                <Link
-                                    key={index}
-                                    href={link.url || '#'}
-                                    className={`inline-flex items-center rounded-md px-3 py-1.5 text-xs font-medium ${
-                                        link.active
-                                            ? 'bg-primary text-primary-foreground'
-                                            : link.url
-                                              ? 'bg-background text-foreground hover:bg-muted'
-                                              : 'cursor-not-allowed bg-muted text-muted-foreground'
-                                    }`}
-                                    dangerouslySetInnerHTML={{
-                                        __html: link.label,
-                                    }}
-                                />
-                            ))}
+                            {pageLinks.map((link, index) => {
+                                const hasUrl =
+                                    link.url != null && link.url !== '';
+
+                                return (
+                                    <Link
+                                        key={index}
+                                        href={link.url ?? '#'}
+                                        className={`inline-flex items-center rounded-md px-3 py-1.5 text-xs font-medium ${
+                                            link.active
+                                                ? 'bg-primary text-primary-foreground'
+                                                : hasUrl
+                                                  ? 'bg-background text-foreground hover:bg-muted'
+                                                  : 'cursor-not-allowed bg-muted text-muted-foreground'
+                                        }`}
+                                        dangerouslySetInnerHTML={{
+                                            __html: link.label,
+                                        }}
+                                    />
+                                );
+                            })}
                             {nextLink && (
                                 <Link
-                                    href={nextLink.url || '#'}
+                                    href={
+                                        hasNextUrl ? (nextLink.url ?? '#') : '#'
+                                    }
                                     className={`inline-flex items-center rounded-md px-3 py-1.5 text-xs font-medium ${
-                                        nextLink.url
+                                        hasNextUrl
                                             ? 'bg-background text-foreground hover:bg-muted'
                                             : 'cursor-not-allowed bg-muted text-muted-foreground'
                                     }`}

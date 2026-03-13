@@ -551,12 +551,16 @@ class OfferControllerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
-            '*' => ['uuid', 'name'],
+            'success',
+            'message',
+            'data' => [
+                'divisions' => [
+                    '*' => ['uuid', 'name'],
+                ],
+            ],
         ]);
-        $response->assertJsonFragment([
-            'uuid' => $this->division->uuid,
-            'name' => $this->division->name,
-        ]);
+        $response->assertJsonPath('data.divisions.0.uuid', $this->division->uuid);
+        $response->assertJsonPath('data.divisions.0.name', $this->division->name);
     }
 
     #[Test]
@@ -598,12 +602,10 @@ class OfferControllerTest extends TestCase
         ]));
 
         $response->assertStatus(200);
-        $response->assertJsonMissing([
-            'uuid' => $removedDivision->uuid,
-        ]);
-        $response->assertJsonFragment([
-            'uuid' => $this->division->uuid,
-        ]);
+        $divisions = $response->json('data.divisions');
+        $divisionUuids = array_column($divisions, 'uuid');
+        $this->assertContains($this->division->uuid, $divisionUuids);
+        $this->assertNotContains($removedDivision->uuid, $divisionUuids);
     }
 
     #[Test]

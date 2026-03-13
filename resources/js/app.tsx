@@ -7,7 +7,11 @@ import { Toaster } from 'sonner';
 import '../css/app.css';
 import { initializeTheme } from './hooks/use-appearance';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const rawAppName = import.meta.env.VITE_APP_NAME;
+const appName =
+    rawAppName !== null && rawAppName !== undefined && rawAppName !== ''
+        ? rawAppName
+        : 'Laravel';
 
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),

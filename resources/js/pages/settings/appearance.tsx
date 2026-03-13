@@ -63,9 +63,9 @@ export default function Appearance({
         (newLocale: LocaleCode) => {
             savePreferences({
                 locale: newLocale,
-                theme: preferences?.theme || 'system',
-                timezone: preferences?.timezone || 'UTC',
-                date_format: preferences?.date_format || 'd/m/Y',
+                theme: preferences?.theme ?? 'system',
+                timezone: preferences?.timezone ?? 'UTC',
+                date_format: preferences?.date_format ?? 'd/m/Y',
             });
         },
         [preferences, savePreferences],
@@ -76,9 +76,9 @@ export default function Appearance({
             updateAppearance(theme);
             savePreferences({
                 theme,
-                locale: preferences?.locale || currentLocale,
-                timezone: preferences?.timezone || 'UTC',
-                date_format: preferences?.date_format || 'd/m/Y',
+                locale: preferences?.locale ?? currentLocale,
+                timezone: preferences?.timezone ?? 'UTC',
+                date_format: preferences?.date_format ?? 'd/m/Y',
             });
         },
         [preferences, currentLocale, savePreferences, updateAppearance],
@@ -146,15 +146,15 @@ export default function Appearance({
                             {t('settings.appearance.timezone_description')}
                         </p>
                         <Select
-                            value={preferences?.timezone || 'UTC'}
+                            value={preferences?.timezone ?? 'UTC'}
                             onValueChange={(value) =>
                                 savePreferences({
                                     timezone: value,
-                                    theme: preferences?.theme || 'system',
+                                    theme: preferences?.theme ?? 'system',
                                     locale:
-                                        preferences?.locale || currentLocale,
+                                        preferences?.locale ?? currentLocale,
                                     date_format:
-                                        preferences?.date_format || 'd/m/Y',
+                                        preferences?.date_format ?? 'd/m/Y',
                                 })
                             }
                         >
@@ -185,14 +185,14 @@ export default function Appearance({
                             {t('settings.appearance.date_format_description')}
                         </p>
                         <Select
-                            value={preferences?.date_format || 'd/m/Y'}
+                            value={preferences?.date_format ?? 'd/m/Y'}
                             onValueChange={(value) =>
                                 savePreferences({
                                     date_format: value,
-                                    theme: preferences?.theme || 'system',
+                                    theme: preferences?.theme ?? 'system',
                                     locale:
-                                        preferences?.locale || currentLocale,
-                                    timezone: preferences?.timezone || 'UTC',
+                                        preferences?.locale ?? currentLocale,
+                                    timezone: preferences?.timezone ?? 'UTC',
                                 })
                             }
                         >

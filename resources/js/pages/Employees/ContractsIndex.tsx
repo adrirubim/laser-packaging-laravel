@@ -144,12 +144,27 @@ export default function ContractsIndex() {
         router.get(
             contractsRoutes.index().url,
             {
-                search: value || undefined,
-                employee_uuid: filters.employee_uuid || undefined,
-                supplier_uuid: filters.supplier_uuid || undefined,
-                per_page: filters.per_page || undefined,
-                sort_by: filters.sort_by || undefined,
-                sort_order: filters.sort_order || undefined,
+                search: value != null && value !== '' ? value : undefined,
+                employee_uuid:
+                    filters.employee_uuid != null &&
+                    filters.employee_uuid !== ''
+                        ? filters.employee_uuid
+                        : undefined,
+                supplier_uuid:
+                    filters.supplier_uuid != null &&
+                    filters.supplier_uuid !== ''
+                        ? filters.supplier_uuid
+                        : undefined,
+                per_page:
+                    filters.per_page != null && filters.per_page !== ''
+                        ? filters.per_page
+                        : undefined,
+                sort_by:
+                    filters.sort_by != null && filters.sort_by !== ''
+                        ? filters.sort_by
+                        : undefined,
+                sort_order:
+                    filters.sort_order != null ? filters.sort_order : undefined,
             },
             {
                 preserveState: true,
@@ -162,11 +177,26 @@ export default function ContractsIndex() {
         router.get(
             contractsRoutes.index().url,
             {
-                employee_uuid: filters.employee_uuid || undefined,
-                supplier_uuid: filters.supplier_uuid || undefined,
-                per_page: filters.per_page || undefined,
-                sort_by: filters.sort_by || undefined,
-                sort_order: filters.sort_order || undefined,
+                employee_uuid:
+                    filters.employee_uuid != null &&
+                    filters.employee_uuid !== ''
+                        ? filters.employee_uuid
+                        : undefined,
+                supplier_uuid:
+                    filters.supplier_uuid != null &&
+                    filters.supplier_uuid !== ''
+                        ? filters.supplier_uuid
+                        : undefined,
+                per_page:
+                    filters.per_page != null && filters.per_page !== ''
+                        ? filters.per_page
+                        : undefined,
+                sort_by:
+                    filters.sort_by != null && filters.sort_by !== ''
+                        ? filters.sort_by
+                        : undefined,
+                sort_order:
+                    filters.sort_order != null ? filters.sort_order : undefined,
             },
             { preserveState: true, preserveScroll: true },
         );
@@ -176,12 +206,31 @@ export default function ContractsIndex() {
         router.get(
             contractsRoutes.index().url,
             {
-                search: filters.search || undefined,
-                employee_uuid: value === 'all' ? undefined : value || undefined,
-                supplier_uuid: filters.supplier_uuid || undefined,
-                per_page: filters.per_page || undefined,
-                sort_by: filters.sort_by || undefined,
-                sort_order: filters.sort_order || undefined,
+                search:
+                    filters.search != null && filters.search !== ''
+                        ? filters.search
+                        : undefined,
+                employee_uuid:
+                    value === 'all'
+                        ? undefined
+                        : value != null && value !== ''
+                          ? value
+                          : undefined,
+                supplier_uuid:
+                    filters.supplier_uuid != null &&
+                    filters.supplier_uuid !== ''
+                        ? filters.supplier_uuid
+                        : undefined,
+                per_page:
+                    filters.per_page != null && filters.per_page !== ''
+                        ? filters.per_page
+                        : undefined,
+                sort_by:
+                    filters.sort_by != null && filters.sort_by !== ''
+                        ? filters.sort_by
+                        : undefined,
+                sort_order:
+                    filters.sort_order != null ? filters.sort_order : undefined,
             },
             {
                 preserveState: true,
@@ -194,12 +243,31 @@ export default function ContractsIndex() {
         router.get(
             contractsRoutes.index().url,
             {
-                search: filters.search || undefined,
-                employee_uuid: filters.employee_uuid || undefined,
-                supplier_uuid: value === 'all' ? undefined : value || undefined,
-                per_page: filters.per_page || undefined,
-                sort_by: filters.sort_by || undefined,
-                sort_order: filters.sort_order || undefined,
+                search:
+                    filters.search != null && filters.search !== ''
+                        ? filters.search
+                        : undefined,
+                employee_uuid:
+                    filters.employee_uuid != null &&
+                    filters.employee_uuid !== ''
+                        ? filters.employee_uuid
+                        : undefined,
+                supplier_uuid:
+                    value === 'all'
+                        ? undefined
+                        : value != null && value !== ''
+                          ? value
+                          : undefined,
+                per_page:
+                    filters.per_page != null && filters.per_page !== ''
+                        ? filters.per_page
+                        : undefined,
+                sort_by:
+                    filters.sort_by != null && filters.sort_by !== ''
+                        ? filters.sort_by
+                        : undefined,
+                sort_order:
+                    filters.sort_order != null ? filters.sort_order : undefined,
             },
             {
                 preserveState: true,
@@ -231,7 +299,7 @@ export default function ContractsIndex() {
         dateString: string | null | undefined,
         emptyLabel: string = '-',
     ): string => {
-        if (!dateString) return emptyLabel;
+        if (dateString == null || dateString === '') return emptyLabel;
         const date = new Date(dateString);
         return date.toLocaleDateString('it-IT', {
             year: 'numeric',
@@ -365,7 +433,7 @@ export default function ContractsIndex() {
                         </div>
                         <div className="flex flex-wrap items-center gap-2">
                             <SearchInput
-                                value={filters.search || ''}
+                                value={filters.search ?? ''}
                                 onChange={handleSearchChange}
                                 onClear={clearSearch}
                                 placeholder={t(
@@ -378,7 +446,12 @@ export default function ContractsIndex() {
                                 :
                             </label>
                             <Select
-                                value={filters.employee_uuid || 'all'}
+                                value={
+                                    filters.employee_uuid != null &&
+                                    filters.employee_uuid !== ''
+                                        ? filters.employee_uuid
+                                        : 'all'
+                                }
                                 onValueChange={handleEmployeeChange}
                             >
                                 <SelectTrigger className="h-8 w-48 text-xs">
@@ -408,7 +481,12 @@ export default function ContractsIndex() {
                                 :
                             </label>
                             <Select
-                                value={filters.supplier_uuid || 'all'}
+                                value={
+                                    filters.supplier_uuid != null &&
+                                    filters.supplier_uuid !== ''
+                                        ? filters.supplier_uuid
+                                        : 'all'
+                                }
                                 onValueChange={handleSupplierChange}
                             >
                                 <SelectTrigger className="h-8 w-48 text-xs">
@@ -573,13 +651,16 @@ export default function ContractsIndex() {
                                         </td>
                                         <td className="px-3 py-2">
                                             <span className="inline-flex items-center rounded-full bg-muted px-2 py-1 text-xs font-medium">
-                                                {contract.pay_level_label ||
-                                                    t(
-                                                        PAY_LEVEL_KEYS[
-                                                            contract.pay_level
-                                                        ] ??
-                                                            'common.not_available',
-                                                    )}
+                                                {contract.pay_level_label !=
+                                                    null &&
+                                                contract.pay_level_label !== ''
+                                                    ? contract.pay_level_label
+                                                    : t(
+                                                          PAY_LEVEL_KEYS[
+                                                              contract.pay_level
+                                                          ] ??
+                                                              'common.not_available',
+                                                      )}
                                             </span>
                                         </td>
                                         <td className="px-3 py-2 text-xs">
@@ -801,12 +882,15 @@ export default function ContractsIndex() {
                                             :{' '}
                                         </span>
                                         <span className="inline-flex items-center rounded-full bg-muted px-2 py-1 text-xs font-medium">
-                                            {contract.pay_level_label ||
-                                                t(
-                                                    PAY_LEVEL_KEYS[
-                                                        contract.pay_level
-                                                    ] ?? 'common.not_available',
-                                                )}
+                                            {contract.pay_level_label != null &&
+                                            contract.pay_level_label !== ''
+                                                ? contract.pay_level_label
+                                                : t(
+                                                      PAY_LEVEL_KEYS[
+                                                          contract.pay_level
+                                                      ] ??
+                                                          'common.not_available',
+                                                  )}
                                         </span>
                                     </div>
                                     <div>
@@ -820,19 +904,22 @@ export default function ContractsIndex() {
                                             {formatDate(contract.start_date)}
                                         </span>
                                     </div>
-                                    {contract.end_date && (
-                                        <div className="col-span-2">
-                                            <span className="text-muted-foreground">
-                                                {t(
-                                                    'employees.contracts.end_mobile',
-                                                )}
-                                                :{' '}
-                                            </span>
-                                            <span>
-                                                {formatDate(contract.end_date)}
-                                            </span>
-                                        </div>
-                                    )}
+                                    {contract.end_date != null &&
+                                        contract.end_date !== '' && (
+                                            <div className="col-span-2">
+                                                <span className="text-muted-foreground">
+                                                    {t(
+                                                        'employees.contracts.end_mobile',
+                                                    )}
+                                                    :{' '}
+                                                </span>
+                                                <span>
+                                                    {formatDate(
+                                                        contract.end_date,
+                                                    )}
+                                                </span>
+                                            </div>
+                                        )}
                                 </div>
                             </div>
                         ))
@@ -899,18 +986,27 @@ export default function ContractsIndex() {
                                         )}
                                     </Label>
                                     <p className="text-sm font-medium">
-                                        {viewDialog.contract.supplier
-                                            ?.company_name || '-'}
+                                        {viewDialog.contract.supplier != null &&
+                                        viewDialog.contract.supplier
+                                            .company_name !== ''
+                                            ? viewDialog.contract.supplier
+                                                  .company_name
+                                            : '-'}
                                     </p>
-                                    {viewDialog.contract.supplier && (
-                                        <p className="mt-1 font-mono text-xs text-muted-foreground">
-                                            {t(
-                                                'employees.contracts.view_label_code',
-                                            )}
-                                            :{' '}
-                                            {viewDialog.contract.supplier.code}
-                                        </p>
-                                    )}
+                                    {viewDialog.contract.supplier != null &&
+                                        viewDialog.contract.supplier.code !==
+                                            '' && (
+                                            <p className="mt-1 font-mono text-xs text-muted-foreground">
+                                                {t(
+                                                    'employees.contracts.view_label_code',
+                                                )}
+                                                :{' '}
+                                                {
+                                                    viewDialog.contract.supplier
+                                                        .code
+                                                }
+                                            </p>
+                                        )}
                                 </div>
                                 <div>
                                     <Label className="text-xs text-muted-foreground">
@@ -921,13 +1017,18 @@ export default function ContractsIndex() {
                                     <p className="text-sm">
                                         <span className="inline-flex items-center rounded-full bg-muted px-2 py-1 text-xs font-medium">
                                             {viewDialog.contract
-                                                .pay_level_label ||
-                                                t(
-                                                    PAY_LEVEL_KEYS[
-                                                        viewDialog.contract
-                                                            .pay_level
-                                                    ] ?? 'common.not_available',
-                                                )}
+                                                .pay_level_label != null &&
+                                            viewDialog.contract
+                                                .pay_level_label !== ''
+                                                ? viewDialog.contract
+                                                      .pay_level_label
+                                                : t(
+                                                      PAY_LEVEL_KEYS[
+                                                          viewDialog.contract
+                                                              .pay_level
+                                                      ] ??
+                                                          'common.not_available',
+                                                  )}
                                         </span>
                                     </p>
                                 </div>
@@ -1016,25 +1117,31 @@ function EditContractDialog({
         end_date: string;
         pay_level: string;
     }>({
-        employee_uuid: contract?.employee?.uuid || '',
-        supplier_uuid: contract?.supplier?.uuid || '',
-        start_date: contract?.start_date
-            ? contract.start_date.split('T')[0]
-            : '',
-        end_date: contract?.end_date ? contract.end_date.split('T')[0] : '',
-        pay_level: contract?.pay_level?.toString() || '0',
+        employee_uuid: contract?.employee?.uuid ?? '',
+        supplier_uuid: contract?.supplier?.uuid ?? '',
+        start_date:
+            contract?.start_date != null && contract.start_date !== ''
+                ? contract.start_date.split('T')[0]
+                : '',
+        end_date:
+            contract?.end_date != null && contract.end_date !== ''
+                ? contract.end_date.split('T')[0]
+                : '',
+        pay_level: contract?.pay_level?.toString() ?? '0',
     });
 
     useEffect(() => {
         if (contract) {
-            setData('employee_uuid', contract.employee?.uuid || '');
-            setData('supplier_uuid', contract.supplier?.uuid || '');
+            setData('employee_uuid', contract.employee?.uuid ?? '');
+            setData('supplier_uuid', contract.supplier?.uuid ?? '');
             setData('start_date', contract.start_date.split('T')[0]);
             setData(
                 'end_date',
-                contract.end_date ? contract.end_date.split('T')[0] : '',
+                contract.end_date != null && contract.end_date !== ''
+                    ? contract.end_date.split('T')[0]
+                    : '',
             );
-            setData('pay_level', contract.pay_level?.toString() || '0');
+            setData('pay_level', contract.pay_level?.toString() ?? '0');
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps -- setData from useForm is stable
     }, [contract]);
@@ -1078,7 +1185,8 @@ function EditContractDialog({
                         >
                             <SelectTrigger
                                 className={
-                                    errors.employee_uuid
+                                    errors.employee_uuid != null &&
+                                    errors.employee_uuid !== ''
                                         ? 'border-destructive'
                                         : ''
                                 }
@@ -1103,11 +1211,12 @@ function EditContractDialog({
                                     ))}
                             </SelectContent>
                         </Select>
-                        {errors.employee_uuid && (
-                            <p className="text-xs text-destructive">
-                                {errors.employee_uuid}
-                            </p>
-                        )}
+                        {errors.employee_uuid != null &&
+                            errors.employee_uuid !== '' && (
+                                <p className="text-xs text-destructive">
+                                    {errors.employee_uuid}
+                                </p>
+                            )}
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="supplier_uuid">
@@ -1122,7 +1231,8 @@ function EditContractDialog({
                         >
                             <SelectTrigger
                                 className={
-                                    errors.supplier_uuid
+                                    errors.supplier_uuid != null &&
+                                    errors.supplier_uuid !== ''
                                         ? 'border-destructive'
                                         : ''
                                 }
@@ -1146,11 +1256,12 @@ function EditContractDialog({
                                     ))}
                             </SelectContent>
                         </Select>
-                        {errors.supplier_uuid && (
-                            <p className="text-xs text-destructive">
-                                {errors.supplier_uuid}
-                            </p>
-                        )}
+                        {errors.supplier_uuid != null &&
+                            errors.supplier_uuid !== '' && (
+                                <p className="text-xs text-destructive">
+                                    {errors.supplier_uuid}
+                                </p>
+                            )}
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="start_date">
@@ -1165,14 +1276,18 @@ function EditContractDialog({
                             }
                             required
                             className={
-                                errors.start_date ? 'border-destructive' : ''
+                                errors.start_date != null &&
+                                errors.start_date !== ''
+                                    ? 'border-destructive'
+                                    : ''
                             }
                         />
-                        {errors.start_date && (
-                            <p className="text-xs text-destructive">
-                                {errors.start_date}
-                            </p>
-                        )}
+                        {errors.start_date != null &&
+                            errors.start_date !== '' && (
+                                <p className="text-xs text-destructive">
+                                    {errors.start_date}
+                                </p>
+                            )}
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="end_date">
@@ -1186,10 +1301,13 @@ function EditContractDialog({
                                 setData('end_date', e.target.value)
                             }
                             className={
-                                errors.end_date ? 'border-destructive' : ''
+                                errors.end_date != null &&
+                                errors.end_date !== ''
+                                    ? 'border-destructive'
+                                    : ''
                             }
                         />
-                        {errors.end_date && (
+                        {errors.end_date != null && errors.end_date !== '' && (
                             <p className="text-xs text-destructive">
                                 {errors.end_date}
                             </p>
@@ -1226,11 +1344,12 @@ function EditContractDialog({
                                 </SelectItem>
                             </SelectContent>
                         </Select>
-                        {errors.pay_level && (
-                            <p className="text-xs text-destructive">
-                                {errors.pay_level}
-                            </p>
-                        )}
+                        {errors.pay_level != null &&
+                            errors.pay_level !== '' && (
+                                <p className="text-xs text-destructive">
+                                    {errors.pay_level}
+                                </p>
+                            )}
                     </div>
                     <div className="flex justify-end gap-2 pt-4">
                         <Button

@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Actions;
 
-use App\Actions\CreateOfferAction;
 use App\Models\Offer;
 use App\Services\OfferNumberService;
+use Domain\Offers\Actions\CreateOfferAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;

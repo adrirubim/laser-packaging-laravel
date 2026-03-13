@@ -82,10 +82,10 @@ export default function OrdersCreate({
     const [shippingAddresses, setShippingAddresses] =
         useState<ShippingAddress[]>(initialAddresses);
     const [selectedArticle, setSelectedArticle] = useState<string>(
-        initialArticle?.uuid || '',
+        initialArticle?.uuid ?? '',
     );
     const [currentArticle, setCurrentArticle] = useState<Article | null>(
-        initialArticle || null,
+        initialArticle ?? null,
     );
     const [selectedShippingAddress, setSelectedShippingAddress] =
         useState<string>(initialShippingAddressUuid ?? '');
@@ -197,7 +197,10 @@ export default function OrdersCreate({
     const isLotReadonly = typeLot === '-1' || typeLot === '';
 
     const handleDownloadPalletSheet = () => {
-        if (currentArticle?.palletSheet?.uuid) {
+        if (
+            currentArticle?.palletSheet?.uuid != null &&
+            currentArticle.palletSheet.uuid !== ''
+        ) {
             window.open(
                 articlesRoutes.palletSheets.downloadFile({
                     palletSheet: currentArticle.palletSheet.uuid,
@@ -266,24 +269,27 @@ export default function OrdersCreate({
                                                             />
                                                         </div>
 
-                                                        {currentArticle.um && (
-                                                            <div className="grid gap-2">
-                                                                <FormLabel htmlFor="um">
-                                                                    {t(
-                                                                        'orders.labels.um',
-                                                                    )}
-                                                                </FormLabel>
-                                                                <Input
-                                                                    id="um"
-                                                                    name="um"
-                                                                    value={
-                                                                        currentArticle.um
-                                                                    }
-                                                                    readOnly
-                                                                    className="bg-muted"
-                                                                />
-                                                            </div>
-                                                        )}
+                                                        {currentArticle.um !=
+                                                            null &&
+                                                            currentArticle.um !==
+                                                                '' && (
+                                                                <div className="grid gap-2">
+                                                                    <FormLabel htmlFor="um">
+                                                                        {t(
+                                                                            'orders.labels.um',
+                                                                        )}
+                                                                    </FormLabel>
+                                                                    <Input
+                                                                        id="um"
+                                                                        name="um"
+                                                                        value={
+                                                                            currentArticle.um
+                                                                        }
+                                                                        readOnly
+                                                                        className="bg-muted"
+                                                                    />
+                                                                </div>
+                                                            )}
                                                     </>
                                                 )}
 
@@ -352,10 +358,14 @@ export default function OrdersCreate({
                                                                             article.cod_article_las
                                                                         }{' '}
                                                                         -{' '}
-                                                                        {article.article_descr ||
-                                                                            t(
-                                                                                'common.no_description',
-                                                                            )}
+                                                                        {article.article_descr !=
+                                                                            null &&
+                                                                        article.article_descr !==
+                                                                            ''
+                                                                            ? article.article_descr
+                                                                            : t(
+                                                                                  'common.no_description',
+                                                                              )}
                                                                     </SelectItem>
                                                                 ),
                                                             )}
@@ -440,23 +450,32 @@ export default function OrdersCreate({
                                                         }
                                                         required
                                                         aria-invalid={
-                                                            quantityValidation.error
+                                                            quantityValidation.error !=
+                                                                null &&
+                                                            quantityValidation.error !==
+                                                                ''
                                                                 ? 'true'
                                                                 : 'false'
                                                         }
                                                         className={
-                                                            quantityValidation.error
+                                                            quantityValidation.error !=
+                                                                null &&
+                                                            quantityValidation.error !==
+                                                                ''
                                                                 ? 'border-destructive'
                                                                 : ''
                                                         }
                                                     />
-                                                    {quantityValidation.error && (
-                                                        <p className="text-xs text-destructive">
-                                                            {
-                                                                quantityValidation.error
-                                                            }
-                                                        </p>
-                                                    )}
+                                                    {quantityValidation.error !=
+                                                        null &&
+                                                        quantityValidation.error !==
+                                                            '' && (
+                                                            <p className="text-xs text-destructive">
+                                                                {
+                                                                    quantityValidation.error
+                                                                }
+                                                            </p>
+                                                        )}
                                                     <InputError
                                                         message={
                                                             allErrors.quantity
@@ -518,23 +537,32 @@ export default function OrdersCreate({
                                                             deliveryDateValidation.onBlur
                                                         }
                                                         aria-invalid={
-                                                            deliveryDateValidation.error
+                                                            deliveryDateValidation.error !=
+                                                                null &&
+                                                            deliveryDateValidation.error !==
+                                                                ''
                                                                 ? 'true'
                                                                 : 'false'
                                                         }
                                                         className={
-                                                            deliveryDateValidation.error
+                                                            deliveryDateValidation.error !=
+                                                                null &&
+                                                            deliveryDateValidation.error !==
+                                                                ''
                                                                 ? 'border-destructive'
                                                                 : ''
                                                         }
                                                     />
-                                                    {deliveryDateValidation.error && (
-                                                        <p className="text-xs text-destructive">
-                                                            {
-                                                                deliveryDateValidation.error
-                                                            }
-                                                        </p>
-                                                    )}
+                                                    {deliveryDateValidation.error !=
+                                                        null &&
+                                                        deliveryDateValidation.error !==
+                                                            '' && (
+                                                            <p className="text-xs text-destructive">
+                                                                {
+                                                                    deliveryDateValidation.error
+                                                                }
+                                                            </p>
+                                                        )}
                                                     <InputError
                                                         message={
                                                             allErrors.delivery_requested_date
@@ -557,14 +585,17 @@ export default function OrdersCreate({
                                                     />
                                                     <Select
                                                         value={
-                                                            selectedShippingAddress ||
-                                                            undefined
+                                                            selectedShippingAddress !==
+                                                            ''
+                                                                ? selectedShippingAddress
+                                                                : undefined
                                                         }
                                                         onValueChange={
                                                             setSelectedShippingAddress
                                                         }
                                                         disabled={
-                                                            !selectedArticle ||
+                                                            selectedArticle ===
+                                                                '' ||
                                                             shippingAddresses.length ===
                                                                 0
                                                         }
@@ -572,7 +603,8 @@ export default function OrdersCreate({
                                                         <SelectTrigger>
                                                             <SelectValue
                                                                 placeholder={
-                                                                    !selectedArticle
+                                                                    selectedArticle ===
+                                                                    ''
                                                                         ? t(
                                                                               'orders.create.select_article_first',
                                                                           )
@@ -604,7 +636,13 @@ export default function OrdersCreate({
                                                                             address.postal_code,
                                                                         ]
                                                                             .filter(
-                                                                                Boolean,
+                                                                                (
+                                                                                    part,
+                                                                                ) =>
+                                                                                    part !=
+                                                                                        null &&
+                                                                                    part !==
+                                                                                        '',
                                                                             )
                                                                             .join(
                                                                                 ' - ',
@@ -1020,7 +1058,8 @@ export default function OrdersCreate({
                                                 </div>
 
                                                 {/* Foglio Pallet Aggiuntivo */}
-                                                {currentArticle?.palletSheet && (
+                                                {currentArticle?.palletSheet !=
+                                                    null && (
                                                     <div className="grid gap-2">
                                                         <FormLabel htmlFor="pallet_sheet">
                                                             {t(
@@ -1031,7 +1070,7 @@ export default function OrdersCreate({
                                                             <Input
                                                                 id="pallet_sheet"
                                                                 name="pallet_sheet"
-                                                                value={`${currentArticle.palletSheet.code} - ${currentArticle.palletSheet.description || ''}`}
+                                                                value={`${currentArticle.palletSheet.code} - ${currentArticle.palletSheet.description ?? ''}`}
                                                                 readOnly
                                                                 className="flex-1 bg-muted"
                                                             />
@@ -1170,7 +1209,7 @@ export default function OrdersCreate({
                                                                             key={
                                                                                 material.uuid
                                                                             }
-                                                                            value={`${material.cod} - ${material.description || ''}`}
+                                                                            value={`${material.cod} - ${material.description ?? ''}`}
                                                                             readOnly
                                                                             className="bg-muted"
                                                                         />

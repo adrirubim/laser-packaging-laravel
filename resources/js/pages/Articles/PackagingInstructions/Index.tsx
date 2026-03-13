@@ -222,16 +222,19 @@ export default function PackagingInstructionsIndex() {
                                                         <h3 className="font-medium">
                                                             {instruction.code}
                                                         </h3>
-                                                        {instruction.number && (
-                                                            <p className="text-xs text-muted-foreground">
-                                                                {t(
-                                                                    'articles.packaging_instructions.index.number_label',
-                                                                )}{' '}
-                                                                {
-                                                                    instruction.number
-                                                                }
-                                                            </p>
-                                                        )}
+                                                        {instruction.number !=
+                                                            null &&
+                                                            instruction.number !==
+                                                                '' && (
+                                                                <p className="text-xs text-muted-foreground">
+                                                                    {t(
+                                                                        'articles.packaging_instructions.index.number_label',
+                                                                    )}{' '}
+                                                                    {
+                                                                        instruction.number
+                                                                    }
+                                                                </p>
+                                                            )}
                                                     </div>
                                                 </div>
                                                 <ActionsDropdown
@@ -258,31 +261,32 @@ export default function PackagingInstructionsIndex() {
                                                     }
                                                 />
                                             </div>
-                                            {instruction.filename && (
-                                                <div className="text-xs text-muted-foreground">
-                                                    {t(
-                                                        'articles.packaging_instructions.index.attachment_label',
-                                                    )}{' '}
-                                                    {instruction.filename}{' '}
-                                                    <button
-                                                        type="button"
-                                                        className="ml-1 text-primary underline-offset-2 hover:underline"
-                                                        onClick={() => {
-                                                            window.location.href =
-                                                                articles.packagingInstructions.download(
-                                                                    {
-                                                                        packagingInstruction:
-                                                                            instruction.uuid,
-                                                                    },
-                                                                ).url;
-                                                        }}
-                                                    >
+                                            {instruction.filename != null &&
+                                                instruction.filename !== '' && (
+                                                    <div className="text-xs text-muted-foreground">
                                                         {t(
-                                                            'articles.packaging_instructions.index.download',
-                                                        )}
-                                                    </button>
-                                                </div>
-                                            )}
+                                                            'articles.packaging_instructions.index.attachment_label',
+                                                        )}{' '}
+                                                        {instruction.filename}{' '}
+                                                        <button
+                                                            type="button"
+                                                            className="ml-1 text-primary underline-offset-2 hover:underline"
+                                                            onClick={() => {
+                                                                window.location.href =
+                                                                    articles.packagingInstructions.download(
+                                                                        {
+                                                                            packagingInstruction:
+                                                                                instruction.uuid,
+                                                                        },
+                                                                    ).url;
+                                                            }}
+                                                        >
+                                                            {t(
+                                                                'articles.packaging_instructions.index.download',
+                                                            )}
+                                                        </button>
+                                                    </div>
+                                                )}
                                         </div>
                                     ),
                                 )
@@ -379,14 +383,20 @@ export default function PackagingInstructionsIndex() {
                                                 {instruction.code}
                                             </td>
                                             <td className="px-3 py-2 align-middle">
-                                                {instruction.number || (
+                                                {instruction.number != null &&
+                                                instruction.number !== '' ? (
+                                                    instruction.number
+                                                ) : (
                                                     <span className="text-muted-foreground">
                                                         —
                                                     </span>
                                                 )}
                                             </td>
                                             <td className="px-3 py-2 align-middle text-xs">
-                                                {instruction.filename || (
+                                                {instruction.filename != null &&
+                                                instruction.filename !== '' ? (
+                                                    instruction.filename
+                                                ) : (
                                                     <span className="text-muted-foreground">
                                                         —
                                                     </span>

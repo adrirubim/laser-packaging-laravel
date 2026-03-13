@@ -238,53 +238,63 @@ export default function EmployeesShow({ employee }: EmployeesShowProps) {
                         </CardContent>
                     </Card>
 
-                    {employee.contracts && employee.contracts.length > 0 && (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>
-                                    {t('employees.show.contracts_card_title')}
-                                </CardTitle>
-                                <CardDescription>
-                                    {t(
-                                        'employees.show.contracts_card_description',
-                                    )}
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-2">
-                                    {employee.contracts.map((contract) => (
-                                        <div
-                                            key={contract.uuid}
-                                            className="flex items-center justify-between rounded-lg border p-3"
-                                        >
-                                            <div>
-                                                <p className="font-medium">
-                                                    {new Date(
-                                                        contract.start_date,
-                                                    ).toLocaleDateString()}
-                                                    {contract.end_date &&
-                                                        ` - ${new Date(contract.end_date).toLocaleDateString()}`}
-                                                </p>
-                                                {contract.pay_level && (
-                                                    <p className="text-sm text-muted-foreground">
-                                                        {t(
-                                                            'employees.show.pay_level_label',
+                    {employee.contracts != null &&
+                        employee.contracts.length > 0 && (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>
+                                        {t(
+                                            'employees.show.contracts_card_title',
+                                        )}
+                                    </CardTitle>
+                                    <CardDescription>
+                                        {t(
+                                            'employees.show.contracts_card_description',
+                                        )}
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-2">
+                                        {employee.contracts.map((contract) => (
+                                            <div
+                                                key={contract.uuid}
+                                                className="flex items-center justify-between rounded-lg border p-3"
+                                            >
+                                                <div>
+                                                    <p className="font-medium">
+                                                        {new Date(
+                                                            contract.start_date,
+                                                        ).toLocaleDateString()}
+                                                        {contract.end_date !=
+                                                            null &&
+                                                            contract.end_date !==
+                                                                '' &&
+                                                            ` - ${new Date(contract.end_date).toLocaleDateString()}`}
+                                                    </p>
+                                                    {contract.pay_level !=
+                                                        null && (
+                                                        <p className="text-sm text-muted-foreground">
+                                                            {t(
+                                                                'employees.show.pay_level_label',
+                                                            )}
+                                                            :{' '}
+                                                            {contract.pay_level}
+                                                        </p>
+                                                    )}
+                                                    {contract.notes != null &&
+                                                        contract.notes !==
+                                                            '' && (
+                                                            <p className="text-xs text-muted-foreground">
+                                                                {contract.notes}
+                                                            </p>
                                                         )}
-                                                        : {contract.pay_level}
-                                                    </p>
-                                                )}
-                                                {contract.notes && (
-                                                    <p className="text-xs text-muted-foreground">
-                                                        {contract.notes}
-                                                    </p>
-                                                )}
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </CardContent>
-                        </Card>
-                    )}
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
                 </div>
             </div>
 
