@@ -1,6 +1,6 @@
 # Skills (enterprise) — laser-packaging-laravel
 
-Skills in `.cursor/skills/` apply to the whole project and are committed so the team shares the same standards. Activation rules: `laravel-boost.mdc`. **Stack:** Laravel 12, Inertia v2, React 19, Tailwind v4, Wayfinder, ESLint 10, PHPUnit 13.
+Skills in `.cursor/skills/` apply to the whole project and are committed so the team shares the same standards. Activation rules: `laravel-boost.mdc`. **Stack:** Laravel 13, Inertia v2, React 19, Tailwind v4, Wayfinder, ESLint 10, PHPUnit 13.
 
 ---
 
