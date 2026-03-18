@@ -1,11 +1,18 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/react-starter-kit",
+    "name": "adrirubim/laser-packaging-laravel",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Enterprise-grade offers, articles, orders, planning and production portal built with Laravel + Inertia (React) + PostgreSQL.",
     "keywords": [
         "laravel",
-        "framework"
+        "inertia",
+        "react",
+        "typescript",
+        "postgresql",
+        "manufacturing",
+        "packaging",
+        "production",
+        "planning"
     ],
     "license": "MIT",
     "require": {

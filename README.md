@@ -4,10 +4,10 @@
 
 # Laser Packaging Laravel
 
-> A modern, enterprise-grade application for managing offers, articles, orders and a production portal (web + API). Built with Laravel 12, React 19 (Inertia.js), and PostgreSQL. Featuring a professional UI/UX, comprehensive security, and optimized performance.
+> A modern, enterprise-grade application for managing offers, articles, orders and a production portal (web + API). Built with Laravel 13, React 19 (Inertia.js), and PostgreSQL. Featuring a professional UI/UX, comprehensive security, and optimized performance.
 
 [![PHP](https://img.shields.io/badge/PHP-8.4+-777BB4?style=flat&logo=php&logoColor=white)](https://www.php.net/)
-[![Laravel](https://img.shields.io/badge/Laravel-12.54-FF2D20?style=flat&logo=laravel&logoColor=white)](https://laravel.com/)
+[![Laravel](https://img.shields.io/badge/Laravel-13.0-FF2D20?style=flat&logo=laravel&logoColor=white)](https://laravel.com/)
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-316192?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
@@ -17,6 +17,7 @@
 
 ## 📋 Table of Contents
 
+- [Operational Quickstart](#operational-quickstart)
 - [Overview](#overview)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
@@ -37,6 +38,24 @@
 
 ---
 
+<a id="operational-quickstart"></a>
+## ⚙️ Operational Quickstart
+
+Use these commands from the **repository root** as your main entrypoints:
+
+| Command | Purpose |
+|---------|---------|
+| `composer run dev` | Start the full local dev stack: Laravel server, queue listener, logs (Pail), and Vite dev server. |
+| `npm run build && php artisan test` | Build frontend assets (Vite manifest) and run the full PHP test suite. |
+| `npm run format && npm run lint && npm run types` | Format, lint, and type-check the frontend. |
+| `composer audit && npm audit` | Check dependency vulnerabilities (Composer + npm). |
+| `composer run setup` | First-time setup: installs deps, copies `.env`, generates key, migrates, installs JS deps, builds assets. |
+
+**Default dev URL:** `http://localhost:8000` (Laravel).  
+For Vite HMR, the dev server runs on its default port (see terminal output).
+
+For detailed docs: start from [docs/README.md](docs/README.md).
+
 <a id="overview"></a>
 ## 🎯 Overview
 
@@ -44,7 +63,7 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 
 ### Key Highlights
 
-- **Modern Stack:** Laravel 12.54.x, React 19.2.x, Inertia.js 2.3.x, TypeScript 5.9.x, Vite 7.3.x, Tailwind CSS 4.2.x, Radix UI
+- **Modern Stack:** Laravel 13.0.x, React 19.2.x, Inertia.js 2.3.x, TypeScript 5.9.x, Vite 8.0.x, Tailwind CSS 4.2.x, Radix UI
 - **Professional UI/UX:** Skeleton loaders, dashboard charts, real-time search, mobile-responsive, accessibility (WCAG AA)
 - **Enterprise Security:** Form Requests, validation, `.env` handling, test DB isolation
 - **Optimized Performance:** Caching, indexes, Performance test suite (Concurrency, Load, API)
@@ -119,7 +138,7 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 - **Enterprise internal platforms (offers & production)**: companies that need a robust back-office to manage offers, articles, orders and production planning with a clear audit trail and multi-language support.
 - **Manufacturing / packaging teams**: operations teams that require a single source of truth for master data (customers, materials, machinery, critical issues) and a production portal that aligns business logic with factory workflows.
 - **SaaS-style B2B tools**: products that expose a production portal or API to external partners and need hard guarantees on validation, security, and performance under real concurrency.
-- **Engineering teams (Laravel + React)**: teams that want a reference implementation of a **Laravel 12 + React 19 + Inertia** stack with professional UX patterns (skeleton loaders, charts, filters) and a large, well-tested codebase.
+- **Engineering teams (Laravel + React)**: teams that want a reference implementation of a **Laravel 13 + React 19 + Inertia** stack with professional UX patterns (skeleton loaders, charts, filters) and a large, well-tested codebase.
 
 ---
 
@@ -128,7 +147,7 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 
 ### Backend
 
-- **Framework:** Laravel 12
+- **Framework:** Laravel 13
 - **Language:** PHP 8.4+
 - **Database:** PostgreSQL (MySQL supported)
 - **Authentication:** Laravel Fortify
@@ -139,7 +158,7 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 - **Framework:** React 19 with Inertia.js
 - **Language:** TypeScript 5.9
 - **Styling:** Tailwind CSS 4.2 · Radix UI
-- **Build Tool:** Vite 7
+- **Build Tool:** Vite 8
 
 ### Development Tools
 
@@ -159,7 +178,7 @@ Laser Packaging Laravel is a **production-ready** content management system desi
   Check: `node -v`
 - **Composer** >= 2.0 (reference env: 2.8.12)  
   Check: `composer -V`
-- **NPM** >= 10.0 (reference env: 11.11.0)  
+- **NPM** >= 10.0 (reference env: 10.9.x)  
   Check: `npm -v`
 
 ---
@@ -263,7 +282,7 @@ All documentation is in **English** and lives under `docs/`. The main index is *
 | **Getting started** | [Database setup](docs/DATABASE.md) |
 | **Development** | [Backend](docs/BACKEND_GUIDE.md) · [Frontend](docs/FRONTEND_GUIDE.md) · [i18n](docs/I18N.md) |
 | **Testing** | [Coverage](docs/TEST_COVERAGE.md) |
-| **Policy** | [What to commit](docs/GIT_WHAT_TO_COMMIT.md) · [Branch policy](docs/BRANCH_POLICY.md) · [SECURITY](SECURITY.md) · [CONTRIBUTING](CONTRIBUTING.md) · [LICENSE](LICENSE) · [Changelog](CHANGELOG.md) |
+| **Policy** | [What to commit](docs/GIT_WHAT_TO_COMMIT.md) · [Branch policy](docs/BRANCH_POLICY.md) · [SECURITY](SECURITY.md) · [CONTRIBUTING](CONTRIBUTING.md) · [Code of Conduct](CODE_OF_CONDUCT.md) · [LICENSE](LICENSE) · [Changelog](CHANGELOG.md) |
 
 For a navigable, high-level overview, you can also use the [GitHub Wiki](https://github.com/adrirubim/laser-packaging-laravel/wiki).
 

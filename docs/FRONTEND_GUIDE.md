@@ -1,6 +1,6 @@
 # Frontend Guide (Inertia + React 19)
 
-**Stack:** [VERSION_STACK.md](VERSION_STACK.md). Inertia 2.3.x, React 19.2.x, TypeScript 5.9.x, Vite 7.3.x, Tailwind 4.2.x, ESLint 10 (flat config). Routes: Wayfinder (`@/actions`, `@/routes`).
+**Stack:** [VERSION_STACK.md](VERSION_STACK.md). Inertia 2.3.x, React 19.2.x, TypeScript 5.9.x, Vite 8.0.x, Tailwind 4.2.x, ESLint 10 (flat config). Routes: Wayfinder (`@/actions`, `@/routes`).
 
 ## Quick reference
 

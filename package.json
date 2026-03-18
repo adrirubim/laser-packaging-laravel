@@ -1,5 +1,13 @@
 {
     "$schema": "https://www.schemastore.org/package.json",
+    "name": "laser-packaging-laravel",
+    "version": "1.0.0",
+    "description": "Enterprise-grade backoffice and production portal built with Laravel + Inertia (React) + Vite.",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/adrirubim/laser-packaging-laravel.git"
+    },
     "private": true,
     "type": "module",
     "scripts": {

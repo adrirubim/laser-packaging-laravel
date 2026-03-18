@@ -1,6 +1,6 @@
 # Backend Guide
 
-**Stack:** [VERSION_STACK.md](VERSION_STACK.md). Laravel 12.54.x, PHP 8.4.x, PostgreSQL, Inertia.js 2.3.x, PHPUnit 13.
+**Stack:** [VERSION_STACK.md](VERSION_STACK.md). Laravel 13.0.x, PHP 8.4.x, PostgreSQL, Inertia.js 2.3.x, PHPUnit 13.
 
 ## 1. Architecture (Omega 2026)
 

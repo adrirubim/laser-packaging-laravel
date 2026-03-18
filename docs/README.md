@@ -35,6 +35,23 @@ Single entry point for repository documentation. All docs are in **English** and
 
 ---
 
+## Operations & Deployment
+
+| Document | Description |
+|----------|-------------|
+| [deployment/README.md](deployment/README.md) | Production deployment guide (env, build, queue, scheduler, storage) |
+| [TROUBLESHOOTING.md](TROUBLESHOOTING.md) | Common errors and fixes (Vite manifest, DB, WSL, CI, deps) |
+
+---
+
+## APIs
+
+| Document | Description |
+|----------|-------------|
+| [API.md](API.md) | Production Portal API + Planning API (endpoints, auth, payloads) |
+
+---
+
 ## Testing & CI
 
 | Document | Description |
@@ -52,5 +69,6 @@ Single entry point for repository documentation. All docs are in **English** and
 | [GIT_WHAT_TO_COMMIT.md](GIT_WHAT_TO_COMMIT.md) | Commit policy; complements `.gitignore` |
 | [../SECURITY.md](../SECURITY.md) | Security policy and vulnerability reporting |
 | [../CONTRIBUTING.md](../CONTRIBUTING.md) | Contributing guidelines |
+| [../CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md) | Community standards and enforcement |
 | [BRANCH_POLICY.md](BRANCH_POLICY.md) | Branch workflow, protection rules and PR process |
 | [../CHANGELOG.md](../CHANGELOG.md) | Version history (Keep a Changelog + SemVer) |
