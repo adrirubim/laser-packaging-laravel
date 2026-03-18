@@ -2459,7 +2459,8 @@ export default function OrdersIndex() {
                                                                             <>
                                                                                 {(() => {
                                                                                     const articleUuid =
-                                                                                        order.article
+                                                                                        order
+                                                                                            .article
                                                                                             ?.uuid;
                                                                                     if (
                                                                                         articleUuid ==
@@ -2492,7 +2493,8 @@ export default function OrdersIndex() {
                                                                                 })()}
                                                                                 {(() => {
                                                                                     const offerUuid =
-                                                                                        order.article
+                                                                                        order
+                                                                                            .article
                                                                                             ?.offer_uuid;
                                                                                     if (
                                                                                         offerUuid ==
