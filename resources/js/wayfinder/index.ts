@@ -145,7 +145,14 @@ export const validateParameters = (
     args: Record<string, unknown> | undefined,
     optional: string[],
 ) => {
-    const missing = optional.filter((key) => args?.[key] === undefined);
+    const missing = optional.filter((key) => {
+        if (args === undefined) return true;
+
+        const hasKey: boolean = Object.prototype.hasOwnProperty.call(args, key);
+        if (!hasKey) return true;
+
+        return typeof args[key] === 'undefined';
+    });
     const expectedMissing = optional.slice(missing.length * -1);
 
     for (let i = 0; i < missing.length; i++) {
