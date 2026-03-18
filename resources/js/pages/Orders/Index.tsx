@@ -2457,42 +2457,58 @@ export default function OrdersIndex() {
                                                                         }
                                                                         extraItems={
                                                                             <>
-                                                                                {order.article && (
-                                                                                    <Link
-                                                                                        href={
-                                                                                            articlesRoutes.show(
-                                                                                                {
-                                                                                                    article:
-                                                                                                        order
-                                                                                                            .article
-                                                                                                            .uuid,
-                                                                                                },
-                                                                                            )
-                                                                                                .url
-                                                                                        }
-                                                                                        className="flex items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
-                                                                                    >
-                                                                                        <Package className="mr-2 h-4 w-4 text-foreground" />
-                                                                                        {t(
-                                                                                            'orders.index.view_article',
-                                                                                        )}
-                                                                                    </Link>
-                                                                                )}
-                                                                                {order
-                                                                                    .article
-                                                                                    ?.offer_uuid !=
-                                                                                    null &&
-                                                                                    order
-                                                                                        .article
-                                                                                        ?.offer_uuid !==
-                                                                                        '' && (
+                                                                                {(() => {
+                                                                                    const articleUuid =
+                                                                                        order.article
+                                                                                            ?.uuid;
+                                                                                    if (
+                                                                                        articleUuid ==
+                                                                                            null ||
+                                                                                        articleUuid ===
+                                                                                            ''
+                                                                                    ) {
+                                                                                        return null;
+                                                                                    }
+
+                                                                                    return (
+                                                                                        <Link
+                                                                                            href={
+                                                                                                articlesRoutes.show(
+                                                                                                    {
+                                                                                                        article:
+                                                                                                            articleUuid,
+                                                                                                    },
+                                                                                                )
+                                                                                                    .url
+                                                                                            }
+                                                                                            className="flex items-center px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
+                                                                                        >
+                                                                                            <Package className="mr-2 h-4 w-4 text-foreground" />
+                                                                                            {t(
+                                                                                                'orders.index.view_article',
+                                                                                            )}
+                                                                                        </Link>
+                                                                                    );
+                                                                                })()}
+                                                                                {(() => {
+                                                                                    const offerUuid =
+                                                                                        order.article
+                                                                                            ?.offer_uuid;
+                                                                                    if (
+                                                                                        offerUuid ==
+                                                                                            null ||
+                                                                                        offerUuid ===
+                                                                                            ''
+                                                                                    ) {
+                                                                                        return null;
+                                                                                    }
+
+                                                                                    return (
                                                                                         <Link
                                                                                             href={
                                                                                                 offers.show(
                                                                                                     {
-                                                                                                        offer: order
-                                                                                                            .article!
-                                                                                                            .offer_uuid!,
+                                                                                                        offer: offerUuid,
                                                                                                     },
                                                                                                 )
                                                                                                     .url
@@ -2504,7 +2520,8 @@ export default function OrdersIndex() {
                                                                                                 'orders.view_offer',
                                                                                             )}
                                                                                         </Link>
-                                                                                    )}
+                                                                                    );
+                                                                                })()}
                                                                                 <div
                                                                                     onClick={(
                                                                                         e,
