@@ -73,10 +73,28 @@ This document is the single reference for commit policy. It complements `.gitign
 
 - No `.env` or secrets; no `node_modules/` or `vendor/` in the commit.
 - Commit `composer.lock` and `package-lock.json` when dependencies change.
-- Run the full pipeline (matches CI):
-  ```bash
-  php scripts/i18n-check.php && ./vendor/bin/pint && npm run format && npm run format:check && npm run lint && npm run types && php artisan config:clear && php artisan test && npm run test -- --run && npm run build
-  ```
+- Run the CI-parity pipelines:
+  - Lint (matches `.github/workflows/lint.yml`):
+    ```bash
+    composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+    npm ci --legacy-peer-deps
+    vendor/bin/pint
+    npm run format:check
+    npm run lint
+    ```
+  - Tests (matches `.github/workflows/tests.yml`):
+    ```bash
+    npm ci --legacy-peer-deps
+    composer install --no-interaction --prefer-dist --optimize-autoloader
+    npm run build
+    cp .env.example .env
+    php artisan key:generate
+    php scripts/i18n-check.php
+    php artisan config:clear
+    npm run types
+    npm run test -- --run
+    php artisan test --compact
+    ```
 - Documentation committed to the repository is in English and follows project standards.
 
 See: [CONTRIBUTING.md](../CONTRIBUTING.md), [SECURITY.md](../SECURITY.md).

@@ -315,13 +315,15 @@ php artisan test --testsuite=Unit
 php artisan test --testsuite=Feature
 php artisan test --testsuite=Performance
 
-# Run PHP + frontend (Vitest) tests together
-php artisan test:all
-# If PHP tests show 419 (Page Expired) under test:all, run separately:
-#   php artisan test && npm run test -- --run
+# Run frontend tests (Vitest)
+npm run test -- --run
 ```
 
-**Frontend tests (Vitest):** Planning and other React tests live in `resources/js/pages/**/*.test.tsx`. Run them with `npm run test` or include them in one go with `php artisan test:all`.
+**Frontend tests (Vitest):** Planning and other React tests live in `resources/js/pages/**/*.test.tsx`. Run them with `npm run test -- --run`.
+
+Optional local convenience:
+
+- `php artisan test:all` runs **PHP tests** and then **Vitest**. (CI runs them as separate steps.)
 
 ### Test Coverage
 
@@ -497,13 +499,42 @@ php artisan storage:link
 <a id="before-pushing-to-github"></a>
 ## 📤 Before Pushing to GitHub
 
-Ensure dependencies are installed (`composer install`, `npm ci`). Run the full pipeline locally to avoid CI failures:
+This project enforces CI checks via GitHub Actions. To avoid surprises, run the **same commands CI runs** locally.
+
+Prerequisites:
+
+- Install dependencies: `composer install` and `npm ci --legacy-peer-deps`
+- Tests require a running PostgreSQL instance (CI uses PostgreSQL 16 and database `laser_packaging_test`)
+
+### Lint pipeline (matches `.github/workflows/lint.yml`)
 
 ```bash
-php scripts/i18n-check.php && ./vendor/bin/pint && npm run format && npm run format:check && npm run lint && npm run types && php artisan config:clear && php artisan test && npm run test -- --run && npm run build
+composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+npm ci --legacy-peer-deps
+vendor/bin/pint
+npm run format:check
+npm run lint
 ```
 
-Or run each step separately: i18n-check, Pint, format, format:check, lint, types, config:clear, PHP tests, Vitest, build. This matches what GitHub Actions runs.
+### Tests pipeline (matches `.github/workflows/tests.yml`)
+
+```bash
+npm ci --legacy-peer-deps
+composer install --no-interaction --prefer-dist --optimize-autoloader
+npm run build
+cp .env.example .env
+php artisan key:generate
+php scripts/i18n-check.php
+php artisan config:clear
+npm run types
+npm run test -- --run
+php artisan test --compact
+```
+
+Notes:
+
+- `npm run format` is intentionally **not** part of CI; CI enforces formatting via `npm run format:check`.
+- If you want auto-formatting locally, run `npm run format` before `npm run format:check`.
 
 ---
 

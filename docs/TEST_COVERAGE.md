@@ -11,10 +11,31 @@ npm run build
 php artisan test
 ```
 
-**Full pre-push pipeline** (matches GitHub CI):
+**CI-parity pipelines** (match GitHub Actions):
+
+- Lint (matches `.github/workflows/lint.yml`):
 
 ```bash
-php scripts/i18n-check.php && ./vendor/bin/pint && npm run format && npm run format:check && npm run lint && npm run types && php artisan config:clear && php artisan test && npm run test -- --run && npm run build
+composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+npm ci --legacy-peer-deps
+vendor/bin/pint
+npm run format:check
+npm run lint
+```
+
+- Tests (matches `.github/workflows/tests.yml`):
+
+```bash
+npm ci --legacy-peer-deps
+composer install --no-interaction --prefer-dist --optimize-autoloader
+npm run build
+cp .env.example .env
+php artisan key:generate
+php scripts/i18n-check.php
+php artisan config:clear
+npm run types
+npm run test -- --run
+php artisan test --compact
 ```
 
 **Suites:** `--testsuite=Unit` | `--testsuite=Feature` | `--testsuite=Performance` · **Vitest:** `npm run test -- --run`
