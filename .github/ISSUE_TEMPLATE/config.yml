@@ -1,0 +1,9 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability report
+    url: https://github.com/adrirubim/laser-packaging-laravel/security/advisories/new
+    about: Please report security issues privately via GitHub Security Advisories.
+  - name: General questions / discussions
+    url: https://github.com/adrirubim/laser-packaging-laravel/discussions
+    about: Use Discussions for questions, ideas, and community support.
+
