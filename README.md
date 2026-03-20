@@ -7,7 +7,7 @@
 > A modern, enterprise-grade application for managing offers, articles, orders and a production portal (web + API). Built with Laravel 13, React 19 (Inertia.js), and PostgreSQL. Featuring a professional UI/UX, comprehensive security, and optimized performance.
 
 [![PHP](https://img.shields.io/badge/PHP-8.4+-777BB4?style=flat&logo=php&logoColor=white)](https://www.php.net/)
-[![Laravel](https://img.shields.io/badge/Laravel-13.0-FF2D20?style=flat&logo=laravel&logoColor=white)](https://laravel.com/)
+[![Laravel](https://img.shields.io/badge/Laravel-13.1-FF2D20?style=flat&logo=laravel&logoColor=white)](https://laravel.com/)
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-316192?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
@@ -63,7 +63,7 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 
 ### Key Highlights
 
-- **Modern Stack:** Laravel 13.0.x, React 19.2.x, Inertia.js 2.3.x, TypeScript 5.9.x, Vite 8.0.x, Tailwind CSS 4.2.x, Radix UI
+- **Modern Stack:** Laravel 13.1.x, React 19.2.x, Inertia.js 2.3.x, TypeScript 5.9.x, Vite 8.0.x, Tailwind CSS 4.2.x, Radix UI
 - **Professional UI/UX:** Skeleton loaders, dashboard charts, real-time search, mobile-responsive, accessibility (WCAG AA)
 - **Enterprise Security:** Form Requests, validation, `.env` handling, test DB isolation
 - **Optimized Performance:** Caching, indexes, Performance test suite (Concurrency, Load, API)

@@ -9,7 +9,7 @@ and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2
 
 #### Changed
 
-- Documentation: synced stack/runtime versions (Laravel 13.0, PHPUnit 13, Node 22 / npm 10).
+- Documentation: synced stack/runtime versions (Laravel 13.1, PHPUnit 13, Node 22 / npm 10).
 - Dependencies: refreshed `package-lock.json` (npm) to match the current toolchain.
 
 ### [1.0.0] - 2026-03-09

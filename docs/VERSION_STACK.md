@@ -9,7 +9,7 @@ Versions are resolved in `package-lock.json` and `composer.lock`. Check locally 
 | Package | Exact version (composer.lock) | Require in composer.json |
 |---------|-------------------------------|---------------------------|
 | **PHP** | 8.4.x (environment; minimum 8.2) | `^8.2` |
-| **laravel/framework** | 13.0.0 | `^13.0` |
+| **laravel/framework** | 13.1.1 | `^13.0` |
 | **inertiajs/inertia-laravel** | 2.0.22 | `^2.0` |
 | **laravel/fortify** | 1.36.1 | `^1.30` |
 | **laravel/wayfinder** | 0.1.14 | `^0.1.9` |
@@ -23,7 +23,7 @@ Versions are resolved in `package-lock.json` and `composer.lock`. Check locally 
 |------|----------------------------------|------|
 | **Node.js** | 22.22.x (e.g. 22.22.1) | Minimum 22.0.0; check: `node -v` |
 | **npm** | 10.9.x (e.g. 10.9.4) | Reference environment; check: `npm -v` |
-| **Composer** | 2.8.x (e.g. 2.8.12) | Reference environment; check: `composer -V` |
+| **Composer** | 2.9.x (e.g. 2.9.5) | Reference environment; check: `composer -V` |
 
 ---
 
@@ -35,13 +35,13 @@ Versions are resolved in `package-lock.json` and `composer.lock`. Check locally 
 | **react-dom** | 19.2.4 | `^19.2.0` |
 | **@inertiajs/react** | 2.3.18 | `^2.3.7` |
 | **typescript** | 5.9.3 | `^5.7.2` |
-| **vite** | 8.0.0 | `^8.0.0` |
-| **tailwindcss** | 4.2.1 | `^4.0.0` |
-| **@types/react** | (aligned to react 19) | `^19.2.0` |
-| **@types/react-dom** | (aligned to react-dom 19) | `^19.2.0` |
-| **eslint** | 10.x | `^10.0.0` |
-| **@eslint/js** | 10.x | `^10.0.0` |
-| **react-is** | 19.x | `^19.0.0` (for recharts) |
+| **vite** | 8.0.1 | `^8.0.0` |
+| **tailwindcss** | 4.2.2 | `^4.0.0` |
+| **@types/react** | 19.2.14 | `^19.2.0` |
+| **@types/react-dom** | 19.2.3 | `^19.2.0` |
+| **eslint** | 10.0.3 | `^10.0.0` |
+| **@eslint/js** | 10.0.1 | `^10.0.0` |
+| **react-is** | 19.2.4 | `^19.0.0` (for recharts) |
 
 ---
 
@@ -49,7 +49,7 @@ Versions are resolved in `package-lock.json` and `composer.lock`. Check locally 
 
 To cite the stack in other documentation:
 
-- **Backend:** PHP 8.2+, Laravel 13.0.x, Inertia Laravel 2.0.x, Wayfinder 0.1.x  
+- **Backend:** PHP 8.2+, Laravel 13.1.x, Inertia Laravel 2.0.x, Wayfinder 0.1.x  
 - **Frontend:** React 19.2.x, Inertia.js React 2.3.x, TypeScript 5.9.x, Vite 8.0.x, Tailwind CSS 4.2.x  
 
 Reference: **March 2026**. Full detail: this file.
