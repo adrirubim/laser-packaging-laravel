@@ -8,7 +8,7 @@ Skills in `.cursor/skills/` apply to the whole project and are committed so the 
 
 | Skill | Use |
 |-------|-----|
-| **wayfinder-development** | Backend routes in frontend (`@/actions`, `@/routes`), links and forms with Wayfinder. |
+| **wayfinder-development** | Backend routes in frontend (`#app/actions`, `#app/routes`), links and forms with Wayfinder. |
 | **inertia-react-development** | Inertia pages, `<Link>`, `<Form>`, useForm, deferred props, prefetch, polling. |
 | **tailwindcss-development** | Tailwind v4 styles, layout, responsive, dark mode. |
 

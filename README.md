@@ -46,8 +46,9 @@ Use these commands from the **repository root** as your main entrypoints:
 | Command | Purpose |
 |---------|---------|
 | `composer run dev` | Start the full local dev stack: Laravel server, queue listener, logs (Pail), and Vite dev server. |
-| `npm run build && php artisan test` | Build frontend assets (Vite manifest) and run the full PHP test suite. |
+| `npm run build && php artisan test --compact` | Build frontend assets (Vite manifest) and run the full PHP test suite. |
 | `npm run format && npm run lint && npm run types` | Format, lint, and type-check the frontend. |
+| `npm run lint && npm run types && npm run build && php artisan test --compact` | CI-style local verification (lint + types + build + tests). |
 | `composer audit && npm audit` | Check dependency vulnerabilities (Composer + npm). |
 | `composer run setup` | First-time setup: installs deps, copies `.env`, generates key, migrates, installs JS deps, builds assets. |
 
@@ -157,6 +158,7 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 
 - **Framework:** React 19 with Inertia.js
 - **Language:** TypeScript 6.0
+- **Imports alias:** Use `#app/*` for app-local imports (`#app/*` → `resources/js/*` via `tsconfig.json` + `vite.config.ts`).
 - **Styling:** Tailwind CSS 4.2 · Radix UI
 - **Build Tool:** Vite 8
 

@@ -1,6 +1,6 @@
 # Frontend Guide (Inertia + React 19)
 
-**Stack:** [VERSION_STACK.md](VERSION_STACK.md). Inertia React 3.0.x, React 19.2.x, TypeScript 6.0.x, Vite 8.0.x, Tailwind 4.2.x, ESLint 10 (flat config). Routes: Wayfinder (`@/actions`, `@/routes`).
+**Stack:** [VERSION_STACK.md](VERSION_STACK.md). Inertia React 3.0.x, React 19.2.x, TypeScript 6.0.x, Vite 8.0.x, Tailwind 4.2.x, ESLint 10 (flat config). Alias: `#app/*` → `resources/js/*`. Routes: Wayfinder (`#app/actions`, `#app/routes`).
 
 ## Quick reference
 
@@ -10,7 +10,7 @@
 - **Flash:** `useFlashNotifications()` and `<FlashNotifications flash={flash} />` only.
 - **Delete:** Always `ConfirmDeleteDialog` (never `window.confirm`).
 - **Loading:** Skeletons on heavy Index pages; `Spinner` for inline use only.
-- **Routes:** Wayfinder from `@/actions` and `@/routes`; types from `resources/js/lib`.
+- **Routes:** Wayfinder from `#app/actions` and `#app/routes`; types from `#app/types`.
 
 ## Key components
 
@@ -34,7 +34,7 @@ Use `useTranslations()` and `t(key)` for all user-visible strings. Keys live in 
 
 ## Auth & password fields
 
-- **PasswordInput** (`@/components/ui/password-input`) — Use for all password fields. Show/hide toggle (eye icon). Supports `ref` and standard input props.
+- **PasswordInput** (`#app/components/ui/password-input`) — Use for all password fields. Show/hide toggle (eye icon). Supports `ref` and standard input props.
 - **PasswordStrengthIndicator** — Optional, informational (register and settings). Bar and label from backend/translations (e.g. weak/medium/strong).
 - **Password match feedback** — Real-time message when confirmation differs; server-side `confirmed` rule; messages from `lang/{locale}/validation.php`.
 
