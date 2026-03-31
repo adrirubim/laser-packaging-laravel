@@ -7,9 +7,9 @@
 > A modern, enterprise-grade application for managing offers, articles, orders and a production portal (web + API). Built with Laravel 13, React 19 (Inertia.js), and PostgreSQL. Featuring a professional UI/UX, comprehensive security, and optimized performance.
 
 [![PHP](https://img.shields.io/badge/PHP-8.4+-777BB4?style=flat&logo=php&logoColor=white)](https://www.php.net/)
-[![Laravel](https://img.shields.io/badge/Laravel-13.1-FF2D20?style=flat&logo=laravel&logoColor=white)](https://laravel.com/)
+[![Laravel](https://img.shields.io/badge/Laravel-13.2-FF2D20?style=flat&logo=laravel&logoColor=white)](https://laravel.com/)
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-316192?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4.2-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Tests](https://img.shields.io/badge/Tests-1017%2B%20passing-brightgreen?style=flat)](docs/TEST_COVERAGE.md)
@@ -63,7 +63,7 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 
 ### Key Highlights
 
-- **Modern Stack:** Laravel 13.1.x, React 19.2.x, Inertia.js 2.3.x, TypeScript 5.9.x, Vite 8.0.x, Tailwind CSS 4.2.x, Radix UI
+- **Modern Stack:** Laravel 13.2.x, React 19.2.x, Inertia (Laravel) 3.0.x, Inertia (React) 3.0.x, TypeScript 6.0.x, Vite 8.0.x, Tailwind CSS 4.2.x, Radix UI
 - **Professional UI/UX:** Skeleton loaders, dashboard charts, real-time search, mobile-responsive, accessibility (WCAG AA)
 - **Enterprise Security:** Form Requests, validation, `.env` handling, test DB isolation
 - **Optimized Performance:** Caching, indexes, Performance test suite (Concurrency, Load, API)
@@ -156,7 +156,7 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 ### Frontend
 
 - **Framework:** React 19 with Inertia.js
-- **Language:** TypeScript 5.9
+- **Language:** TypeScript 6.0
 - **Styling:** Tailwind CSS 4.2 · Radix UI
 - **Build Tool:** Vite 8
 
@@ -176,9 +176,9 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 - **PostgreSQL** (app and tests; see [docs/DATABASE.md](docs/DATABASE.md))
 - **Node.js** >= 22.0.0 (reference env: 22.22.1; CI uses Node 22)  
   Check: `node -v`
-- **Composer** >= 2.0 (reference env: 2.8.12)  
+- **Composer** >= 2.0 (reference env: 2.9.5)  
   Check: `composer -V`
-- **NPM** >= 10.0 (reference env: 10.9.x)  
+- **NPM** >= 10.0 (reference env: 11.12.x)  
   Check: `npm -v`
 
 ---

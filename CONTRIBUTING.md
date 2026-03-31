@@ -73,11 +73,3 @@ See `docs/TEST_COVERAGE.md` and the README “Before Pushing to GitHub” sectio
 
 For questions or coordination, contact the maintainer (see `README.md` → Author).
 
-# Contributing
-
-The contributing guide for this repository is maintained in:
-
-- `docs/CONTRIBUTING.md`
-
-Please read it before opening issues or pull requests.
-
