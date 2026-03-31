@@ -1,6 +1,6 @@
-import HeadingSmall from '@/components/heading-small';
-import InputError from '@/components/input-error';
-import { Button } from '@/components/ui/button';
+import HeadingSmall from '#app/components/heading-small';
+import InputError from '#app/components/input-error';
+import { Button } from '#app/components/ui/button';
 import {
     Dialog,
     DialogClose,
@@ -9,14 +9,14 @@ import {
     DialogFooter,
     DialogTitle,
     DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useTranslations } from '@/hooks/use-translations';
-import AppLayout from '@/layouts/app-layout';
-import SettingsLayout from '@/layouts/settings/layout';
-import { destroy, index as sessionsIndex } from '@/routes/sessions/index';
-import { type BreadcrumbItem } from '@/types';
+} from '#app/components/ui/dialog';
+import { Input } from '#app/components/ui/input';
+import { Label } from '#app/components/ui/label';
+import { useTranslations } from '#app/hooks/use-translations';
+import AppLayout from '#app/layouts/app-layout';
+import SettingsLayout from '#app/layouts/settings/layout';
+import { destroy, index as sessionsIndex } from '#app/routes/sessions/index';
+import { type BreadcrumbItem } from '#app/types';
 import { Form, Head } from '@inertiajs/react';
 import { useRef } from 'react';
 

@@ -1,4 +1,4 @@
-import { useTranslations } from '@/hooks/use-translations';
+import { useTranslations } from '#app/hooks/use-translations';
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
 import { memo } from 'react';
 import type { RangeMode, ZoomLevel } from './types';

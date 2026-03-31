@@ -1,15 +1,15 @@
-import { update } from '@/routes/password/index';
+import { update } from '#app/routes/password/index';
 import { Form, Head } from '@inertiajs/react';
 import { useRef, useState } from 'react';
 
-import InputError from '@/components/input-error';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { PasswordInput } from '@/components/ui/password-input';
-import { Spinner } from '@/components/ui/spinner';
-import { useTranslations } from '@/hooks/use-translations';
-import AuthLayout from '@/layouts/auth-layout';
+import InputError from '#app/components/input-error';
+import { Button } from '#app/components/ui/button';
+import { Input } from '#app/components/ui/input';
+import { Label } from '#app/components/ui/label';
+import { PasswordInput } from '#app/components/ui/password-input';
+import { Spinner } from '#app/components/ui/spinner';
+import { useTranslations } from '#app/hooks/use-translations';
+import AuthLayout from '#app/layouts/auth-layout';
 
 interface ResetPasswordProps {
     token: string;

@@ -1,26 +1,26 @@
-import { ActionsDropdown } from '@/components/ActionsDropdown';
-import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
+import { ActionsDropdown } from '#app/components/ActionsDropdown';
+import ConfirmDeleteDialog from '#app/components/confirm-delete-dialog';
 import {
     FlashNotifications,
     useFlashNotifications,
-} from '@/components/flash-notifications';
-import { IndexHeader } from '@/components/IndexHeader';
-import { Pagination } from '@/components/Pagination';
-import { SearchInput } from '@/components/SearchInput';
-import { SortableTableHeader } from '@/components/SortableTableHeader';
-import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
+} from '#app/components/flash-notifications';
+import { IndexHeader } from '#app/components/IndexHeader';
+import { Pagination } from '#app/components/Pagination';
+import { SearchInput } from '#app/components/SearchInput';
+import { SortableTableHeader } from '#app/components/SortableTableHeader';
+import { DropdownMenuItem } from '#app/components/ui/dropdown-menu';
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from '@/components/ui/select';
-import { useTranslations } from '@/hooks/use-translations';
-import AppLayout from '@/layouts/app-layout';
-import articles from '@/routes/articles/index';
-import offers from '@/routes/offers/index';
-import { type BreadcrumbItem } from '@/types';
+} from '#app/components/ui/select';
+import { useTranslations } from '#app/hooks/use-translations';
+import AppLayout from '#app/layouts/app-layout';
+import articles from '#app/routes/articles/index';
+import offers from '#app/routes/offers/index';
+import { type BreadcrumbItem } from '#app/types';
 import { Head, router, usePage } from '@inertiajs/react';
 import {
     CheckCircle2,

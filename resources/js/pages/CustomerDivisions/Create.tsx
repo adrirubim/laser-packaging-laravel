@@ -1,23 +1,28 @@
-import { FormLabel } from '@/components/FormLabel';
-import InputError from '@/components/input-error';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+import { FormLabel } from '#app/components/FormLabel';
+import InputError from '#app/components/input-error';
+import { Button } from '#app/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from '#app/components/ui/card';
+import { Input } from '#app/components/ui/input';
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from '@/components/ui/select';
-import { useTranslations } from '@/hooks/use-translations';
-import { useFieldValidation } from '@/hooks/useFieldValidation';
-import AppLayout from '@/layouts/app-layout';
-import { generateUUID } from '@/lib/utils/uuid';
-import { validationRules } from '@/lib/validation/rules';
-import customerDivisions from '@/routes/customer-divisions/index';
-import customersRoutes from '@/routes/customers/index';
-import { type BreadcrumbItem } from '@/types';
+} from '#app/components/ui/select';
+import { useTranslations } from '#app/hooks/use-translations';
+import { useFieldValidation } from '#app/hooks/useFieldValidation';
+import AppLayout from '#app/layouts/app-layout';
+import { generateUUID } from '#app/lib/utils/uuid';
+import { validationRules } from '#app/lib/validation/rules';
+import customerDivisions from '#app/routes/customer-divisions/index';
+import customersRoutes from '#app/routes/customers/index';
+import { type BreadcrumbItem } from '#app/types';
 import { Form, Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 

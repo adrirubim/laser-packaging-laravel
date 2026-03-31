@@ -1,4 +1,4 @@
-import { toUrl } from '@/lib/utils';
+import { toUrl } from '#app/lib/utils';
 import type { InertiaLinkProps } from '@inertiajs/react';
 import { usePage } from '@inertiajs/react';
 

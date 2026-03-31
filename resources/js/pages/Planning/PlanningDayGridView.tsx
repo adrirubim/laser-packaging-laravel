@@ -2,7 +2,7 @@
  * Griglia giorno/settimana — slot orari, celle pianificazione e riepilogo.
  * Header sticky, navigazione Tab/Enter, Shift+rueda scroll orizzontale.
  */
-import { useTranslations } from '@/hooks/use-translations';
+import { useTranslations } from '#app/hooks/use-translations';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SUMMARY_ROWS } from './constants';
 import type { PlanningContract, PlanningLine, SlotColumn } from './types';

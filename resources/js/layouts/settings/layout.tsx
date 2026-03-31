@@ -1,14 +1,14 @@
-import Heading from '@/components/heading';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { useActiveUrl } from '@/hooks/use-active-url';
-import { useTranslations } from '@/hooks/use-translations';
-import { cn, toUrl } from '@/lib/utils';
-import { edit as editAppearance } from '@/routes/appearance/index';
-import { edit } from '@/routes/profile/index';
-import { index as sessionsIndex } from '@/routes/sessions/index';
-import { show } from '@/routes/two-factor/index';
-import { edit as editPassword } from '@/routes/user-password/index';
+import Heading from '#app/components/heading';
+import { Button } from '#app/components/ui/button';
+import { Separator } from '#app/components/ui/separator';
+import { useActiveUrl } from '#app/hooks/use-active-url';
+import { useTranslations } from '#app/hooks/use-translations';
+import { cn, toUrl } from '#app/lib/utils';
+import { edit as editAppearance } from '#app/routes/appearance/index';
+import { edit } from '#app/routes/profile/index';
+import { index as sessionsIndex } from '#app/routes/sessions/index';
+import { show } from '#app/routes/two-factor/index';
+import { edit as editPassword } from '#app/routes/user-password/index';
 import { Link } from '@inertiajs/react';
 import { type PropsWithChildren } from 'react';
 

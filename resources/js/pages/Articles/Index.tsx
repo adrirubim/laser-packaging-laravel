@@ -1,36 +1,36 @@
-import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
-import { FlashNotifications } from '@/components/flash-notifications';
-import { IndexHeader } from '@/components/IndexHeader';
-import { Pagination } from '@/components/Pagination';
-import { SearchInput } from '@/components/SearchInput';
-import { SortableTableHeader } from '@/components/SortableTableHeader';
-import { Button } from '@/components/ui/button';
+import ConfirmDeleteDialog from '#app/components/confirm-delete-dialog';
+import { FlashNotifications } from '#app/components/flash-notifications';
+import { IndexHeader } from '#app/components/IndexHeader';
+import { Pagination } from '#app/components/Pagination';
+import { SearchInput } from '#app/components/SearchInput';
+import { SortableTableHeader } from '#app/components/SortableTableHeader';
+import { Button } from '#app/components/ui/button';
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card';
+} from '#app/components/ui/card';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '#app/components/ui/dropdown-menu';
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from '@/components/ui/select';
-import { useTranslations } from '@/hooks/use-translations';
-import AppLayout from '@/layouts/app-layout';
-import articles from '@/routes/articles/index';
-import offers from '@/routes/offers/index';
-import orders from '@/routes/orders/index';
-import { type BreadcrumbItem } from '@/types';
+} from '#app/components/ui/select';
+import { useTranslations } from '#app/hooks/use-translations';
+import AppLayout from '#app/layouts/app-layout';
+import articles from '#app/routes/articles/index';
+import offers from '#app/routes/offers/index';
+import orders from '#app/routes/orders/index';
+import { type BreadcrumbItem } from '#app/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
     AlertCircle,

@@ -1,17 +1,17 @@
-import type { LocaleCode } from '@/components/locale-dropdown';
-import LocaleDropdown from '@/components/locale-dropdown';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import type { LocaleCode } from '#app/components/locale-dropdown';
+import LocaleDropdown from '#app/components/locale-dropdown';
+import { Badge } from '#app/components/ui/badge';
+import { Button } from '#app/components/ui/button';
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card';
-import { useTranslations } from '@/hooks/use-translations';
-import { dashboard, login, register } from '@/routes';
-import { type SharedData } from '@/types';
+} from '#app/components/ui/card';
+import { useTranslations } from '#app/hooks/use-translations';
+import { dashboard, login, register } from '#app/routes';
+import { type SharedData } from '#app/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
     ArrowRight,

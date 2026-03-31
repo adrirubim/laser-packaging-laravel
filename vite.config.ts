@@ -28,11 +28,9 @@ export default defineConfig(({ command }) => ({
               ]
             : []),
     ],
-    esbuild: {
-        jsx: 'automatic',
-    },
     resolve: {
         alias: {
+            '#app': '/resources/js',
             '@modules': '/src/modules',
             '@core': '/src/core',
             '@shared': '/src/shared',

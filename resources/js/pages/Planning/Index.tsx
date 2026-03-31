@@ -4,20 +4,20 @@
  * Hour/quarter zoom, cell and summary editing, shifts, weekend, overdue, deadline,
  * Tab/Enter navigation, error handling. Tailwind only, no external CSS.
  */
-import { ErrorBoundary } from '@/components/error-boundary';
-import { useTranslations } from '@/hooks/use-translations';
-import AppLayout from '@/layouts/app-layout';
-import api from '@/routes/api';
-import orders from '@/routes/orders/index';
-import planningRoutes from '@/routes/planning';
-import type { BreadcrumbItem, PageProps } from '@/types';
+import { ErrorBoundary } from '#app/components/error-boundary';
+import { useTranslations } from '#app/hooks/use-translations';
+import AppLayout from '#app/layouts/app-layout';
+import api from '#app/routes/api';
+import orders from '#app/routes/orders/index';
+import planningRoutes from '#app/routes/planning';
+import type { BreadcrumbItem, PageProps } from '#app/types';
 import type {
     DomainPlanningBoard,
     DomainPlanningContract,
     DomainPlanningLine,
     DomainPlanningRow,
     DomainPlanningSummaryRow,
-} from '@/types/DomainModels';
+} from '#app/types/DomainModels';
 import { Head } from '@inertiajs/react';
 import {
     Suspense,

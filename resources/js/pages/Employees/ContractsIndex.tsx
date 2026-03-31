@@ -1,38 +1,38 @@
-import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
+import ConfirmDeleteDialog from '#app/components/confirm-delete-dialog';
 import {
     FlashNotifications,
     useFlashNotifications,
-} from '@/components/flash-notifications';
-import { Pagination } from '@/components/Pagination';
-import { SearchInput } from '@/components/SearchInput';
-import { SortableTableHeader } from '@/components/SortableTableHeader';
-import { Button } from '@/components/ui/button';
+} from '#app/components/flash-notifications';
+import { Pagination } from '#app/components/Pagination';
+import { SearchInput } from '#app/components/SearchInput';
+import { SortableTableHeader } from '#app/components/SortableTableHeader';
+import { Button } from '#app/components/ui/button';
 import {
     Dialog,
     DialogContent,
     DialogDescription,
     DialogHeader,
     DialogTitle,
-} from '@/components/ui/dialog';
+} from '#app/components/ui/dialog';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+} from '#app/components/ui/dropdown-menu';
+import { Input } from '#app/components/ui/input';
+import { Label } from '#app/components/ui/label';
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from '@/components/ui/select';
-import { useTranslations } from '@/hooks/use-translations';
-import AppLayout from '@/layouts/app-layout';
-import * as contractsRoutes from '@/routes/employees/contracts/index';
-import { type BreadcrumbItem } from '@/types';
+} from '#app/components/ui/select';
+import { useTranslations } from '#app/hooks/use-translations';
+import AppLayout from '#app/layouts/app-layout';
+import * as contractsRoutes from '#app/routes/employees/contracts/index';
+import { type BreadcrumbItem } from '#app/types';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import {
     CalendarPlus,

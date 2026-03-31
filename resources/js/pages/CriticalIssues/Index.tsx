@@ -1,14 +1,14 @@
-import { ActionsDropdown } from '@/components/ActionsDropdown';
-import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
+import { ActionsDropdown } from '#app/components/ActionsDropdown';
+import ConfirmDeleteDialog from '#app/components/confirm-delete-dialog';
 import {
     FlashNotifications,
     useFlashNotifications,
-} from '@/components/flash-notifications';
-import { IndexHeader } from '@/components/IndexHeader';
-import { useTranslations } from '@/hooks/use-translations';
-import AppLayout from '@/layouts/app-layout';
-import criticalIssues from '@/routes/critical-issues/index';
-import { type BreadcrumbItem } from '@/types';
+} from '#app/components/flash-notifications';
+import { IndexHeader } from '#app/components/IndexHeader';
+import { useTranslations } from '#app/hooks/use-translations';
+import AppLayout from '#app/layouts/app-layout';
+import criticalIssues from '#app/routes/critical-issues/index';
+import { type BreadcrumbItem } from '#app/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
     AlertTriangle,

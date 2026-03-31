@@ -53,7 +53,7 @@ export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>,
 > = InertiaPageProps<SharedData & T>;
 
-declare module '@/types/DomainModels' {
+declare module '#app/types/DomainModels' {
     export interface DomainOrderArticle {
         uuid: string;
         cod_article_las: string;

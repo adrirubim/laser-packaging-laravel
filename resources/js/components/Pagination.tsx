@@ -1,4 +1,4 @@
-import { useTranslations } from '@/hooks/use-translations';
+import { useTranslations } from '#app/hooks/use-translations';
 import { Link } from '@inertiajs/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 

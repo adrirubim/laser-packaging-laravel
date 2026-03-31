@@ -1,26 +1,26 @@
-import { FormLabel } from '@/components/FormLabel';
-import InputError from '@/components/input-error';
-import { Button } from '@/components/ui/button';
+import { FormLabel } from '#app/components/FormLabel';
+import InputError from '#app/components/input-error';
+import { Button } from '#app/components/ui/button';
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+} from '#app/components/ui/card';
+import { Input } from '#app/components/ui/input';
+import { Textarea } from '#app/components/ui/textarea';
 import {
     Tooltip,
     TooltipContent,
     TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { useTranslations } from '@/hooks/use-translations';
-import { useFieldValidation } from '@/hooks/useFieldValidation';
-import AppLayout from '@/layouts/app-layout';
-import { validationRules } from '@/lib/validation/rules';
-import suppliers from '@/routes/suppliers/index';
-import { type BreadcrumbItem } from '@/types';
+} from '#app/components/ui/tooltip';
+import { useTranslations } from '#app/hooks/use-translations';
+import { useFieldValidation } from '#app/hooks/useFieldValidation';
+import AppLayout from '#app/layouts/app-layout';
+import { validationRules } from '#app/lib/validation/rules';
+import suppliers from '#app/routes/suppliers/index';
+import { type BreadcrumbItem } from '#app/types';
 import { Form, Head, router } from '@inertiajs/react';
 import { HelpCircle } from 'lucide-react';
 import { useState } from 'react';

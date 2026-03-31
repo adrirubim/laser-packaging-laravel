@@ -1,18 +1,18 @@
-import { acknowledgeAlert } from '@/actions/App/Http/Controllers/DashboardController';
-import { OrderStatusChart } from '@/components/dashboard/OrderStatusChart';
-import { OrdersTrendChart } from '@/components/dashboard/OrdersTrendChart';
-import { ProductionProgressChart } from '@/components/dashboard/ProductionProgressChart';
-import { TopArticlesChart } from '@/components/dashboard/TopArticlesChart';
-import { TopCustomersChart } from '@/components/dashboard/TopCustomersChart';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { acknowledgeAlert } from '#app/actions/App/Http/Controllers/DashboardController';
+import { OrderStatusChart } from '#app/components/dashboard/OrderStatusChart';
+import { OrdersTrendChart } from '#app/components/dashboard/OrdersTrendChart';
+import { ProductionProgressChart } from '#app/components/dashboard/ProductionProgressChart';
+import { TopArticlesChart } from '#app/components/dashboard/TopArticlesChart';
+import { TopCustomersChart } from '#app/components/dashboard/TopCustomersChart';
+import { Badge } from '#app/components/ui/badge';
+import { Button } from '#app/components/ui/button';
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card';
+} from '#app/components/ui/card';
 import {
     Dialog,
     DialogContent,
@@ -20,7 +20,7 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-} from '@/components/ui/dialog';
+} from '#app/components/ui/dialog';
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -28,35 +28,35 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+} from '#app/components/ui/dropdown-menu';
+import { Input } from '#app/components/ui/input';
+import { Label } from '#app/components/ui/label';
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from '@/components/ui/select';
-import { Skeleton } from '@/components/ui/skeleton';
+} from '#app/components/ui/select';
+import { Skeleton } from '#app/components/ui/skeleton';
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { getOrderStatusColor } from '@/constants/orderStatus';
-import { useTranslations } from '@/hooks/use-translations';
-import AppLayout from '@/layouts/app-layout';
-import { dashboard } from '@/routes';
-import articles from '@/routes/articles/index';
-import customers from '@/routes/customers/index';
-import offers from '@/routes/offers/index';
-import orders from '@/routes/orders/index';
-import planning from '@/routes/planning/index';
-import productionPortal from '@/routes/production-portal/index';
-import { type BreadcrumbItem } from '@/types';
-import { type DomainDashboardStats } from '@/types/DomainModels';
+} from '#app/components/ui/tooltip';
+import { getOrderStatusColor } from '#app/constants/orderStatus';
+import { useTranslations } from '#app/hooks/use-translations';
+import AppLayout from '#app/layouts/app-layout';
+import { dashboard } from '#app/routes';
+import articles from '#app/routes/articles/index';
+import customers from '#app/routes/customers/index';
+import offers from '#app/routes/offers/index';
+import orders from '#app/routes/orders/index';
+import planning from '#app/routes/planning/index';
+import productionPortal from '#app/routes/production-portal/index';
+import { type BreadcrumbItem } from '#app/types';
+import { type DomainDashboardStats } from '#app/types/DomainModels';
 import { Head, Link, router } from '@inertiajs/react';
 import {
     AlertTriangle,

@@ -1,17 +1,17 @@
-import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
-import { Button } from '@/components/ui/button';
+import ConfirmDeleteDialog from '#app/components/confirm-delete-dialog';
+import { Button } from '#app/components/ui/button';
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { useTranslations } from '@/hooks/use-translations';
-import AppLayout from '@/layouts/app-layout';
-import articleCategories from '@/routes/article-categories/index';
-import { type BreadcrumbItem } from '@/types';
+} from '#app/components/ui/card';
+import { Label } from '#app/components/ui/label';
+import { useTranslations } from '#app/hooks/use-translations';
+import AppLayout from '#app/layouts/app-layout';
+import articleCategories from '#app/routes/article-categories/index';
+import { type BreadcrumbItem } from '#app/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Edit, Package, Tag, Trash2 } from 'lucide-react';
 import { useState } from 'react';

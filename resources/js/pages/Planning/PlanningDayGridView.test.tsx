@@ -8,7 +8,7 @@ import type {
     ZoomLevel,
 } from './types';
 
-vi.mock('@/hooks/use-translations', () => {
+vi.mock('#app/hooks/use-translations', () => {
     const itTranslations: Record<string, string> = {
         'planning.no_columns':
             'Nessuna colonna disponibile per il periodo selezionato.',

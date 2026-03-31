@@ -8,27 +8,27 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
     AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+} from '#app/components/ui/alert-dialog';
+import { Badge } from '#app/components/ui/badge';
+import { Button } from '#app/components/ui/button';
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useTranslations } from '@/hooks/use-translations';
+} from '#app/components/ui/card';
+import { Input } from '#app/components/ui/input';
+import { Label } from '#app/components/ui/label';
+import { useTranslations } from '#app/hooks/use-translations';
 import {
     addManualQuantity,
     addPalletQuantity,
     confirmAutocontrollo,
     ProductionPortalError,
     suspendOrder,
-} from '@/lib/api/production-portal';
-import productionPortal from '@/routes/production-portal/index';
+} from '#app/lib/api/production-portal';
+import productionPortal from '#app/routes/production-portal/index';
 import { Head, Link, router } from '@inertiajs/react';
 import {
     AlertTriangle,

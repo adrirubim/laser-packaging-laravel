@@ -1,27 +1,27 @@
-import { ConfirmCloseDialog } from '@/components/confirm-close-dialog';
-import { FormValidationNotification } from '@/components/form-validation-notification';
-import { FormLabel } from '@/components/FormLabel';
-import InputError from '@/components/input-error';
-import { Button } from '@/components/ui/button';
+import { ConfirmCloseDialog } from '#app/components/confirm-close-dialog';
+import { FormValidationNotification } from '#app/components/form-validation-notification';
+import { FormLabel } from '#app/components/FormLabel';
+import InputError from '#app/components/input-error';
+import { Button } from '#app/components/ui/button';
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+} from '#app/components/ui/card';
+import { Input } from '#app/components/ui/input';
 import {
     Tooltip,
     TooltipContent,
     TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { useTranslations } from '@/hooks/use-translations';
-import { useFieldValidation } from '@/hooks/useFieldValidation';
-import AppLayout from '@/layouts/app-layout';
-import { validationRules } from '@/lib/validation/rules';
-import customers from '@/routes/customers/index';
-import { type BreadcrumbItem } from '@/types';
+} from '#app/components/ui/tooltip';
+import { useTranslations } from '#app/hooks/use-translations';
+import { useFieldValidation } from '#app/hooks/useFieldValidation';
+import AppLayout from '#app/layouts/app-layout';
+import { validationRules } from '#app/lib/validation/rules';
+import customers from '#app/routes/customers/index';
+import { type BreadcrumbItem } from '#app/types';
 import { Form, Head, router } from '@inertiajs/react';
 import { HelpCircle } from 'lucide-react';
 import { useState } from 'react';

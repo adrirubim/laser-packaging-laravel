@@ -1,31 +1,31 @@
-import { ConfirmCloseDialog } from '@/components/confirm-close-dialog';
-import { FormValidationNotification } from '@/components/form-validation-notification';
-import { FormLabel } from '@/components/FormLabel';
-import InputError from '@/components/input-error';
-import { Button } from '@/components/ui/button';
+import { ConfirmCloseDialog } from '#app/components/confirm-close-dialog';
+import { FormValidationNotification } from '#app/components/form-validation-notification';
+import { FormLabel } from '#app/components/FormLabel';
+import InputError from '#app/components/input-error';
+import { Button } from '#app/components/ui/button';
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
+} from '#app/components/ui/card';
+import { Checkbox } from '#app/components/ui/checkbox';
+import { Input } from '#app/components/ui/input';
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { useTranslations } from '@/hooks/use-translations';
-import { useFieldValidation } from '@/hooks/useFieldValidation';
-import AppLayout from '@/layouts/app-layout';
-import { validationRules } from '@/lib/validation/rules';
-import articles from '@/routes/articles/index';
-import { type BreadcrumbItem } from '@/types';
+} from '#app/components/ui/select';
+import { Textarea } from '#app/components/ui/textarea';
+import { useTranslations } from '#app/hooks/use-translations';
+import { useFieldValidation } from '#app/hooks/useFieldValidation';
+import AppLayout from '#app/layouts/app-layout';
+import { validationRules } from '#app/lib/validation/rules';
+import articles from '#app/routes/articles/index';
+import { type BreadcrumbItem } from '#app/types';
 import { Form, Head, router, usePage } from '@inertiajs/react';
 import { Download } from 'lucide-react';
 import { useState } from 'react';

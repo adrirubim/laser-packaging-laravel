@@ -1,5 +1,5 @@
-import { useTranslations } from '@/hooks/use-translations';
-import { cn } from '@/lib/utils';
+import { useTranslations } from '#app/hooks/use-translations';
+import { cn } from '#app/lib/utils';
 import { X } from 'lucide-react';
 
 interface FilterChipProps {

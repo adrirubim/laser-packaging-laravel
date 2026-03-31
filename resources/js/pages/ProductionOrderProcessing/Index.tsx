@@ -1,23 +1,23 @@
-import { ActionsDropdown } from '@/components/ActionsDropdown';
-import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
+import { ActionsDropdown } from '#app/components/ActionsDropdown';
+import ConfirmDeleteDialog from '#app/components/confirm-delete-dialog';
 import {
     FlashNotifications,
     useFlashNotifications,
-} from '@/components/flash-notifications';
+} from '#app/components/flash-notifications';
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from '@/components/ui/select';
-import { useTranslations } from '@/hooks/use-translations';
-import AppLayout from '@/layouts/app-layout';
-import { getDateLocale } from '@/lib/locales';
-import { formatDecimal, parseDecimal } from '@/lib/utils/number';
-import ordersRoutes from '@/routes/orders/index';
-import productionOrderProcessing from '@/routes/production-order-processing/index';
-import { type BreadcrumbItem } from '@/types';
+} from '#app/components/ui/select';
+import { useTranslations } from '#app/hooks/use-translations';
+import AppLayout from '#app/layouts/app-layout';
+import { getDateLocale } from '#app/lib/locales';
+import { formatDecimal, parseDecimal } from '#app/lib/utils/number';
+import ordersRoutes from '#app/routes/orders/index';
+import productionOrderProcessing from '#app/routes/production-order-processing/index';
+import { type BreadcrumbItem } from '#app/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
     ArrowDown,

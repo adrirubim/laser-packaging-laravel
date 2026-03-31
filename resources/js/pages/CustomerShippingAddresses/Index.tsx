@@ -1,24 +1,24 @@
-import { ActionsDropdown } from '@/components/ActionsDropdown';
-import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
+import { ActionsDropdown } from '#app/components/ActionsDropdown';
+import ConfirmDeleteDialog from '#app/components/confirm-delete-dialog';
 import {
     FlashNotifications,
     useFlashNotifications,
-} from '@/components/flash-notifications';
-import { IndexHeader } from '@/components/IndexHeader';
-import { Pagination } from '@/components/Pagination';
-import { SearchInput } from '@/components/SearchInput';
-import { SortableTableHeader } from '@/components/SortableTableHeader';
+} from '#app/components/flash-notifications';
+import { IndexHeader } from '#app/components/IndexHeader';
+import { Pagination } from '#app/components/Pagination';
+import { SearchInput } from '#app/components/SearchInput';
+import { SortableTableHeader } from '#app/components/SortableTableHeader';
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from '@/components/ui/select';
-import { useTranslations } from '@/hooks/use-translations';
-import AppLayout from '@/layouts/app-layout';
-import customerShippingAddresses from '@/routes/customer-shipping-addresses/index';
-import { type BreadcrumbItem } from '@/types';
+} from '#app/components/ui/select';
+import { useTranslations } from '#app/hooks/use-translations';
+import AppLayout from '#app/layouts/app-layout';
+import customerShippingAddresses from '#app/routes/customer-shipping-addresses/index';
+import { type BreadcrumbItem } from '#app/types';
 import { Head, router, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 

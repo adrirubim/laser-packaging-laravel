@@ -1,17 +1,17 @@
-import { FormLabel } from '@/components/FormLabel';
-import { Button } from '@/components/ui/button';
+import { FormLabel } from '#app/components/FormLabel';
+import { Button } from '#app/components/ui/button';
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { useTranslations } from '@/hooks/use-translations';
-import AppLayout from '@/layouts/app-layout';
-import valueTypes from '@/routes/value-types/index';
-import { type BreadcrumbItem } from '@/types';
+} from '#app/components/ui/card';
+import { Input } from '#app/components/ui/input';
+import { useTranslations } from '#app/hooks/use-translations';
+import AppLayout from '#app/layouts/app-layout';
+import valueTypes from '#app/routes/value-types/index';
+import { type BreadcrumbItem } from '#app/types';
 import { Form, Head, router } from '@inertiajs/react';
 
 type ValueType = {

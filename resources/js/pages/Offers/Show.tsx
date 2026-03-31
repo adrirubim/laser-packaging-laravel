@@ -1,20 +1,20 @@
-import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
-import { Button } from '@/components/ui/button';
+import ConfirmDeleteDialog from '#app/components/confirm-delete-dialog';
+import { Button } from '#app/components/ui/button';
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { useTranslations } from '@/hooks/use-translations';
-import AppLayout from '@/layouts/app-layout';
-import offerOperations from '@/routes/offer-operations/index';
-import offers from '@/routes/offers/index';
-import { type BreadcrumbItem } from '@/types';
+} from '#app/components/ui/card';
+import { Input } from '#app/components/ui/input';
+import { Label } from '#app/components/ui/label';
+import { Textarea } from '#app/components/ui/textarea';
+import { useTranslations } from '#app/hooks/use-translations';
+import AppLayout from '#app/layouts/app-layout';
+import offerOperations from '#app/routes/offer-operations/index';
+import offers from '#app/routes/offers/index';
+import { type BreadcrumbItem } from '#app/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { Download, FileText, Loader2 } from 'lucide-react';
 import { useState } from 'react';

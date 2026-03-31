@@ -1,6 +1,6 @@
-import { NavFooter } from '@/components/nav-footer';
-import { NavMain } from '@/components/nav-main';
-import { NavUser } from '@/components/nav-user';
+import { NavFooter } from '#app/components/nav-footer';
+import { NavMain } from '#app/components/nav-main';
+import { NavUser } from '#app/components/nav-user';
 import {
     Sidebar,
     SidebarContent,
@@ -9,20 +9,20 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-} from '@/components/ui/sidebar';
-import { useTranslations } from '@/hooks/use-translations';
-import { dashboard } from '@/routes';
-import articles from '@/routes/articles/index';
-import customerDivisions from '@/routes/customer-divisions/index';
-import customerShippingAddresses from '@/routes/customer-shipping-addresses/index';
-import customers from '@/routes/customers/index';
-import employees from '@/routes/employees/index';
-import machinery from '@/routes/machinery/index';
-import materials from '@/routes/materials/index';
-import offers from '@/routes/offers/index';
-import orders from '@/routes/orders/index';
-import suppliers from '@/routes/suppliers/index';
-import { type NavGroup, type NavItem } from '@/types';
+} from '#app/components/ui/sidebar';
+import { useTranslations } from '#app/hooks/use-translations';
+import { dashboard } from '#app/routes';
+import articles from '#app/routes/articles/index';
+import customerDivisions from '#app/routes/customer-divisions/index';
+import customerShippingAddresses from '#app/routes/customer-shipping-addresses/index';
+import customers from '#app/routes/customers/index';
+import employees from '#app/routes/employees/index';
+import machinery from '#app/routes/machinery/index';
+import materials from '#app/routes/materials/index';
+import offers from '#app/routes/offers/index';
+import orders from '#app/routes/orders/index';
+import suppliers from '#app/routes/suppliers/index';
+import { type NavGroup, type NavItem } from '#app/types';
 import { Link } from '@inertiajs/react';
 import {
     Activity,

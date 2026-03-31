@@ -1,19 +1,19 @@
-import { DashboardEmptyState } from '@/components/dashboard/DashboardEmptyState';
-import { Button } from '@/components/ui/button';
+import { DashboardEmptyState } from '#app/components/dashboard/DashboardEmptyState';
+import { Button } from '#app/components/ui/button';
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card';
+} from '#app/components/ui/card';
 import {
     Dialog,
     DialogContent,
     DialogHeader,
     DialogTitle,
-} from '@/components/ui/dialog';
-import { useTranslations } from '@/hooks/use-translations';
+} from '#app/components/ui/dialog';
+import { useTranslations } from '#app/hooks/use-translations';
 import { Maximize2 } from 'lucide-react';
 import { useState } from 'react';
 import type { LegendPayload } from 'recharts';

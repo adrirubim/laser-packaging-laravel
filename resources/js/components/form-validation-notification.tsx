@@ -1,4 +1,4 @@
-import { useTranslations } from '@/hooks/use-translations';
+import { useTranslations } from '#app/hooks/use-translations';
 import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 

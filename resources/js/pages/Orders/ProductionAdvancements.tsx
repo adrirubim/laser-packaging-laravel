@@ -1,33 +1,33 @@
-import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
+import ConfirmDeleteDialog from '#app/components/confirm-delete-dialog';
 import {
     FlashNotifications,
     useFlashNotifications,
-} from '@/components/flash-notifications';
-import { Pagination } from '@/components/Pagination';
-import { SearchInput } from '@/components/SearchInput';
-import { SortableTableHeader } from '@/components/SortableTableHeader';
-import { Button } from '@/components/ui/button';
+} from '#app/components/flash-notifications';
+import { Pagination } from '#app/components/Pagination';
+import { SearchInput } from '#app/components/SearchInput';
+import { SortableTableHeader } from '#app/components/SortableTableHeader';
+import { Button } from '#app/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from '#app/components/ui/dropdown-menu';
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from '@/components/ui/select';
+} from '#app/components/ui/select';
 import {
     getOrderStatusColor,
     getOrderStatusLabelKey,
-} from '@/constants/orderStatus';
-import { useTranslations } from '@/hooks/use-translations';
-import AppLayout from '@/layouts/app-layout';
-import orders from '@/routes/orders/index';
-import { type BreadcrumbItem } from '@/types';
+} from '#app/constants/orderStatus';
+import { useTranslations } from '#app/hooks/use-translations';
+import AppLayout from '#app/layouts/app-layout';
+import orders from '#app/routes/orders/index';
+import { type BreadcrumbItem } from '#app/types';
 import { Head, router, usePage } from '@inertiajs/react';
 import { Edit, Eye, MoreHorizontal, Trash2 } from 'lucide-react';
 import { useState } from 'react';

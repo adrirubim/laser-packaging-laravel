@@ -1,4 +1,4 @@
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Alert, AlertDescription } from '#app/components/ui/alert';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -8,33 +8,33 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
+} from '#app/components/ui/alert-dialog';
+import { Button } from '#app/components/ui/button';
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
+} from '#app/components/ui/card';
+import { Label } from '#app/components/ui/label';
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
+} from '#app/components/ui/select';
+import { Textarea } from '#app/components/ui/textarea';
 import {
     getOrderStatusColor,
     getOrderStatusLabelKey,
-} from '@/constants/orderStatus';
-import { useTranslations } from '@/hooks/use-translations';
-import AppLayout from '@/layouts/app-layout';
-import orders from '@/routes/orders/index';
-import { type BreadcrumbItem } from '@/types';
-import type { ApiResponse } from '@/types/DomainModels';
+} from '#app/constants/orderStatus';
+import { useTranslations } from '#app/hooks/use-translations';
+import AppLayout from '#app/layouts/app-layout';
+import orders from '#app/routes/orders/index';
+import { type BreadcrumbItem } from '#app/types';
+import type { ApiResponse } from '#app/types/DomainModels';
 import { Head, router } from '@inertiajs/react';
 import { AlertCircle, CheckCircle2, Loader2, XCircle } from 'lucide-react';
 import { useState } from 'react';

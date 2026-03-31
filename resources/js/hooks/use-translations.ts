@@ -1,4 +1,4 @@
-import type { SharedData } from '@/types';
+import type { SharedData } from '#app/types';
 import { usePage } from '@inertiajs/react';
 
 export type TranslationParams = Record<string, string | number>;

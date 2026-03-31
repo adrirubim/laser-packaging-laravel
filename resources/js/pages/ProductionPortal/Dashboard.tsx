@@ -1,14 +1,14 @@
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Badge } from '#app/components/ui/badge';
+import { Button } from '#app/components/ui/button';
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card';
-import { useTranslations } from '@/hooks/use-translations';
-import productionPortal from '@/routes/production-portal/index';
+} from '#app/components/ui/card';
+import { useTranslations } from '#app/hooks/use-translations';
+import productionPortal from '#app/routes/production-portal/index';
 import { Head, Link, router } from '@inertiajs/react';
 import { Eye, LogOut, Package, RefreshCw } from 'lucide-react';
 import { useEffect, useState } from 'react';

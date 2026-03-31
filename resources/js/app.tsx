@@ -1,4 +1,5 @@
-import { ErrorBoundary } from '@/components/error-boundary';
+import { ErrorBoundary } from '#app/components/error-boundary';
+import type { ResolvedComponent } from '@inertiajs/react';
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { StrictMode } from 'react';
@@ -15,7 +16,7 @@ const appName =
 
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),
-    resolve: async (name) => {
+    resolve: async (name: string): Promise<ResolvedComponent> => {
         const mod = await resolvePageComponent(
             `./pages/${name}.tsx`,
             import.meta.glob([
@@ -24,7 +25,9 @@ createInertiaApp({
                 '!./pages/**/*.spec.tsx',
             ]),
         );
-        return (mod as { default?: unknown }).default ?? mod;
+
+        const component = (mod as { default?: unknown }).default ?? mod;
+        return component as ResolvedComponent;
     },
     setup({ el, App, props }) {
         const root = createRoot(el);

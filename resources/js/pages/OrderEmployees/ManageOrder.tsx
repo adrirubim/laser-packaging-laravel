@@ -7,21 +7,21 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
+} from '#app/components/ui/alert-dialog';
+import { Button } from '#app/components/ui/button';
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { useTranslations } from '@/hooks/use-translations';
-import AppLayout from '@/layouts/app-layout';
-import orderEmployees from '@/routes/order-employees/index';
-import orders from '@/routes/orders/index';
-import { type BreadcrumbItem } from '@/types';
+} from '#app/components/ui/card';
+import { Input } from '#app/components/ui/input';
+import { useTranslations } from '#app/hooks/use-translations';
+import AppLayout from '#app/layouts/app-layout';
+import orderEmployees from '#app/routes/order-employees/index';
+import orders from '#app/routes/orders/index';
+import { type BreadcrumbItem } from '#app/types';
 import { Head, router, usePage } from '@inertiajs/react';
 import {
     AlertCircle,

@@ -1,21 +1,23 @@
-import AppearanceTabs from '@/components/appearance-tabs';
-import HeadingSmall from '@/components/heading-small';
-import type { LocaleCode } from '@/components/locale-dropdown';
-import LocaleTabs from '@/components/locale-tabs';
+import AppearanceTabs from '#app/components/appearance-tabs';
+import HeadingSmall from '#app/components/heading-small';
+import type { LocaleCode } from '#app/components/locale-dropdown';
+import LocaleTabs from '#app/components/locale-tabs';
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from '@/components/ui/select';
-import { useAppearance } from '@/hooks/use-appearance';
-import { useTranslations } from '@/hooks/use-translations';
-import AppLayout from '@/layouts/app-layout';
-import SettingsLayout from '@/layouts/settings/layout';
-import appearance, { edit as editAppearance } from '@/routes/appearance/index';
-import type { SharedData } from '@/types';
-import { type BreadcrumbItem } from '@/types';
+} from '#app/components/ui/select';
+import { useAppearance } from '#app/hooks/use-appearance';
+import { useTranslations } from '#app/hooks/use-translations';
+import AppLayout from '#app/layouts/app-layout';
+import SettingsLayout from '#app/layouts/settings/layout';
+import appearance, {
+    edit as editAppearance,
+} from '#app/routes/appearance/index';
+import type { SharedData } from '#app/types';
+import { type BreadcrumbItem } from '#app/types';
 import { Head, router, usePage } from '@inertiajs/react';
 import { useCallback } from 'react';
 

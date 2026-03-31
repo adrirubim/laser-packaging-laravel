@@ -1,10 +1,10 @@
-import { FlashNotifications } from '@/components/flash-notifications';
-import { Pagination } from '@/components/Pagination';
-import { useTranslations } from '@/hooks/use-translations';
-import AppLayout from '@/layouts/app-layout';
-import orderEmployees from '@/routes/order-employees/index';
-import orders from '@/routes/orders/index';
-import { type BreadcrumbItem } from '@/types';
+import { FlashNotifications } from '#app/components/flash-notifications';
+import { Pagination } from '#app/components/Pagination';
+import { useTranslations } from '#app/hooks/use-translations';
+import AppLayout from '#app/layouts/app-layout';
+import orderEmployees from '#app/routes/order-employees/index';
+import orders from '#app/routes/orders/index';
+import { type BreadcrumbItem } from '#app/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 
 type Employee = {

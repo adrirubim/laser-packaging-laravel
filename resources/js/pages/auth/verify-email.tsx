@@ -1,11 +1,11 @@
 // Components
-import TextLink from '@/components/text-link';
-import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
-import { useTranslations } from '@/hooks/use-translations';
-import AuthLayout from '@/layouts/auth-layout';
-import { logout } from '@/routes';
-import { send } from '@/routes/verification/index';
+import TextLink from '#app/components/text-link';
+import { Button } from '#app/components/ui/button';
+import { Spinner } from '#app/components/ui/spinner';
+import { useTranslations } from '#app/hooks/use-translations';
+import AuthLayout from '#app/layouts/auth-layout';
+import { logout } from '#app/routes';
+import { send } from '#app/routes/verification/index';
 import { Form, Head } from '@inertiajs/react';
 
 export default function VerifyEmail({ status }: { status?: string }) {

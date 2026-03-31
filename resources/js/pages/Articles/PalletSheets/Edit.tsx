@@ -1,20 +1,20 @@
-import { ConfirmCloseDialog } from '@/components/confirm-close-dialog';
-import { FormValidationNotification } from '@/components/form-validation-notification';
-import { FormLabel } from '@/components/FormLabel';
-import InputError from '@/components/input-error';
-import { Button } from '@/components/ui/button';
+import { ConfirmCloseDialog } from '#app/components/confirm-close-dialog';
+import { FormValidationNotification } from '#app/components/form-validation-notification';
+import { FormLabel } from '#app/components/FormLabel';
+import InputError from '#app/components/input-error';
+import { Button } from '#app/components/ui/button';
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { useTranslations } from '@/hooks/use-translations';
-import AppLayout from '@/layouts/app-layout';
-import articles from '@/routes/articles/index';
-import { type BreadcrumbItem } from '@/types';
+} from '#app/components/ui/card';
+import { Input } from '#app/components/ui/input';
+import { useTranslations } from '#app/hooks/use-translations';
+import AppLayout from '#app/layouts/app-layout';
+import articles from '#app/routes/articles/index';
+import { type BreadcrumbItem } from '#app/types';
 import { Form, Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 

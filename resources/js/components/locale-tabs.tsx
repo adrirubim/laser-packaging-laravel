@@ -1,7 +1,7 @@
-import { FlagIcon, type LocaleCode } from '@/components/locale-dropdown';
-import { useTranslations } from '@/hooks/use-translations';
-import { LOCALES } from '@/lib/locales';
-import { cn } from '@/lib/utils';
+import { FlagIcon, type LocaleCode } from '#app/components/locale-dropdown';
+import { useTranslations } from '#app/hooks/use-translations';
+import { LOCALES } from '#app/lib/locales';
+import { cn } from '#app/lib/utils';
 import { type HTMLAttributes } from 'react';
 
 type LocaleTabsProps = HTMLAttributes<HTMLDivElement> & {

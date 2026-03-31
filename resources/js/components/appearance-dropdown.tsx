@@ -1,12 +1,12 @@
-import { Button } from '@/components/ui/button';
+import { Button } from '#app/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { useAppearance } from '@/hooks/use-appearance';
-import { useTranslations } from '@/hooks/use-translations';
+} from '#app/components/ui/dropdown-menu';
+import { useAppearance } from '#app/hooks/use-appearance';
+import { useTranslations } from '#app/hooks/use-translations';
 import { Monitor, Moon, Sun } from 'lucide-react';
 import { HTMLAttributes } from 'react';
 

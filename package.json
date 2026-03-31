@@ -10,6 +10,9 @@
     },
     "private": true,
     "type": "module",
+    "imports": {
+        "#app/*": "./resources/js/*"
+    },
     "scripts": {
         "postinstall": "node scripts/normalize-patches.cjs && (patch-package || true) && node scripts/fix-radix-after-patch.cjs && node -e \"try{require('fs').rmSync('node_modules/.vite',{recursive:!0,force:!0})}catch(e){}\"",
         "build": "vite build",

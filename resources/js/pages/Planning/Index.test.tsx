@@ -8,7 +8,7 @@ import { renderToString } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 import PlanningBoard from './Index';
 
-vi.mock('@/hooks/use-translations', () => ({
+vi.mock('#app/hooks/use-translations', () => ({
     useTranslations: () => ({ t: (key: string) => key }),
 }));
 
@@ -17,11 +17,11 @@ vi.mock('@inertiajs/react', () => ({
     usePage: () => ({ props: {} }),
 }));
 
-vi.mock('@/layouts/app-layout', () => ({
+vi.mock('#app/layouts/app-layout', () => ({
     default: ({ children }: { children: React.ReactNode }) => children,
 }));
 
-vi.mock('@/components/error-boundary', () => ({
+vi.mock('#app/components/error-boundary', () => ({
     ErrorBoundary: ({ children }: { children: React.ReactNode }) => children,
 }));
 
@@ -29,11 +29,11 @@ vi.mock('sonner', () => ({
     toast: { success: vi.fn() },
 }));
 
-vi.mock('@/routes', () => ({
+vi.mock('#app/routes', () => ({
     dashboard: () => ({ url: () => '/' }),
 }));
 
-vi.mock('@/routes/api', () => ({
+vi.mock('#app/routes/api', () => ({
     default: {
         planning: {
             data: { url: () => '/api/planning/data' },
@@ -43,7 +43,7 @@ vi.mock('@/routes/api', () => ({
     },
 }));
 
-vi.mock('@/routes/planning', () => ({
+vi.mock('#app/routes/planning', () => ({
     default: { index: { url: () => '/planning' } },
 }));
 

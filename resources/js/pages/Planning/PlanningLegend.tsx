@@ -1,4 +1,4 @@
-import { useTranslations } from '@/hooks/use-translations';
+import { useTranslations } from '#app/hooks/use-translations';
 import { memo } from 'react';
 import type { RangeMode, ZoomLevel } from './types';
 

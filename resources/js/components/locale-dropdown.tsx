@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import { Button } from '#app/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -6,10 +6,10 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { useTranslations } from '@/hooks/use-translations';
-import { LOCALES, type LocaleCode } from '@/lib/locales';
-import { cn } from '@/lib/utils';
+} from '#app/components/ui/dropdown-menu';
+import { useTranslations } from '#app/hooks/use-translations';
+import { LOCALES, type LocaleCode } from '#app/lib/locales';
+import { cn } from '#app/lib/utils';
 import { Check } from 'lucide-react';
 
 export type { LocaleCode };

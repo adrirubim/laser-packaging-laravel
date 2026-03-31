@@ -1,19 +1,19 @@
-import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
-import { send } from '@/routes/verification/index';
-import { type BreadcrumbItem, type SharedData } from '@/types';
+import ProfileController from '#app/actions/App/Http/Controllers/Settings/ProfileController';
+import { send } from '#app/routes/verification/index';
+import { type BreadcrumbItem, type SharedData } from '#app/types';
 import { Transition } from '@headlessui/react';
 import { Form, Head, Link, usePage } from '@inertiajs/react';
 
-import DeleteUser from '@/components/delete-user';
-import HeadingSmall from '@/components/heading-small';
-import InputError from '@/components/input-error';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useTranslations } from '@/hooks/use-translations';
-import AppLayout from '@/layouts/app-layout';
-import SettingsLayout from '@/layouts/settings/layout';
-import { edit } from '@/routes/profile/index';
+import DeleteUser from '#app/components/delete-user';
+import HeadingSmall from '#app/components/heading-small';
+import InputError from '#app/components/input-error';
+import { Button } from '#app/components/ui/button';
+import { Input } from '#app/components/ui/input';
+import { Label } from '#app/components/ui/label';
+import { useTranslations } from '#app/hooks/use-translations';
+import AppLayout from '#app/layouts/app-layout';
+import SettingsLayout from '#app/layouts/settings/layout';
+import { edit } from '#app/routes/profile/index';
 
 export default function Profile({
     mustVerifyEmail,

@@ -7,8 +7,8 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { useTranslations } from '@/hooks/use-translations';
+} from '#app/components/ui/alert-dialog';
+import { useTranslations } from '#app/hooks/use-translations';
 
 type ConfirmCloseDialogProps = {
     open: boolean;

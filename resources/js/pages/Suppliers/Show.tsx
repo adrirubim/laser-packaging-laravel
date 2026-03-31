@@ -1,17 +1,17 @@
-import { FormLabel } from '@/components/FormLabel';
-import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
-import { Button } from '@/components/ui/button';
+import { FormLabel } from '#app/components/FormLabel';
+import ConfirmDeleteDialog from '#app/components/confirm-delete-dialog';
+import { Button } from '#app/components/ui/button';
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card';
-import { useTranslations } from '@/hooks/use-translations';
-import AppLayout from '@/layouts/app-layout';
-import suppliers from '@/routes/suppliers/index';
-import { type BreadcrumbItem } from '@/types';
+} from '#app/components/ui/card';
+import { useTranslations } from '#app/hooks/use-translations';
+import AppLayout from '#app/layouts/app-layout';
+import suppliers from '#app/routes/suppliers/index';
+import { type BreadcrumbItem } from '#app/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 

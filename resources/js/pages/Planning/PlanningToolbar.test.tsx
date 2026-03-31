@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import PlanningToolbar from './PlanningToolbar';
 import type { RangeMode, ZoomLevel } from './types';
 
-vi.mock('@/hooks/use-translations', () => {
+vi.mock('#app/hooks/use-translations', () => {
     const itTranslations: Record<string, string> = {
         'planning.toolbar_aria': 'Controlli pianificazione',
         'planning.prev_day': 'Giorno precedente',

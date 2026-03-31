@@ -1,19 +1,19 @@
-import PasswordController from '@/actions/App/Http/Controllers/Settings/PasswordController';
-import InputError from '@/components/input-error';
-import { PasswordStrengthIndicator } from '@/components/password-strength';
-import { useTranslations } from '@/hooks/use-translations';
-import AppLayout from '@/layouts/app-layout';
-import SettingsLayout from '@/layouts/settings/layout';
-import { type BreadcrumbItem } from '@/types';
+import PasswordController from '#app/actions/App/Http/Controllers/Settings/PasswordController';
+import InputError from '#app/components/input-error';
+import { PasswordStrengthIndicator } from '#app/components/password-strength';
+import { useTranslations } from '#app/hooks/use-translations';
+import AppLayout from '#app/layouts/app-layout';
+import SettingsLayout from '#app/layouts/settings/layout';
+import { type BreadcrumbItem } from '#app/types';
 import { Transition } from '@headlessui/react';
 import { Form, Head } from '@inertiajs/react';
 import { useRef, useState } from 'react';
 
-import HeadingSmall from '@/components/heading-small';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { PasswordInput } from '@/components/ui/password-input';
-import { edit } from '@/routes/user-password/index';
+import HeadingSmall from '#app/components/heading-small';
+import { Button } from '#app/components/ui/button';
+import { Label } from '#app/components/ui/label';
+import { PasswordInput } from '#app/components/ui/password-input';
+import { edit } from '#app/routes/user-password/index';
 
 export default function Password() {
     const { t } = useTranslations();

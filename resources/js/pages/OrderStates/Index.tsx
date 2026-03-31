@@ -1,14 +1,14 @@
-import { ActionsDropdown } from '@/components/ActionsDropdown';
+import { ActionsDropdown } from '#app/components/ActionsDropdown';
 import {
     FlashNotifications,
     useFlashNotifications,
-} from '@/components/flash-notifications';
-import { IndexHeader } from '@/components/IndexHeader';
-import { Pagination } from '@/components/Pagination';
-import { useTranslations } from '@/hooks/use-translations';
-import AppLayout from '@/layouts/app-layout';
-import orderStates from '@/routes/order-states/index';
-import { type BreadcrumbItem } from '@/types';
+} from '#app/components/flash-notifications';
+import { IndexHeader } from '#app/components/IndexHeader';
+import { Pagination } from '#app/components/Pagination';
+import { useTranslations } from '#app/hooks/use-translations';
+import AppLayout from '#app/layouts/app-layout';
+import orderStates from '#app/routes/order-states/index';
+import { type BreadcrumbItem } from '#app/types';
 import { Head, usePage } from '@inertiajs/react';
 
 type OrderState = {

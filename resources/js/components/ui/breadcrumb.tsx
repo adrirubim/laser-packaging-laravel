@@ -2,8 +2,8 @@ import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { ChevronRight, MoreHorizontal } from "lucide-react"
 
-import { useTranslations } from "@/hooks/use-translations"
-import { cn } from "@/lib/utils"
+import { useTranslations } from "#app/hooks/use-translations"
+import { cn } from "#app/lib/utils"
 
 function Breadcrumb({ ...props }: React.ComponentProps<"nav">) {
   const { t } = useTranslations()

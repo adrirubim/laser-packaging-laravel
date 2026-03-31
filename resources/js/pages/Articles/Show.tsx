@@ -1,26 +1,26 @@
-import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import ConfirmDeleteDialog from '#app/components/confirm-delete-dialog';
+import { Badge } from '#app/components/ui/badge';
+import { Button } from '#app/components/ui/button';
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
+} from '#app/components/ui/card';
+import { Checkbox } from '#app/components/ui/checkbox';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Label } from '@/components/ui/label';
-import { useTranslations } from '@/hooks/use-translations';
-import AppLayout from '@/layouts/app-layout';
-import articles from '@/routes/articles/index';
-import offers from '@/routes/offers/index';
-import { type BreadcrumbItem } from '@/types';
+} from '#app/components/ui/dropdown-menu';
+import { Label } from '#app/components/ui/label';
+import { useTranslations } from '#app/hooks/use-translations';
+import AppLayout from '#app/layouts/app-layout';
+import articles from '#app/routes/articles/index';
+import offers from '#app/routes/offers/index';
+import { type BreadcrumbItem } from '#app/types';
 import { Head, Link, router } from '@inertiajs/react';
 import {
     Box,

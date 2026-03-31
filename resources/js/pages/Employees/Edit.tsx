@@ -1,24 +1,24 @@
-import { ConfirmCloseDialog } from '@/components/confirm-close-dialog';
-import { FormValidationNotification } from '@/components/form-validation-notification';
-import { FormLabel } from '@/components/FormLabel';
-import InputError from '@/components/input-error';
-import { Button } from '@/components/ui/button';
+import { ConfirmCloseDialog } from '#app/components/confirm-close-dialog';
+import { FormValidationNotification } from '#app/components/form-validation-notification';
+import { FormLabel } from '#app/components/FormLabel';
+import InputError from '#app/components/input-error';
+import { Button } from '#app/components/ui/button';
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { PasswordInput } from '@/components/ui/password-input';
-import { useTranslations } from '@/hooks/use-translations';
-import { useFieldValidation } from '@/hooks/useFieldValidation';
-import AppLayout from '@/layouts/app-layout';
-import { validationRules } from '@/lib/validation/rules';
-import employees from '@/routes/employees/index';
-import { type BreadcrumbItem } from '@/types';
+} from '#app/components/ui/card';
+import { Checkbox } from '#app/components/ui/checkbox';
+import { Input } from '#app/components/ui/input';
+import { PasswordInput } from '#app/components/ui/password-input';
+import { useTranslations } from '#app/hooks/use-translations';
+import { useFieldValidation } from '#app/hooks/useFieldValidation';
+import AppLayout from '#app/layouts/app-layout';
+import { validationRules } from '#app/lib/validation/rules';
+import employees from '#app/routes/employees/index';
+import { type BreadcrumbItem } from '#app/types';
 import { Form, Head, router } from '@inertiajs/react';
 import { ArrowLeft } from 'lucide-react';
 import { useState } from 'react';

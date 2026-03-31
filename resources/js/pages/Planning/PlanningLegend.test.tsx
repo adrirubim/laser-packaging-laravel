@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import PlanningLegend from './PlanningLegend';
 import type { RangeMode, ZoomLevel } from './types';
 
-vi.mock('@/hooks/use-translations', () => {
+vi.mock('#app/hooks/use-translations', () => {
     const itTranslations: Record<string, string> = {
         'planning.legend_title': 'Legenda',
         'planning.legend_sr_occupied': 'Occupato',

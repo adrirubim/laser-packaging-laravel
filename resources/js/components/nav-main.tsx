@@ -2,7 +2,7 @@ import {
     Collapsible,
     CollapsibleContent,
     CollapsibleTrigger,
-} from '@/components/ui/collapsible';
+} from '#app/components/ui/collapsible';
 import {
     SidebarGroup,
     SidebarGroupLabel,
@@ -12,10 +12,10 @@ import {
     SidebarMenuSub,
     SidebarMenuSubButton,
     SidebarMenuSubItem,
-} from '@/components/ui/sidebar';
-import { useActiveUrl } from '@/hooks/use-active-url';
-import { useTranslations } from '@/hooks/use-translations';
-import { type NavGroup, type NavItem } from '@/types';
+} from '#app/components/ui/sidebar';
+import { useActiveUrl } from '#app/hooks/use-active-url';
+import { useTranslations } from '#app/hooks/use-translations';
+import { type NavGroup, type NavItem } from '#app/types';
 import { Link } from '@inertiajs/react';
 import { ChevronRight } from 'lucide-react';
 

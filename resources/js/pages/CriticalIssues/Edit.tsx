@@ -1,19 +1,19 @@
-import { ConfirmCloseDialog } from '@/components/confirm-close-dialog';
-import InputError from '@/components/input-error';
-import { Button } from '@/components/ui/button';
+import { ConfirmCloseDialog } from '#app/components/confirm-close-dialog';
+import InputError from '#app/components/input-error';
+import { Button } from '#app/components/ui/button';
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useTranslations } from '@/hooks/use-translations';
-import AppLayout from '@/layouts/app-layout';
-import criticalIssues from '@/routes/critical-issues/index';
-import { type BreadcrumbItem } from '@/types';
+} from '#app/components/ui/card';
+import { Input } from '#app/components/ui/input';
+import { Label } from '#app/components/ui/label';
+import { useTranslations } from '#app/hooks/use-translations';
+import AppLayout from '#app/layouts/app-layout';
+import criticalIssues from '#app/routes/critical-issues/index';
+import { type BreadcrumbItem } from '#app/types';
 import { Form, Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 

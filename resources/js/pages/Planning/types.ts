@@ -8,7 +8,7 @@ import type {
     DomainPlanningRow,
     DomainPlanningSummary,
     DomainPlanningSummaryRow,
-} from '@/types/DomainModels';
+} from '#app/types/DomainModels';
 
 export type RangeMode = 'day' | 'week' | 'month';
 export type ZoomLevel = 'hour' | 'quarter';

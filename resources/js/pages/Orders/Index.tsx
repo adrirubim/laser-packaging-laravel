@@ -1,37 +1,37 @@
-import { ActionsDropdown } from '@/components/ActionsDropdown';
-import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
+import { ActionsDropdown } from '#app/components/ActionsDropdown';
+import ConfirmDeleteDialog from '#app/components/confirm-delete-dialog';
 import {
     FlashNotifications,
     useFlashNotifications,
-} from '@/components/flash-notifications';
-import { Pagination } from '@/components/Pagination';
-import { SearchInput } from '@/components/SearchInput';
-import { SortableTableHeader } from '@/components/SortableTableHeader';
+} from '#app/components/flash-notifications';
+import { Pagination } from '#app/components/Pagination';
+import { SearchInput } from '#app/components/SearchInput';
+import { SortableTableHeader } from '#app/components/SortableTableHeader';
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from '@/components/ui/select';
+} from '#app/components/ui/select';
 import {
     getOrderStatusColor,
     getOrderStatusLabelKey,
-} from '@/constants/orderStatus';
-import { useTranslations } from '@/hooks/use-translations';
-import AppLayout from '@/layouts/app-layout';
-import { getDateLocale } from '@/lib/locales';
+} from '#app/constants/orderStatus';
+import { useTranslations } from '#app/hooks/use-translations';
+import AppLayout from '#app/layouts/app-layout';
+import { getDateLocale } from '#app/lib/locales';
 import {
     calculateProgress,
     formatDecimal,
     parseDecimal,
-} from '@/lib/utils/number';
-import api from '@/routes/api';
-import articlesRoutes from '@/routes/articles/index';
-import offers from '@/routes/offers/index';
-import orders from '@/routes/orders/index';
-import { type BreadcrumbItem } from '@/types';
-import type { DomainOrder } from '@/types/DomainModels';
+} from '#app/lib/utils/number';
+import api from '#app/routes/api';
+import articlesRoutes from '#app/routes/articles/index';
+import offers from '#app/routes/offers/index';
+import orders from '#app/routes/orders/index';
+import { type BreadcrumbItem } from '#app/types';
+import type { DomainOrder } from '#app/types/DomainModels';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
     AlertTriangle,

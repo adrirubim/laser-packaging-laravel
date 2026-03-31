@@ -1,11 +1,11 @@
-import { Button } from '@/components/ui/button';
+import { Button } from '#app/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { useTranslations } from '@/hooks/use-translations';
+} from '#app/components/ui/dropdown-menu';
+import { useTranslations } from '#app/hooks/use-translations';
 import { Link } from '@inertiajs/react';
 import { Edit, Eye, MoreHorizontal, Trash2 } from 'lucide-react';
 import { type ReactNode } from 'react';

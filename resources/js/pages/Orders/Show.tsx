@@ -1,22 +1,22 @@
-import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
-import { FlashNotifications } from '@/components/flash-notifications';
-import { Button } from '@/components/ui/button';
+import ConfirmDeleteDialog from '#app/components/confirm-delete-dialog';
+import { FlashNotifications } from '#app/components/flash-notifications';
+import { Button } from '#app/components/ui/button';
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { getLotTypeOptionKey } from '@/constants/lotTypes';
-import { getLabelOptionKey } from '@/constants/orderLabels';
-import { getOrderStatusLabelKey } from '@/constants/orderStatus';
-import { useTranslations } from '@/hooks/use-translations';
-import AppLayout from '@/layouts/app-layout';
-import articles from '@/routes/articles/index';
-import orders from '@/routes/orders/index';
-import { type BreadcrumbItem } from '@/types';
+} from '#app/components/ui/card';
+import { Label } from '#app/components/ui/label';
+import { getLotTypeOptionKey } from '#app/constants/lotTypes';
+import { getLabelOptionKey } from '#app/constants/orderLabels';
+import { getOrderStatusLabelKey } from '#app/constants/orderStatus';
+import { useTranslations } from '#app/hooks/use-translations';
+import AppLayout from '#app/layouts/app-layout';
+import articles from '#app/routes/articles/index';
+import orders from '#app/routes/orders/index';
+import { type BreadcrumbItem } from '#app/types';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { Download, Loader2 } from 'lucide-react';
 import { useState } from 'react';

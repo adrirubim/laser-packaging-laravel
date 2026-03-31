@@ -1,18 +1,18 @@
-import ConfirmDeleteDialog from '@/components/confirm-delete-dialog';
-import { Button } from '@/components/ui/button';
+import ConfirmDeleteDialog from '#app/components/confirm-delete-dialog';
+import { Button } from '#app/components/ui/button';
 import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
-} from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { useTranslations } from '@/hooks/use-translations';
-import AppLayout from '@/layouts/app-layout';
-import customerDivisions from '@/routes/customer-divisions/index';
-import customerShippingAddresses from '@/routes/customer-shipping-addresses/index';
-import { type BreadcrumbItem } from '@/types';
+} from '#app/components/ui/card';
+import { Label } from '#app/components/ui/label';
+import { useTranslations } from '#app/hooks/use-translations';
+import AppLayout from '#app/layouts/app-layout';
+import customerDivisions from '#app/routes/customer-divisions/index';
+import customerShippingAddresses from '#app/routes/customer-shipping-addresses/index';
+import { type BreadcrumbItem } from '#app/types';
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 

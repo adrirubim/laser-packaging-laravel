@@ -1,4 +1,4 @@
-import { useTranslations } from '@/hooks/use-translations';
+import { useTranslations } from '#app/hooks/use-translations';
 import { Slider } from 'primereact/slider';
 import { useState } from 'react';
 

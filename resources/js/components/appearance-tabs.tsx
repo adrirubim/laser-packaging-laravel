@@ -1,6 +1,6 @@
-import { Appearance, useAppearance } from '@/hooks/use-appearance';
-import { useTranslations } from '@/hooks/use-translations';
-import { cn } from '@/lib/utils';
+import { Appearance, useAppearance } from '#app/hooks/use-appearance';
+import { useTranslations } from '#app/hooks/use-translations';
+import { cn } from '#app/lib/utils';
 import { LucideIcon, Monitor, Moon, Sun } from 'lucide-react';
 import { HTMLAttributes } from 'react';
 

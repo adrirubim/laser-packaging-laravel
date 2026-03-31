@@ -1,5 +1,5 @@
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { useTranslations } from '@/hooks/use-translations';
+import { Alert, AlertDescription, AlertTitle } from '#app/components/ui/alert';
+import { useTranslations } from '#app/hooks/use-translations';
 import { AlertCircleIcon } from 'lucide-react';
 
 export default function AlertError({
