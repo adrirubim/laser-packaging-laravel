@@ -1,24 +1,36 @@
-## Description
+## Summary
 
-<!-- Brief description of the change. Link to issue: "Fixes #123" or "Relates to #456". -->
+- 
 
-## Type of change
+## Changes
 
-- [ ] Bug fix (non-breaking)
-- [ ] New feature (non-breaking)
-- [ ] Breaking change
-- [ ] Documentation
-- [ ] Refactor / chore
+- 
 
-## Checklist
+## Test plan
 
-- [ ] Code follows PSR-12 (PHP) and project conventions (TypeScript, React)
-- [ ] `vendor/bin/pint`, `npm run format:check`, `npm run lint` (and `npm run types`) run clean
-- [ ] `npm run build`, `npm run test -- --run`, and `php artisan test --compact` pass
-- [ ] New behavior covered by tests where relevant
-- [ ] Documentation updated if needed (README, `docs/`, or code comments)
-- [ ] Screenshots or GIFs added for UI changes (if applicable)
+Select what you ran:
 
-## Breaking changes (if any)
+- [ ] `composer install`
+- [ ] `npm ci --legacy-peer-deps`
+- [ ] `vendor/bin/pint`
+- [ ] `npm run format:check`
+- [ ] `npm run lint`
+- [ ] `npm run types`
+- [ ] `npm run build`
+- [ ] `npm run test -- --run`
+- [ ] `php artisan test --compact`
 
-<!-- Describe migration path or config changes for breaking changes. Otherwise leave empty. -->
+## Screenshots (if applicable)
+
+- 
+
+## Notes / risks
+
+- 
+
+## Breaking changes
+
+- [ ] No
+- [ ] Yes (describe impact and migration path below)
+
+If **Yes**, explain the impact and migration path:

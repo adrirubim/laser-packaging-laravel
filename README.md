@@ -12,8 +12,9 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-316192?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4.2-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![Tests](https://img.shields.io/badge/Tests-1017%2B%20passing-brightgreen?style=flat)](docs/TEST_COVERAGE.md)
-[![License](https://img.shields.io/badge/License-MIT-yellow?style=flat)](LICENSE)
+[![Tests](https://img.shields.io/github/actions/workflow/status/adrirubim/laser-packaging-laravel/tests.yml?branch=main&label=Tests&style=flat&color=brightgreen)](https://github.com/adrirubim/laser-packaging-laravel/actions/workflows/tests.yml)
+[![Lint](https://img.shields.io/github/actions/workflow/status/adrirubim/laser-packaging-laravel/lint.yml?branch=main&label=Lint&style=flat&color=blue)](https://github.com/adrirubim/laser-packaging-laravel/actions/workflows/lint.yml)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=flat)](LICENSE)
 
 ## 📋 Table of Contents
 
@@ -381,7 +382,7 @@ Backend tree (high level): `app/Http/Controllers/`, `src/Domains/*/Actions`, `ap
 ---
 
 <a id="project-status"></a>
-## 📊 Project status
+## 📊 Project Status
 
 **Overall Score: 10/10** — Production-ready, optimized, well-structured, fully tested, and professionally documented.
 
@@ -502,6 +503,12 @@ php artisan storage:link
 ## 📤 Before Pushing to GitHub
 
 This project enforces CI checks via GitHub Actions. To avoid surprises, run the **same commands CI runs** locally.
+
+Recommended single entrypoint (CI parity):
+
+```bash
+./scripts/dev-verify.sh
+```
 
 Prerequisites:
 
