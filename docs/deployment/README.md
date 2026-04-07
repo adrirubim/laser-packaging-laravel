@@ -14,7 +14,7 @@ The application is a Laravel + Inertia (React) monolith with:
 
 ## 1. Requirements
 
-- **PHP**: 8.4+ (project minimum is 8.2, but the reference environment is 8.4.x)
+- **PHP**: 8.4+ (project minimum is 8.4; reference environment is 8.4.x)
 - **Composer**: 2.x
 - **Node.js**: 22.x (CI uses Node 22)
 - **Database**: PostgreSQL recommended (CI uses Postgres 16); MySQL is possible but not the default
