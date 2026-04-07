@@ -9,11 +9,11 @@ Versions are resolved in `package-lock.json` and `composer.lock`. Check locally 
 | Package | Exact version (composer.lock) | Require in composer.json |
 |---------|-------------------------------|---------------------------|
 | **PHP** | 8.4.x (environment; minimum 8.2) | `^8.2` |
-| **laravel/framework** | 13.2.0 | `^13.0` |
-| **inertiajs/inertia-laravel** | 3.0.1 | `^3` |
+| **laravel/framework** | 13.4.0 | `^13.0` |
+| **inertiajs/inertia-laravel** | 3.0.2 | `^3` |
 | **laravel/fortify** | 1.36.2 | `^1.30` |
 | **laravel/wayfinder** | 0.1.15 | `^0.1.9` |
-| **phpunit/phpunit** | 13.0.6 | `^13.0` |
+| **phpunit/phpunit** | 13.1.0 | `^13.0` |
 
 ---
 
@@ -33,14 +33,14 @@ Versions are resolved in `package-lock.json` and `composer.lock`. Check locally 
 |---------|-----------------------------------|------------------------|
 | **react** | 19.2.4 | `^19.2.0` |
 | **react-dom** | 19.2.4 | `^19.2.0` |
-| **@inertiajs/react** | 3.0.0 | `^3.0.0` |
+| **@inertiajs/react** | 3.0.2 | `^3.0.2` |
 | **typescript** | 6.0.2 | `^6.0.2` |
-| **vite** | 8.0.3 | `^8.0.0` |
-| **tailwindcss** | 4.2.2 | `^4.0.0` |
+| **vite** | 8.0.6 | `^8.0.6` |
+| **tailwindcss** | 4.2.2 | `^4.2.2` |
 | **@types/react** | 19.2.14 | `^19.2.0` |
 | **@types/react-dom** | 19.2.3 | `^19.2.0` |
-| **eslint** | 10.1.0 | `^10.0.3` |
-| **@eslint/js** | 10.0.1 | `^10.0.0` |
+| **eslint** | 10.2.0 | `^10.2.0` |
+| **@eslint/js** | 10.0.1 | `^10.0.1` |
 | **react-is** | 19.2.4 | `^19.0.0` (for recharts) |
 
 ---
@@ -49,7 +49,7 @@ Versions are resolved in `package-lock.json` and `composer.lock`. Check locally 
 
 To cite the stack in other documentation:
 
-- **Backend:** PHP 8.2+, Laravel 13.2.x, Inertia Laravel 3.0.x, Wayfinder 0.1.x  
+- **Backend:** PHP 8.2+, Laravel 13.4.x, Inertia Laravel 3.0.x, Wayfinder 0.1.x  
 - **Frontend:** React 19.2.x, Inertia React 3.0.x, TypeScript 6.0.x, Vite 8.0.x, Tailwind CSS 4.2.x  
 
 Reference: **March 2026**. Full detail: this file.

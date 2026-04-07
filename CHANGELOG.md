@@ -9,7 +9,7 @@ and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2
 
 #### Changed
 
-- Documentation: synced stack/runtime versions (Laravel 13.2, Inertia v3, TypeScript 6, Node 22 / npm 11).
+- Documentation: synced stack/runtime versions (Laravel 13.4, Inertia v3, TypeScript 6, Node 22 / npm 11).
 - Dependencies: refreshed Composer + npm lock files to match the current toolchain.
 
 ### [1.0.0] - 2026-03-09
