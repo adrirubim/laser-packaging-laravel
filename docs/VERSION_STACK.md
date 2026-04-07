@@ -8,7 +8,7 @@ Versions are resolved in `package-lock.json` and `composer.lock`. Check locally 
 
 | Package | Exact version (composer.lock) | Require in composer.json |
 |---------|-------------------------------|---------------------------|
-| **PHP** | 8.4.x (environment; minimum 8.2) | `^8.2` |
+| **PHP** | 8.4.x (environment; minimum 8.4) | `^8.4` |
 | **laravel/framework** | 13.4.0 | `^13.0` |
 | **inertiajs/inertia-laravel** | 3.0.2 | `^3` |
 | **laravel/fortify** | 1.36.2 | `^1.30` |
