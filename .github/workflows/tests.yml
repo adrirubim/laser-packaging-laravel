@@ -18,9 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # PHP 8.5 todavía no está declarado como compatible
-        # por sabberworm/php-css-parser (dependencia de dompdf),
-        # por eso la matriz se limita a 8.4 por ahora.
+        # PHP 8.5 is not yet declared compatible
+        # by sabberworm/php-css-parser (dompdf dependency),
+        # so the matrix is limited to 8.4 for now.
         php-version: ['8.4']
 
     services:
