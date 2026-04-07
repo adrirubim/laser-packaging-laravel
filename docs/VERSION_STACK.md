@@ -31,9 +31,9 @@ Versions are resolved in `package-lock.json` and `composer.lock`. Check locally 
 
 | Package | Exact version (package-lock.json) | Range in package.json |
 |---------|-----------------------------------|------------------------|
-| **react** | 19.2.4 | `^19.2.0` |
-| **react-dom** | 19.2.4 | `^19.2.0` |
-| **@inertiajs/react** | 3.0.2 | `^3.0.2` |
+| **react** | 19.2.4 | `^19.2.4` |
+| **react-dom** | 19.2.4 | `^19.2.4` |
+| **@inertiajs/react** | 3.0.3 | `^3.0.3` |
 | **typescript** | 6.0.2 | `^6.0.2` |
 | **vite** | 8.0.6 | `^8.0.6` |
 | **tailwindcss** | 4.2.2 | `^4.2.2` |
@@ -49,7 +49,7 @@ Versions are resolved in `package-lock.json` and `composer.lock`. Check locally 
 
 To cite the stack in other documentation:
 
-- **Backend:** PHP 8.2+, Laravel 13.4.x, Inertia Laravel 3.0.x, Wayfinder 0.1.x  
+- **Backend:** PHP 8.4+, Laravel 13.4.x, Inertia Laravel 3.0.x, Wayfinder 0.1.x  
 - **Frontend:** React 19.2.x, Inertia React 3.0.x, TypeScript 6.0.x, Vite 8.0.x, Tailwind CSS 4.2.x  
 
 Reference: **March 2026**. Full detail: this file.
