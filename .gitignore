@@ -47,3 +47,6 @@ patch-package-error.json.gz
 
 # Internal documentation (not for GitHub)
 docs/planning/
+
+# Cursor local MCP config (machine-specific)
+.cursor/mcp.json

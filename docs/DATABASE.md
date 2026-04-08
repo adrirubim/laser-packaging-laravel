@@ -64,3 +64,6 @@ This creates customers, offers, articles, orders in various statuses, and planni
 ```bash
 php artisan test --compact tests/Feature/Flows/DemoAllSectionsVerificationTest.php
 ```
+
+### Create test database (PostgreSQL)
+See `docs/snippets/CREATE_TEST_DATABASE.sql`.
