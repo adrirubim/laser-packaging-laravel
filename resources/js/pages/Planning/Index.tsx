@@ -67,6 +67,10 @@ type PlanningBoardProps = PageProps<{ today: string }>;
 
 export default function PlanningBoard({ today }: PlanningBoardProps) {
     const { t } = useTranslations();
+    const tRef = useRef(t);
+    useEffect(() => {
+        tRef.current = t;
+    }, [t]);
     const breadcrumbs: BreadcrumbItem[] = useMemo(
         () => [
             { title: t('nav.orders'), href: orders.index().url },
@@ -193,70 +197,87 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
         startTransition(() => setZoomLevel(level));
     }, []);
 
-    const loadData = useCallback(async () => {
-        const maxRetries = 2;
-        const delays = [1000, 2000]; // backoff 1s, 2s
+    const inFlightLoadControllerRef = useRef<AbortController | null>(null);
+    const loadData = useCallback(
+        async (range: { start: string; end: string }) => {
+            const maxRetries = 2;
+            const delays = [1000, 2000]; // backoff 1s, 2s
 
-        for (let attempt = 0; attempt <= maxRetries; attempt++) {
-            try {
-                setLoading(true);
-                setError(null);
+            for (let attempt = 0; attempt <= maxRetries; attempt++) {
+                try {
+                    setLoading(true);
+                    setError(null);
 
-                const response = await fetch(api.planning.data.url(), {
-                    method: 'POST',
-                    credentials: 'same-origin',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Accept: 'application/json',
-                    },
-                    body: JSON.stringify({
-                        start_date: `${startDate} 00:00:00`,
-                        end_date: `${endDate} 23:59:59`,
-                    }),
-                });
+                    // Cancel any previous in-flight load for the current component instance
+                    inFlightLoadControllerRef.current?.abort();
+                    const controller = new AbortController();
+                    inFlightLoadControllerRef.current = controller;
 
-                if (response.ok === false) {
-                    const text = await response.text();
-                    throw new Error(
-                        t('planning.error_load', {
-                            status: response.status,
-                            detail: text,
+                    const response = await fetch(api.planning.data.url(), {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        signal: controller.signal,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Accept: 'application/json',
+                        },
+                        body: JSON.stringify({
+                            start_date: `${range.start} 00:00:00`,
+                            end_date: `${range.end} 23:59:59`,
                         }),
-                    );
-                }
+                    });
 
-                const json = (await response.json()) as DomainPlanningBoard;
-                if (json.error_code !== 0) {
-                    throw new Error(t('planning.error_unknown'));
-                }
+                    if (response.ok === false) {
+                        const text = await response.text();
+                        throw new Error(
+                            tRef.current('planning.error_load', {
+                                status: response.status,
+                                detail: text,
+                            }),
+                        );
+                    }
 
-                setLines(json.lines ?? []);
-                setPlanning(json.planning ?? []);
-                setSummaries(json.summary ?? []);
-                setContracts(json.contracts ?? []);
-                setLoading(false);
-                return;
-            } catch (e) {
-                const err = e as Error;
-                const message =
-                    err.message !== ''
-                        ? err.message
-                        : t('planning.error_load_generic');
-                if (attempt === maxRetries) {
-                    setError(message);
+                    const json = (await response.json()) as DomainPlanningBoard;
+                    if (json.error_code !== 0) {
+                        throw new Error(tRef.current('planning.error_unknown'));
+                    }
+
+                    setLines(json.lines ?? []);
+                    setPlanning(json.planning ?? []);
+                    setSummaries(json.summary ?? []);
+                    setContracts(json.contracts ?? []);
                     setLoading(false);
-                } else {
-                    await new Promise((r) =>
-                        setTimeout(r, delays[attempt] ?? 2000),
-                    );
+                    return;
+                } catch (e) {
+                    const err = e as Error;
+                    if (err.name === 'AbortError') {
+                        // A newer loadData() call replaced this one.
+                        return;
+                    }
+                    const message =
+                        err.message !== ''
+                            ? err.message
+                            : tRef.current('planning.error_load_generic');
+                    if (attempt === maxRetries) {
+                        setError(message);
+                        setLoading(false);
+                    } else {
+                        await new Promise((r) =>
+                            setTimeout(r, delays[attempt] ?? 2000),
+                        );
+                    }
                 }
             }
-        }
-    }, [startDate, endDate, t]);
+        },
+        [],
+    );
 
     useEffect(() => {
-        void loadData();
-    }, [loadData]);
+        void loadData({ start: startDate, end: endDate });
+        return () => {
+            inFlightLoadControllerRef.current?.abort();
+        };
+    }, [loadData, startDate, endDate]);
 
     const savePlanningCell = useCallback(
         async (
@@ -1002,7 +1023,12 @@ export default function PlanningBoard({ today }: PlanningBoardProps) {
                             <span>{error}</span>
                             <button
                                 type="button"
-                                onClick={() => void loadData()}
+                                onClick={() =>
+                                    void loadData({
+                                        start: startDate,
+                                        end: endDate,
+                                    })
+                                }
                                 className="rounded-md border border-destructive/60 bg-destructive/20 px-2.5 py-1 font-medium hover:bg-destructive/30"
                                 aria-label={t('planning.retry_load')}
                             >
