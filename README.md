@@ -256,7 +256,7 @@ npm run build
 php artisan serve
 ```
 
-Then open **http://localhost:8000**. For full dev (Laravel + Vite): `npm run dev`.
+Then open **http://localhost:8000**. For full dev (Laravel + Vite + queue + logs): `composer run dev`.
 
 **PDF generation (optional):**
 
@@ -296,7 +296,7 @@ For a navigable, high-level overview, you can also use the [GitHub Wiki](https:/
 
 GitHub Actions runs **tests** and **lint** on every push and pull request to `main` and `develop`.
 
-- **Tests** (`.github/workflows/tests.yml`): PHP 8.4, Node 22, `composer install`, `npm ci --legacy-peer-deps`, `npm run build`, i18n-check, config:clear, TypeScript check, Vitest, `php artisan test`
+- **Tests** (`.github/workflows/tests.yml`): PHP 8.4, Node 22, `composer install`, `npm ci --legacy-peer-deps`, `npm run build`, i18n-check, config:clear, TypeScript check, Vitest, `php artisan test --compact`
 - **Lint** (`.github/workflows/lint.yml`): `composer install`, `npm ci --legacy-peer-deps`, Pint, `npm run format:check`, `npm run lint` (ESLint 10)
 
 ---
