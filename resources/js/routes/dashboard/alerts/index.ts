@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\DashboardController::acknowledge
 * @see app/Http/Controllers/DashboardController.php:64
@@ -32,28 +32,6 @@ acknowledge.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: acknowledge.url(options),
     method: 'post',
 })
-
-/**
-* @see \App\Http\Controllers\DashboardController::acknowledge
-* @see app/Http/Controllers/DashboardController.php:64
-* @route '/dashboard/alerts/acknowledge'
-*/
-const acknowledgeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: acknowledge.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\DashboardController::acknowledge
-* @see app/Http/Controllers/DashboardController.php:64
-* @route '/dashboard/alerts/acknowledge'
-*/
-acknowledgeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: acknowledge.url(options),
-    method: 'post',
-})
-
-acknowledge.form = acknowledgeForm
 
 const alerts = {
     acknowledge: Object.assign(acknowledge, acknowledge),

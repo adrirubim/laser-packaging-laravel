@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\ModelSCQController::generateCquNumber
 * @see app/Http/Controllers/ModelSCQController.php:231
@@ -42,43 +42,6 @@ generateCquNumber.head = (options?: RouteQueryOptions): RouteDefinition<'head'> 
     url: generateCquNumber.url(options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\ModelSCQController::generateCquNumber
-* @see app/Http/Controllers/ModelSCQController.php:231
-* @route '/articles/cq-models/generate-cqu-number'
-*/
-const generateCquNumberForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: generateCquNumber.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ModelSCQController::generateCquNumber
-* @see app/Http/Controllers/ModelSCQController.php:231
-* @route '/articles/cq-models/generate-cqu-number'
-*/
-generateCquNumberForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: generateCquNumber.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ModelSCQController::generateCquNumber
-* @see app/Http/Controllers/ModelSCQController.php:231
-* @route '/articles/cq-models/generate-cqu-number'
-*/
-generateCquNumberForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: generateCquNumber.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-generateCquNumber.form = generateCquNumberForm
 
 /**
 * @see \App\Http\Controllers\ModelSCQController::downloadFile
@@ -149,43 +112,6 @@ downloadFile.head = (args: { cqModel: string | { uuid: string } } | [cqModel: st
 })
 
 /**
-* @see \App\Http\Controllers\ModelSCQController::downloadFile
-* @see app/Http/Controllers/ModelSCQController.php:253
-* @route '/articles/cq-models/{cqModel}/download-file'
-*/
-const downloadFileForm = (args: { cqModel: string | { uuid: string } } | [cqModel: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: downloadFile.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ModelSCQController::downloadFile
-* @see app/Http/Controllers/ModelSCQController.php:253
-* @route '/articles/cq-models/{cqModel}/download-file'
-*/
-downloadFileForm.get = (args: { cqModel: string | { uuid: string } } | [cqModel: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: downloadFile.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ModelSCQController::downloadFile
-* @see app/Http/Controllers/ModelSCQController.php:253
-* @route '/articles/cq-models/{cqModel}/download-file'
-*/
-downloadFileForm.head = (args: { cqModel: string | { uuid: string } } | [cqModel: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: downloadFile.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-downloadFile.form = downloadFileForm
-
-/**
 * @see \App\Http\Controllers\ModelSCQController::index
 * @see app/Http/Controllers/ModelSCQController.php:16
 * @route '/articles/cq-models'
@@ -228,43 +154,6 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\ModelSCQController::index
-* @see app/Http/Controllers/ModelSCQController.php:16
-* @route '/articles/cq-models'
-*/
-const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ModelSCQController::index
-* @see app/Http/Controllers/ModelSCQController.php:16
-* @route '/articles/cq-models'
-*/
-indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ModelSCQController::index
-* @see app/Http/Controllers/ModelSCQController.php:16
-* @route '/articles/cq-models'
-*/
-indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\ModelSCQController::create
@@ -311,43 +200,6 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
-* @see \App\Http\Controllers\ModelSCQController::create
-* @see app/Http/Controllers/ModelSCQController.php:60
-* @route '/articles/cq-models/create'
-*/
-const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: create.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ModelSCQController::create
-* @see app/Http/Controllers/ModelSCQController.php:60
-* @route '/articles/cq-models/create'
-*/
-createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: create.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ModelSCQController::create
-* @see app/Http/Controllers/ModelSCQController.php:60
-* @route '/articles/cq-models/create'
-*/
-createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: create.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-create.form = createForm
-
-/**
 * @see \App\Http\Controllers\ModelSCQController::store
 * @see app/Http/Controllers/ModelSCQController.php:72
 * @route '/articles/cq-models'
@@ -380,28 +232,6 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
-
-/**
-* @see \App\Http\Controllers\ModelSCQController::store
-* @see app/Http/Controllers/ModelSCQController.php:72
-* @route '/articles/cq-models'
-*/
-const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\ModelSCQController::store
-* @see app/Http/Controllers/ModelSCQController.php:72
-* @route '/articles/cq-models'
-*/
-storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(options),
-    method: 'post',
-})
-
-store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\ModelSCQController::show
@@ -472,43 +302,6 @@ show.head = (args: { cqModel: string | { uuid: string } } | [cqModel: string | {
 })
 
 /**
-* @see \App\Http\Controllers\ModelSCQController::show
-* @see app/Http/Controllers/ModelSCQController.php:130
-* @route '/articles/cq-models/{cqModel}'
-*/
-const showForm = (args: { cqModel: string | { uuid: string } } | [cqModel: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ModelSCQController::show
-* @see app/Http/Controllers/ModelSCQController.php:130
-* @route '/articles/cq-models/{cqModel}'
-*/
-showForm.get = (args: { cqModel: string | { uuid: string } } | [cqModel: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ModelSCQController::show
-* @see app/Http/Controllers/ModelSCQController.php:130
-* @route '/articles/cq-models/{cqModel}'
-*/
-showForm.head = (args: { cqModel: string | { uuid: string } } | [cqModel: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-show.form = showForm
-
-/**
 * @see \App\Http\Controllers\ModelSCQController::edit
 * @see app/Http/Controllers/ModelSCQController.php:140
 * @route '/articles/cq-models/{cqModel}/edit'
@@ -575,43 +368,6 @@ edit.head = (args: { cqModel: string | { uuid: string } } | [cqModel: string | {
     url: edit.url(args, options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\ModelSCQController::edit
-* @see app/Http/Controllers/ModelSCQController.php:140
-* @route '/articles/cq-models/{cqModel}/edit'
-*/
-const editForm = (args: { cqModel: string | { uuid: string } } | [cqModel: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: edit.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ModelSCQController::edit
-* @see app/Http/Controllers/ModelSCQController.php:140
-* @route '/articles/cq-models/{cqModel}/edit'
-*/
-editForm.get = (args: { cqModel: string | { uuid: string } } | [cqModel: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: edit.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ModelSCQController::edit
-* @see app/Http/Controllers/ModelSCQController.php:140
-* @route '/articles/cq-models/{cqModel}/edit'
-*/
-editForm.head = (args: { cqModel: string | { uuid: string } } | [cqModel: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: edit.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-edit.form = editForm
 
 /**
 * @see \App\Http\Controllers\ModelSCQController::update
@@ -682,53 +438,6 @@ update.patch = (args: { cqModel: string | { uuid: string } } | [cqModel: string 
 })
 
 /**
-* @see \App\Http\Controllers\ModelSCQController::update
-* @see app/Http/Controllers/ModelSCQController.php:150
-* @route '/articles/cq-models/{cqModel}'
-*/
-const updateForm = (args: { cqModel: string | { uuid: string } } | [cqModel: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\ModelSCQController::update
-* @see app/Http/Controllers/ModelSCQController.php:150
-* @route '/articles/cq-models/{cqModel}'
-*/
-updateForm.put = (args: { cqModel: string | { uuid: string } } | [cqModel: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\ModelSCQController::update
-* @see app/Http/Controllers/ModelSCQController.php:150
-* @route '/articles/cq-models/{cqModel}'
-*/
-updateForm.patch = (args: { cqModel: string | { uuid: string } } | [cqModel: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PATCH',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-update.form = updateForm
-
-/**
 * @see \App\Http\Controllers\ModelSCQController::destroy
 * @see app/Http/Controllers/ModelSCQController.php:219
 * @route '/articles/cq-models/{cqModel}'
@@ -785,38 +494,6 @@ destroy.delete = (args: { cqModel: string | { uuid: string } } | [cqModel: strin
     url: destroy.url(args, options),
     method: 'delete',
 })
-
-/**
-* @see \App\Http\Controllers\ModelSCQController::destroy
-* @see app/Http/Controllers/ModelSCQController.php:219
-* @route '/articles/cq-models/{cqModel}'
-*/
-const destroyForm = (args: { cqModel: string | { uuid: string } } | [cqModel: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\ModelSCQController::destroy
-* @see app/Http/Controllers/ModelSCQController.php:219
-* @route '/articles/cq-models/{cqModel}'
-*/
-destroyForm.delete = (args: { cqModel: string | { uuid: string } } | [cqModel: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-destroy.form = destroyForm
 
 const cqModels = {
     generateCquNumber: Object.assign(generateCquNumber, generateCquNumber),

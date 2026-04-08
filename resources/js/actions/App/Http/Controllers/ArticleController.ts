@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\ArticleController::getLasCode
 * @see app/Http/Controllers/ArticleController.php:549
@@ -42,43 +42,6 @@ getLasCode.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: getLasCode.url(options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\ArticleController::getLasCode
-* @see app/Http/Controllers/ArticleController.php:549
-* @route '/articles/get-las-code'
-*/
-const getLasCodeForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: getLasCode.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleController::getLasCode
-* @see app/Http/Controllers/ArticleController.php:549
-* @route '/articles/get-las-code'
-*/
-getLasCodeForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: getLasCode.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleController::getLasCode
-* @see app/Http/Controllers/ArticleController.php:549
-* @route '/articles/get-las-code'
-*/
-getLasCodeForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: getLasCode.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-getLasCode.form = getLasCodeForm
 
 /**
 * @see \App\Http\Controllers\ArticleController::downloadLineLayoutFile
@@ -149,43 +112,6 @@ downloadLineLayoutFile.head = (args: { article: string | { uuid: string } } | [a
 })
 
 /**
-* @see \App\Http\Controllers\ArticleController::downloadLineLayoutFile
-* @see app/Http/Controllers/ArticleController.php:611
-* @route '/articles/{article}/download-line-layout'
-*/
-const downloadLineLayoutFileForm = (args: { article: string | { uuid: string } } | [article: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: downloadLineLayoutFile.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleController::downloadLineLayoutFile
-* @see app/Http/Controllers/ArticleController.php:611
-* @route '/articles/{article}/download-line-layout'
-*/
-downloadLineLayoutFileForm.get = (args: { article: string | { uuid: string } } | [article: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: downloadLineLayoutFile.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleController::downloadLineLayoutFile
-* @see app/Http/Controllers/ArticleController.php:611
-* @route '/articles/{article}/download-line-layout'
-*/
-downloadLineLayoutFileForm.head = (args: { article: string | { uuid: string } } | [article: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: downloadLineLayoutFile.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-downloadLineLayoutFile.form = downloadLineLayoutFileForm
-
-/**
 * @see \App\Http\Controllers\ArticleController::index
 * @see app/Http/Controllers/ArticleController.php:54
 * @route '/articles'
@@ -228,43 +154,6 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\ArticleController::index
-* @see app/Http/Controllers/ArticleController.php:54
-* @route '/articles'
-*/
-const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleController::index
-* @see app/Http/Controllers/ArticleController.php:54
-* @route '/articles'
-*/
-indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleController::index
-* @see app/Http/Controllers/ArticleController.php:54
-* @route '/articles'
-*/
-indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\ArticleController::create
@@ -311,43 +200,6 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
-* @see \App\Http\Controllers\ArticleController::create
-* @see app/Http/Controllers/ArticleController.php:106
-* @route '/articles/create'
-*/
-const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: create.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleController::create
-* @see app/Http/Controllers/ArticleController.php:106
-* @route '/articles/create'
-*/
-createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: create.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleController::create
-* @see app/Http/Controllers/ArticleController.php:106
-* @route '/articles/create'
-*/
-createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: create.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-create.form = createForm
-
-/**
 * @see \App\Http\Controllers\ArticleController::store
 * @see app/Http/Controllers/ArticleController.php:195
 * @route '/articles'
@@ -380,28 +232,6 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
-
-/**
-* @see \App\Http\Controllers\ArticleController::store
-* @see app/Http/Controllers/ArticleController.php:195
-* @route '/articles'
-*/
-const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleController::store
-* @see app/Http/Controllers/ArticleController.php:195
-* @route '/articles'
-*/
-storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(options),
-    method: 'post',
-})
-
-store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\ArticleController::show
@@ -472,43 +302,6 @@ show.head = (args: { article: string | { uuid: string } } | [article: string | {
 })
 
 /**
-* @see \App\Http\Controllers\ArticleController::show
-* @see app/Http/Controllers/ArticleController.php:314
-* @route '/articles/{article}'
-*/
-const showForm = (args: { article: string | { uuid: string } } | [article: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleController::show
-* @see app/Http/Controllers/ArticleController.php:314
-* @route '/articles/{article}'
-*/
-showForm.get = (args: { article: string | { uuid: string } } | [article: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleController::show
-* @see app/Http/Controllers/ArticleController.php:314
-* @route '/articles/{article}'
-*/
-showForm.head = (args: { article: string | { uuid: string } } | [article: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-show.form = showForm
-
-/**
 * @see \App\Http\Controllers\ArticleController::edit
 * @see app/Http/Controllers/ArticleController.php:340
 * @route '/articles/{article}/edit'
@@ -575,43 +368,6 @@ edit.head = (args: { article: string | { uuid: string } } | [article: string | {
     url: edit.url(args, options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\ArticleController::edit
-* @see app/Http/Controllers/ArticleController.php:340
-* @route '/articles/{article}/edit'
-*/
-const editForm = (args: { article: string | { uuid: string } } | [article: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: edit.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleController::edit
-* @see app/Http/Controllers/ArticleController.php:340
-* @route '/articles/{article}/edit'
-*/
-editForm.get = (args: { article: string | { uuid: string } } | [article: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: edit.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleController::edit
-* @see app/Http/Controllers/ArticleController.php:340
-* @route '/articles/{article}/edit'
-*/
-editForm.head = (args: { article: string | { uuid: string } } | [article: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: edit.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-edit.form = editForm
 
 /**
 * @see \App\Http\Controllers\ArticleController::update
@@ -682,53 +438,6 @@ update.patch = (args: { article: string | { uuid: string } } | [article: string 
 })
 
 /**
-* @see \App\Http\Controllers\ArticleController::update
-* @see app/Http/Controllers/ArticleController.php:394
-* @route '/articles/{article}'
-*/
-const updateForm = (args: { article: string | { uuid: string } } | [article: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleController::update
-* @see app/Http/Controllers/ArticleController.php:394
-* @route '/articles/{article}'
-*/
-updateForm.put = (args: { article: string | { uuid: string } } | [article: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleController::update
-* @see app/Http/Controllers/ArticleController.php:394
-* @route '/articles/{article}'
-*/
-updateForm.patch = (args: { article: string | { uuid: string } } | [article: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PATCH',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-update.form = updateForm
-
-/**
 * @see \App\Http\Controllers\ArticleController::destroy
 * @see app/Http/Controllers/ArticleController.php:524
 * @route '/articles/{article}'
@@ -785,38 +494,6 @@ destroy.delete = (args: { article: string | { uuid: string } } | [article: strin
     url: destroy.url(args, options),
     method: 'delete',
 })
-
-/**
-* @see \App\Http\Controllers\ArticleController::destroy
-* @see app/Http/Controllers/ArticleController.php:524
-* @route '/articles/{article}'
-*/
-const destroyForm = (args: { article: string | { uuid: string } } | [article: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleController::destroy
-* @see app/Http/Controllers/ArticleController.php:524
-* @route '/articles/{article}'
-*/
-destroyForm.delete = (args: { article: string | { uuid: string } } | [article: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-destroy.form = destroyForm
 
 const ArticleController = { getLasCode, downloadLineLayoutFile, index, create, store, show, edit, update, destroy }
 

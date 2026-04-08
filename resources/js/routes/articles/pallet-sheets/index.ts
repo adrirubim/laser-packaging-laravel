@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\PalletSheetController::downloadFile
 * @see app/Http/Controllers/PalletSheetController.php:212
@@ -68,43 +68,6 @@ downloadFile.head = (args: { palletSheet: string | { uuid: string } } | [palletS
 })
 
 /**
-* @see \App\Http\Controllers\PalletSheetController::downloadFile
-* @see app/Http/Controllers/PalletSheetController.php:212
-* @route '/articles/pallet-sheets/{palletSheet}/download-file'
-*/
-const downloadFileForm = (args: { palletSheet: string | { uuid: string } } | [palletSheet: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: downloadFile.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\PalletSheetController::downloadFile
-* @see app/Http/Controllers/PalletSheetController.php:212
-* @route '/articles/pallet-sheets/{palletSheet}/download-file'
-*/
-downloadFileForm.get = (args: { palletSheet: string | { uuid: string } } | [palletSheet: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: downloadFile.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\PalletSheetController::downloadFile
-* @see app/Http/Controllers/PalletSheetController.php:212
-* @route '/articles/pallet-sheets/{palletSheet}/download-file'
-*/
-downloadFileForm.head = (args: { palletSheet: string | { uuid: string } } | [palletSheet: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: downloadFile.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-downloadFile.form = downloadFileForm
-
-/**
 * @see \App\Http\Controllers\PalletSheetController::index
 * @see app/Http/Controllers/PalletSheetController.php:15
 * @route '/articles/pallet-sheets'
@@ -147,43 +110,6 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\PalletSheetController::index
-* @see app/Http/Controllers/PalletSheetController.php:15
-* @route '/articles/pallet-sheets'
-*/
-const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\PalletSheetController::index
-* @see app/Http/Controllers/PalletSheetController.php:15
-* @route '/articles/pallet-sheets'
-*/
-indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\PalletSheetController::index
-* @see app/Http/Controllers/PalletSheetController.php:15
-* @route '/articles/pallet-sheets'
-*/
-indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\PalletSheetController::create
@@ -230,43 +156,6 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
-* @see \App\Http\Controllers\PalletSheetController::create
-* @see app/Http/Controllers/PalletSheetController.php:59
-* @route '/articles/pallet-sheets/create'
-*/
-const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: create.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\PalletSheetController::create
-* @see app/Http/Controllers/PalletSheetController.php:59
-* @route '/articles/pallet-sheets/create'
-*/
-createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: create.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\PalletSheetController::create
-* @see app/Http/Controllers/PalletSheetController.php:59
-* @route '/articles/pallet-sheets/create'
-*/
-createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: create.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-create.form = createForm
-
-/**
 * @see \App\Http\Controllers\PalletSheetController::store
 * @see app/Http/Controllers/PalletSheetController.php:67
 * @route '/articles/pallet-sheets'
@@ -299,28 +188,6 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
-
-/**
-* @see \App\Http\Controllers\PalletSheetController::store
-* @see app/Http/Controllers/PalletSheetController.php:67
-* @route '/articles/pallet-sheets'
-*/
-const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\PalletSheetController::store
-* @see app/Http/Controllers/PalletSheetController.php:67
-* @route '/articles/pallet-sheets'
-*/
-storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(options),
-    method: 'post',
-})
-
-store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\PalletSheetController::show
@@ -391,43 +258,6 @@ show.head = (args: { palletSheet: string | { uuid: string } } | [palletSheet: st
 })
 
 /**
-* @see \App\Http\Controllers\PalletSheetController::show
-* @see app/Http/Controllers/PalletSheetController.php:117
-* @route '/articles/pallet-sheets/{palletSheet}'
-*/
-const showForm = (args: { palletSheet: string | { uuid: string } } | [palletSheet: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\PalletSheetController::show
-* @see app/Http/Controllers/PalletSheetController.php:117
-* @route '/articles/pallet-sheets/{palletSheet}'
-*/
-showForm.get = (args: { palletSheet: string | { uuid: string } } | [palletSheet: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\PalletSheetController::show
-* @see app/Http/Controllers/PalletSheetController.php:117
-* @route '/articles/pallet-sheets/{palletSheet}'
-*/
-showForm.head = (args: { palletSheet: string | { uuid: string } } | [palletSheet: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-show.form = showForm
-
-/**
 * @see \App\Http\Controllers\PalletSheetController::edit
 * @see app/Http/Controllers/PalletSheetController.php:127
 * @route '/articles/pallet-sheets/{palletSheet}/edit'
@@ -494,43 +324,6 @@ edit.head = (args: { palletSheet: string | { uuid: string } } | [palletSheet: st
     url: edit.url(args, options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\PalletSheetController::edit
-* @see app/Http/Controllers/PalletSheetController.php:127
-* @route '/articles/pallet-sheets/{palletSheet}/edit'
-*/
-const editForm = (args: { palletSheet: string | { uuid: string } } | [palletSheet: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: edit.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\PalletSheetController::edit
-* @see app/Http/Controllers/PalletSheetController.php:127
-* @route '/articles/pallet-sheets/{palletSheet}/edit'
-*/
-editForm.get = (args: { palletSheet: string | { uuid: string } } | [palletSheet: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: edit.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\PalletSheetController::edit
-* @see app/Http/Controllers/PalletSheetController.php:127
-* @route '/articles/pallet-sheets/{palletSheet}/edit'
-*/
-editForm.head = (args: { palletSheet: string | { uuid: string } } | [palletSheet: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: edit.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-edit.form = editForm
 
 /**
 * @see \App\Http\Controllers\PalletSheetController::update
@@ -601,53 +394,6 @@ update.patch = (args: { palletSheet: string | { uuid: string } } | [palletSheet:
 })
 
 /**
-* @see \App\Http\Controllers\PalletSheetController::update
-* @see app/Http/Controllers/PalletSheetController.php:137
-* @route '/articles/pallet-sheets/{palletSheet}'
-*/
-const updateForm = (args: { palletSheet: string | { uuid: string } } | [palletSheet: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\PalletSheetController::update
-* @see app/Http/Controllers/PalletSheetController.php:137
-* @route '/articles/pallet-sheets/{palletSheet}'
-*/
-updateForm.put = (args: { palletSheet: string | { uuid: string } } | [palletSheet: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\PalletSheetController::update
-* @see app/Http/Controllers/PalletSheetController.php:137
-* @route '/articles/pallet-sheets/{palletSheet}'
-*/
-updateForm.patch = (args: { palletSheet: string | { uuid: string } } | [palletSheet: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PATCH',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-update.form = updateForm
-
-/**
 * @see \App\Http\Controllers\PalletSheetController::destroy
 * @see app/Http/Controllers/PalletSheetController.php:200
 * @route '/articles/pallet-sheets/{palletSheet}'
@@ -704,38 +450,6 @@ destroy.delete = (args: { palletSheet: string | { uuid: string } } | [palletShee
     url: destroy.url(args, options),
     method: 'delete',
 })
-
-/**
-* @see \App\Http\Controllers\PalletSheetController::destroy
-* @see app/Http/Controllers/PalletSheetController.php:200
-* @route '/articles/pallet-sheets/{palletSheet}'
-*/
-const destroyForm = (args: { palletSheet: string | { uuid: string } } | [palletSheet: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\PalletSheetController::destroy
-* @see app/Http/Controllers/PalletSheetController.php:200
-* @route '/articles/pallet-sheets/{palletSheet}'
-*/
-destroyForm.delete = (args: { palletSheet: string | { uuid: string } } | [palletSheet: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-destroy.form = destroyForm
 
 const palletSheets = {
     downloadFile: Object.assign(downloadFile, downloadFile),

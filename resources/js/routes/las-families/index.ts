@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\LasFamilyController::index
 * @see app/Http/Controllers/LasFamilyController.php:20
@@ -42,43 +42,6 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\LasFamilyController::index
-* @see app/Http/Controllers/LasFamilyController.php:20
-* @route '/offers/las-families'
-*/
-const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\LasFamilyController::index
-* @see app/Http/Controllers/LasFamilyController.php:20
-* @route '/offers/las-families'
-*/
-indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\LasFamilyController::index
-* @see app/Http/Controllers/LasFamilyController.php:20
-* @route '/offers/las-families'
-*/
-indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\LasFamilyController::create
@@ -125,43 +88,6 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
-* @see \App\Http\Controllers\LasFamilyController::create
-* @see app/Http/Controllers/LasFamilyController.php:41
-* @route '/offers/las-families/create'
-*/
-const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: create.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\LasFamilyController::create
-* @see app/Http/Controllers/LasFamilyController.php:41
-* @route '/offers/las-families/create'
-*/
-createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: create.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\LasFamilyController::create
-* @see app/Http/Controllers/LasFamilyController.php:41
-* @route '/offers/las-families/create'
-*/
-createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: create.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-create.form = createForm
-
-/**
 * @see \App\Http\Controllers\LasFamilyController::store
 * @see app/Http/Controllers/LasFamilyController.php:46
 * @route '/offers/las-families'
@@ -194,28 +120,6 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
-
-/**
-* @see \App\Http\Controllers\LasFamilyController::store
-* @see app/Http/Controllers/LasFamilyController.php:46
-* @route '/offers/las-families'
-*/
-const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\LasFamilyController::store
-* @see app/Http/Controllers/LasFamilyController.php:46
-* @route '/offers/las-families'
-*/
-storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(options),
-    method: 'post',
-})
-
-store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\LasFamilyController::show
@@ -286,43 +190,6 @@ show.head = (args: { lasFamily: string | { uuid: string } } | [lasFamily: string
 })
 
 /**
-* @see \App\Http\Controllers\LasFamilyController::show
-* @see app/Http/Controllers/LasFamilyController.php:70
-* @route '/offers/las-families/{lasFamily}'
-*/
-const showForm = (args: { lasFamily: string | { uuid: string } } | [lasFamily: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\LasFamilyController::show
-* @see app/Http/Controllers/LasFamilyController.php:70
-* @route '/offers/las-families/{lasFamily}'
-*/
-showForm.get = (args: { lasFamily: string | { uuid: string } } | [lasFamily: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\LasFamilyController::show
-* @see app/Http/Controllers/LasFamilyController.php:70
-* @route '/offers/las-families/{lasFamily}'
-*/
-showForm.head = (args: { lasFamily: string | { uuid: string } } | [lasFamily: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-show.form = showForm
-
-/**
 * @see \App\Http\Controllers\LasFamilyController::edit
 * @see app/Http/Controllers/LasFamilyController.php:77
 * @route '/offers/las-families/{lasFamily}/edit'
@@ -389,43 +256,6 @@ edit.head = (args: { lasFamily: string | { uuid: string } } | [lasFamily: string
     url: edit.url(args, options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\LasFamilyController::edit
-* @see app/Http/Controllers/LasFamilyController.php:77
-* @route '/offers/las-families/{lasFamily}/edit'
-*/
-const editForm = (args: { lasFamily: string | { uuid: string } } | [lasFamily: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: edit.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\LasFamilyController::edit
-* @see app/Http/Controllers/LasFamilyController.php:77
-* @route '/offers/las-families/{lasFamily}/edit'
-*/
-editForm.get = (args: { lasFamily: string | { uuid: string } } | [lasFamily: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: edit.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\LasFamilyController::edit
-* @see app/Http/Controllers/LasFamilyController.php:77
-* @route '/offers/las-families/{lasFamily}/edit'
-*/
-editForm.head = (args: { lasFamily: string | { uuid: string } } | [lasFamily: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: edit.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-edit.form = editForm
 
 /**
 * @see \App\Http\Controllers\LasFamilyController::update
@@ -496,53 +326,6 @@ update.patch = (args: { lasFamily: string | { uuid: string } } | [lasFamily: str
 })
 
 /**
-* @see \App\Http\Controllers\LasFamilyController::update
-* @see app/Http/Controllers/LasFamilyController.php:84
-* @route '/offers/las-families/{lasFamily}'
-*/
-const updateForm = (args: { lasFamily: string | { uuid: string } } | [lasFamily: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\LasFamilyController::update
-* @see app/Http/Controllers/LasFamilyController.php:84
-* @route '/offers/las-families/{lasFamily}'
-*/
-updateForm.put = (args: { lasFamily: string | { uuid: string } } | [lasFamily: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\LasFamilyController::update
-* @see app/Http/Controllers/LasFamilyController.php:84
-* @route '/offers/las-families/{lasFamily}'
-*/
-updateForm.patch = (args: { lasFamily: string | { uuid: string } } | [lasFamily: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PATCH',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-update.form = updateForm
-
-/**
 * @see \App\Http\Controllers\LasFamilyController::destroy
 * @see app/Http/Controllers/LasFamilyController.php:104
 * @route '/offers/las-families/{lasFamily}'
@@ -599,38 +382,6 @@ destroy.delete = (args: { lasFamily: string | { uuid: string } } | [lasFamily: s
     url: destroy.url(args, options),
     method: 'delete',
 })
-
-/**
-* @see \App\Http\Controllers\LasFamilyController::destroy
-* @see app/Http/Controllers/LasFamilyController.php:104
-* @route '/offers/las-families/{lasFamily}'
-*/
-const destroyForm = (args: { lasFamily: string | { uuid: string } } | [lasFamily: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\LasFamilyController::destroy
-* @see app/Http/Controllers/LasFamilyController.php:104
-* @route '/offers/las-families/{lasFamily}'
-*/
-destroyForm.delete = (args: { lasFamily: string | { uuid: string } } | [lasFamily: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-destroy.form = destroyForm
 
 const lasFamilies = {
     index: Object.assign(index, index),

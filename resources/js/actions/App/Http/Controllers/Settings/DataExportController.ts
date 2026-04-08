@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Settings\DataExportController::__invoke
 * @see app/Http/Controllers/Settings/DataExportController.php:11
@@ -42,42 +42,5 @@ DataExportController.head = (options?: RouteQueryOptions): RouteDefinition<'head
     url: DataExportController.url(options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\Settings\DataExportController::__invoke
-* @see app/Http/Controllers/Settings/DataExportController.php:11
-* @route '/settings/data-export'
-*/
-const DataExportControllerForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: DataExportController.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\Settings\DataExportController::__invoke
-* @see app/Http/Controllers/Settings/DataExportController.php:11
-* @route '/settings/data-export'
-*/
-DataExportControllerForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: DataExportController.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\Settings\DataExportController::__invoke
-* @see app/Http/Controllers/Settings/DataExportController.php:11
-* @route '/settings/data-export'
-*/
-DataExportControllerForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: DataExportController.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-DataExportController.form = DataExportControllerForm
 
 export default DataExportController

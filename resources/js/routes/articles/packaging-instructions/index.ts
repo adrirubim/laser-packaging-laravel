@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\ArticleICController::generateIcNumber
 * @see app/Http/Controllers/ArticleICController.php:190
@@ -42,43 +42,6 @@ generateIcNumber.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
     url: generateIcNumber.url(options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\ArticleICController::generateIcNumber
-* @see app/Http/Controllers/ArticleICController.php:190
-* @route '/articles/packaging-instructions/generate-ic-number'
-*/
-const generateIcNumberForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: generateIcNumber.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleICController::generateIcNumber
-* @see app/Http/Controllers/ArticleICController.php:190
-* @route '/articles/packaging-instructions/generate-ic-number'
-*/
-generateIcNumberForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: generateIcNumber.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleICController::generateIcNumber
-* @see app/Http/Controllers/ArticleICController.php:190
-* @route '/articles/packaging-instructions/generate-ic-number'
-*/
-generateIcNumberForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: generateIcNumber.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-generateIcNumber.form = generateIcNumberForm
 
 /**
 * @see \App\Http\Controllers\ArticleICController::download
@@ -149,43 +112,6 @@ download.head = (args: { packagingInstruction: string | { uuid: string } } | [pa
 })
 
 /**
-* @see \App\Http\Controllers\ArticleICController::download
-* @see app/Http/Controllers/ArticleICController.php:171
-* @route '/articles/packaging-instructions/{packagingInstruction}/download'
-*/
-const downloadForm = (args: { packagingInstruction: string | { uuid: string } } | [packagingInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: download.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleICController::download
-* @see app/Http/Controllers/ArticleICController.php:171
-* @route '/articles/packaging-instructions/{packagingInstruction}/download'
-*/
-downloadForm.get = (args: { packagingInstruction: string | { uuid: string } } | [packagingInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: download.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleICController::download
-* @see app/Http/Controllers/ArticleICController.php:171
-* @route '/articles/packaging-instructions/{packagingInstruction}/download'
-*/
-downloadForm.head = (args: { packagingInstruction: string | { uuid: string } } | [packagingInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: download.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-download.form = downloadForm
-
-/**
 * @see \App\Http\Controllers\ArticleICController::index
 * @see app/Http/Controllers/ArticleICController.php:29
 * @route '/articles/packaging-instructions'
@@ -228,43 +154,6 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\ArticleICController::index
-* @see app/Http/Controllers/ArticleICController.php:29
-* @route '/articles/packaging-instructions'
-*/
-const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleICController::index
-* @see app/Http/Controllers/ArticleICController.php:29
-* @route '/articles/packaging-instructions'
-*/
-indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleICController::index
-* @see app/Http/Controllers/ArticleICController.php:29
-* @route '/articles/packaging-instructions'
-*/
-indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\ArticleICController::create
@@ -311,43 +200,6 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
-* @see \App\Http\Controllers\ArticleICController::create
-* @see app/Http/Controllers/ArticleICController.php:42
-* @route '/articles/packaging-instructions/create'
-*/
-const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: create.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleICController::create
-* @see app/Http/Controllers/ArticleICController.php:42
-* @route '/articles/packaging-instructions/create'
-*/
-createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: create.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleICController::create
-* @see app/Http/Controllers/ArticleICController.php:42
-* @route '/articles/packaging-instructions/create'
-*/
-createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: create.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-create.form = createForm
-
-/**
 * @see \App\Http\Controllers\ArticleICController::store
 * @see app/Http/Controllers/ArticleICController.php:50
 * @route '/articles/packaging-instructions'
@@ -380,28 +232,6 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
-
-/**
-* @see \App\Http\Controllers\ArticleICController::store
-* @see app/Http/Controllers/ArticleICController.php:50
-* @route '/articles/packaging-instructions'
-*/
-const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleICController::store
-* @see app/Http/Controllers/ArticleICController.php:50
-* @route '/articles/packaging-instructions'
-*/
-storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(options),
-    method: 'post',
-})
-
-store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\ArticleICController::show
@@ -472,43 +302,6 @@ show.head = (args: { packagingInstruction: string | { uuid: string } } | [packag
 })
 
 /**
-* @see \App\Http\Controllers\ArticleICController::show
-* @see app/Http/Controllers/ArticleICController.php:84
-* @route '/articles/packaging-instructions/{packagingInstruction}'
-*/
-const showForm = (args: { packagingInstruction: string | { uuid: string } } | [packagingInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleICController::show
-* @see app/Http/Controllers/ArticleICController.php:84
-* @route '/articles/packaging-instructions/{packagingInstruction}'
-*/
-showForm.get = (args: { packagingInstruction: string | { uuid: string } } | [packagingInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleICController::show
-* @see app/Http/Controllers/ArticleICController.php:84
-* @route '/articles/packaging-instructions/{packagingInstruction}'
-*/
-showForm.head = (args: { packagingInstruction: string | { uuid: string } } | [packagingInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-show.form = showForm
-
-/**
 * @see \App\Http\Controllers\ArticleICController::edit
 * @see app/Http/Controllers/ArticleICController.php:96
 * @route '/articles/packaging-instructions/{packagingInstruction}/edit'
@@ -575,43 +368,6 @@ edit.head = (args: { packagingInstruction: string | { uuid: string } } | [packag
     url: edit.url(args, options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\ArticleICController::edit
-* @see app/Http/Controllers/ArticleICController.php:96
-* @route '/articles/packaging-instructions/{packagingInstruction}/edit'
-*/
-const editForm = (args: { packagingInstruction: string | { uuid: string } } | [packagingInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: edit.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleICController::edit
-* @see app/Http/Controllers/ArticleICController.php:96
-* @route '/articles/packaging-instructions/{packagingInstruction}/edit'
-*/
-editForm.get = (args: { packagingInstruction: string | { uuid: string } } | [packagingInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: edit.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleICController::edit
-* @see app/Http/Controllers/ArticleICController.php:96
-* @route '/articles/packaging-instructions/{packagingInstruction}/edit'
-*/
-editForm.head = (args: { packagingInstruction: string | { uuid: string } } | [packagingInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: edit.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-edit.form = editForm
 
 /**
 * @see \App\Http\Controllers\ArticleICController::update
@@ -682,53 +438,6 @@ update.patch = (args: { packagingInstruction: string | { uuid: string } } | [pac
 })
 
 /**
-* @see \App\Http\Controllers\ArticleICController::update
-* @see app/Http/Controllers/ArticleICController.php:106
-* @route '/articles/packaging-instructions/{packagingInstruction}'
-*/
-const updateForm = (args: { packagingInstruction: string | { uuid: string } } | [packagingInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleICController::update
-* @see app/Http/Controllers/ArticleICController.php:106
-* @route '/articles/packaging-instructions/{packagingInstruction}'
-*/
-updateForm.put = (args: { packagingInstruction: string | { uuid: string } } | [packagingInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleICController::update
-* @see app/Http/Controllers/ArticleICController.php:106
-* @route '/articles/packaging-instructions/{packagingInstruction}'
-*/
-updateForm.patch = (args: { packagingInstruction: string | { uuid: string } } | [packagingInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PATCH',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-update.form = updateForm
-
-/**
 * @see \App\Http\Controllers\ArticleICController::destroy
 * @see app/Http/Controllers/ArticleICController.php:160
 * @route '/articles/packaging-instructions/{packagingInstruction}'
@@ -785,38 +494,6 @@ destroy.delete = (args: { packagingInstruction: string | { uuid: string } } | [p
     url: destroy.url(args, options),
     method: 'delete',
 })
-
-/**
-* @see \App\Http\Controllers\ArticleICController::destroy
-* @see app/Http/Controllers/ArticleICController.php:160
-* @route '/articles/packaging-instructions/{packagingInstruction}'
-*/
-const destroyForm = (args: { packagingInstruction: string | { uuid: string } } | [packagingInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\ArticleICController::destroy
-* @see app/Http/Controllers/ArticleICController.php:160
-* @route '/articles/packaging-instructions/{packagingInstruction}'
-*/
-destroyForm.delete = (args: { packagingInstruction: string | { uuid: string } } | [packagingInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-destroy.form = destroyForm
 
 const packagingInstructions = {
     generateIcNumber: Object.assign(generateIcNumber, generateIcNumber),

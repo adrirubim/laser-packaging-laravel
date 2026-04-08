@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\CustomerShippingAddressController::loadDivisions
 * @see app/Http/Controllers/CustomerShippingAddressController.php:176
@@ -42,43 +42,6 @@ loadDivisions.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
     url: loadDivisions.url(options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\CustomerShippingAddressController::loadDivisions
-* @see app/Http/Controllers/CustomerShippingAddressController.php:176
-* @route '/customer-shipping-addresses/load-divisions'
-*/
-const loadDivisionsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: loadDivisions.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\CustomerShippingAddressController::loadDivisions
-* @see app/Http/Controllers/CustomerShippingAddressController.php:176
-* @route '/customer-shipping-addresses/load-divisions'
-*/
-loadDivisionsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: loadDivisions.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\CustomerShippingAddressController::loadDivisions
-* @see app/Http/Controllers/CustomerShippingAddressController.php:176
-* @route '/customer-shipping-addresses/load-divisions'
-*/
-loadDivisionsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: loadDivisions.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-loadDivisions.form = loadDivisionsForm
 
 /**
 * @see \App\Http\Controllers\CustomerShippingAddressController::index
@@ -125,43 +88,6 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
-* @see \App\Http\Controllers\CustomerShippingAddressController::index
-* @see app/Http/Controllers/CustomerShippingAddressController.php:39
-* @route '/customer-shipping-addresses'
-*/
-const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\CustomerShippingAddressController::index
-* @see app/Http/Controllers/CustomerShippingAddressController.php:39
-* @route '/customer-shipping-addresses'
-*/
-indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\CustomerShippingAddressController::index
-* @see app/Http/Controllers/CustomerShippingAddressController.php:39
-* @route '/customer-shipping-addresses'
-*/
-indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-index.form = indexForm
-
-/**
 * @see \App\Http\Controllers\CustomerShippingAddressController::create
 * @see app/Http/Controllers/CustomerShippingAddressController.php:54
 * @route '/customer-shipping-addresses/create'
@@ -206,43 +132,6 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
-* @see \App\Http\Controllers\CustomerShippingAddressController::create
-* @see app/Http/Controllers/CustomerShippingAddressController.php:54
-* @route '/customer-shipping-addresses/create'
-*/
-const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: create.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\CustomerShippingAddressController::create
-* @see app/Http/Controllers/CustomerShippingAddressController.php:54
-* @route '/customer-shipping-addresses/create'
-*/
-createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: create.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\CustomerShippingAddressController::create
-* @see app/Http/Controllers/CustomerShippingAddressController.php:54
-* @route '/customer-shipping-addresses/create'
-*/
-createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: create.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-create.form = createForm
-
-/**
 * @see \App\Http\Controllers\CustomerShippingAddressController::store
 * @see app/Http/Controllers/CustomerShippingAddressController.php:72
 * @route '/customer-shipping-addresses'
@@ -275,28 +164,6 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
-
-/**
-* @see \App\Http\Controllers\CustomerShippingAddressController::store
-* @see app/Http/Controllers/CustomerShippingAddressController.php:72
-* @route '/customer-shipping-addresses'
-*/
-const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\CustomerShippingAddressController::store
-* @see app/Http/Controllers/CustomerShippingAddressController.php:72
-* @route '/customer-shipping-addresses'
-*/
-storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(options),
-    method: 'post',
-})
-
-store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\CustomerShippingAddressController::show
@@ -367,43 +234,6 @@ show.head = (args: { customerShippingAddress: string | { uuid: string } } | [cus
 })
 
 /**
-* @see \App\Http\Controllers\CustomerShippingAddressController::show
-* @see app/Http/Controllers/CustomerShippingAddressController.php:89
-* @route '/customer-shipping-addresses/{customerShippingAddress}'
-*/
-const showForm = (args: { customerShippingAddress: string | { uuid: string } } | [customerShippingAddress: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\CustomerShippingAddressController::show
-* @see app/Http/Controllers/CustomerShippingAddressController.php:89
-* @route '/customer-shipping-addresses/{customerShippingAddress}'
-*/
-showForm.get = (args: { customerShippingAddress: string | { uuid: string } } | [customerShippingAddress: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\CustomerShippingAddressController::show
-* @see app/Http/Controllers/CustomerShippingAddressController.php:89
-* @route '/customer-shipping-addresses/{customerShippingAddress}'
-*/
-showForm.head = (args: { customerShippingAddress: string | { uuid: string } } | [customerShippingAddress: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-show.form = showForm
-
-/**
 * @see \App\Http\Controllers\CustomerShippingAddressController::edit
 * @see app/Http/Controllers/CustomerShippingAddressController.php:101
 * @route '/customer-shipping-addresses/{customerShippingAddress}/edit'
@@ -470,43 +300,6 @@ edit.head = (args: { customerShippingAddress: string | { uuid: string } } | [cus
     url: edit.url(args, options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\CustomerShippingAddressController::edit
-* @see app/Http/Controllers/CustomerShippingAddressController.php:101
-* @route '/customer-shipping-addresses/{customerShippingAddress}/edit'
-*/
-const editForm = (args: { customerShippingAddress: string | { uuid: string } } | [customerShippingAddress: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: edit.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\CustomerShippingAddressController::edit
-* @see app/Http/Controllers/CustomerShippingAddressController.php:101
-* @route '/customer-shipping-addresses/{customerShippingAddress}/edit'
-*/
-editForm.get = (args: { customerShippingAddress: string | { uuid: string } } | [customerShippingAddress: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: edit.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\CustomerShippingAddressController::edit
-* @see app/Http/Controllers/CustomerShippingAddressController.php:101
-* @route '/customer-shipping-addresses/{customerShippingAddress}/edit'
-*/
-editForm.head = (args: { customerShippingAddress: string | { uuid: string } } | [customerShippingAddress: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: edit.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-edit.form = editForm
 
 /**
 * @see \App\Http\Controllers\CustomerShippingAddressController::update
@@ -577,53 +370,6 @@ update.patch = (args: { customerShippingAddress: string | { uuid: string } } | [
 })
 
 /**
-* @see \App\Http\Controllers\CustomerShippingAddressController::update
-* @see app/Http/Controllers/CustomerShippingAddressController.php:121
-* @route '/customer-shipping-addresses/{customerShippingAddress}'
-*/
-const updateForm = (args: { customerShippingAddress: string | { uuid: string } } | [customerShippingAddress: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\CustomerShippingAddressController::update
-* @see app/Http/Controllers/CustomerShippingAddressController.php:121
-* @route '/customer-shipping-addresses/{customerShippingAddress}'
-*/
-updateForm.put = (args: { customerShippingAddress: string | { uuid: string } } | [customerShippingAddress: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\CustomerShippingAddressController::update
-* @see app/Http/Controllers/CustomerShippingAddressController.php:121
-* @route '/customer-shipping-addresses/{customerShippingAddress}'
-*/
-updateForm.patch = (args: { customerShippingAddress: string | { uuid: string } } | [customerShippingAddress: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PATCH',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-update.form = updateForm
-
-/**
 * @see \App\Http\Controllers\CustomerShippingAddressController::destroy
 * @see app/Http/Controllers/CustomerShippingAddressController.php:147
 * @route '/customer-shipping-addresses/{customerShippingAddress}'
@@ -680,38 +426,6 @@ destroy.delete = (args: { customerShippingAddress: string | { uuid: string } } |
     url: destroy.url(args, options),
     method: 'delete',
 })
-
-/**
-* @see \App\Http\Controllers\CustomerShippingAddressController::destroy
-* @see app/Http/Controllers/CustomerShippingAddressController.php:147
-* @route '/customer-shipping-addresses/{customerShippingAddress}'
-*/
-const destroyForm = (args: { customerShippingAddress: string | { uuid: string } } | [customerShippingAddress: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\CustomerShippingAddressController::destroy
-* @see app/Http/Controllers/CustomerShippingAddressController.php:147
-* @route '/customer-shipping-addresses/{customerShippingAddress}'
-*/
-destroyForm.delete = (args: { customerShippingAddress: string | { uuid: string } } | [customerShippingAddress: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-destroy.form = destroyForm
 
 const CustomerShippingAddressController = { loadDivisions, index, create, store, show, edit, update, destroy }
 

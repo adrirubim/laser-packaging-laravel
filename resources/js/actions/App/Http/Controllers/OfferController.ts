@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\OfferController::getDivisions
 * @see app/Http/Controllers/OfferController.php:657
@@ -42,43 +42,6 @@ getDivisions.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: getDivisions.url(options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\OfferController::getDivisions
-* @see app/Http/Controllers/OfferController.php:657
-* @route '/offers/get-divisions'
-*/
-const getDivisionsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: getDivisions.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\OfferController::getDivisions
-* @see app/Http/Controllers/OfferController.php:657
-* @route '/offers/get-divisions'
-*/
-getDivisionsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: getDivisions.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\OfferController::getDivisions
-* @see app/Http/Controllers/OfferController.php:657
-* @route '/offers/get-divisions'
-*/
-getDivisionsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: getDivisions.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-getDivisions.form = getDivisionsForm
 
 /**
 * @see \App\Http\Controllers\OfferController::downloadPdf
@@ -149,43 +112,6 @@ downloadPdf.head = (args: { offer: string | { uuid: string } } | [offer: string 
 })
 
 /**
-* @see \App\Http\Controllers\OfferController::downloadPdf
-* @see app/Http/Controllers/OfferController.php:362
-* @route '/offers/{offer}/download-pdf'
-*/
-const downloadPdfForm = (args: { offer: string | { uuid: string } } | [offer: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: downloadPdf.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\OfferController::downloadPdf
-* @see app/Http/Controllers/OfferController.php:362
-* @route '/offers/{offer}/download-pdf'
-*/
-downloadPdfForm.get = (args: { offer: string | { uuid: string } } | [offer: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: downloadPdf.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\OfferController::downloadPdf
-* @see app/Http/Controllers/OfferController.php:362
-* @route '/offers/{offer}/download-pdf'
-*/
-downloadPdfForm.head = (args: { offer: string | { uuid: string } } | [offer: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: downloadPdf.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-downloadPdf.form = downloadPdfForm
-
-/**
 * @see \App\Http\Controllers\OfferController::index
 * @see app/Http/Controllers/OfferController.php:84
 * @route '/offers'
@@ -228,43 +154,6 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\OfferController::index
-* @see app/Http/Controllers/OfferController.php:84
-* @route '/offers'
-*/
-const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\OfferController::index
-* @see app/Http/Controllers/OfferController.php:84
-* @route '/offers'
-*/
-indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\OfferController::index
-* @see app/Http/Controllers/OfferController.php:84
-* @route '/offers'
-*/
-indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\OfferController::create
@@ -311,43 +200,6 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
-* @see \App\Http\Controllers\OfferController::create
-* @see app/Http/Controllers/OfferController.php:148
-* @route '/offers/create'
-*/
-const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: create.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\OfferController::create
-* @see app/Http/Controllers/OfferController.php:148
-* @route '/offers/create'
-*/
-createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: create.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\OfferController::create
-* @see app/Http/Controllers/OfferController.php:148
-* @route '/offers/create'
-*/
-createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: create.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-create.form = createForm
-
-/**
 * @see \App\Http\Controllers\OfferController::store
 * @see app/Http/Controllers/OfferController.php:281
 * @route '/offers'
@@ -380,28 +232,6 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
-
-/**
-* @see \App\Http\Controllers\OfferController::store
-* @see app/Http/Controllers/OfferController.php:281
-* @route '/offers'
-*/
-const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\OfferController::store
-* @see app/Http/Controllers/OfferController.php:281
-* @route '/offers'
-*/
-storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(options),
-    method: 'post',
-})
-
-store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\OfferController::show
@@ -472,43 +302,6 @@ show.head = (args: { offer: string | { uuid: string } } | [offer: string | { uui
 })
 
 /**
-* @see \App\Http\Controllers\OfferController::show
-* @see app/Http/Controllers/OfferController.php:302
-* @route '/offers/{offer}'
-*/
-const showForm = (args: { offer: string | { uuid: string } } | [offer: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\OfferController::show
-* @see app/Http/Controllers/OfferController.php:302
-* @route '/offers/{offer}'
-*/
-showForm.get = (args: { offer: string | { uuid: string } } | [offer: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\OfferController::show
-* @see app/Http/Controllers/OfferController.php:302
-* @route '/offers/{offer}'
-*/
-showForm.head = (args: { offer: string | { uuid: string } } | [offer: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-show.form = showForm
-
-/**
 * @see \App\Http\Controllers\OfferController::edit
 * @see app/Http/Controllers/OfferController.php:381
 * @route '/offers/{offer}/edit'
@@ -575,43 +368,6 @@ edit.head = (args: { offer: string | { uuid: string } } | [offer: string | { uui
     url: edit.url(args, options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\OfferController::edit
-* @see app/Http/Controllers/OfferController.php:381
-* @route '/offers/{offer}/edit'
-*/
-const editForm = (args: { offer: string | { uuid: string } } | [offer: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: edit.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\OfferController::edit
-* @see app/Http/Controllers/OfferController.php:381
-* @route '/offers/{offer}/edit'
-*/
-editForm.get = (args: { offer: string | { uuid: string } } | [offer: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: edit.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\OfferController::edit
-* @see app/Http/Controllers/OfferController.php:381
-* @route '/offers/{offer}/edit'
-*/
-editForm.head = (args: { offer: string | { uuid: string } } | [offer: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: edit.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-edit.form = editForm
 
 /**
 * @see \App\Http\Controllers\OfferController::update
@@ -682,53 +438,6 @@ update.patch = (args: { offer: string | { uuid: string } } | [offer: string | { 
 })
 
 /**
-* @see \App\Http\Controllers\OfferController::update
-* @see app/Http/Controllers/OfferController.php:601
-* @route '/offers/{offer}'
-*/
-const updateForm = (args: { offer: string | { uuid: string } } | [offer: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\OfferController::update
-* @see app/Http/Controllers/OfferController.php:601
-* @route '/offers/{offer}'
-*/
-updateForm.put = (args: { offer: string | { uuid: string } } | [offer: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\OfferController::update
-* @see app/Http/Controllers/OfferController.php:601
-* @route '/offers/{offer}'
-*/
-updateForm.patch = (args: { offer: string | { uuid: string } } | [offer: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PATCH',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-update.form = updateForm
-
-/**
 * @see \App\Http\Controllers\OfferController::destroy
 * @see app/Http/Controllers/OfferController.php:628
 * @route '/offers/{offer}'
@@ -785,38 +494,6 @@ destroy.delete = (args: { offer: string | { uuid: string } } | [offer: string | 
     url: destroy.url(args, options),
     method: 'delete',
 })
-
-/**
-* @see \App\Http\Controllers\OfferController::destroy
-* @see app/Http/Controllers/OfferController.php:628
-* @route '/offers/{offer}'
-*/
-const destroyForm = (args: { offer: string | { uuid: string } } | [offer: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\OfferController::destroy
-* @see app/Http/Controllers/OfferController.php:628
-* @route '/offers/{offer}'
-*/
-destroyForm.delete = (args: { offer: string | { uuid: string } } | [offer: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-destroy.form = destroyForm
 
 const OfferController = { getDivisions, downloadPdf, index, create, store, show, edit, update, destroy }
 
