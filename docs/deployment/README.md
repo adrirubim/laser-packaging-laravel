@@ -114,7 +114,7 @@ Before shipping a release:
 ```bash
 composer audit
 npm audit
-php artisan test
+php artisan test --compact
 npm run types
 npm run build
 ```

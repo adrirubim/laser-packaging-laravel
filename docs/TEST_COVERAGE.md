@@ -8,7 +8,7 @@ Feature tests use Inertia + Vite. If you see *"Unable to locate file in Vite man
 
 ```bash
 npm run build
-php artisan test
+php artisan test --compact
 ```
 
 **CI-parity pipelines** (match GitHub Actions):

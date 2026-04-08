@@ -44,7 +44,7 @@ Configuration is split between:
 
 4. Run tests (they will also use `laser_packaging_test`):
    ```bash
-   php artisan test
+   php artisan test --compact
    ```
 
 ---
@@ -62,5 +62,5 @@ This creates customers, offers, articles, orders in various statuses, and planni
 ### Verification
 
 ```bash
-php artisan test tests/Feature/Flows/DemoAllSectionsVerificationTest.php
+php artisan test --compact tests/Feature/Flows/DemoAllSectionsVerificationTest.php
 ```

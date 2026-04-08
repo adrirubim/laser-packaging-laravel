@@ -75,7 +75,7 @@ If migrations fail for tests, run:
 
 ```bash
 php artisan migrate:fresh --env=testing
-php artisan test
+php artisan test --compact
 ```
 
 ---

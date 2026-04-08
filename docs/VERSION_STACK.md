@@ -12,8 +12,8 @@ Versions are resolved in `package-lock.json` and `composer.lock`. Check locally 
 | **laravel/framework** | 13.4.0 | `^13.0` |
 | **inertiajs/inertia-laravel** | 3.0.2 | `^3` |
 | **laravel/fortify** | 1.36.2 | `^1.30` |
-| **laravel/wayfinder** | 0.1.15 | `^0.1.9` |
-| **phpunit/phpunit** | 13.1.0 | `^13.0` |
+| **laravel/wayfinder** | 0.1.16 | `^0.1.9` |
+| **phpunit/phpunit** | 13.1.1 | `^13.0` |
 
 ---
 
@@ -35,7 +35,7 @@ Versions are resolved in `package-lock.json` and `composer.lock`. Check locally 
 | **react-dom** | 19.2.4 | `^19.2.4` |
 | **@inertiajs/react** | 3.0.3 | `^3.0.3` |
 | **typescript** | 6.0.2 | `^6.0.2` |
-| **vite** | 8.0.6 | `^8.0.6` |
+| **vite** | 8.0.7 | `^8.0.7` |
 | **tailwindcss** | 4.2.2 | `^4.2.2` |
 | **@types/react** | 19.2.14 | `^19.2.0` |
 | **@types/react-dom** | 19.2.3 | `^19.2.0` |

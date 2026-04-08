@@ -430,7 +430,10 @@ After running seeders (e.g. `php artisan db:seed` or `TestDataSeeder`), the appl
 # Start Laravel server only
 php artisan serve
 
-# Start Laravel + Vite
+# Start full local dev stack (recommended)
+composer run dev
+
+# Start Laravel + Vite (alternative)
 npm run dev
 
 # Build for production
@@ -448,7 +451,7 @@ php artisan migrate
 
 # Reset ONLY the test database and run tests
 php artisan migrate:fresh --env=testing
-php artisan test
+php artisan test --compact
 ```
 
 ### Testing
@@ -456,7 +459,7 @@ php artisan test
 ```bash
 # Run all tests (build frontend first)
 npm run build
-php artisan test
+php artisan test --compact
 
 # Run specific suite
 php artisan test --testsuite=Unit
