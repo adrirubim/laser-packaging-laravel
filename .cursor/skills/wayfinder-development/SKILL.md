@@ -1,6 +1,6 @@
 ---
 name: wayfinder-development
-description: "Use this skill for Laravel Wayfinder which auto-generates typed functions for Laravel controllers and routes. ALWAYS use this skill when frontend code needs to call backend routes or controller actions. Trigger when: connecting any React/Vue/Svelte/Inertia frontend to Laravel controllers, routes, building end-to-end features with both frontend and backend, wiring up forms or links to backend endpoints, fixing route-related TypeScript errors, importing from #app/actions or #app/routes, or running wayfinder:generate. Use Wayfinder route functions instead of hardcoded URLs. Covers: wayfinder() vite plugin, .url()/.get()/.post()/.form(), query params, route model binding, tree-shaking. Do not use for backend-only task"
+description: "Use this skill for Laravel Wayfinder which auto-generates typed functions for Laravel controllers and routes. ALWAYS use this skill when frontend code needs to call backend routes or controller actions. Trigger when: connecting any React/Vue/Svelte/Inertia frontend to Laravel controllers, routes, building end-to-end features with both frontend and backend, wiring up forms or links to backend endpoints, fixing route-related TypeScript errors, importing from @/actions or @/routes, or running wayfinder:generate. Use Wayfinder route functions instead of hardcoded URLs. Covers: wayfinder() vite plugin, .url()/.get()/.post()/.form(), query params, route model binding, tree-shaking. Do not use for backend-only task"
 license: MIT
 metadata:
   author: laravel
@@ -30,8 +30,10 @@ php artisan wayfinder:generate --with-form --no-interaction
 <!-- Controller Action Imports -->
 ```typescript
 // Named imports for tree-shaking (preferred)...
-import { show, store, update } from '#app/actions/App/Http/Controllers/PostController'
-import { show as postShow } from '#app/routes/post'
+import { show, store, update } from '@/actions/App/Http/Controllers/PostController'
+
+// Named route imports...
+import { show as postShow } from '@/routes/post'
 ```
 
 ### Common Methods
