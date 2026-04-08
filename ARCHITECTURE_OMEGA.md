@@ -15,7 +15,7 @@ inspecting the folder structure.
   - Generic APIs use `ApiResponseResource`, which standardizes the contract `{ success, message, data }`.
 
 - **Standard JSON Response (`ApiResponseResource`)**  
-  `ApiResponseResource` is the **only** exit door for JSON responses in controllers (except for very low‑level middleware or `Handler`).  
+  `ApiResponseResource` is the standard exit door for JSON responses in controllers (except for very low‑level middleware or `Handler`).  
   - **Success**: `ApiResponseResource::success(true, message?, data?)`  
     - `success`: `true` when the operation completes successfully.  
     - `message`: short, human‑readable text (optional).  
@@ -24,12 +24,13 @@ inspecting the folder structure.
     - `success` is always `false`.  
     - `message` explains the error at a high level.  
     - `data` may contain additional details (for example, validation `errors`).  
-  - Direct `response()->json()` calls are only allowed in very specific system middleware or in `Handler.php`.  
-    Any controller endpoint returning JSON must use `ApiResponseResource`.
+  - Direct `response()->json()` calls are only allowed in very specific system middleware or in `Handler.php`, **and** for explicitly documented legacy/internal endpoints (see Planning notes below).
+    Any new controller endpoint returning JSON should default to `ApiResponseResource`.
 
 - **Views vs. APIs**  
   - **Web / Inertia views**: controllers return `Inertia::render(...)` with props already transformed by domain resources when appropriate.  
   - **APIs / AJAX**: controllers return `ApiResponseResource::success()` or `::error()`; any legacy or special structure must be wrapped inside `data` or, in exceptional cases, added via `->additional([...])` only when regression tests require it.
+  - **Planning API (internal)**: some Planning endpoints are internal JSON endpoints used by the authenticated Planning UI (`/planning`) and may return `response()->json()` with dedicated Resources for historical reasons. These exceptions must remain documented and covered by tests.
 
 - **Architecture guardrail**  
   - If you detect “smart” business logic in a controller (beyond a simple `all()`/`find()` or delegating to a repository), move it into an Action under `src/Domains/{Domain}/Actions/`.  
