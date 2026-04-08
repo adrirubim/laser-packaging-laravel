@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\OrderController::productionAdvancements
 * @see app/Http/Controllers/OrderController.php:252
@@ -44,6 +44,43 @@ productionAdvancements.head = (options?: RouteQueryOptions): RouteDefinition<'he
 })
 
 /**
+* @see \App\Http\Controllers\OrderController::productionAdvancements
+* @see app/Http/Controllers/OrderController.php:252
+* @route '/orders/production-advancements'
+*/
+const productionAdvancementsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: productionAdvancements.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderController::productionAdvancements
+* @see app/Http/Controllers/OrderController.php:252
+* @route '/orders/production-advancements'
+*/
+productionAdvancementsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: productionAdvancements.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderController::productionAdvancements
+* @see app/Http/Controllers/OrderController.php:252
+* @route '/orders/production-advancements'
+*/
+productionAdvancementsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: productionAdvancements.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+productionAdvancements.form = productionAdvancementsForm
+
+/**
 * @see \App\Http\Controllers\OrderController::getShippingAddresses
 * @see app/Http/Controllers/OrderController.php:272
 * @route '/orders/get-shipping-addresses'
@@ -86,6 +123,43 @@ getShippingAddresses.head = (options?: RouteQueryOptions): RouteDefinition<'head
     url: getShippingAddresses.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\OrderController::getShippingAddresses
+* @see app/Http/Controllers/OrderController.php:272
+* @route '/orders/get-shipping-addresses'
+*/
+const getShippingAddressesForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: getShippingAddresses.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderController::getShippingAddresses
+* @see app/Http/Controllers/OrderController.php:272
+* @route '/orders/get-shipping-addresses'
+*/
+getShippingAddressesForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: getShippingAddresses.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderController::getShippingAddresses
+* @see app/Http/Controllers/OrderController.php:272
+* @route '/orders/get-shipping-addresses'
+*/
+getShippingAddressesForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: getShippingAddresses.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+getShippingAddresses.form = getShippingAddressesForm
 
 /**
 * @see \App\Http\Controllers\OrderController::manageStatus
@@ -156,6 +230,43 @@ manageStatus.head = (args: { order: string | { uuid: string } } | [order: string
 })
 
 /**
+* @see \App\Http\Controllers\OrderController::manageStatus
+* @see app/Http/Controllers/OrderController.php:302
+* @route '/orders/{order}/manage-status'
+*/
+const manageStatusForm = (args: { order: string | { uuid: string } } | [order: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: manageStatus.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderController::manageStatus
+* @see app/Http/Controllers/OrderController.php:302
+* @route '/orders/{order}/manage-status'
+*/
+manageStatusForm.get = (args: { order: string | { uuid: string } } | [order: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: manageStatus.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderController::manageStatus
+* @see app/Http/Controllers/OrderController.php:302
+* @route '/orders/{order}/manage-status'
+*/
+manageStatusForm.head = (args: { order: string | { uuid: string } } | [order: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: manageStatus.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+manageStatus.form = manageStatusForm
+
+/**
 * @see \App\Http\Controllers\OrderController::saveSemaforo
 * @see app/Http/Controllers/OrderController.php:332
 * @route '/orders/{order}/save-semaforo'
@@ -214,6 +325,28 @@ saveSemaforo.post = (args: { order: string | { uuid: string } } | [order: string
 })
 
 /**
+* @see \App\Http\Controllers\OrderController::saveSemaforo
+* @see app/Http/Controllers/OrderController.php:332
+* @route '/orders/{order}/save-semaforo'
+*/
+const saveSemaforoForm = (args: { order: string | { uuid: string } } | [order: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: saveSemaforo.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\OrderController::saveSemaforo
+* @see app/Http/Controllers/OrderController.php:332
+* @route '/orders/{order}/save-semaforo'
+*/
+saveSemaforoForm.post = (args: { order: string | { uuid: string } } | [order: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: saveSemaforo.url(args, options),
+    method: 'post',
+})
+
+saveSemaforo.form = saveSemaforoForm
+
+/**
 * @see \App\Http\Controllers\OrderController::changeStatus
 * @see app/Http/Controllers/OrderController.php:373
 * @route '/orders/{order}/change-status'
@@ -270,6 +403,28 @@ changeStatus.post = (args: { order: string | { uuid: string } } | [order: string
     url: changeStatus.url(args, options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\OrderController::changeStatus
+* @see app/Http/Controllers/OrderController.php:373
+* @route '/orders/{order}/change-status'
+*/
+const changeStatusForm = (args: { order: string | { uuid: string } } | [order: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: changeStatus.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\OrderController::changeStatus
+* @see app/Http/Controllers/OrderController.php:373
+* @route '/orders/{order}/change-status'
+*/
+changeStatusForm.post = (args: { order: string | { uuid: string } } | [order: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: changeStatus.url(args, options),
+    method: 'post',
+})
+
+changeStatus.form = changeStatusForm
 
 /**
 * @see \App\Http\Controllers\OrderController::downloadBarcode
@@ -340,6 +495,43 @@ downloadBarcode.head = (args: { order: string | { uuid: string } } | [order: str
 })
 
 /**
+* @see \App\Http\Controllers\OrderController::downloadBarcode
+* @see app/Http/Controllers/OrderController.php:405
+* @route '/orders/{order}/download-barcode'
+*/
+const downloadBarcodeForm = (args: { order: string | { uuid: string } } | [order: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: downloadBarcode.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderController::downloadBarcode
+* @see app/Http/Controllers/OrderController.php:405
+* @route '/orders/{order}/download-barcode'
+*/
+downloadBarcodeForm.get = (args: { order: string | { uuid: string } } | [order: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: downloadBarcode.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderController::downloadBarcode
+* @see app/Http/Controllers/OrderController.php:405
+* @route '/orders/{order}/download-barcode'
+*/
+downloadBarcodeForm.head = (args: { order: string | { uuid: string } } | [order: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: downloadBarcode.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+downloadBarcode.form = downloadBarcodeForm
+
+/**
 * @see \App\Http\Controllers\OrderController::downloadAutocontrollo
 * @see app/Http/Controllers/OrderController.php:430
 * @route '/orders/{order}/download-autocontrollo'
@@ -408,6 +600,43 @@ downloadAutocontrollo.head = (args: { order: string | { uuid: string } } | [orde
 })
 
 /**
+* @see \App\Http\Controllers\OrderController::downloadAutocontrollo
+* @see app/Http/Controllers/OrderController.php:430
+* @route '/orders/{order}/download-autocontrollo'
+*/
+const downloadAutocontrolloForm = (args: { order: string | { uuid: string } } | [order: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: downloadAutocontrollo.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderController::downloadAutocontrollo
+* @see app/Http/Controllers/OrderController.php:430
+* @route '/orders/{order}/download-autocontrollo'
+*/
+downloadAutocontrolloForm.get = (args: { order: string | { uuid: string } } | [order: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: downloadAutocontrollo.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderController::downloadAutocontrollo
+* @see app/Http/Controllers/OrderController.php:430
+* @route '/orders/{order}/download-autocontrollo'
+*/
+downloadAutocontrolloForm.head = (args: { order: string | { uuid: string } } | [order: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: downloadAutocontrollo.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+downloadAutocontrollo.form = downloadAutocontrolloForm
+
+/**
 * @see \App\Http\Controllers\OrderController::index
 * @see app/Http/Controllers/OrderController.php:81
 * @route '/orders'
@@ -450,6 +679,43 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\OrderController::index
+* @see app/Http/Controllers/OrderController.php:81
+* @route '/orders'
+*/
+const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderController::index
+* @see app/Http/Controllers/OrderController.php:81
+* @route '/orders'
+*/
+indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderController::index
+* @see app/Http/Controllers/OrderController.php:81
+* @route '/orders'
+*/
+indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\OrderController::create
@@ -496,6 +762,43 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
+* @see \App\Http\Controllers\OrderController::create
+* @see app/Http/Controllers/OrderController.php:116
+* @route '/orders/create'
+*/
+const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderController::create
+* @see app/Http/Controllers/OrderController.php:116
+* @route '/orders/create'
+*/
+createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderController::create
+* @see app/Http/Controllers/OrderController.php:116
+* @route '/orders/create'
+*/
+createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+create.form = createForm
+
+/**
 * @see \App\Http\Controllers\OrderController::store
 * @see app/Http/Controllers/OrderController.php:150
 * @route '/orders'
@@ -528,6 +831,28 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\OrderController::store
+* @see app/Http/Controllers/OrderController.php:150
+* @route '/orders'
+*/
+const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\OrderController::store
+* @see app/Http/Controllers/OrderController.php:150
+* @route '/orders'
+*/
+storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\OrderController::show
@@ -598,6 +923,43 @@ show.head = (args: { order: string | { uuid: string } } | [order: string | { uui
 })
 
 /**
+* @see \App\Http\Controllers\OrderController::show
+* @see app/Http/Controllers/OrderController.php:168
+* @route '/orders/{order}'
+*/
+const showForm = (args: { order: string | { uuid: string } } | [order: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderController::show
+* @see app/Http/Controllers/OrderController.php:168
+* @route '/orders/{order}'
+*/
+showForm.get = (args: { order: string | { uuid: string } } | [order: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderController::show
+* @see app/Http/Controllers/OrderController.php:168
+* @route '/orders/{order}'
+*/
+showForm.head = (args: { order: string | { uuid: string } } | [order: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+show.form = showForm
+
+/**
 * @see \App\Http\Controllers\OrderController::edit
 * @see app/Http/Controllers/OrderController.php:194
 * @route '/orders/{order}/edit'
@@ -664,6 +1026,43 @@ edit.head = (args: { order: string | { uuid: string } } | [order: string | { uui
     url: edit.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\OrderController::edit
+* @see app/Http/Controllers/OrderController.php:194
+* @route '/orders/{order}/edit'
+*/
+const editForm = (args: { order: string | { uuid: string } } | [order: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderController::edit
+* @see app/Http/Controllers/OrderController.php:194
+* @route '/orders/{order}/edit'
+*/
+editForm.get = (args: { order: string | { uuid: string } } | [order: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderController::edit
+* @see app/Http/Controllers/OrderController.php:194
+* @route '/orders/{order}/edit'
+*/
+editForm.head = (args: { order: string | { uuid: string } } | [order: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+edit.form = editForm
 
 /**
 * @see \App\Http\Controllers\OrderController::update
@@ -734,6 +1133,53 @@ update.patch = (args: { order: string | { uuid: string } } | [order: string | { 
 })
 
 /**
+* @see \App\Http\Controllers\OrderController::update
+* @see app/Http/Controllers/OrderController.php:220
+* @route '/orders/{order}'
+*/
+const updateForm = (args: { order: string | { uuid: string } } | [order: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\OrderController::update
+* @see app/Http/Controllers/OrderController.php:220
+* @route '/orders/{order}'
+*/
+updateForm.put = (args: { order: string | { uuid: string } } | [order: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\OrderController::update
+* @see app/Http/Controllers/OrderController.php:220
+* @route '/orders/{order}'
+*/
+updateForm.patch = (args: { order: string | { uuid: string } } | [order: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PATCH',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+update.form = updateForm
+
+/**
 * @see \App\Http\Controllers\OrderController::destroy
 * @see app/Http/Controllers/OrderController.php:241
 * @route '/orders/{order}'
@@ -790,6 +1236,38 @@ destroy.delete = (args: { order: string | { uuid: string } } | [order: string | 
     url: destroy.url(args, options),
     method: 'delete',
 })
+
+/**
+* @see \App\Http\Controllers\OrderController::destroy
+* @see app/Http/Controllers/OrderController.php:241
+* @route '/orders/{order}'
+*/
+const destroyForm = (args: { order: string | { uuid: string } } | [order: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\OrderController::destroy
+* @see app/Http/Controllers/OrderController.php:241
+* @route '/orders/{order}'
+*/
+destroyForm.delete = (args: { order: string | { uuid: string } } | [order: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+destroy.form = destroyForm
 
 const OrderController = { productionAdvancements, getShippingAddresses, manageStatus, saveSemaforo, changeStatus, downloadBarcode, downloadAutocontrollo, index, create, store, show, edit, update, destroy }
 

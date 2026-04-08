@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\LsResourceController::index
 * @see app/Http/Controllers/LsResourceController.php:20
@@ -42,6 +42,43 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\LsResourceController::index
+* @see app/Http/Controllers/LsResourceController.php:20
+* @route '/offers/ls-resources'
+*/
+const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\LsResourceController::index
+* @see app/Http/Controllers/LsResourceController.php:20
+* @route '/offers/ls-resources'
+*/
+indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\LsResourceController::index
+* @see app/Http/Controllers/LsResourceController.php:20
+* @route '/offers/ls-resources'
+*/
+indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\LsResourceController::create
@@ -88,6 +125,43 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
+* @see \App\Http\Controllers\LsResourceController::create
+* @see app/Http/Controllers/LsResourceController.php:41
+* @route '/offers/ls-resources/create'
+*/
+const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\LsResourceController::create
+* @see app/Http/Controllers/LsResourceController.php:41
+* @route '/offers/ls-resources/create'
+*/
+createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\LsResourceController::create
+* @see app/Http/Controllers/LsResourceController.php:41
+* @route '/offers/ls-resources/create'
+*/
+createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+create.form = createForm
+
+/**
 * @see \App\Http\Controllers\LsResourceController::store
 * @see app/Http/Controllers/LsResourceController.php:46
 * @route '/offers/ls-resources'
@@ -120,6 +194,28 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\LsResourceController::store
+* @see app/Http/Controllers/LsResourceController.php:46
+* @route '/offers/ls-resources'
+*/
+const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\LsResourceController::store
+* @see app/Http/Controllers/LsResourceController.php:46
+* @route '/offers/ls-resources'
+*/
+storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\LsResourceController::show
@@ -190,6 +286,43 @@ show.head = (args: { lsResource: string | { uuid: string } } | [lsResource: stri
 })
 
 /**
+* @see \App\Http\Controllers\LsResourceController::show
+* @see app/Http/Controllers/LsResourceController.php:66
+* @route '/offers/ls-resources/{lsResource}'
+*/
+const showForm = (args: { lsResource: string | { uuid: string } } | [lsResource: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\LsResourceController::show
+* @see app/Http/Controllers/LsResourceController.php:66
+* @route '/offers/ls-resources/{lsResource}'
+*/
+showForm.get = (args: { lsResource: string | { uuid: string } } | [lsResource: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\LsResourceController::show
+* @see app/Http/Controllers/LsResourceController.php:66
+* @route '/offers/ls-resources/{lsResource}'
+*/
+showForm.head = (args: { lsResource: string | { uuid: string } } | [lsResource: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+show.form = showForm
+
+/**
 * @see \App\Http\Controllers\LsResourceController::edit
 * @see app/Http/Controllers/LsResourceController.php:73
 * @route '/offers/ls-resources/{lsResource}/edit'
@@ -256,6 +389,43 @@ edit.head = (args: { lsResource: string | { uuid: string } } | [lsResource: stri
     url: edit.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\LsResourceController::edit
+* @see app/Http/Controllers/LsResourceController.php:73
+* @route '/offers/ls-resources/{lsResource}/edit'
+*/
+const editForm = (args: { lsResource: string | { uuid: string } } | [lsResource: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\LsResourceController::edit
+* @see app/Http/Controllers/LsResourceController.php:73
+* @route '/offers/ls-resources/{lsResource}/edit'
+*/
+editForm.get = (args: { lsResource: string | { uuid: string } } | [lsResource: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\LsResourceController::edit
+* @see app/Http/Controllers/LsResourceController.php:73
+* @route '/offers/ls-resources/{lsResource}/edit'
+*/
+editForm.head = (args: { lsResource: string | { uuid: string } } | [lsResource: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+edit.form = editForm
 
 /**
 * @see \App\Http\Controllers\LsResourceController::update
@@ -326,6 +496,53 @@ update.patch = (args: { lsResource: string | { uuid: string } } | [lsResource: s
 })
 
 /**
+* @see \App\Http\Controllers\LsResourceController::update
+* @see app/Http/Controllers/LsResourceController.php:80
+* @route '/offers/ls-resources/{lsResource}'
+*/
+const updateForm = (args: { lsResource: string | { uuid: string } } | [lsResource: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\LsResourceController::update
+* @see app/Http/Controllers/LsResourceController.php:80
+* @route '/offers/ls-resources/{lsResource}'
+*/
+updateForm.put = (args: { lsResource: string | { uuid: string } } | [lsResource: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\LsResourceController::update
+* @see app/Http/Controllers/LsResourceController.php:80
+* @route '/offers/ls-resources/{lsResource}'
+*/
+updateForm.patch = (args: { lsResource: string | { uuid: string } } | [lsResource: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PATCH',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+update.form = updateForm
+
+/**
 * @see \App\Http\Controllers\LsResourceController::destroy
 * @see app/Http/Controllers/LsResourceController.php:102
 * @route '/offers/ls-resources/{lsResource}'
@@ -382,6 +599,38 @@ destroy.delete = (args: { lsResource: string | { uuid: string } } | [lsResource:
     url: destroy.url(args, options),
     method: 'delete',
 })
+
+/**
+* @see \App\Http\Controllers\LsResourceController::destroy
+* @see app/Http/Controllers/LsResourceController.php:102
+* @route '/offers/ls-resources/{lsResource}'
+*/
+const destroyForm = (args: { lsResource: string | { uuid: string } } | [lsResource: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\LsResourceController::destroy
+* @see app/Http/Controllers/LsResourceController.php:102
+* @route '/offers/ls-resources/{lsResource}'
+*/
+destroyForm.delete = (args: { lsResource: string | { uuid: string } } | [lsResource: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+destroy.form = destroyForm
 
 const lsResources = {
     index: Object.assign(index, index),

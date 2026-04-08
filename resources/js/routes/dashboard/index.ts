@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
 import alerts from './alerts'
 /**
 * @see \App\Http\Controllers\DashboardController::stats
@@ -43,6 +43,43 @@ stats.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: stats.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\DashboardController::stats
+* @see app/Http/Controllers/DashboardController.php:42
+* @route '/dashboard/stats'
+*/
+const statsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: stats.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\DashboardController::stats
+* @see app/Http/Controllers/DashboardController.php:42
+* @route '/dashboard/stats'
+*/
+statsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: stats.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\DashboardController::stats
+* @see app/Http/Controllers/DashboardController.php:42
+* @route '/dashboard/stats'
+*/
+statsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: stats.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+stats.form = statsForm
 
 const dashboard = {
     stats: Object.assign(stats, stats),

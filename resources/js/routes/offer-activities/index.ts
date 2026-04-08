@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\OfferActivityController::index
 * @see app/Http/Controllers/OfferActivityController.php:22
@@ -42,6 +42,43 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\OfferActivityController::index
+* @see app/Http/Controllers/OfferActivityController.php:22
+* @route '/offers/activities'
+*/
+const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OfferActivityController::index
+* @see app/Http/Controllers/OfferActivityController.php:22
+* @route '/offers/activities'
+*/
+indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OfferActivityController::index
+* @see app/Http/Controllers/OfferActivityController.php:22
+* @route '/offers/activities'
+*/
+indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\OfferActivityController::create
@@ -88,6 +125,43 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
+* @see \App\Http\Controllers\OfferActivityController::create
+* @see app/Http/Controllers/OfferActivityController.php:50
+* @route '/offers/activities/create'
+*/
+const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OfferActivityController::create
+* @see app/Http/Controllers/OfferActivityController.php:50
+* @route '/offers/activities/create'
+*/
+createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OfferActivityController::create
+* @see app/Http/Controllers/OfferActivityController.php:50
+* @route '/offers/activities/create'
+*/
+createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+create.form = createForm
+
+/**
 * @see \App\Http\Controllers\OfferActivityController::store
 * @see app/Http/Controllers/OfferActivityController.php:55
 * @route '/offers/activities'
@@ -120,6 +194,28 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\OfferActivityController::store
+* @see app/Http/Controllers/OfferActivityController.php:55
+* @route '/offers/activities'
+*/
+const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\OfferActivityController::store
+* @see app/Http/Controllers/OfferActivityController.php:55
+* @route '/offers/activities'
+*/
+storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\OfferActivityController::show
@@ -190,6 +286,43 @@ show.head = (args: { offerActivity: string | { uuid: string } } | [offerActivity
 })
 
 /**
+* @see \App\Http\Controllers\OfferActivityController::show
+* @see app/Http/Controllers/OfferActivityController.php:66
+* @route '/offers/activities/{offerActivity}'
+*/
+const showForm = (args: { offerActivity: string | { uuid: string } } | [offerActivity: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OfferActivityController::show
+* @see app/Http/Controllers/OfferActivityController.php:66
+* @route '/offers/activities/{offerActivity}'
+*/
+showForm.get = (args: { offerActivity: string | { uuid: string } } | [offerActivity: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OfferActivityController::show
+* @see app/Http/Controllers/OfferActivityController.php:66
+* @route '/offers/activities/{offerActivity}'
+*/
+showForm.head = (args: { offerActivity: string | { uuid: string } } | [offerActivity: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+show.form = showForm
+
+/**
 * @see \App\Http\Controllers\OfferActivityController::edit
 * @see app/Http/Controllers/OfferActivityController.php:73
 * @route '/offers/activities/{offerActivity}/edit'
@@ -256,6 +389,43 @@ edit.head = (args: { offerActivity: string | { uuid: string } } | [offerActivity
     url: edit.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\OfferActivityController::edit
+* @see app/Http/Controllers/OfferActivityController.php:73
+* @route '/offers/activities/{offerActivity}/edit'
+*/
+const editForm = (args: { offerActivity: string | { uuid: string } } | [offerActivity: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OfferActivityController::edit
+* @see app/Http/Controllers/OfferActivityController.php:73
+* @route '/offers/activities/{offerActivity}/edit'
+*/
+editForm.get = (args: { offerActivity: string | { uuid: string } } | [offerActivity: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OfferActivityController::edit
+* @see app/Http/Controllers/OfferActivityController.php:73
+* @route '/offers/activities/{offerActivity}/edit'
+*/
+editForm.head = (args: { offerActivity: string | { uuid: string } } | [offerActivity: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+edit.form = editForm
 
 /**
 * @see \App\Http\Controllers\OfferActivityController::update
@@ -326,6 +496,53 @@ update.patch = (args: { offerActivity: string | { uuid: string } } | [offerActiv
 })
 
 /**
+* @see \App\Http\Controllers\OfferActivityController::update
+* @see app/Http/Controllers/OfferActivityController.php:80
+* @route '/offers/activities/{offerActivity}'
+*/
+const updateForm = (args: { offerActivity: string | { uuid: string } } | [offerActivity: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\OfferActivityController::update
+* @see app/Http/Controllers/OfferActivityController.php:80
+* @route '/offers/activities/{offerActivity}'
+*/
+updateForm.put = (args: { offerActivity: string | { uuid: string } } | [offerActivity: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\OfferActivityController::update
+* @see app/Http/Controllers/OfferActivityController.php:80
+* @route '/offers/activities/{offerActivity}'
+*/
+updateForm.patch = (args: { offerActivity: string | { uuid: string } } | [offerActivity: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PATCH',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+update.form = updateForm
+
+/**
 * @see \App\Http\Controllers\OfferActivityController::destroy
 * @see app/Http/Controllers/OfferActivityController.php:88
 * @route '/offers/activities/{offerActivity}'
@@ -382,6 +599,38 @@ destroy.delete = (args: { offerActivity: string | { uuid: string } } | [offerAct
     url: destroy.url(args, options),
     method: 'delete',
 })
+
+/**
+* @see \App\Http\Controllers\OfferActivityController::destroy
+* @see app/Http/Controllers/OfferActivityController.php:88
+* @route '/offers/activities/{offerActivity}'
+*/
+const destroyForm = (args: { offerActivity: string | { uuid: string } } | [offerActivity: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\OfferActivityController::destroy
+* @see app/Http/Controllers/OfferActivityController.php:88
+* @route '/offers/activities/{offerActivity}'
+*/
+destroyForm.delete = (args: { offerActivity: string | { uuid: string } } | [offerActivity: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+destroy.form = destroyForm
 
 const offerActivities = {
     index: Object.assign(index, index),

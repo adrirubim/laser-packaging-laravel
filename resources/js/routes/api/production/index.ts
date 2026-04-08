@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../wayfinder'
 import foglioPallet from './foglio-pallet'
 /**
 * @see \App\Http\Controllers\Api\ProductionPortalController::authenticate
@@ -35,6 +35,28 @@ authenticate.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 })
 
 /**
+* @see \App\Http\Controllers\Api\ProductionPortalController::authenticate
+* @see app/Http/Controllers/Api/ProductionPortalController.php:70
+* @route '/api/production/authenticate'
+*/
+const authenticateForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: authenticate.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\Api\ProductionPortalController::authenticate
+* @see app/Http/Controllers/Api/ProductionPortalController.php:70
+* @route '/api/production/authenticate'
+*/
+authenticateForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: authenticate.url(options),
+    method: 'post',
+})
+
+authenticate.form = authenticateForm
+
+/**
 * @see \App\Http\Controllers\Api\ProductionPortalController::login
 * @see app/Http/Controllers/Api/ProductionPortalController.php:107
 * @route '/api/production/login'
@@ -67,6 +89,28 @@ login.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: login.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\Api\ProductionPortalController::login
+* @see app/Http/Controllers/Api/ProductionPortalController.php:107
+* @route '/api/production/login'
+*/
+const loginForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: login.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\Api\ProductionPortalController::login
+* @see app/Http/Controllers/Api/ProductionPortalController.php:107
+* @route '/api/production/login'
+*/
+loginForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: login.url(options),
+    method: 'post',
+})
+
+login.form = loginForm
 
 /**
 * @see \App\Http\Controllers\Api\ProductionPortalController::checkToken
@@ -103,6 +147,28 @@ checkToken.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 })
 
 /**
+* @see \App\Http\Controllers\Api\ProductionPortalController::checkToken
+* @see app/Http/Controllers/Api/ProductionPortalController.php:164
+* @route '/api/production/check-token'
+*/
+const checkTokenForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: checkToken.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\Api\ProductionPortalController::checkToken
+* @see app/Http/Controllers/Api/ProductionPortalController.php:164
+* @route '/api/production/check-token'
+*/
+checkTokenForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: checkToken.url(options),
+    method: 'post',
+})
+
+checkToken.form = checkTokenForm
+
+/**
 * @see \App\Http\Controllers\Api\ProductionPortalController::addPalletQuantity
 * @see app/Http/Controllers/Api/ProductionPortalController.php:199
 * @route '/api/production/add-pallet-quantity'
@@ -135,6 +201,28 @@ addPalletQuantity.post = (options?: RouteQueryOptions): RouteDefinition<'post'> 
     url: addPalletQuantity.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\Api\ProductionPortalController::addPalletQuantity
+* @see app/Http/Controllers/Api/ProductionPortalController.php:199
+* @route '/api/production/add-pallet-quantity'
+*/
+const addPalletQuantityForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: addPalletQuantity.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\Api\ProductionPortalController::addPalletQuantity
+* @see app/Http/Controllers/Api/ProductionPortalController.php:199
+* @route '/api/production/add-pallet-quantity'
+*/
+addPalletQuantityForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: addPalletQuantity.url(options),
+    method: 'post',
+})
+
+addPalletQuantity.form = addPalletQuantityForm
 
 /**
 * @see \App\Http\Controllers\Api\ProductionPortalController::addManualQuantity
@@ -171,6 +259,28 @@ addManualQuantity.post = (options?: RouteQueryOptions): RouteDefinition<'post'> 
 })
 
 /**
+* @see \App\Http\Controllers\Api\ProductionPortalController::addManualQuantity
+* @see app/Http/Controllers/Api/ProductionPortalController.php:231
+* @route '/api/production/add-manual-quantity'
+*/
+const addManualQuantityForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: addManualQuantity.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\Api\ProductionPortalController::addManualQuantity
+* @see app/Http/Controllers/Api/ProductionPortalController.php:231
+* @route '/api/production/add-manual-quantity'
+*/
+addManualQuantityForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: addManualQuantity.url(options),
+    method: 'post',
+})
+
+addManualQuantity.form = addManualQuantityForm
+
+/**
 * @see \App\Http\Controllers\Api\ProductionPortalController::suspendOrder
 * @see app/Http/Controllers/Api/ProductionPortalController.php:268
 * @route '/api/production/suspend-order'
@@ -203,6 +313,28 @@ suspendOrder.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: suspendOrder.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\Api\ProductionPortalController::suspendOrder
+* @see app/Http/Controllers/Api/ProductionPortalController.php:268
+* @route '/api/production/suspend-order'
+*/
+const suspendOrderForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: suspendOrder.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\Api\ProductionPortalController::suspendOrder
+* @see app/Http/Controllers/Api/ProductionPortalController.php:268
+* @route '/api/production/suspend-order'
+*/
+suspendOrderForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: suspendOrder.url(options),
+    method: 'post',
+})
+
+suspendOrder.form = suspendOrderForm
 
 /**
 * @see \App\Http\Controllers\Api\ProductionPortalController::confirmAutocontrollo
@@ -239,6 +371,28 @@ confirmAutocontrollo.post = (options?: RouteQueryOptions): RouteDefinition<'post
 })
 
 /**
+* @see \App\Http\Controllers\Api\ProductionPortalController::confirmAutocontrollo
+* @see app/Http/Controllers/Api/ProductionPortalController.php:299
+* @route '/api/production/confirm-autocontrollo'
+*/
+const confirmAutocontrolloForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: confirmAutocontrollo.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\Api\ProductionPortalController::confirmAutocontrollo
+* @see app/Http/Controllers/Api/ProductionPortalController.php:299
+* @route '/api/production/confirm-autocontrollo'
+*/
+confirmAutocontrolloForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: confirmAutocontrollo.url(options),
+    method: 'post',
+})
+
+confirmAutocontrollo.form = confirmAutocontrolloForm
+
+/**
 * @see \App\Http\Controllers\Api\ProductionPortalController::employeeOrderList
 * @see app/Http/Controllers/Api/ProductionPortalController.php:330
 * @route '/api/production/employee-order-list'
@@ -273,6 +427,28 @@ employeeOrderList.post = (options?: RouteQueryOptions): RouteDefinition<'post'> 
 })
 
 /**
+* @see \App\Http\Controllers\Api\ProductionPortalController::employeeOrderList
+* @see app/Http/Controllers/Api/ProductionPortalController.php:330
+* @route '/api/production/employee-order-list'
+*/
+const employeeOrderListForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: employeeOrderList.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\Api\ProductionPortalController::employeeOrderList
+* @see app/Http/Controllers/Api/ProductionPortalController.php:330
+* @route '/api/production/employee-order-list'
+*/
+employeeOrderListForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: employeeOrderList.url(options),
+    method: 'post',
+})
+
+employeeOrderList.form = employeeOrderListForm
+
+/**
 * @see \App\Http\Controllers\Api\ProductionPortalController::getInfo
 * @see app/Http/Controllers/Api/ProductionPortalController.php:363
 * @route '/api/production/get-info'
@@ -305,6 +481,28 @@ getInfo.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: getInfo.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\Api\ProductionPortalController::getInfo
+* @see app/Http/Controllers/Api/ProductionPortalController.php:363
+* @route '/api/production/get-info'
+*/
+const getInfoForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: getInfo.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\Api\ProductionPortalController::getInfo
+* @see app/Http/Controllers/Api/ProductionPortalController.php:363
+* @route '/api/production/get-info'
+*/
+getInfoForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: getInfo.url(options),
+    method: 'post',
+})
+
+getInfo.form = getInfoForm
 
 const production = {
     authenticate: Object.assign(authenticate, authenticate),

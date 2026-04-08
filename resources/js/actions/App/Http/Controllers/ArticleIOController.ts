@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\ArticleIOController::generateIONumber
 * @see app/Http/Controllers/ArticleIOController.php:190
@@ -42,6 +42,43 @@ generateIONumber.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =
     url: generateIONumber.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\ArticleIOController::generateIONumber
+* @see app/Http/Controllers/ArticleIOController.php:190
+* @route '/articles/operational-instructions/generate-io-number'
+*/
+const generateIONumberForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: generateIONumber.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ArticleIOController::generateIONumber
+* @see app/Http/Controllers/ArticleIOController.php:190
+* @route '/articles/operational-instructions/generate-io-number'
+*/
+generateIONumberForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: generateIONumber.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ArticleIOController::generateIONumber
+* @see app/Http/Controllers/ArticleIOController.php:190
+* @route '/articles/operational-instructions/generate-io-number'
+*/
+generateIONumberForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: generateIONumber.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+generateIONumber.form = generateIONumberForm
 
 /**
 * @see \App\Http\Controllers\ArticleIOController::download
@@ -112,6 +149,43 @@ download.head = (args: { operationalInstruction: string | { uuid: string } } | [
 })
 
 /**
+* @see \App\Http\Controllers\ArticleIOController::download
+* @see app/Http/Controllers/ArticleIOController.php:171
+* @route '/articles/operational-instructions/{operationalInstruction}/download'
+*/
+const downloadForm = (args: { operationalInstruction: string | { uuid: string } } | [operationalInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: download.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ArticleIOController::download
+* @see app/Http/Controllers/ArticleIOController.php:171
+* @route '/articles/operational-instructions/{operationalInstruction}/download'
+*/
+downloadForm.get = (args: { operationalInstruction: string | { uuid: string } } | [operationalInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: download.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ArticleIOController::download
+* @see app/Http/Controllers/ArticleIOController.php:171
+* @route '/articles/operational-instructions/{operationalInstruction}/download'
+*/
+downloadForm.head = (args: { operationalInstruction: string | { uuid: string } } | [operationalInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: download.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+download.form = downloadForm
+
+/**
 * @see \App\Http\Controllers\ArticleIOController::index
 * @see app/Http/Controllers/ArticleIOController.php:29
 * @route '/articles/operational-instructions'
@@ -154,6 +228,43 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\ArticleIOController::index
+* @see app/Http/Controllers/ArticleIOController.php:29
+* @route '/articles/operational-instructions'
+*/
+const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ArticleIOController::index
+* @see app/Http/Controllers/ArticleIOController.php:29
+* @route '/articles/operational-instructions'
+*/
+indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ArticleIOController::index
+* @see app/Http/Controllers/ArticleIOController.php:29
+* @route '/articles/operational-instructions'
+*/
+indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\ArticleIOController::create
@@ -200,6 +311,43 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
+* @see \App\Http\Controllers\ArticleIOController::create
+* @see app/Http/Controllers/ArticleIOController.php:42
+* @route '/articles/operational-instructions/create'
+*/
+const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ArticleIOController::create
+* @see app/Http/Controllers/ArticleIOController.php:42
+* @route '/articles/operational-instructions/create'
+*/
+createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ArticleIOController::create
+* @see app/Http/Controllers/ArticleIOController.php:42
+* @route '/articles/operational-instructions/create'
+*/
+createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+create.form = createForm
+
+/**
 * @see \App\Http\Controllers\ArticleIOController::store
 * @see app/Http/Controllers/ArticleIOController.php:50
 * @route '/articles/operational-instructions'
@@ -232,6 +380,28 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\ArticleIOController::store
+* @see app/Http/Controllers/ArticleIOController.php:50
+* @route '/articles/operational-instructions'
+*/
+const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\ArticleIOController::store
+* @see app/Http/Controllers/ArticleIOController.php:50
+* @route '/articles/operational-instructions'
+*/
+storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\ArticleIOController::show
@@ -302,6 +472,43 @@ show.head = (args: { operationalInstruction: string | { uuid: string } } | [oper
 })
 
 /**
+* @see \App\Http\Controllers\ArticleIOController::show
+* @see app/Http/Controllers/ArticleIOController.php:84
+* @route '/articles/operational-instructions/{operationalInstruction}'
+*/
+const showForm = (args: { operationalInstruction: string | { uuid: string } } | [operationalInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ArticleIOController::show
+* @see app/Http/Controllers/ArticleIOController.php:84
+* @route '/articles/operational-instructions/{operationalInstruction}'
+*/
+showForm.get = (args: { operationalInstruction: string | { uuid: string } } | [operationalInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ArticleIOController::show
+* @see app/Http/Controllers/ArticleIOController.php:84
+* @route '/articles/operational-instructions/{operationalInstruction}'
+*/
+showForm.head = (args: { operationalInstruction: string | { uuid: string } } | [operationalInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+show.form = showForm
+
+/**
 * @see \App\Http\Controllers\ArticleIOController::edit
 * @see app/Http/Controllers/ArticleIOController.php:96
 * @route '/articles/operational-instructions/{operationalInstruction}/edit'
@@ -368,6 +575,43 @@ edit.head = (args: { operationalInstruction: string | { uuid: string } } | [oper
     url: edit.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\ArticleIOController::edit
+* @see app/Http/Controllers/ArticleIOController.php:96
+* @route '/articles/operational-instructions/{operationalInstruction}/edit'
+*/
+const editForm = (args: { operationalInstruction: string | { uuid: string } } | [operationalInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ArticleIOController::edit
+* @see app/Http/Controllers/ArticleIOController.php:96
+* @route '/articles/operational-instructions/{operationalInstruction}/edit'
+*/
+editForm.get = (args: { operationalInstruction: string | { uuid: string } } | [operationalInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ArticleIOController::edit
+* @see app/Http/Controllers/ArticleIOController.php:96
+* @route '/articles/operational-instructions/{operationalInstruction}/edit'
+*/
+editForm.head = (args: { operationalInstruction: string | { uuid: string } } | [operationalInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+edit.form = editForm
 
 /**
 * @see \App\Http\Controllers\ArticleIOController::update
@@ -438,6 +682,53 @@ update.patch = (args: { operationalInstruction: string | { uuid: string } } | [o
 })
 
 /**
+* @see \App\Http\Controllers\ArticleIOController::update
+* @see app/Http/Controllers/ArticleIOController.php:106
+* @route '/articles/operational-instructions/{operationalInstruction}'
+*/
+const updateForm = (args: { operationalInstruction: string | { uuid: string } } | [operationalInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\ArticleIOController::update
+* @see app/Http/Controllers/ArticleIOController.php:106
+* @route '/articles/operational-instructions/{operationalInstruction}'
+*/
+updateForm.put = (args: { operationalInstruction: string | { uuid: string } } | [operationalInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\ArticleIOController::update
+* @see app/Http/Controllers/ArticleIOController.php:106
+* @route '/articles/operational-instructions/{operationalInstruction}'
+*/
+updateForm.patch = (args: { operationalInstruction: string | { uuid: string } } | [operationalInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PATCH',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+update.form = updateForm
+
+/**
 * @see \App\Http\Controllers\ArticleIOController::destroy
 * @see app/Http/Controllers/ArticleIOController.php:160
 * @route '/articles/operational-instructions/{operationalInstruction}'
@@ -494,6 +785,38 @@ destroy.delete = (args: { operationalInstruction: string | { uuid: string } } | 
     url: destroy.url(args, options),
     method: 'delete',
 })
+
+/**
+* @see \App\Http\Controllers\ArticleIOController::destroy
+* @see app/Http/Controllers/ArticleIOController.php:160
+* @route '/articles/operational-instructions/{operationalInstruction}'
+*/
+const destroyForm = (args: { operationalInstruction: string | { uuid: string } } | [operationalInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\ArticleIOController::destroy
+* @see app/Http/Controllers/ArticleIOController.php:160
+* @route '/articles/operational-instructions/{operationalInstruction}'
+*/
+destroyForm.delete = (args: { operationalInstruction: string | { uuid: string } } | [operationalInstruction: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+destroy.form = destroyForm
 
 const ArticleIOController = { generateIONumber, download, index, create, store, show, edit, update, destroy }
 

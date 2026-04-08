@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Planning\PlanningController::save
 * @see app/Http/Controllers/Planning/PlanningController.php:136
@@ -32,6 +32,28 @@ save.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: save.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\Planning\PlanningController::save
+* @see app/Http/Controllers/Planning/PlanningController.php:136
+* @route '/api/planning/summary/save'
+*/
+const saveForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: save.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\Planning\PlanningController::save
+* @see app/Http/Controllers/Planning/PlanningController.php:136
+* @route '/api/planning/summary/save'
+*/
+saveForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: save.url(options),
+    method: 'post',
+})
+
+save.form = saveForm
 
 const summary = {
     save: Object.assign(save, save),

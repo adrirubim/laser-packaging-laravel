@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\MachineryController::index
 * @see app/Http/Controllers/MachineryController.php:25
@@ -42,6 +42,43 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\MachineryController::index
+* @see app/Http/Controllers/MachineryController.php:25
+* @route '/machinery'
+*/
+const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\MachineryController::index
+* @see app/Http/Controllers/MachineryController.php:25
+* @route '/machinery'
+*/
+indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\MachineryController::index
+* @see app/Http/Controllers/MachineryController.php:25
+* @route '/machinery'
+*/
+indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\MachineryController::create
@@ -88,6 +125,43 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
+* @see \App\Http\Controllers\MachineryController::create
+* @see app/Http/Controllers/MachineryController.php:51
+* @route '/machinery/create'
+*/
+const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\MachineryController::create
+* @see app/Http/Controllers/MachineryController.php:51
+* @route '/machinery/create'
+*/
+createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\MachineryController::create
+* @see app/Http/Controllers/MachineryController.php:51
+* @route '/machinery/create'
+*/
+createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+create.form = createForm
+
+/**
 * @see \App\Http\Controllers\MachineryController::store
 * @see app/Http/Controllers/MachineryController.php:63
 * @route '/machinery'
@@ -120,6 +194,28 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\MachineryController::store
+* @see app/Http/Controllers/MachineryController.php:63
+* @route '/machinery'
+*/
+const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\MachineryController::store
+* @see app/Http/Controllers/MachineryController.php:63
+* @route '/machinery'
+*/
+storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\MachineryController::show
@@ -190,6 +286,43 @@ show.head = (args: { machinery: string | { uuid: string } } | [machinery: string
 })
 
 /**
+* @see \App\Http\Controllers\MachineryController::show
+* @see app/Http/Controllers/MachineryController.php:82
+* @route '/machinery/{machinery}'
+*/
+const showForm = (args: { machinery: string | { uuid: string } } | [machinery: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\MachineryController::show
+* @see app/Http/Controllers/MachineryController.php:82
+* @route '/machinery/{machinery}'
+*/
+showForm.get = (args: { machinery: string | { uuid: string } } | [machinery: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\MachineryController::show
+* @see app/Http/Controllers/MachineryController.php:82
+* @route '/machinery/{machinery}'
+*/
+showForm.head = (args: { machinery: string | { uuid: string } } | [machinery: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+show.form = showForm
+
+/**
 * @see \App\Http\Controllers\MachineryController::edit
 * @see app/Http/Controllers/MachineryController.php:94
 * @route '/machinery/{machinery}/edit'
@@ -256,6 +389,43 @@ edit.head = (args: { machinery: string | { uuid: string } } | [machinery: string
     url: edit.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\MachineryController::edit
+* @see app/Http/Controllers/MachineryController.php:94
+* @route '/machinery/{machinery}/edit'
+*/
+const editForm = (args: { machinery: string | { uuid: string } } | [machinery: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\MachineryController::edit
+* @see app/Http/Controllers/MachineryController.php:94
+* @route '/machinery/{machinery}/edit'
+*/
+editForm.get = (args: { machinery: string | { uuid: string } } | [machinery: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\MachineryController::edit
+* @see app/Http/Controllers/MachineryController.php:94
+* @route '/machinery/{machinery}/edit'
+*/
+editForm.head = (args: { machinery: string | { uuid: string } } | [machinery: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+edit.form = editForm
 
 /**
 * @see \App\Http\Controllers\MachineryController::update
@@ -326,6 +496,53 @@ update.patch = (args: { machinery: string | { uuid: string } } | [machinery: str
 })
 
 /**
+* @see \App\Http\Controllers\MachineryController::update
+* @see app/Http/Controllers/MachineryController.php:108
+* @route '/machinery/{machinery}'
+*/
+const updateForm = (args: { machinery: string | { uuid: string } } | [machinery: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\MachineryController::update
+* @see app/Http/Controllers/MachineryController.php:108
+* @route '/machinery/{machinery}'
+*/
+updateForm.put = (args: { machinery: string | { uuid: string } } | [machinery: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\MachineryController::update
+* @see app/Http/Controllers/MachineryController.php:108
+* @route '/machinery/{machinery}'
+*/
+updateForm.patch = (args: { machinery: string | { uuid: string } } | [machinery: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PATCH',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+update.form = updateForm
+
+/**
 * @see \App\Http\Controllers\MachineryController::destroy
 * @see app/Http/Controllers/MachineryController.php:122
 * @route '/machinery/{machinery}'
@@ -382,6 +599,38 @@ destroy.delete = (args: { machinery: string | { uuid: string } } | [machinery: s
     url: destroy.url(args, options),
     method: 'delete',
 })
+
+/**
+* @see \App\Http\Controllers\MachineryController::destroy
+* @see app/Http/Controllers/MachineryController.php:122
+* @route '/machinery/{machinery}'
+*/
+const destroyForm = (args: { machinery: string | { uuid: string } } | [machinery: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\MachineryController::destroy
+* @see app/Http/Controllers/MachineryController.php:122
+* @route '/machinery/{machinery}'
+*/
+destroyForm.delete = (args: { machinery: string | { uuid: string } } | [machinery: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+destroy.form = destroyForm
 
 const machinery = {
     index: Object.assign(index, index),

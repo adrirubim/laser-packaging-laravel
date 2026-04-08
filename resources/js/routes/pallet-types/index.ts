@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\PalletTypeController::index
 * @see app/Http/Controllers/PalletTypeController.php:24
@@ -42,6 +42,43 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\PalletTypeController::index
+* @see app/Http/Controllers/PalletTypeController.php:24
+* @route '/pallet-types'
+*/
+const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PalletTypeController::index
+* @see app/Http/Controllers/PalletTypeController.php:24
+* @route '/pallet-types'
+*/
+indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PalletTypeController::index
+* @see app/Http/Controllers/PalletTypeController.php:24
+* @route '/pallet-types'
+*/
+indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\PalletTypeController::create
@@ -88,6 +125,43 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
+* @see \App\Http\Controllers\PalletTypeController::create
+* @see app/Http/Controllers/PalletTypeController.php:49
+* @route '/pallet-types/create'
+*/
+const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PalletTypeController::create
+* @see app/Http/Controllers/PalletTypeController.php:49
+* @route '/pallet-types/create'
+*/
+createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PalletTypeController::create
+* @see app/Http/Controllers/PalletTypeController.php:49
+* @route '/pallet-types/create'
+*/
+createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+create.form = createForm
+
+/**
 * @see \App\Http\Controllers\PalletTypeController::store
 * @see app/Http/Controllers/PalletTypeController.php:57
 * @route '/pallet-types'
@@ -120,6 +194,28 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\PalletTypeController::store
+* @see app/Http/Controllers/PalletTypeController.php:57
+* @route '/pallet-types'
+*/
+const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\PalletTypeController::store
+* @see app/Http/Controllers/PalletTypeController.php:57
+* @route '/pallet-types'
+*/
+storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\PalletTypeController::show
@@ -190,6 +286,43 @@ show.head = (args: { palletType: string | { uuid: string } } | [palletType: stri
 })
 
 /**
+* @see \App\Http\Controllers\PalletTypeController::show
+* @see app/Http/Controllers/PalletTypeController.php:76
+* @route '/pallet-types/{palletType}'
+*/
+const showForm = (args: { palletType: string | { uuid: string } } | [palletType: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PalletTypeController::show
+* @see app/Http/Controllers/PalletTypeController.php:76
+* @route '/pallet-types/{palletType}'
+*/
+showForm.get = (args: { palletType: string | { uuid: string } } | [palletType: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PalletTypeController::show
+* @see app/Http/Controllers/PalletTypeController.php:76
+* @route '/pallet-types/{palletType}'
+*/
+showForm.head = (args: { palletType: string | { uuid: string } } | [palletType: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+show.form = showForm
+
+/**
 * @see \App\Http\Controllers\PalletTypeController::edit
 * @see app/Http/Controllers/PalletTypeController.php:88
 * @route '/pallet-types/{palletType}/edit'
@@ -256,6 +389,43 @@ edit.head = (args: { palletType: string | { uuid: string } } | [palletType: stri
     url: edit.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\PalletTypeController::edit
+* @see app/Http/Controllers/PalletTypeController.php:88
+* @route '/pallet-types/{palletType}/edit'
+*/
+const editForm = (args: { palletType: string | { uuid: string } } | [palletType: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PalletTypeController::edit
+* @see app/Http/Controllers/PalletTypeController.php:88
+* @route '/pallet-types/{palletType}/edit'
+*/
+editForm.get = (args: { palletType: string | { uuid: string } } | [palletType: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PalletTypeController::edit
+* @see app/Http/Controllers/PalletTypeController.php:88
+* @route '/pallet-types/{palletType}/edit'
+*/
+editForm.head = (args: { palletType: string | { uuid: string } } | [palletType: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+edit.form = editForm
 
 /**
 * @see \App\Http\Controllers\PalletTypeController::update
@@ -326,6 +496,53 @@ update.patch = (args: { palletType: string | { uuid: string } } | [palletType: s
 })
 
 /**
+* @see \App\Http\Controllers\PalletTypeController::update
+* @see app/Http/Controllers/PalletTypeController.php:98
+* @route '/pallet-types/{palletType}'
+*/
+const updateForm = (args: { palletType: string | { uuid: string } } | [palletType: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\PalletTypeController::update
+* @see app/Http/Controllers/PalletTypeController.php:98
+* @route '/pallet-types/{palletType}'
+*/
+updateForm.put = (args: { palletType: string | { uuid: string } } | [palletType: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\PalletTypeController::update
+* @see app/Http/Controllers/PalletTypeController.php:98
+* @route '/pallet-types/{palletType}'
+*/
+updateForm.patch = (args: { palletType: string | { uuid: string } } | [palletType: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PATCH',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+update.form = updateForm
+
+/**
 * @see \App\Http\Controllers\PalletTypeController::destroy
 * @see app/Http/Controllers/PalletTypeController.php:112
 * @route '/pallet-types/{palletType}'
@@ -382,6 +599,38 @@ destroy.delete = (args: { palletType: string | { uuid: string } } | [palletType:
     url: destroy.url(args, options),
     method: 'delete',
 })
+
+/**
+* @see \App\Http\Controllers\PalletTypeController::destroy
+* @see app/Http/Controllers/PalletTypeController.php:112
+* @route '/pallet-types/{palletType}'
+*/
+const destroyForm = (args: { palletType: string | { uuid: string } } | [palletType: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\PalletTypeController::destroy
+* @see app/Http/Controllers/PalletTypeController.php:112
+* @route '/pallet-types/{palletType}'
+*/
+destroyForm.delete = (args: { palletType: string | { uuid: string } } | [palletType: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+destroy.form = destroyForm
 
 const palletTypes = {
     index: Object.assign(index, index),

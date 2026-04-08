@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\OrderEmployeeController::getAssignments
 * @see app/Http/Controllers/OrderEmployeeController.php:50
@@ -44,6 +44,43 @@ getAssignments.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => 
 })
 
 /**
+* @see \App\Http\Controllers\OrderEmployeeController::getAssignments
+* @see app/Http/Controllers/OrderEmployeeController.php:50
+* @route '/order-employees/get-assignments'
+*/
+const getAssignmentsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: getAssignments.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderEmployeeController::getAssignments
+* @see app/Http/Controllers/OrderEmployeeController.php:50
+* @route '/order-employees/get-assignments'
+*/
+getAssignmentsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: getAssignments.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderEmployeeController::getAssignments
+* @see app/Http/Controllers/OrderEmployeeController.php:50
+* @route '/order-employees/get-assignments'
+*/
+getAssignmentsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: getAssignments.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+getAssignments.form = getAssignmentsForm
+
+/**
 * @see \App\Http\Controllers\OrderEmployeeController::saveAssignments
 * @see app/Http/Controllers/OrderEmployeeController.php:75
 * @route '/order-employees/save-assignments'
@@ -76,6 +113,28 @@ saveAssignments.post = (options?: RouteQueryOptions): RouteDefinition<'post'> =>
     url: saveAssignments.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\OrderEmployeeController::saveAssignments
+* @see app/Http/Controllers/OrderEmployeeController.php:75
+* @route '/order-employees/save-assignments'
+*/
+const saveAssignmentsForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: saveAssignments.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\OrderEmployeeController::saveAssignments
+* @see app/Http/Controllers/OrderEmployeeController.php:75
+* @route '/order-employees/save-assignments'
+*/
+saveAssignmentsForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: saveAssignments.url(options),
+    method: 'post',
+})
+
+saveAssignments.form = saveAssignmentsForm
 
 /**
 * @see \App\Http\Controllers\OrderEmployeeController::checkAssignment
@@ -122,6 +181,43 @@ checkAssignment.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =>
 })
 
 /**
+* @see \App\Http\Controllers\OrderEmployeeController::checkAssignment
+* @see app/Http/Controllers/OrderEmployeeController.php:96
+* @route '/order-employees/check-assignment'
+*/
+const checkAssignmentForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: checkAssignment.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderEmployeeController::checkAssignment
+* @see app/Http/Controllers/OrderEmployeeController.php:96
+* @route '/order-employees/check-assignment'
+*/
+checkAssignmentForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: checkAssignment.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderEmployeeController::checkAssignment
+* @see app/Http/Controllers/OrderEmployeeController.php:96
+* @route '/order-employees/check-assignment'
+*/
+checkAssignmentForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: checkAssignment.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+checkAssignment.form = checkAssignmentForm
+
+/**
 * @see \App\Http\Controllers\OrderEmployeeController::index
 * @see app/Http/Controllers/OrderEmployeeController.php:26
 * @route '/order-employees'
@@ -164,6 +260,43 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\OrderEmployeeController::index
+* @see app/Http/Controllers/OrderEmployeeController.php:26
+* @route '/order-employees'
+*/
+const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderEmployeeController::index
+* @see app/Http/Controllers/OrderEmployeeController.php:26
+* @route '/order-employees'
+*/
+indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderEmployeeController::index
+* @see app/Http/Controllers/OrderEmployeeController.php:26
+* @route '/order-employees'
+*/
+indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\OrderEmployeeController::create
@@ -210,6 +343,43 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
+* @see \App\Http\Controllers\OrderEmployeeController::create
+* @see app/Http/Controllers/OrderEmployeeController.php:0
+* @route '/order-employees/create'
+*/
+const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderEmployeeController::create
+* @see app/Http/Controllers/OrderEmployeeController.php:0
+* @route '/order-employees/create'
+*/
+createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderEmployeeController::create
+* @see app/Http/Controllers/OrderEmployeeController.php:0
+* @route '/order-employees/create'
+*/
+createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+create.form = createForm
+
+/**
 * @see \App\Http\Controllers\OrderEmployeeController::store
 * @see app/Http/Controllers/OrderEmployeeController.php:0
 * @route '/order-employees'
@@ -242,6 +412,28 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\OrderEmployeeController::store
+* @see app/Http/Controllers/OrderEmployeeController.php:0
+* @route '/order-employees'
+*/
+const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\OrderEmployeeController::store
+* @see app/Http/Controllers/OrderEmployeeController.php:0
+* @route '/order-employees'
+*/
+storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\OrderEmployeeController::show
@@ -306,6 +498,43 @@ show.head = (args: { orderEmployee: string | number } | [orderEmployee: string |
 })
 
 /**
+* @see \App\Http\Controllers\OrderEmployeeController::show
+* @see app/Http/Controllers/OrderEmployeeController.php:0
+* @route '/order-employees/{orderEmployee}'
+*/
+const showForm = (args: { orderEmployee: string | number } | [orderEmployee: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderEmployeeController::show
+* @see app/Http/Controllers/OrderEmployeeController.php:0
+* @route '/order-employees/{orderEmployee}'
+*/
+showForm.get = (args: { orderEmployee: string | number } | [orderEmployee: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderEmployeeController::show
+* @see app/Http/Controllers/OrderEmployeeController.php:0
+* @route '/order-employees/{orderEmployee}'
+*/
+showForm.head = (args: { orderEmployee: string | number } | [orderEmployee: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+show.form = showForm
+
+/**
 * @see \App\Http\Controllers\OrderEmployeeController::edit
 * @see app/Http/Controllers/OrderEmployeeController.php:0
 * @route '/order-employees/{orderEmployee}/edit'
@@ -366,6 +595,43 @@ edit.head = (args: { orderEmployee: string | number } | [orderEmployee: string |
     url: edit.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\OrderEmployeeController::edit
+* @see app/Http/Controllers/OrderEmployeeController.php:0
+* @route '/order-employees/{orderEmployee}/edit'
+*/
+const editForm = (args: { orderEmployee: string | number } | [orderEmployee: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderEmployeeController::edit
+* @see app/Http/Controllers/OrderEmployeeController.php:0
+* @route '/order-employees/{orderEmployee}/edit'
+*/
+editForm.get = (args: { orderEmployee: string | number } | [orderEmployee: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\OrderEmployeeController::edit
+* @see app/Http/Controllers/OrderEmployeeController.php:0
+* @route '/order-employees/{orderEmployee}/edit'
+*/
+editForm.head = (args: { orderEmployee: string | number } | [orderEmployee: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+edit.form = editForm
 
 /**
 * @see \App\Http\Controllers\OrderEmployeeController::update
@@ -430,6 +696,53 @@ update.patch = (args: { orderEmployee: string | number } | [orderEmployee: strin
 })
 
 /**
+* @see \App\Http\Controllers\OrderEmployeeController::update
+* @see app/Http/Controllers/OrderEmployeeController.php:0
+* @route '/order-employees/{orderEmployee}'
+*/
+const updateForm = (args: { orderEmployee: string | number } | [orderEmployee: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\OrderEmployeeController::update
+* @see app/Http/Controllers/OrderEmployeeController.php:0
+* @route '/order-employees/{orderEmployee}'
+*/
+updateForm.put = (args: { orderEmployee: string | number } | [orderEmployee: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\OrderEmployeeController::update
+* @see app/Http/Controllers/OrderEmployeeController.php:0
+* @route '/order-employees/{orderEmployee}'
+*/
+updateForm.patch = (args: { orderEmployee: string | number } | [orderEmployee: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PATCH',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+update.form = updateForm
+
+/**
 * @see \App\Http\Controllers\OrderEmployeeController::destroy
 * @see app/Http/Controllers/OrderEmployeeController.php:146
 * @route '/order-employees/{orderEmployee}'
@@ -486,6 +799,38 @@ destroy.delete = (args: { orderEmployee: string | { uuid: string } } | [orderEmp
     url: destroy.url(args, options),
     method: 'delete',
 })
+
+/**
+* @see \App\Http\Controllers\OrderEmployeeController::destroy
+* @see app/Http/Controllers/OrderEmployeeController.php:146
+* @route '/order-employees/{orderEmployee}'
+*/
+const destroyForm = (args: { orderEmployee: string | { uuid: string } } | [orderEmployee: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\OrderEmployeeController::destroy
+* @see app/Http/Controllers/OrderEmployeeController.php:146
+* @route '/order-employees/{orderEmployee}'
+*/
+destroyForm.delete = (args: { orderEmployee: string | { uuid: string } } | [orderEmployee: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+destroy.form = destroyForm
 
 const orderEmployees = {
     getAssignments: Object.assign(getAssignments, getAssignments),

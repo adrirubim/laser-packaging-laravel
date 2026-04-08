@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\ProductionPortalWebController::login
 * @see app/Http/Controllers/ProductionPortalWebController.php:25
@@ -44,6 +44,43 @@ login.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
+* @see \App\Http\Controllers\ProductionPortalWebController::login
+* @see app/Http/Controllers/ProductionPortalWebController.php:25
+* @route '/production-portal/login'
+*/
+const loginForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: login.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ProductionPortalWebController::login
+* @see app/Http/Controllers/ProductionPortalWebController.php:25
+* @route '/production-portal/login'
+*/
+loginForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: login.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ProductionPortalWebController::login
+* @see app/Http/Controllers/ProductionPortalWebController.php:25
+* @route '/production-portal/login'
+*/
+loginForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: login.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+login.form = loginForm
+
+/**
 * @see \App\Http\Controllers\ProductionPortalWebController::authenticate
 * @see app/Http/Controllers/ProductionPortalWebController.php:33
 * @route '/production-portal/authenticate'
@@ -78,6 +115,28 @@ authenticate.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 })
 
 /**
+* @see \App\Http\Controllers\ProductionPortalWebController::authenticate
+* @see app/Http/Controllers/ProductionPortalWebController.php:33
+* @route '/production-portal/authenticate'
+*/
+const authenticateForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: authenticate.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\ProductionPortalWebController::authenticate
+* @see app/Http/Controllers/ProductionPortalWebController.php:33
+* @route '/production-portal/authenticate'
+*/
+authenticateForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: authenticate.url(options),
+    method: 'post',
+})
+
+authenticate.form = authenticateForm
+
+/**
 * @see \App\Http\Controllers\ProductionPortalWebController::logout
 * @see app/Http/Controllers/ProductionPortalWebController.php:160
 * @route '/production-portal/logout'
@@ -110,6 +169,28 @@ logout.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: logout.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\ProductionPortalWebController::logout
+* @see app/Http/Controllers/ProductionPortalWebController.php:160
+* @route '/production-portal/logout'
+*/
+const logoutForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: logout.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\ProductionPortalWebController::logout
+* @see app/Http/Controllers/ProductionPortalWebController.php:160
+* @route '/production-portal/logout'
+*/
+logoutForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: logout.url(options),
+    method: 'post',
+})
+
+logout.form = logoutForm
 
 /**
 * @see \App\Http\Controllers\ProductionPortalWebController::dashboard
@@ -154,6 +235,43 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: dashboard.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\ProductionPortalWebController::dashboard
+* @see app/Http/Controllers/ProductionPortalWebController.php:96
+* @route '/production-portal/dashboard'
+*/
+const dashboardForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: dashboard.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ProductionPortalWebController::dashboard
+* @see app/Http/Controllers/ProductionPortalWebController.php:96
+* @route '/production-portal/dashboard'
+*/
+dashboardForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: dashboard.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ProductionPortalWebController::dashboard
+* @see app/Http/Controllers/ProductionPortalWebController.php:96
+* @route '/production-portal/dashboard'
+*/
+dashboardForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: dashboard.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+dashboard.form = dashboardForm
 
 /**
 * @see \App\Http\Controllers\ProductionPortalWebController::showOrder
@@ -216,6 +334,43 @@ showOrder.head = (args: { order: string | number } | [order: string | number ] |
     url: showOrder.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\ProductionPortalWebController::showOrder
+* @see app/Http/Controllers/ProductionPortalWebController.php:126
+* @route '/production-portal/order/{order}'
+*/
+const showOrderForm = (args: { order: string | number } | [order: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: showOrder.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ProductionPortalWebController::showOrder
+* @see app/Http/Controllers/ProductionPortalWebController.php:126
+* @route '/production-portal/order/{order}'
+*/
+showOrderForm.get = (args: { order: string | number } | [order: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: showOrder.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ProductionPortalWebController::showOrder
+* @see app/Http/Controllers/ProductionPortalWebController.php:126
+* @route '/production-portal/order/{order}'
+*/
+showOrderForm.head = (args: { order: string | number } | [order: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: showOrder.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+showOrder.form = showOrderForm
 
 const ProductionPortalWebController = { login, authenticate, logout, dashboard, showOrder }
 

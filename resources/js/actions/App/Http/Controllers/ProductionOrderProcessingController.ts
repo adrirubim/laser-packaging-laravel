@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::index
 * @see app/Http/Controllers/ProductionOrderProcessingController.php:19
@@ -42,6 +42,43 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\ProductionOrderProcessingController::index
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:19
+* @route '/production-order-processing'
+*/
+const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ProductionOrderProcessingController::index
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:19
+* @route '/production-order-processing'
+*/
+indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ProductionOrderProcessingController::index
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:19
+* @route '/production-order-processing'
+*/
+indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::create
@@ -88,6 +125,43 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
+* @see \App\Http\Controllers\ProductionOrderProcessingController::create
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:148
+* @route '/production-order-processing/create'
+*/
+const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ProductionOrderProcessingController::create
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:148
+* @route '/production-order-processing/create'
+*/
+createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ProductionOrderProcessingController::create
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:148
+* @route '/production-order-processing/create'
+*/
+createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+create.form = createForm
+
+/**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::store
 * @see app/Http/Controllers/ProductionOrderProcessingController.php:178
 * @route '/production-order-processing'
@@ -120,6 +194,28 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\ProductionOrderProcessingController::store
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:178
+* @route '/production-order-processing'
+*/
+const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\ProductionOrderProcessingController::store
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:178
+* @route '/production-order-processing'
+*/
+storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::show
@@ -184,6 +280,43 @@ show.head = (args: { productionOrderProcessing: string | number } | [productionO
 })
 
 /**
+* @see \App\Http\Controllers\ProductionOrderProcessingController::show
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:225
+* @route '/production-order-processing/{productionOrderProcessing}'
+*/
+const showForm = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ProductionOrderProcessingController::show
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:225
+* @route '/production-order-processing/{productionOrderProcessing}'
+*/
+showForm.get = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ProductionOrderProcessingController::show
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:225
+* @route '/production-order-processing/{productionOrderProcessing}'
+*/
+showForm.head = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+show.form = showForm
+
+/**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::edit
 * @see app/Http/Controllers/ProductionOrderProcessingController.php:233
 * @route '/production-order-processing/{productionOrderProcessing}/edit'
@@ -244,6 +377,43 @@ edit.head = (args: { productionOrderProcessing: string | number } | [productionO
     url: edit.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\ProductionOrderProcessingController::edit
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:233
+* @route '/production-order-processing/{productionOrderProcessing}/edit'
+*/
+const editForm = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ProductionOrderProcessingController::edit
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:233
+* @route '/production-order-processing/{productionOrderProcessing}/edit'
+*/
+editForm.get = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ProductionOrderProcessingController::edit
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:233
+* @route '/production-order-processing/{productionOrderProcessing}/edit'
+*/
+editForm.head = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+edit.form = editForm
 
 /**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::update
@@ -308,6 +478,53 @@ update.patch = (args: { productionOrderProcessing: string | number } | [producti
 })
 
 /**
+* @see \App\Http\Controllers\ProductionOrderProcessingController::update
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:241
+* @route '/production-order-processing/{productionOrderProcessing}'
+*/
+const updateForm = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\ProductionOrderProcessingController::update
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:241
+* @route '/production-order-processing/{productionOrderProcessing}'
+*/
+updateForm.put = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\ProductionOrderProcessingController::update
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:241
+* @route '/production-order-processing/{productionOrderProcessing}'
+*/
+updateForm.patch = (args: { productionOrderProcessing: string | number } | [productionOrderProcessing: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PATCH',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+update.form = updateForm
+
+/**
 * @see \App\Http\Controllers\ProductionOrderProcessingController::destroy
 * @see app/Http/Controllers/ProductionOrderProcessingController.php:250
 * @route '/production-order-processing/{productionOrderProcessing}'
@@ -364,6 +581,38 @@ destroy.delete = (args: { productionOrderProcessing: string | { uuid: string } }
     url: destroy.url(args, options),
     method: 'delete',
 })
+
+/**
+* @see \App\Http\Controllers\ProductionOrderProcessingController::destroy
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:250
+* @route '/production-order-processing/{productionOrderProcessing}'
+*/
+const destroyForm = (args: { productionOrderProcessing: string | { uuid: string } } | [productionOrderProcessing: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\ProductionOrderProcessingController::destroy
+* @see app/Http/Controllers/ProductionOrderProcessingController.php:250
+* @route '/production-order-processing/{productionOrderProcessing}'
+*/
+destroyForm.delete = (args: { productionOrderProcessing: string | { uuid: string } } | [productionOrderProcessing: string | { uuid: string } ] | string | { uuid: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+destroy.form = destroyForm
 
 const ProductionOrderProcessingController = { index, create, store, show, edit, update, destroy }
 
