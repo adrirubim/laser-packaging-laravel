@@ -8,15 +8,51 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "php"
+    groups:
+      symfony-and-laravel-ecosystem:
+        patterns:
+          - "laravel/*"
+          - "symfony/*"
+      dev-tools:
+        patterns:
+          - "phpunit/*"
+          - "fakerphp/*"
+          - "nunomaduro/*"
 
   # JavaScript (npm)
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "javascript"
+    groups:
+      lint-and-format:
+        patterns:
+          - "eslint*"
+          - "@eslint/*"
+          - "prettier*"
+          - "typescript*"
+      build-tooling:
+        patterns:
+          - "vite*"
+          - "@vitejs/*"
+          - "laravel-vite-plugin"
+          - "@tailwindcss/*"
+          - "tailwindcss"
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github_actions"
