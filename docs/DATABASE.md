@@ -66,4 +66,8 @@ php artisan test --compact tests/Feature/Flows/DemoAllSectionsVerificationTest.p
 ```
 
 ### Create test database (PostgreSQL)
-See `docs/snippets/CREATE_TEST_DATABASE.sql`.
+Prefer the one-liner in the quick setup section:
+
+```bash
+psql -U postgres -c "CREATE DATABASE laser_packaging_test;"
+```

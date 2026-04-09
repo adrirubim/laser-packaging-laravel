@@ -4,6 +4,19 @@ Versions are resolved in `package-lock.json` and `composer.lock`. Check locally 
 
 ---
 
+## Top Stack (quick visibility)
+
+| Layer | Component | Version |
+|------|-----------|---------|
+| Backend | PHP | 8.4.x (min 8.4) |
+| Backend | Laravel | 13.4.0 |
+| Frontend | React | 19.2.4 |
+| Frontend | TypeScript | 6.0.2 |
+| Frontend | Vite | 8.0.7 |
+| Database | PostgreSQL | 14+ |
+
+---
+
 ## Backend (PHP / Composer)
 
 | Package | Exact version (composer.lock) | Require in composer.json |
