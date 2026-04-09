@@ -1,4 +1,4 @@
-# Stack Versions (Exact Reference)
+# Version Stack
 
 Versions are resolved in `package-lock.json` and `composer.lock`. Check locally with `npm ls <pkg>` or `composer show <pkg>`.
 
@@ -66,3 +66,4 @@ To cite the stack in other documentation:
 - **Frontend:** React 19.2.x, Inertia React 3.0.x, TypeScript 6.0.x, Vite 8.0.x, Tailwind CSS 4.2.x  
 
 Reference: **March 2026**. Full detail: this file.
+

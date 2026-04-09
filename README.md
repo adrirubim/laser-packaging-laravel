@@ -70,7 +70,7 @@ Laser Packaging Laravel is a **production-ready** content management system desi
 - **Enterprise Security:** Form Requests, validation, `.env` handling, test DB isolation
 - **Optimized Performance:** Caching, indexes, Performance test suite (Concurrency, Load, API)
 - **Comprehensive Testing:** 1017+ PHP tests, 24 Vitest tests, covering all critical paths
-- **Documentation:** [docs/README.md](docs/README.md) (index), [test coverage](docs/TEST_COVERAGE.md), [VERSION_STACK](docs/VERSION_STACK.md)
+- **Documentation:** [docs/README.md](docs/README.md) (index), [test coverage](docs/TEST_COVERAGE.md), [VERSION_STACK](VERSION_STACK.md)
 
 ---
 
@@ -281,7 +281,7 @@ All documentation is in **English** and lives under `docs/`. The main index is *
 
 | Section | Links |
 |---------|--------|
-| **Overview** | [VERSION_STACK](docs/VERSION_STACK.md) · [PROJECT_STATUS](docs/PROJECT_STATUS.md) |
+| **Overview** | [VERSION_STACK](VERSION_STACK.md) · [PROJECT_STATUS](docs/PROJECT_STATUS.md) |
 | **Getting started** | [Database setup](docs/DATABASE.md) |
 | **Development** | [Backend](docs/BACKEND_GUIDE.md) · [Frontend](docs/FRONTEND_GUIDE.md) · [i18n](docs/I18N.md) |
 | **Testing** | [Coverage](docs/TEST_COVERAGE.md) |
@@ -587,4 +587,4 @@ See **[CONTRIBUTING.md](CONTRIBUTING.md)** for local checks, branch/commit conve
 
 ---
 
-**Last Updated:** March 2026 · **Status:** Production Ready ✅ · **Version:** v1.0.0 · **Stack:** [docs/VERSION_STACK.md](docs/VERSION_STACK.md)
+**Last Updated:** March 2026 · **Status:** Production Ready ✅ · **Version:** v1.0.0 · **Stack:** [VERSION_STACK.md](VERSION_STACK.md)
