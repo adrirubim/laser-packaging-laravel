@@ -2,7 +2,7 @@
 
 ## `env()` Only in Config Files
 
-Direct `env()` calls return `null` when config is cached.
+Direct `env()` calls may return `null` when config is cached.
 
 Incorrect:
 ```php
@@ -27,8 +27,8 @@ Incorrect:
 
 # .env committed to repo or shared in Slack
 
-STRIPE_SECRET=REDACTED
-AWS_SECRET_ACCESS_KEY=YOUR_SECRET_HERE
+STRIPE_SECRET=sk_live_abc123
+AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI
 ```
 
 Correct:
