@@ -9,8 +9,8 @@ and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2
 
 #### Changed
 
-- Dependencies (npm): bumped `vite` to `8.0.7`, `@headlessui/react` to `2.2.10`, and `typescript-eslint` to `8.58.1`.
-- Dependencies (Composer): bumped `laravel/boost` to `2.4.2`, `laravel/wayfinder` to `0.1.16`, and `phpunit/phpunit` to `13.1.1`.
+- Dependencies (npm): bumped `vite` to `8.0.8`, `lucide-react` to `1.8.0`, `react` / `react-dom` / `react-is` to `19.2.5`, and `typescript-eslint` to `8.58.2`.
+- Dependencies (Composer): bumped `laravel/framework` to `13.5.0`, `inertiajs/inertia-laravel` to `3.0.6`, `laravel/boost` to `2.4.4`, and `phpunit/phpunit` to `13.1.5`.
 - Wayfinder: regenerated `resources/js/routes/**` and `resources/js/actions/**`; updated Inertia `<Form>` usage to use `action={route.url()}` + `method="..."` (Wayfinder no longer provides `.form()` in generated types).
 - Documentation: aligned version references and recommended commands (dev + CI parity) with the current stack.
 

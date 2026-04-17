@@ -62,7 +62,7 @@ Versions are resolved in `package-lock.json` and `composer.lock`. Check locally 
 
 To cite the stack in other documentation:
 
-- **Backend:** PHP 8.4+, Laravel 13.4.x, Inertia Laravel 3.0.x, Wayfinder 0.1.x  
+- **Backend:** PHP 8.4+, Laravel 13.5.x, Inertia Laravel 3.0.x, Wayfinder 0.1.x  
 - **Frontend:** React 19.2.x, Inertia React 3.0.x, TypeScript 6.0.x, Vite 8.0.x, Tailwind CSS 4.2.x  
 
 Reference: **April 2026**. Full detail: this file.
