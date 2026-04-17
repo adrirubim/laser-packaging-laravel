@@ -23,27 +23,25 @@ export function SearchInput({
 }: SearchInputProps) {
     const { t } = useTranslations();
     const resolvedPlaceholder = placeholder ?? t('common.search_placeholder');
-    const [localValue, setLocalValue] = useState(value);
+    const [isEditing, setIsEditing] = useState(false);
+    const [draftValue, setDraftValue] = useState(value);
+    const displayedValue = isEditing ? draftValue : value;
 
     useEffect(() => {
-        // Call only if local value differs from server
-        if (localValue === value) {
+        if (!isEditing) {
             return;
         }
 
         const timer = setTimeout(() => {
-            onChange(localValue);
+            onChange(draftValue);
         }, debounceMs);
 
         return () => clearTimeout(timer);
-    }, [localValue, debounceMs, onChange, value]);
-
-    useEffect(() => {
-        setLocalValue(value);
-    }, [value]);
+    }, [draftValue, debounceMs, isEditing, onChange]);
 
     const handleClear = () => {
-        setLocalValue('');
+        setIsEditing(true);
+        setDraftValue('');
         if (onClear) {
             onClear();
         } else {
@@ -56,15 +54,23 @@ export function SearchInput({
             <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
             <input
                 type="text"
-                value={localValue}
-                onChange={(e) => setLocalValue(e.target.value)}
+                value={displayedValue}
+                onFocus={() => {
+                    setIsEditing(true);
+                    setDraftValue(value);
+                }}
+                onBlur={() => setIsEditing(false)}
+                onChange={(e) => {
+                    setIsEditing(true);
+                    setDraftValue(e.target.value);
+                }}
                 placeholder={resolvedPlaceholder}
                 className="w-full rounded-md border border-input bg-background px-3 py-2 pr-9 pl-9 text-sm shadow-sm focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
             />
             {isLoading && (
                 <Loader2 className="absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 transform animate-spin text-muted-foreground" />
             )}
-            {localValue && !isLoading && (
+            {displayedValue !== '' && !isLoading && (
                 <button
                     onClick={handleClear}
                     className="absolute top-1/2 right-3 -translate-y-1/2 transform transition-opacity hover:opacity-70"
